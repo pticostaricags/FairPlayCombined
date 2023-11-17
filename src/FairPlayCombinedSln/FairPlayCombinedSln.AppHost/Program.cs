@@ -1,10 +1,25 @@
+using Microsoft.Extensions.Configuration;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
-//For issue about same target path, check: https://github.com/dotnet/aspire/issues/851
-builder.AddProject<Projects.FairPlayDating>("fairplaydating");
+var fairPlayCombinedDbCS = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
+    throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
+builder.AddProject<Projects.FairPlayDating>("fairplaydating")
+    .WithEnvironment(callback => 
+    {
+        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+    });
 
-builder.AddProject<Projects.FairPlayShop>("fairplayshop");
+builder.AddProject<Projects.FairPlayTube>("fairplaytube")
+    .WithEnvironment(callback =>
+    {
+        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+    });
 
-builder.AddProject<Projects.FairPlayTube>("fairplaytube");
+builder.AddProject<Projects.FairPlayShop>("fairplayshop")
+    .WithEnvironment(callback =>
+    {
+        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+    });
 
 builder.Build().Run();

@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>e867248f-3eea-4583-af41-43c0cf232d5b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,13 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FairPlayDating\FairPlayDating\FairPlayDating.csproj">
+    <ProjectReference Include="..\FairPlayDating\FairPlayDating.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
-    <ProjectReference Include="..\FairPlayShop\FairPlayShop\FairPlayShop.csproj">
-      <ExcludeAssets>all</ExcludeAssets>
-    </ProjectReference>
-    <ProjectReference Include="..\FairPlayTube\FairPlayTube\FairPlayTube.csproj">
+    <ProjectReference Include="..\FairPlayShop\FairPlayShop.csproj" />
+    <ProjectReference Include="..\FairPlayTube\FairPlayTube.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
   </ItemGroup>
