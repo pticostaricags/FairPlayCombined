@@ -396,3 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/src/FairPlayCombinedSln/FairPlayCombinedSln.AppHost/aspire-manifest.json
