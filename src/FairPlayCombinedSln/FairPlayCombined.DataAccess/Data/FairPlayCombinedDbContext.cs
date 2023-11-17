@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using FairPlayCombined.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 
 namespace FairPlayCombined.DataAccess.Data;
 
@@ -15,44 +16,54 @@ public partial class FairPlayCombinedDbContext : DbContext
     {
     }
 
-    public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
+    public virtual DbSet<AspNetRoleClaims> AspNetRoleClaims { get; set; }
 
-    public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
+    public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
 
-    public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
+    public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
 
-    public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
+    public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
 
-    public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
+    public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
 
-    public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
+    public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
+
+    public virtual DbSet<ErrorLog> ErrorLog { get; set; }
+
+    public virtual DbSet<Store> Store { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AspNetRole>(entity =>
+        modelBuilder.Entity<AspNetRoles>(entity =>
         {
             entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
                 .IsUnique()
                 .HasFilter("([NormalizedName] IS NOT NULL)");
         });
 
-        modelBuilder.Entity<AspNetUser>(entity =>
+        modelBuilder.Entity<AspNetUsers>(entity =>
         {
             entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
                 .IsUnique()
                 .HasFilter("([NormalizedUserName] IS NOT NULL)");
 
-            entity.HasMany(d => d.Roles).WithMany(p => p.Users)
+            entity.HasMany(d => d.Role).WithMany(p => p.User)
                 .UsingEntity<Dictionary<string, object>>(
-                    "AspNetUserRole",
-                    r => r.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
-                    l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
+                    "AspNetUserRoles",
+                    r => r.HasOne<AspNetRoles>().WithMany().HasForeignKey("RoleId"),
+                    l => l.HasOne<AspNetUsers>().WithMany().HasForeignKey("UserId"),
                     j =>
                     {
                         j.HasKey("UserId", "RoleId");
-                        j.ToTable("AspNetUserRoles");
                         j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
                     });
+        });
+
+        modelBuilder.Entity<Store>(entity =>
+        {
+            entity.HasOne(d => d.Owner).WithMany(p => p.Store)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Store_AspNetUsers");
         });
 
         OnModelCreatingPartial(modelBuilder);

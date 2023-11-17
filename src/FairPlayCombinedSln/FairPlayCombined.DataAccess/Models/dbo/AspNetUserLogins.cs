@@ -6,13 +6,14 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
 [PrimaryKey("LoginProvider", "ProviderKey")]
 [Index("UserId", Name = "IX_AspNetUserLogins_UserId")]
-public partial class AspNetUserLogin
+public partial class AspNetUserLogins
 {
     [Key]
     public string LoginProvider { get; set; }
@@ -27,5 +28,5 @@ public partial class AspNetUserLogin
 
     [ForeignKey("UserId")]
     [InverseProperty("AspNetUserLogins")]
-    public virtual AspNetUser User { get; set; }
+    public virtual AspNetUsers User { get; set; }
 }

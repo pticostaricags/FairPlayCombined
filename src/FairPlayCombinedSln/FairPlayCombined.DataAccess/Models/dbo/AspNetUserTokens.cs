@@ -6,24 +6,26 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
-[Index("UserId", Name = "IX_AspNetUserClaims_UserId")]
-public partial class AspNetUserClaim
+[PrimaryKey("UserId", "LoginProvider", "Name")]
+public partial class AspNetUserTokens
 {
     [Key]
-    public int Id { get; set; }
-
-    [Required]
     public string UserId { get; set; }
 
-    public string ClaimType { get; set; }
+    [Key]
+    public string LoginProvider { get; set; }
 
-    public string ClaimValue { get; set; }
+    [Key]
+    public string Name { get; set; }
+
+    public string Value { get; set; }
 
     [ForeignKey("UserId")]
-    [InverseProperty("AspNetUserClaims")]
-    public virtual AspNetUser User { get; set; }
+    [InverseProperty("AspNetUserTokens")]
+    public virtual AspNetUsers User { get; set; }
 }

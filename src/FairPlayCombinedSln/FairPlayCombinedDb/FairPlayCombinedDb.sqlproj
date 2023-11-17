@@ -58,6 +58,9 @@
     <Folder Include="Properties" />
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
+    <Folder Include="fairplayshop" />
+    <Folder Include="FairPlayShop\Tables\" />
+    <Folder Include="Security\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
@@ -68,5 +71,8 @@
     <Build Include="dbo\Tables\AspNetRoles.sql" />
     <Build Include="dbo\Tables\AspNetRoleClaims.sql" />
     <Build Include="dbo\Tables\__EFMigrationsHistory.sql" />
+    <Build Include="dbo\Tables\ErrorLog.sql" />
+    <Build Include="FairPlayShop\Tables\Store.sql" />
+    <Build Include="Security\FairPlayShop.sql" />
   </ItemGroup>
 </Project>

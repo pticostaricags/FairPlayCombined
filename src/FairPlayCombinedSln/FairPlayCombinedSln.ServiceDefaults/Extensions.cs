@@ -1,12 +1,18 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-
+using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Models.dboSchema;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.OpenApi;
 namespace Microsoft.Extensions.Hosting;
 
 public static class Extensions
@@ -28,6 +34,11 @@ public static class Extensions
             http.UseServiceDiscovery();
         });
 
+        builder.Services.AddProblemDetails();
+        // Add services to the container.
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
         return builder;
     }
 
@@ -108,6 +119,8 @@ public static class Extensions
             Predicate = r => r.Tags.Contains("live")
         });
 
+        app.UseSwagger();
+        app.UseSwaggerUI();
         return app;
     }
 
@@ -116,4 +129,78 @@ public static class Extensions
             "Microsoft.AspNetCore.Hosting",
             "Microsoft.AspNetCore.Server.Kestrel",
             "System.Net.Http");
+
+    #region FairPlay Apps Customization
+
+    public static WebApplication MapGlobalEndpoints(this WebApplication app)
+    {
+        app.MapGet(pattern: "api/UsersList",
+            async ([FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+            CancellationToken cancellationToken) =>
+        {
+            var fairPlayCombinedDbContext = 
+            await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
+            var users = await fairPlayCombinedDbContext.AspNetUsers
+            .Select(p=>new 
+            {
+                Id=p.Id,
+                Username = p.UserName
+            })
+            .ToArrayAsync(cancellationToken: cancellationToken);
+            return users;
+        });
+        return app; ;
+    }
+    public static WebApplication UseGlobalExceptionHandler(this WebApplication app)
+    {
+        app.UseExceptionHandler(configure =>
+        {
+            configure.Run(async context =>
+            {
+                var exceptionHandlerPathFeature =
+                        context.Features.Get<IExceptionHandlerPathFeature>();
+                var error = exceptionHandlerPathFeature?.Error;
+                if (error != null)
+                {
+                    long? errorId;
+                    try
+                    {
+                        FairPlayCombinedDbContext fairPlayCombinedDbContext =
+                        context.RequestServices.GetRequiredService<FairPlayCombinedDbContext>();
+                        ErrorLog errorLog = new()
+                        {
+                            FullException = error.ToString(),
+                            StackTrace = error.StackTrace,
+                            Message = error.Message
+                        };
+                        await fairPlayCombinedDbContext.ErrorLog.AddAsync(errorLog);
+                        await fairPlayCombinedDbContext.SaveChangesAsync();
+                        errorId = errorLog.ErrorLogId;
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    ProblemDetails problemDetails = new ProblemDetails();
+                    //if (error is CustomValidationException)
+                    //{
+                    //    problemHttpResponse.Detail = error.Message;
+                    //}
+                    //else
+                    {
+                        string userVisibleError = "An error ocurred.";
+                        if (errorId.HasValue)
+                        {
+                            userVisibleError += $" Error code: {errorId}";
+                        }
+                        problemDetails.Detail = userVisibleError;
+                    }
+                    problemDetails.Status = (int)System.Net.HttpStatusCode.BadRequest;
+                    await context.Response.WriteAsJsonAsync<ProblemDetails>(problemDetails);
+                }
+            });
+        });
+        return app;
+    }
+    #endregion
 }

@@ -6,12 +6,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
 [Index("NormalizedEmail", Name = "EmailIndex")]
-public partial class AspNetUser
+public partial class AspNetUsers
 {
     [Key]
     public string Id { get; set; }
@@ -49,15 +50,18 @@ public partial class AspNetUser
     public int AccessFailedCount { get; set; }
 
     [InverseProperty("User")]
-    public virtual ICollection<AspNetUserClaim> AspNetUserClaims { get; set; } = new List<AspNetUserClaim>();
+    public virtual ICollection<AspNetUserClaims> AspNetUserClaims { get; set; } = new List<AspNetUserClaims>();
 
     [InverseProperty("User")]
-    public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; } = new List<AspNetUserLogin>();
+    public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; } = new List<AspNetUserLogins>();
 
     [InverseProperty("User")]
-    public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; } = new List<AspNetUserToken>();
+    public virtual ICollection<AspNetUserTokens> AspNetUserTokens { get; set; } = new List<AspNetUserTokens>();
+
+    [InverseProperty("Owner")]
+    public virtual ICollection<Store> Store { get; set; } = new List<Store>();
 
     [ForeignKey("UserId")]
-    [InverseProperty("Users")]
-    public virtual ICollection<AspNetRole> Roles { get; set; } = new List<AspNetRole>();
+    [InverseProperty("User")]
+    public virtual ICollection<AspNetRoles> Role { get; set; } = new List<AspNetRoles>();
 }

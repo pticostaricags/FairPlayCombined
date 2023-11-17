@@ -6,12 +6,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
 [Index("RoleId", Name = "IX_AspNetRoleClaims_RoleId")]
-public partial class AspNetRoleClaim
+public partial class AspNetRoleClaims
 {
     [Key]
     public int Id { get; set; }
@@ -25,5 +26,5 @@ public partial class AspNetRoleClaim
 
     [ForeignKey("RoleId")]
     [InverseProperty("AspNetRoleClaims")]
-    public virtual AspNetRole Role { get; set; }
+    public virtual AspNetRoles Role { get; set; }
 }

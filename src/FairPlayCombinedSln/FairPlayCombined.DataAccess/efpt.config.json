@@ -42,6 +42,14 @@
       {
          "Name": "[dbo].[AspNetUserTokens]",
          "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ErrorLog]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayShop].[Store]",
+         "ObjectType": 0
       }
    ],
    "UiHint": "..\\FairPlayCombinedDb\\FairPlayCombinedDb.sqlproj",
@@ -54,7 +62,7 @@
    "UseFluentApiOnly": false,
    "UseHandleBars": false,
    "UseHierarchyId": false,
-   "UseInflector": true,
+   "UseInflector": false,
    "UseLegacyPluralizer": false,
    "UseManyToManyEntity": false,
    "UseNoDefaultConstructor": false,

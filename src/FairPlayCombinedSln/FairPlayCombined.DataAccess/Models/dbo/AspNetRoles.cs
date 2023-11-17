@@ -6,11 +6,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
-public partial class AspNetRole
+public partial class AspNetRoles
 {
     [Key]
     public string Id { get; set; }
@@ -24,9 +25,9 @@ public partial class AspNetRole
     public string ConcurrencyStamp { get; set; }
 
     [InverseProperty("Role")]
-    public virtual ICollection<AspNetRoleClaim> AspNetRoleClaims { get; set; } = new List<AspNetRoleClaim>();
+    public virtual ICollection<AspNetRoleClaims> AspNetRoleClaims { get; set; } = new List<AspNetRoleClaims>();
 
     [ForeignKey("RoleId")]
-    [InverseProperty("Roles")]
-    public virtual ICollection<AspNetUser> Users { get; set; } = new List<AspNetUser>();
+    [InverseProperty("Role")]
+    public virtual ICollection<AspNetUsers> User { get; set; } = new List<AspNetUsers>();
 }

@@ -4,12 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using FairPlayDating.Components;
 using FairPlayDating.Components.Account;
 using FairPlayDating.Data;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Diagnostics;
+using FairPlayCombined.DataAccess.Models.dboSchema;
+using Microsoft.AspNetCore.Mvc;
+using FairPlayCombined.DataAccess.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-
-
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -36,9 +39,18 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
+builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(optionsAction =>
+{
+    optionsAction.UseSqlServer(connectionString,
+        sqlServerOptionsAction =>
+        {
+            sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(3),
+                errorNumbersToAdd: null);
+        });
+});
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -47,9 +59,11 @@ app.MapDefaultEndpoints();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseGlobalExceptionHandler();
 }
 else
 {
+    app.UseGlobalExceptionHandler();
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
@@ -66,4 +80,7 @@ app.MapRazorComponents<App>()
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
+app.MapGlobalEndpoints();
+
 app.Run();
+
