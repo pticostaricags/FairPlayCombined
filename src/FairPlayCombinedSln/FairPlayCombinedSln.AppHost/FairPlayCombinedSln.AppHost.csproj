@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting" Version="8.0.0-preview.1.23557.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FairPlayDating\FairPlayDating\FairPlayDating.csproj">
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\FairPlayShop\FairPlayShop\FairPlayShop.csproj">
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\FairPlayTube\FairPlayTube\FairPlayTube.csproj">
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>
