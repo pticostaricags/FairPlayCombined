@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Identity
 @inject RoleManager<IdentityRole> roleManager
 @inject NavigationManager navigationManager
+@inject IToastService toastService
 @rendermode RenderMode.InteractiveServer
 
 <h3>RoleCreateAsync</h3>
@@ -36,11 +37,13 @@
         var result = await this.roleManager.CreateAsync(role);
         if (result.Succeeded)
         {
+            this.toastService!.ShowSuccess($"Role '{role.Name}' been created");
             this.navigationManager.NavigateTo("RoleList");
         }
         else
         {
-            throw new Exception(String.Join(",", result.Errors.Select(p => p.Description)));
+            var message = String.Join(",", result.Errors.Select(p => p.Description));
+            this.toastService!.ShowError(message);
         }
     }
 }
