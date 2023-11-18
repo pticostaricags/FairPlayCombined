@@ -8,7 +8,7 @@
 @inject IRoleService roleService
 @rendermode RenderMode.InteractiveServer
 @attribute [StreamRendering(enabled: true)]
-<h3>UserList</h3>
+<h3>RoleList</h3>
 
 <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
     <PropertyColumn Property="@(p=>p.Id)" Sortable="true"></PropertyColumn>
