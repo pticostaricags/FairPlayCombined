@@ -28,7 +28,11 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
 
+    public virtual DbSet<Culture> Culture { get; set; }
+
     public virtual DbSet<ErrorLog> ErrorLog { get; set; }
+
+    public virtual DbSet<Resource> Resource { get; set; }
 
     public virtual DbSet<Store> Store { get; set; }
 
@@ -57,6 +61,13 @@ public partial class FairPlayCombinedDbContext : DbContext
                         j.HasKey("UserId", "RoleId");
                         j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
                     });
+        });
+
+        modelBuilder.Entity<Resource>(entity =>
+        {
+            entity.HasOne(d => d.Culture).WithMany(p => p.Resource)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Resource_Culture");
         });
 
         modelBuilder.Entity<Store>(entity =>

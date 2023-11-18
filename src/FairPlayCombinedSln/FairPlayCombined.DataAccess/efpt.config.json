@@ -44,7 +44,15 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Culture]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[ErrorLog]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Resource]",
          "ObjectType": 0
       },
       {

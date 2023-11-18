@@ -10,5 +10,9 @@
         {
             public const int PageSize = 10;
         }
+        public static class CacheConfiguration
+        {
+            public static readonly TimeSpan LocalizationCacheDuration = TimeSpan.FromSeconds(5);
+        }
     }
 }
