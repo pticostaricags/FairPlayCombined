@@ -1,0 +1,5 @@
+﻿CREATE TABLE [FairPlayDating].[EyesColor]
+(
+	[EyesColorId] SMALLINT NOT NULL CONSTRAINT PK_EyesColor PRIMARY KEY IDENTITY, 
+    [Name] NVARCHAR(50) NOT NULL
+)

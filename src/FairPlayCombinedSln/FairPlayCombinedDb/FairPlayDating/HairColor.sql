@@ -1,0 +1,5 @@
+﻿CREATE TABLE [FairPlayDating].[HairColor]
+(
+	[HairColorId] SMALLINT NOT NULL CONSTRAINT PK_HairColor PRIMARY KEY IDENTITY, 
+    [Name] NVARCHAR(50) NOT NULL
+)

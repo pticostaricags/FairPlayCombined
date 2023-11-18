@@ -102,6 +102,21 @@
     <Build Include="FairPlaySocial\PostVisibility.sql" />
     <Build Include="FairPlaySocial\PostType.sql" />
     <Build Include="FairPlaySocial\Group.sql" />
+    <Build Include="FairPlayDating\Activity.sql" />
+    <Build Include="FairPlayDating\ApplicationUserVouch.sql" />
+    <Build Include="FairPlayDating\DateObjective.sql" />
+    <Build Include="FairPlayDating\EyesColor.sql" />
+    <Build Include="FairPlayDating\Frequency.sql" />
+    <Build Include="FairPlayDating\Gender.sql" />
+    <Build Include="FairPlayDating\HairColor.sql" />
+    <Build Include="FairPlayDating\KidStatus.sql" />
+    <Build Include="FairPlayDating\LikedUserProfile.sql" />
+    <Build Include="FairPlayDating\NotLikedUserProfile.sql" />
+    <Build Include="FairPlayDating\Religion.sql" />
+    <Build Include="FairPlayDating\TattooStatus.sql" />
+    <Build Include="FairPlayDating\UserActivity.sql" />
+    <Build Include="FairPlayDating\UserMessage.sql" />
+    <Build Include="FairPlayDating\UserProfile.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment1.sql" />
