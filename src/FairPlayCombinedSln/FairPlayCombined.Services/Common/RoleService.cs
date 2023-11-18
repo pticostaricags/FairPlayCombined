@@ -1,34 +1,34 @@
-﻿using FairPlayCombined.Common;
-using FairPlayCombined.DataAccess.Data;
+﻿using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces;
-using FairPlayCombined.Models;
 using FairPlayCombined.Models.Pagination;
+using FairPlayCombined.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
+using FairPlayCombined.Common;
 
 namespace FairPlayCombined.Services.Common
 {
-    public class UserService(
-        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) : 
+    public class RoleService(
+        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) :
         BaseService,
-        IUserService
+        IRoleService
     {
-        public async Task<PaginationOfT<UserModel>> GetPaginatedUserListAsync(
+        public async Task<PaginationOfT<RoleModel>> GetPaginatedRoleListAsync(
             PaginationRequest paginationRequest, CancellationToken cancellationToken)
         {
-            PaginationOfT<UserModel> result = new PaginationOfT<UserModel>();
+            PaginationOfT<RoleModel> result = new();
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             string orderByString = string.Empty;
             if (paginationRequest.SortingItems?.Length > 0)
                 orderByString =
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {base.GetSortTypeString(p.SortType)}"));
-            var query = dbContext.AspNetUsers
+            var query = dbContext.AspNetRoles
                 .AsNoTracking()
-                .Select(p => new UserModel()
+                .Select(p => new RoleModel()
                 {
                     Id = p.Id,
-                    UserName = p.UserName,
+                    Name = p.Name,
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);
@@ -40,6 +40,5 @@ namespace FairPlayCombined.Services.Common
                 .ToArrayAsync(cancellationToken: cancellationToken);
             return result;
         }
-
     }
 }

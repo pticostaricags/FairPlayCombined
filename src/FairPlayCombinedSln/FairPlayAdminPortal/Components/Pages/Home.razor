@@ -5,3 +5,15 @@
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<AuthorizeView>
+    <Authorized>
+        <div>Your claims</div>
+        @foreach (var singleClaim in context.User.Claims)
+        {
+            <div>
+                @singleClaim.ToString()
+            </div>
+        }
+    </Authorized>
+</AuthorizeView>

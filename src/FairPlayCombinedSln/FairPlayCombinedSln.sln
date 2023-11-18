@@ -26,9 +26,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.CitiesImpo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayAdminPortal", "FairPlayAdminPortal\FairPlayAdminPortal.csproj", "{94A1A35C-30DC-4B27-9E60-2AB0FAD94345}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.Interfaces", "FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj", "{4847FB22-B3B8-4CFF-B551-7CD442BF6C27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Interfaces", "FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj", "{4847FB22-B3B8-4CFF-B551-7CD442BF6C27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.Models", "FairPlayCombined.Models\FairPlayCombined.Models.csproj", "{C9C2123D-5FB2-45B3-AEA0-8A701F9859A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Models", "FairPlayCombined.Models\FairPlayCombined.Models.csproj", "{C9C2123D-5FB2-45B3-AEA0-8A701F9859A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
