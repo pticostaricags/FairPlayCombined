@@ -98,6 +98,10 @@
     <Build Include="FairPlayTube\Tables\VideoIndexStatus.sql" />
     <Build Include="FairPlayTube\Tables\VideoVisibility.sql" />
     <Build Include="FairPlayTube\Tables\VideoInfo.sql" />
+    <Build Include="FairPlaySocial\Post.sql" />
+    <Build Include="FairPlaySocial\PostVisibility.sql" />
+    <Build Include="FairPlaySocial\PostType.sql" />
+    <Build Include="FairPlaySocial\Group.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment1.sql" />
