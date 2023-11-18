@@ -66,6 +66,7 @@
     <Folder Include="FairPlayTube" />
     <Folder Include="FairPlaySocial" />
     <Folder Include="FairPlayDating" />
+    <Folder Include="FairPlayTube\Tables" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
@@ -94,6 +95,9 @@
     <Build Include="FairPlayShop\Tables\StoreCustomerOrderDetail.sql" />
     <Build Include="FairPlayShop\Tables\Product.sql" />
     <Build Include="FairPlayShop\Tables\ProductStatus.sql" />
+    <Build Include="FairPlayTube\Tables\VideoIndexStatus.sql" />
+    <Build Include="FairPlayTube\Tables\VideoVisibility.sql" />
+    <Build Include="FairPlayTube\Tables\VideoInfo.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment1.sql" />
