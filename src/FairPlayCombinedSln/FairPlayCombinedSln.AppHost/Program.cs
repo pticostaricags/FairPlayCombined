@@ -44,13 +44,4 @@ builder.AddProject<Projects.FairPlayAdminPortal>(nameof(Projects.FairPlayAdminPo
     });
 
 
-builder.AddProject<Projects.FairPlayCombined_LocalizationGenerator>(nameof(Projects.FairPlayCombined_LocalizationGenerator).ToLower())
-    .WithEnvironment(callback =>
-    {
-        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
-        callback.EnvironmentVariables.Add("AzureOpenAIKey", azureOpenAIKey);
-        callback.EnvironmentVariables.Add("AzureOpenAIEndpoint", azureOpenAIEndpoint);
-    });
-
-
 builder.Build().Run();

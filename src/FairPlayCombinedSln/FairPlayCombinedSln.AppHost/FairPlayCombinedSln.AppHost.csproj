@@ -16,7 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\FairPlayAdminPortal\FairPlayAdminPortal.csproj" />
     <ProjectReference Include="..\FairPlayCombined.CitiesImporter\FairPlayCombined.CitiesImporter.csproj" />
-    <ProjectReference Include="..\FairPlayCombined.LocalizationGenerator\FairPlayCombined.LocalizationGenerator.csproj" />
     <ProjectReference Include="..\FairPlayDating\FairPlayDating.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
