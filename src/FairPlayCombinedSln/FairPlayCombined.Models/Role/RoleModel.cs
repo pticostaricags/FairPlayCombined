@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FairPlayCombined.Models
+namespace FairPlayCombined.Models.Role
 {
     public class RoleModel
     {

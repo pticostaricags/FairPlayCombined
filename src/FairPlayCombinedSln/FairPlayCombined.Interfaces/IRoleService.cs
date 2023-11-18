@@ -1,5 +1,5 @@
-﻿using FairPlayCombined.Models;
-using FairPlayCombined.Models.Pagination;
+﻿using FairPlayCombined.Models.Pagination;
+using FairPlayCombined.Models.Role;
 
 namespace FairPlayCombined.Interfaces
 {
