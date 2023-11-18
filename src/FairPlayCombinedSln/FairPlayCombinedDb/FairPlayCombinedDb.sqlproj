@@ -37,7 +37,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
     <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -45,6 +45,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatTSqlWarningsAsErrors>True</TreatTSqlWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
@@ -62,6 +63,9 @@
     <Folder Include="FairPlayShop\Tables\" />
     <Folder Include="Security\" />
     <Folder Include="Scripts" />
+    <Folder Include="FairPlayTube" />
+    <Folder Include="FairPlaySocial" />
+    <Folder Include="FairPlayDating" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
@@ -77,6 +81,19 @@
     <Build Include="Security\FairPlayShop.sql" />
     <Build Include="dbo\Tables\Culture.sql" />
     <Build Include="dbo\Tables\Resource.sql" />
+    <Build Include="Security\FairPlayDating.sql" />
+    <Build Include="Security\FairPlaySocial.sql" />
+    <Build Include="Security\FairPlayTube.sql" />
+    <Build Include="dbo\Tables\City.sql" />
+    <Build Include="dbo\Tables\Country.sql" />
+    <Build Include="dbo\Tables\StateOrProvince.sql" />
+    <Build Include="dbo\Tables\Photo.sql" />
+    <Build Include="FairPlayShop\Tables\StoreCustomer.sql" />
+    <Build Include="FairPlayShop\Tables\StoreCustomerAddress.sql" />
+    <Build Include="FairPlayShop\Tables\StoreCustomerOrder.sql" />
+    <Build Include="FairPlayShop\Tables\StoreCustomerOrderDetail.sql" />
+    <Build Include="FairPlayShop\Tables\Product.sql" />
+    <Build Include="FairPlayShop\Tables\ProductStatus.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment1.sql" />
