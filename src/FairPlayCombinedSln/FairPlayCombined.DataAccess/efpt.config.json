@@ -44,6 +44,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[City]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Country]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Culture]",
          "ObjectType": 0
       },
@@ -52,11 +60,55 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Photo]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Resource]",
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[StateOrProvince]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayShop].[Product]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayShop].[ProductStatus]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayShop].[Store]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayShop].[StoreCustomer]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayShop].[StoreCustomerAddress]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayShop].[StoreCustomerOrder]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayShop].[StoreCustomerOrderDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoIndexStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoInfo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoVisibility]",
          "ObjectType": 0
       }
    ],

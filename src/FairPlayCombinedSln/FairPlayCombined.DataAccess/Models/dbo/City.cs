@@ -12,20 +12,19 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
-[Index("UserId", Name = "IX_AspNetUserClaims_UserId")]
-public partial class AspNetUserClaims
+[Index("StateOrProvinceId", "Name", Name = "UI_City_Name", IsUnique = true)]
+public partial class City
 {
     [Key]
-    public int Id { get; set; }
+    public int CityId { get; set; }
 
     [Required]
-    public string UserId { get; set; }
+    [StringLength(500)]
+    public string Name { get; set; }
 
-    public string ClaimType { get; set; }
+    public int StateOrProvinceId { get; set; }
 
-    public string ClaimValue { get; set; }
-
-    [ForeignKey("UserId")]
-    [InverseProperty("AspNetUserClaims")]
-    public virtual AspNetUsers User { get; set; }
+    [ForeignKey("StateOrProvinceId")]
+    [InverseProperty("City")]
+    public virtual StateOrProvince StateOrProvince { get; set; }
 }

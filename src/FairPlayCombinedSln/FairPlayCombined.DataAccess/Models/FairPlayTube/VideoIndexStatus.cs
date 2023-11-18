@@ -10,22 +10,18 @@ using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
-namespace FairPlayCombined.DataAccess.Models.dboSchema;
+namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
-[Index("UserId", Name = "IX_AspNetUserClaims_UserId")]
-public partial class AspNetUserClaims
+[Table("VideoIndexStatus", Schema = "FairPlayTube")]
+public partial class VideoIndexStatus
 {
     [Key]
-    public int Id { get; set; }
+    public short VideoIndexStatusId { get; set; }
 
     [Required]
-    public string UserId { get; set; }
+    [StringLength(50)]
+    public string Name { get; set; }
 
-    public string ClaimType { get; set; }
-
-    public string ClaimValue { get; set; }
-
-    [ForeignKey("UserId")]
-    [InverseProperty("AspNetUserClaims")]
-    public virtual AspNetUsers User { get; set; }
+    [InverseProperty("VideoIndexStatus")]
+    public virtual ICollection<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
 }

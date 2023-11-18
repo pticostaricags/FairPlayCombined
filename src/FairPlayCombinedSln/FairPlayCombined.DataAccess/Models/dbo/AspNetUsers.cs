@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
@@ -59,7 +60,13 @@ public partial class AspNetUsers
     public virtual ICollection<AspNetUserTokens> AspNetUserTokens { get; set; } = new List<AspNetUserTokens>();
 
     [InverseProperty("Owner")]
+    public virtual ICollection<Product> Product { get; set; } = new List<Product>();
+
+    [InverseProperty("Owner")]
     public virtual ICollection<Store> Store { get; set; } = new List<Store>();
+
+    [InverseProperty("ApplicationUser")]
+    public virtual ICollection<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
 
     [ForeignKey("UserId")]
     [InverseProperty("User")]

@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
 namespace FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
@@ -28,4 +29,10 @@ public partial class Store
     [ForeignKey("OwnerId")]
     [InverseProperty("Store")]
     public virtual AspNetUsers Owner { get; set; }
+
+    [InverseProperty("Store")]
+    public virtual ICollection<Product> Product { get; set; } = new List<Product>();
+
+    [InverseProperty("Store")]
+    public virtual ICollection<StoreCustomer> StoreCustomer { get; set; } = new List<StoreCustomer>();
 }

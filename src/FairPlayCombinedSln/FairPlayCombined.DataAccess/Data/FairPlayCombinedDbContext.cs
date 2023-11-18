@@ -6,6 +6,7 @@ using FairPlayCombined.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 namespace FairPlayCombined.DataAccess.Data;
 
@@ -28,13 +29,39 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
 
+    public virtual DbSet<City> City { get; set; }
+
+    public virtual DbSet<Country> Country { get; set; }
+
     public virtual DbSet<Culture> Culture { get; set; }
 
     public virtual DbSet<ErrorLog> ErrorLog { get; set; }
 
+    public virtual DbSet<Photo> Photo { get; set; }
+
+    public virtual DbSet<Product> Product { get; set; }
+
+    public virtual DbSet<ProductStatus> ProductStatus { get; set; }
+
     public virtual DbSet<Resource> Resource { get; set; }
 
+    public virtual DbSet<StateOrProvince> StateOrProvince { get; set; }
+
     public virtual DbSet<Store> Store { get; set; }
+
+    public virtual DbSet<StoreCustomer> StoreCustomer { get; set; }
+
+    public virtual DbSet<StoreCustomerAddress> StoreCustomerAddress { get; set; }
+
+    public virtual DbSet<StoreCustomerOrder> StoreCustomerOrder { get; set; }
+
+    public virtual DbSet<StoreCustomerOrderDetail> StoreCustomerOrderDetail { get; set; }
+
+    public virtual DbSet<VideoIndexStatus> VideoIndexStatus { get; set; }
+
+    public virtual DbSet<VideoInfo> VideoInfo { get; set; }
+
+    public virtual DbSet<VideoVisibility> VideoVisibility { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -63,6 +90,37 @@ public partial class FairPlayCombinedDbContext : DbContext
                     });
         });
 
+        modelBuilder.Entity<City>(entity =>
+        {
+            entity.HasOne(d => d.StateOrProvince).WithMany(p => p.City)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_City_StateOrProvince");
+        });
+
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasOne(d => d.Owner).WithMany(p => p.Product)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Product_AspNetUsers");
+
+            entity.HasOne(d => d.ProductStatus).WithMany(p => p.Product)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Product_ProductStatus");
+
+            entity.HasOne(d => d.Store).WithMany(p => p.Product)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Product_Store");
+
+            entity.HasOne(d => d.ThumbnailPhoto).WithMany(p => p.Product)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Product_Photo");
+        });
+
+        modelBuilder.Entity<ProductStatus>(entity =>
+        {
+            entity.Property(e => e.ProductStatusId).ValueGeneratedOnAdd();
+        });
+
         modelBuilder.Entity<Resource>(entity =>
         {
             entity.HasOne(d => d.Culture).WithMany(p => p.Resource)
@@ -70,11 +128,79 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_Resource_Culture");
         });
 
+        modelBuilder.Entity<StateOrProvince>(entity =>
+        {
+            entity.HasOne(d => d.Country).WithMany(p => p.StateOrProvince)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StateOrProvince_Country");
+        });
+
         modelBuilder.Entity<Store>(entity =>
         {
             entity.HasOne(d => d.Owner).WithMany(p => p.Store)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Store_AspNetUsers");
+        });
+
+        modelBuilder.Entity<StoreCustomer>(entity =>
+        {
+            entity.HasOne(d => d.Store).WithMany(p => p.StoreCustomer)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StoreCustomer_Store");
+        });
+
+        modelBuilder.Entity<StoreCustomerAddress>(entity =>
+        {
+            entity.Property(e => e.Id).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<StoreCustomerOrder>(entity =>
+        {
+            entity.HasOne(d => d.StoreCustomer).WithMany(p => p.StoreCustomerOrder)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StoreCustomerOrder_StoreCustomer");
+        });
+
+        modelBuilder.Entity<StoreCustomerOrderDetail>(entity =>
+        {
+            entity.HasOne(d => d.Product).WithMany(p => p.StoreCustomerOrderDetail)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StoreCustomerOrderDetail_Product");
+
+            entity.HasOne(d => d.StoreCustomerOrder).WithMany(p => p.StoreCustomerOrderDetail)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StoreCustomerOrderDetail_StoreCustomerOrder");
+        });
+
+        modelBuilder.Entity<VideoIndexStatus>(entity =>
+        {
+            entity.Property(e => e.VideoIndexStatusId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<VideoInfo>(entity =>
+        {
+            entity.Property(e => e.ApplicationUserId).HasComment("Video Owner Id");
+            entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("getutcdate()");
+            entity.Property(e => e.RowCreationUser).HasDefaultValueSql("'unknown'");
+            entity.Property(e => e.SourceApplication).HasDefaultValueSql("'unknown'");
+            entity.Property(e => e.VideoVisibilityId).HasDefaultValueSql("1");
+
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.VideoInfo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoInfo_ApplicationUser");
+
+            entity.HasOne(d => d.VideoIndexStatus).WithMany(p => p.VideoInfo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoInfo_VideoIndexStatus");
+
+            entity.HasOne(d => d.VideoVisibility).WithMany(p => p.VideoInfo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoInfo_VideoVisibility");
+        });
+
+        modelBuilder.Entity<VideoVisibility>(entity =>
+        {
+            entity.Property(e => e.VideoVisibilityId).ValueGeneratedNever();
         });
 
         OnModelCreatingPartial(modelBuilder);

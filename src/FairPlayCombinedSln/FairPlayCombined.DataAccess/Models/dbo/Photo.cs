@@ -12,20 +12,22 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
-[Index("UserId", Name = "IX_AspNetUserClaims_UserId")]
-public partial class AspNetUserClaims
+public partial class Photo
 {
     [Key]
-    public int Id { get; set; }
+    public long PhotoId { get; set; }
 
     [Required]
-    public string UserId { get; set; }
+    [StringLength(50)]
+    public string Name { get; set; }
 
-    public string ClaimType { get; set; }
+    [Required]
+    [StringLength(50)]
+    public string Filename { get; set; }
 
-    public string ClaimValue { get; set; }
+    [Required]
+    public byte[] PhotoBytes { get; set; }
 
-    [ForeignKey("UserId")]
-    [InverseProperty("AspNetUserClaims")]
-    public virtual AspNetUsers User { get; set; }
+    [InverseProperty("ThumbnailPhoto")]
+    public virtual ICollection<Product> Product { get; set; } = new List<Product>();
 }

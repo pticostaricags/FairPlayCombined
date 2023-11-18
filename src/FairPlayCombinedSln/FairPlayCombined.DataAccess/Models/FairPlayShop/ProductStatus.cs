@@ -10,22 +10,18 @@ using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
-namespace FairPlayCombined.DataAccess.Models.dboSchema;
+namespace FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 
-[Index("UserId", Name = "IX_AspNetUserClaims_UserId")]
-public partial class AspNetUserClaims
+[Table("ProductStatus", Schema = "FairPlayShop")]
+public partial class ProductStatus
 {
     [Key]
-    public int Id { get; set; }
+    public byte ProductStatusId { get; set; }
 
     [Required]
-    public string UserId { get; set; }
+    [StringLength(50)]
+    public string Name { get; set; }
 
-    public string ClaimType { get; set; }
-
-    public string ClaimValue { get; set; }
-
-    [ForeignKey("UserId")]
-    [InverseProperty("AspNetUserClaims")]
-    public virtual AspNetUsers User { get; set; }
+    [InverseProperty("ProductStatus")]
+    public virtual ICollection<Product> Product { get; set; } = new List<Product>();
 }
