@@ -1,6 +1,8 @@
 ﻿@page "/"
-
-<PageTitle>Home</PageTitle>
+@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Home> localizer
+<PageTitle>@localizer[HomeTextKey]</PageTitle>
 
 <h1>Hello, world!</h1>
 
@@ -17,3 +19,8 @@ Welcome to your new app.
         }
     </Authorized>
 </AuthorizeView>
+@code
+{
+    [ResourceKey(defaultValue: "Home")]
+    public const string HomeTextKey = "HomeText";
+}

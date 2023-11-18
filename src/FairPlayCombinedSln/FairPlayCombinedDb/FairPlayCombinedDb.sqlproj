@@ -61,6 +61,7 @@
     <Folder Include="fairplayshop" />
     <Folder Include="FairPlayShop\Tables\" />
     <Folder Include="Security\" />
+    <Folder Include="Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
@@ -76,5 +77,8 @@
     <Build Include="Security\FairPlayShop.sql" />
     <Build Include="dbo\Tables\Culture.sql" />
     <Build Include="dbo\Tables\Resource.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Scripts\Script.PostDeployment1.sql" />
   </ItemGroup>
 </Project>
