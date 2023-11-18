@@ -33,12 +33,6 @@ public static class Extensions
             // Turn on service discovery by default
             http.UseServiceDiscovery();
         });
-
-        builder.Services.AddProblemDetails();
-        // Add services to the container.
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
         return builder;
     }
 
@@ -118,9 +112,6 @@ public static class Extensions
         {
             Predicate = r => r.Tags.Contains("live")
         });
-
-        app.UseSwagger();
-        app.UseSwaggerUI();
         return app;
     }
 
@@ -132,25 +123,6 @@ public static class Extensions
 
     #region FairPlay Apps Customization
 
-    public static WebApplication MapGlobalEndpoints(this WebApplication app)
-    {
-        app.MapGet(pattern: "api/UsersList",
-            async ([FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-            CancellationToken cancellationToken) =>
-        {
-            var fairPlayCombinedDbContext = 
-            await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
-            var users = await fairPlayCombinedDbContext.AspNetUsers
-            .Select(p=>new 
-            {
-                Id=p.Id,
-                Username = p.UserName
-            })
-            .ToArrayAsync(cancellationToken: cancellationToken);
-            return users;
-        });
-        return app; ;
-    }
     public static WebApplication UseGlobalExceptionHandler(this WebApplication app)
     {
         app.UseExceptionHandler(configure =>

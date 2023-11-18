@@ -7,14 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />
     <ProjectReference Include="..\FairPlayCombined.DataAccess\FairPlayCombined.DataAccess.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="FairPlayDating\" />
     <Folder Include="FairPlayTube\" />
     <Folder Include="FairPlayShop\" />
-    <Folder Include="Common\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.5" />
   </ItemGroup>
 
 </Project>

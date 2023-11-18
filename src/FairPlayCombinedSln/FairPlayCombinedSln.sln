@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34310.174
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombinedSln.AppHost", "FairPlayCombinedSln.AppHost\FairPlayCombinedSln.AppHost.csproj", "{7B6BB8DA-B4F8-417B-9993-6ED63520905D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombinedSln.AppHost", "FairPlayCombinedSln.AppHost\FairPlayCombinedSln.AppHost.csproj", "{7B6BB8DA-B4F8-417B-9993-6ED63520905D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombinedSln.ServiceDefaults", "FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj", "{82FEAF8F-C026-46A1-B4D3-5A78D8783E1B}"
 EndProject
@@ -14,9 +14,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayShop", "FairPlaySho
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "FairPlayCombinedDb", "FairPlayCombinedDb\FairPlayCombinedDb.sqlproj", "{2C7B5B23-8334-4D00-8150-C2F93419475D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.DataAccess", "FairPlayCombined.DataAccess\FairPlayCombined.DataAccess.csproj", "{336BDA46-1536-4897-8EA3-74A6B625CA0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.DataAccess", "FairPlayCombined.DataAccess\FairPlayCombined.DataAccess.csproj", "{336BDA46-1536-4897-8EA3-74A6B625CA0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.Services", "FairPlayCombined.Services\FairPlayCombined.Services.csproj", "{9458B340-8756-4DB8-A4B9-97188E242F0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Services", "FairPlayCombined.Services\FairPlayCombined.Services.csproj", "{9458B340-8756-4DB8-A4B9-97188E242F0A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Common", "FairPlayCombined.Common\FairPlayCombined.Common.csproj", "{32D3B253-8583-41A2-A19F-4A6C14526F22}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.AutomatedTests", "FairPlayCombined.AutomatedTests\FairPlayCombined.AutomatedTests.csproj", "{93BF5F86-F177-452B-841F-BAB18256AE83}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.CitiesImporter", "FairPlayCombined.CitiesImporter\FairPlayCombined.CitiesImporter.csproj", "{334144D0-192D-49AA-BA94-C2C00A6502AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayAdminPortal", "FairPlayAdminPortal\FairPlayAdminPortal.csproj", "{94A1A35C-30DC-4B27-9E60-2AB0FAD94345}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.Interfaces", "FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj", "{4847FB22-B3B8-4CFF-B551-7CD442BF6C27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.Models", "FairPlayCombined.Models\FairPlayCombined.Models.csproj", "{C9C2123D-5FB2-45B3-AEA0-8A701F9859A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +70,30 @@ Global
 		{9458B340-8756-4DB8-A4B9-97188E242F0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9458B340-8756-4DB8-A4B9-97188E242F0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9458B340-8756-4DB8-A4B9-97188E242F0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32D3B253-8583-41A2-A19F-4A6C14526F22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32D3B253-8583-41A2-A19F-4A6C14526F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32D3B253-8583-41A2-A19F-4A6C14526F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32D3B253-8583-41A2-A19F-4A6C14526F22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93BF5F86-F177-452B-841F-BAB18256AE83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93BF5F86-F177-452B-841F-BAB18256AE83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93BF5F86-F177-452B-841F-BAB18256AE83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93BF5F86-F177-452B-841F-BAB18256AE83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{334144D0-192D-49AA-BA94-C2C00A6502AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{334144D0-192D-49AA-BA94-C2C00A6502AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{334144D0-192D-49AA-BA94-C2C00A6502AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{334144D0-192D-49AA-BA94-C2C00A6502AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94A1A35C-30DC-4B27-9E60-2AB0FAD94345}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94A1A35C-30DC-4B27-9E60-2AB0FAD94345}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94A1A35C-30DC-4B27-9E60-2AB0FAD94345}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94A1A35C-30DC-4B27-9E60-2AB0FAD94345}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4847FB22-B3B8-4CFF-B551-7CD442BF6C27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4847FB22-B3B8-4CFF-B551-7CD442BF6C27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4847FB22-B3B8-4CFF-B551-7CD442BF6C27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4847FB22-B3B8-4CFF-B551-7CD442BF6C27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9C2123D-5FB2-45B3-AEA0-8A701F9859A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9C2123D-5FB2-45B3-AEA0-8A701F9859A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9C2123D-5FB2-45B3-AEA0-8A701F9859A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9C2123D-5FB2-45B3-AEA0-8A701F9859A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

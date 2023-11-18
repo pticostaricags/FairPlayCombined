@@ -50,6 +50,12 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(optionsAction =>
         });
 });
 
+builder.Services.AddProblemDetails();
+// Add services to the container.
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 var app = builder.Build();
 
@@ -80,7 +86,8 @@ app.MapRazorComponents<App>()
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
-app.MapGlobalEndpoints();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();
 

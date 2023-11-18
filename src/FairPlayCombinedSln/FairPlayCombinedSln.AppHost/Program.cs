@@ -1,3 +1,4 @@
+using FairPlayCombined.CitiesImporter;
 using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -24,6 +25,19 @@ builder.AddProject<Projects.FairPlayShop>(nameof(Projects.FairPlayShop).ToLower(
 {
     callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
 });
+
+
+builder.AddProject<Projects.FairPlayCombined_CitiesImporter>(nameof(CitiesImporter).ToLower())
+    .WithEnvironment(callback =>
+    {
+        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+    });
+
+builder.AddProject<Projects.FairPlayAdminPortal>(nameof(Projects.FairPlayAdminPortal).ToLower())
+    .WithEnvironment(callback =>
+    {
+        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+    });
 
 
 builder.Build().Run();
