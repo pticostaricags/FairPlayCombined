@@ -72,6 +72,66 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayDating].[Activity]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[ApplicationUserVouch]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[DateObjective]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[EyesColor]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[Frequency]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[Gender]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[HairColor]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[KidStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[LikedUserProfile]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[NotLikedUserProfile]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[Religion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[TattooStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[UserActivity]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[UserMessage]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayDating].[UserProfile]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayShop].[Product]",
          "ObjectType": 0
       },
@@ -97,6 +157,22 @@
       },
       {
          "Name": "[FairPlayShop].[StoreCustomerOrderDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlaySocial].[Group]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlaySocial].[Post]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlaySocial].[PostType]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlaySocial].[PostVisibility]",
          "ObjectType": 0
       },
       {

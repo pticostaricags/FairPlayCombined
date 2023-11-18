@@ -12,24 +12,22 @@ using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
-namespace FairPlayCombined.DataAccess.Models.dboSchema;
+namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 
-[Index("CountryId", "Name", Name = "UI_StateOrProvince_Name", IsUnique = true)]
-public partial class StateOrProvince
+[Table("TattooStatus", Schema = "FairPlayDating")]
+[Index("Name", Name = "UI_TattooStatus_Name", IsUnique = true)]
+public partial class TattooStatus
 {
     [Key]
-    public int StateOrProvinceId { get; set; }
+    public short TattooStatusId { get; set; }
 
     [Required]
-    [StringLength(500)]
+    [StringLength(50)]
     public string Name { get; set; }
 
-    public int CountryId { get; set; }
+    [InverseProperty("PreferredTattooStatus")]
+    public virtual ICollection<UserProfile> UserProfilePreferredTattooStatus { get; set; } = new List<UserProfile>();
 
-    [InverseProperty("StateOrProvince")]
-    public virtual ICollection<City> City { get; set; } = new List<City>();
-
-    [ForeignKey("CountryId")]
-    [InverseProperty("StateOrProvince")]
-    public virtual Country Country { get; set; }
+    [InverseProperty("TattooStatus")]
+    public virtual ICollection<UserProfile> UserProfileTattooStatus { get; set; } = new List<UserProfile>();
 }

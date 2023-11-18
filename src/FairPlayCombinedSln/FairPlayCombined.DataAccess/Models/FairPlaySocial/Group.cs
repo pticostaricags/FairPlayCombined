@@ -12,21 +12,30 @@ using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
-namespace FairPlayCombined.DataAccess.Models.dboSchema;
+namespace FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 
-public partial class ErrorLog
+[Table("Group", Schema = "FairPlaySocial")]
+[Index("Name", Name = "UI_Group_Name", IsUnique = true)]
+public partial class Group
 {
     [Key]
-    public long ErrorLogId { get; set; }
+    public long GroupId { get; set; }
 
     [Required]
-    public string Message { get; set; }
+    [StringLength(450)]
+    public string OwnerApplicationUserId { get; set; }
 
     [Required]
-    public string StackTrace { get; set; }
+    [StringLength(50)]
+    public string Name { get; set; }
 
     [Required]
-    public string FullException { get; set; }
+    [StringLength(250)]
+    public string Description { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string TopicTag { get; set; }
 
     public DateTimeOffset RowCreationDateTime { get; set; }
 
@@ -42,4 +51,11 @@ public partial class ErrorLog
     [Column("OriginatorIPAddress")]
     [StringLength(100)]
     public string OriginatorIpaddress { get; set; }
+
+    [ForeignKey("OwnerApplicationUserId")]
+    [InverseProperty("Group")]
+    public virtual AspNetUsers OwnerApplicationUser { get; set; }
+
+    [InverseProperty("Group")]
+    public virtual ICollection<Post> Post { get; set; } = new List<Post>();
 }

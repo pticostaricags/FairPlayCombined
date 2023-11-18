@@ -12,21 +12,24 @@ using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
-namespace FairPlayCombined.DataAccess.Models.dboSchema;
+namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 
-public partial class ErrorLog
+[Table("ApplicationUserVouch", Schema = "FairPlayDating")]
+[Index("FromApplicationUserId", "ToApplicationUserId", Name = "UI_ApplicationUserVouch_FromApplicationUserId_ToApplicationUserId", IsUnique = true)]
+public partial class ApplicationUserVouch
 {
     [Key]
-    public long ErrorLogId { get; set; }
+    public long ApplicationUserVouchId { get; set; }
 
     [Required]
-    public string Message { get; set; }
+    public string FromApplicationUserId { get; set; }
 
     [Required]
-    public string StackTrace { get; set; }
+    public string ToApplicationUserId { get; set; }
 
     [Required]
-    public string FullException { get; set; }
+    [StringLength(500)]
+    public string Description { get; set; }
 
     public DateTimeOffset RowCreationDateTime { get; set; }
 
@@ -42,4 +45,12 @@ public partial class ErrorLog
     [Column("OriginatorIPAddress")]
     [StringLength(100)]
     public string OriginatorIpaddress { get; set; }
+
+    [ForeignKey("FromApplicationUserId")]
+    [InverseProperty("ApplicationUserVouchFromApplicationUser")]
+    public virtual AspNetUsers FromApplicationUser { get; set; }
+
+    [ForeignKey("ToApplicationUserId")]
+    [InverseProperty("ApplicationUserVouchToApplicationUser")]
+    public virtual AspNetUsers ToApplicationUser { get; set; }
 }

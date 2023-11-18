@@ -6,7 +6,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
+using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
@@ -28,6 +30,12 @@ public partial class Photo
     [Required]
     public byte[] PhotoBytes { get; set; }
 
+    [InverseProperty("Photo")]
+    public virtual ICollection<Post> Post { get; set; } = new List<Post>();
+
     [InverseProperty("ThumbnailPhoto")]
     public virtual ICollection<Product> Product { get; set; } = new List<Product>();
+
+    [InverseProperty("ProfilePhoto")]
+    public virtual ICollection<UserProfile> UserProfile { get; set; } = new List<UserProfile>();
 }

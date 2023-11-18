@@ -12,24 +12,19 @@ using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
-namespace FairPlayCombined.DataAccess.Models.dboSchema;
+namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 
-[Index("CountryId", "Name", Name = "UI_StateOrProvince_Name", IsUnique = true)]
-public partial class StateOrProvince
+[Table("Gender", Schema = "FairPlayDating")]
+public partial class Gender
 {
     [Key]
-    public int StateOrProvinceId { get; set; }
+    public short GenderId { get; set; }
 
     [Required]
-    [StringLength(500)]
+    [StringLength(20)]
+    [Unicode(false)]
     public string Name { get; set; }
 
-    public int CountryId { get; set; }
-
-    [InverseProperty("StateOrProvince")]
-    public virtual ICollection<City> City { get; set; } = new List<City>();
-
-    [ForeignKey("CountryId")]
-    [InverseProperty("StateOrProvince")]
-    public virtual Country Country { get; set; }
+    [InverseProperty("BiologicalGender")]
+    public virtual ICollection<UserProfile> UserProfile { get; set; } = new List<UserProfile>();
 }

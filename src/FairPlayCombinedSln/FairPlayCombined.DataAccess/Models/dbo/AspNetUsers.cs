@@ -6,7 +6,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
+using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
@@ -50,6 +52,12 @@ public partial class AspNetUsers
 
     public int AccessFailedCount { get; set; }
 
+    [InverseProperty("FromApplicationUser")]
+    public virtual ICollection<ApplicationUserVouch> ApplicationUserVouchFromApplicationUser { get; set; } = new List<ApplicationUserVouch>();
+
+    [InverseProperty("ToApplicationUser")]
+    public virtual ICollection<ApplicationUserVouch> ApplicationUserVouchToApplicationUser { get; set; } = new List<ApplicationUserVouch>();
+
     [InverseProperty("User")]
     public virtual ICollection<AspNetUserClaims> AspNetUserClaims { get; set; } = new List<AspNetUserClaims>();
 
@@ -59,11 +67,41 @@ public partial class AspNetUsers
     [InverseProperty("User")]
     public virtual ICollection<AspNetUserTokens> AspNetUserTokens { get; set; } = new List<AspNetUserTokens>();
 
+    [InverseProperty("OwnerApplicationUser")]
+    public virtual ICollection<Group> Group { get; set; } = new List<Group>();
+
+    [InverseProperty("LikedApplicationUser")]
+    public virtual ICollection<LikedUserProfile> LikedUserProfileLikedApplicationUser { get; set; } = new List<LikedUserProfile>();
+
+    [InverseProperty("LikingApplicationUser")]
+    public virtual ICollection<LikedUserProfile> LikedUserProfileLikingApplicationUser { get; set; } = new List<LikedUserProfile>();
+
+    [InverseProperty("NotLikedApplicationUser")]
+    public virtual ICollection<NotLikedUserProfile> NotLikedUserProfileNotLikedApplicationUser { get; set; } = new List<NotLikedUserProfile>();
+
+    [InverseProperty("NotLikingApplicationUser")]
+    public virtual ICollection<NotLikedUserProfile> NotLikedUserProfileNotLikingApplicationUser { get; set; } = new List<NotLikedUserProfile>();
+
+    [InverseProperty("OwnerApplicationUser")]
+    public virtual ICollection<Post> Post { get; set; } = new List<Post>();
+
     [InverseProperty("Owner")]
     public virtual ICollection<Product> Product { get; set; } = new List<Product>();
 
     [InverseProperty("Owner")]
     public virtual ICollection<Store> Store { get; set; } = new List<Store>();
+
+    [InverseProperty("ApplicationUser")]
+    public virtual ICollection<UserActivity> UserActivity { get; set; } = new List<UserActivity>();
+
+    [InverseProperty("FromApplicationUser")]
+    public virtual ICollection<UserMessage> UserMessageFromApplicationUser { get; set; } = new List<UserMessage>();
+
+    [InverseProperty("ToApplicationUser")]
+    public virtual ICollection<UserMessage> UserMessageToApplicationUser { get; set; } = new List<UserMessage>();
+
+    [InverseProperty("ApplicationUser")]
+    public virtual UserProfile UserProfile { get; set; }
 
     [InverseProperty("ApplicationUser")]
     public virtual ICollection<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();

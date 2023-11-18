@@ -12,21 +12,20 @@ using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
-namespace FairPlayCombined.DataAccess.Models.dboSchema;
+namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 
-public partial class ErrorLog
+[Table("LikedUserProfile", Schema = "FairPlayDating")]
+[Index("LikingApplicationUserId", "LikedApplicationUserId", Name = "UI_LikedUserProfile_LikingApplicationUserId_LikedApplicationUserId", IsUnique = true)]
+public partial class LikedUserProfile
 {
     [Key]
-    public long ErrorLogId { get; set; }
+    public long LikedUserProfileId { get; set; }
 
     [Required]
-    public string Message { get; set; }
+    public string LikingApplicationUserId { get; set; }
 
     [Required]
-    public string StackTrace { get; set; }
-
-    [Required]
-    public string FullException { get; set; }
+    public string LikedApplicationUserId { get; set; }
 
     public DateTimeOffset RowCreationDateTime { get; set; }
 
@@ -42,4 +41,12 @@ public partial class ErrorLog
     [Column("OriginatorIPAddress")]
     [StringLength(100)]
     public string OriginatorIpaddress { get; set; }
+
+    [ForeignKey("LikedApplicationUserId")]
+    [InverseProperty("LikedUserProfileLikedApplicationUser")]
+    public virtual AspNetUsers LikedApplicationUser { get; set; }
+
+    [ForeignKey("LikingApplicationUserId")]
+    [InverseProperty("LikedUserProfileLikingApplicationUser")]
+    public virtual AspNetUsers LikingApplicationUser { get; set; }
 }

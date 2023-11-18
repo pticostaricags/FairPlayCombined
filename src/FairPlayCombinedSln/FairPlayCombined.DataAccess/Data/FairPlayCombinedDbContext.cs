@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using FairPlayCombined.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
+using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
@@ -16,6 +18,10 @@ public partial class FairPlayCombinedDbContext : DbContext
         : base(options)
     {
     }
+
+    public virtual DbSet<Activity> Activity { get; set; }
+
+    public virtual DbSet<ApplicationUserVouch> ApplicationUserVouch { get; set; }
 
     public virtual DbSet<AspNetRoleClaims> AspNetRoleClaims { get; set; }
 
@@ -35,13 +41,39 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<Culture> Culture { get; set; }
 
+    public virtual DbSet<DateObjective> DateObjective { get; set; }
+
     public virtual DbSet<ErrorLog> ErrorLog { get; set; }
 
+    public virtual DbSet<EyesColor> EyesColor { get; set; }
+
+    public virtual DbSet<Frequency> Frequency { get; set; }
+
+    public virtual DbSet<Gender> Gender { get; set; }
+
+    public virtual DbSet<Group> Group { get; set; }
+
+    public virtual DbSet<HairColor> HairColor { get; set; }
+
+    public virtual DbSet<KidStatus> KidStatus { get; set; }
+
+    public virtual DbSet<LikedUserProfile> LikedUserProfile { get; set; }
+
+    public virtual DbSet<NotLikedUserProfile> NotLikedUserProfile { get; set; }
+
     public virtual DbSet<Photo> Photo { get; set; }
+
+    public virtual DbSet<Post> Post { get; set; }
+
+    public virtual DbSet<PostType> PostType { get; set; }
+
+    public virtual DbSet<PostVisibility> PostVisibility { get; set; }
 
     public virtual DbSet<Product> Product { get; set; }
 
     public virtual DbSet<ProductStatus> ProductStatus { get; set; }
+
+    public virtual DbSet<Religion> Religion { get; set; }
 
     public virtual DbSet<Resource> Resource { get; set; }
 
@@ -57,6 +89,14 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<StoreCustomerOrderDetail> StoreCustomerOrderDetail { get; set; }
 
+    public virtual DbSet<TattooStatus> TattooStatus { get; set; }
+
+    public virtual DbSet<UserActivity> UserActivity { get; set; }
+
+    public virtual DbSet<UserMessage> UserMessage { get; set; }
+
+    public virtual DbSet<UserProfile> UserProfile { get; set; }
+
     public virtual DbSet<VideoIndexStatus> VideoIndexStatus { get; set; }
 
     public virtual DbSet<VideoInfo> VideoInfo { get; set; }
@@ -65,6 +105,19 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ApplicationUserVouch>(entity =>
+        {
+            entity.Property(e => e.ApplicationUserVouchId).ValueGeneratedNever();
+
+            entity.HasOne(d => d.FromApplicationUser).WithMany(p => p.ApplicationUserVouchFromApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ApplicationUserVouch_FromUser");
+
+            entity.HasOne(d => d.ToApplicationUser).WithMany(p => p.ApplicationUserVouchToApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ApplicationUserVouch_ToUser");
+        });
+
         modelBuilder.Entity<AspNetRoles>(entity =>
         {
             entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
@@ -97,6 +150,87 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_City_StateOrProvince");
         });
 
+        modelBuilder.Entity<DateObjective>(entity =>
+        {
+            entity.Property(e => e.DateObjectiveId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<Gender>(entity =>
+        {
+            entity.Property(e => e.GenderId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<Group>(entity =>
+        {
+            entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.Group)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Group_ApplicationUser");
+        });
+
+        modelBuilder.Entity<LikedUserProfile>(entity =>
+        {
+            entity.HasOne(d => d.LikedApplicationUser).WithMany(p => p.LikedUserProfileLikedApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LikedUserProfile_LikedApplicactionUser");
+
+            entity.HasOne(d => d.LikingApplicationUser).WithMany(p => p.LikedUserProfileLikingApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LikedUserProfile_LikingApplicactionUser");
+        });
+
+        modelBuilder.Entity<NotLikedUserProfile>(entity =>
+        {
+            entity.HasOne(d => d.NotLikedApplicationUser).WithMany(p => p.NotLikedUserProfileNotLikedApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NotLikedUserProfile_NotLikedApplicactionUser");
+
+            entity.HasOne(d => d.NotLikingApplicationUser).WithMany(p => p.NotLikedUserProfileNotLikingApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NotLikedUserProfile_NotLikingApplicactionUser");
+        });
+
+        modelBuilder.Entity<Post>(entity =>
+        {
+            entity.ToTable(tb => tb.IsTemporal(ttb =>
+                    {
+                        ttb.UseHistoryTable("PostHistory", "dbo");
+                        ttb
+                            .HasPeriodStart("ValidFrom")
+                            .HasColumnName("ValidFrom");
+                        ttb
+                            .HasPeriodEnd("ValidTo")
+                            .HasColumnName("ValidTo");
+                    }));
+
+            entity.Property(e => e.PostTypeId).HasDefaultValueSql("1");
+            entity.Property(e => e.PostVisibilityId).HasDefaultValueSql("1");
+
+            entity.HasOne(d => d.CreatedFromPost).WithMany(p => p.InverseCreatedFromPost).HasConstraintName("FK_Post_Post");
+
+            entity.HasOne(d => d.Group).WithMany(p => p.Post).HasConstraintName("FK_Post_Group");
+
+            entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.Post)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Post_ApplicationUser");
+
+            entity.HasOne(d => d.Photo).WithMany(p => p.Post).HasConstraintName("FK_Post_Photo");
+
+            entity.HasOne(d => d.PostType).WithMany(p => p.Post)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Post_PostType");
+
+            entity.HasOne(d => d.PostVisibility).WithMany(p => p.Post)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Post_PostVisibility");
+
+            entity.HasOne(d => d.RootPost).WithMany(p => p.InverseRootPost).HasConstraintName("FK_Post_Post_RootPost");
+        });
+
+        modelBuilder.Entity<PostType>(entity =>
+        {
+            entity.Property(e => e.PostTypeId).ValueGeneratedOnAdd();
+        });
+
         modelBuilder.Entity<Product>(entity =>
         {
             entity.HasOne(d => d.Owner).WithMany(p => p.Product)
@@ -119,6 +253,11 @@ public partial class FairPlayCombinedDbContext : DbContext
         modelBuilder.Entity<ProductStatus>(entity =>
         {
             entity.Property(e => e.ProductStatusId).ValueGeneratedOnAdd();
+        });
+
+        modelBuilder.Entity<Religion>(entity =>
+        {
+            entity.Property(e => e.ReligionId).ValueGeneratedNever();
         });
 
         modelBuilder.Entity<Resource>(entity =>
@@ -170,6 +309,91 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.StoreCustomerOrder).WithMany(p => p.StoreCustomerOrderDetail)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_StoreCustomerOrderDetail_StoreCustomerOrder");
+        });
+
+        modelBuilder.Entity<UserActivity>(entity =>
+        {
+            entity.HasOne(d => d.Activity).WithMany(p => p.UserActivity)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserActivity_Activity");
+
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.UserActivity)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserActivity_ApplicationUser");
+
+            entity.HasOne(d => d.Frequency).WithMany(p => p.UserActivity)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserActivity_Frequency");
+        });
+
+        modelBuilder.Entity<UserMessage>(entity =>
+        {
+            entity.HasOne(d => d.FromApplicationUser).WithMany(p => p.UserMessageFromApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FromApplicationUserId_ApplicationUser");
+
+            entity.HasOne(d => d.ToApplicationUser).WithMany(p => p.UserMessageToApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ToApplicationUserId_ApplicationUser");
+        });
+
+        modelBuilder.Entity<UserProfile>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithOne(p => p.UserProfile)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ApplicationUserId_UserProfile");
+
+            entity.HasOne(d => d.BiologicalGender).WithMany(p => p.UserProfile)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_BiologicalGenderId");
+
+            entity.HasOne(d => d.CurrentDateObjective).WithMany(p => p.UserProfile)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_CurrentDateObjectiveId");
+
+            entity.HasOne(d => d.EyesColor).WithMany(p => p.UserProfileEyesColor)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_EyesColor");
+
+            entity.HasOne(d => d.HairColor).WithMany(p => p.UserProfileHairColor)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_HairColor");
+
+            entity.HasOne(d => d.KidStatus).WithMany(p => p.UserProfileKidStatus)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_KidStatus");
+
+            entity.HasOne(d => d.PreferredEyesColor).WithMany(p => p.UserProfilePreferredEyesColor)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_PreferredEyesColor");
+
+            entity.HasOne(d => d.PreferredHairColor).WithMany(p => p.UserProfilePreferredHairColor)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_PreferredHairColor");
+
+            entity.HasOne(d => d.PreferredKidStatus).WithMany(p => p.UserProfilePreferredKidStatus)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_PreferredKidStatus");
+
+            entity.HasOne(d => d.PreferredReligion).WithMany(p => p.UserProfilePreferredReligion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_PreferredReligionId");
+
+            entity.HasOne(d => d.PreferredTattooStatus).WithMany(p => p.UserProfilePreferredTattooStatus)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_PreferredTattooStatus");
+
+            entity.HasOne(d => d.ProfilePhoto).WithMany(p => p.UserProfile)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_Photo");
+
+            entity.HasOne(d => d.Religion).WithMany(p => p.UserProfileReligion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_ReligionId");
+
+            entity.HasOne(d => d.TattooStatus).WithMany(p => p.UserProfileTattooStatus)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_TattooStatus");
         });
 
         modelBuilder.Entity<VideoIndexStatus>(entity =>

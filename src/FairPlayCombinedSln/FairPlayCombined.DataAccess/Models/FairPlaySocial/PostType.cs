@@ -12,24 +12,19 @@ using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
-namespace FairPlayCombined.DataAccess.Models.dboSchema;
+namespace FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 
-[Index("CountryId", "Name", Name = "UI_StateOrProvince_Name", IsUnique = true)]
-public partial class StateOrProvince
+[Table("PostType", Schema = "FairPlaySocial")]
+[Index("Name", Name = "UI_PostType_Name", IsUnique = true)]
+public partial class PostType
 {
     [Key]
-    public int StateOrProvinceId { get; set; }
+    public byte PostTypeId { get; set; }
 
     [Required]
-    [StringLength(500)]
+    [StringLength(10)]
     public string Name { get; set; }
 
-    public int CountryId { get; set; }
-
-    [InverseProperty("StateOrProvince")]
-    public virtual ICollection<City> City { get; set; } = new List<City>();
-
-    [ForeignKey("CountryId")]
-    [InverseProperty("StateOrProvince")]
-    public virtual Country Country { get; set; }
+    [InverseProperty("PostType")]
+    public virtual ICollection<Post> Post { get; set; } = new List<Post>();
 }
