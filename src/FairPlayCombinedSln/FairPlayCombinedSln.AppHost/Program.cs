@@ -44,4 +44,11 @@ builder.AddProject<Projects.FairPlayAdminPortal>(nameof(Projects.FairPlayAdminPo
     });
 
 
+builder.AddProject<Projects.FairPlaySocial>(nameof(Projects.FairPlaySocial).ToLower())
+    .WithEnvironment(callback =>
+    {
+        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+    });
+
+
 builder.Build().Run();

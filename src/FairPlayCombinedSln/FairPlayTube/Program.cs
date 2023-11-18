@@ -25,7 +25,8 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ?? throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
+var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
+    throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

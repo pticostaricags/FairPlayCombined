@@ -30,7 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Interfaces
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Models", "FairPlayCombined.Models\FairPlayCombined.Models.csproj", "{C9C2123D-5FB2-45B3-AEA0-8A701F9859A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.Shared", "FairPlayCombined.Shared\FairPlayCombined.Shared.csproj", "{35E567D1-EF40-4479-A5FB-631DF7F0A8A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Shared", "FairPlayCombined.Shared\FairPlayCombined.Shared.csproj", "{35E567D1-EF40-4479-A5FB-631DF7F0A8A7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlaySocial", "FairPlaySocial\FairPlaySocial.csproj", "{EE186520-5524-4CDD-BDED-D63001FD0312}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,6 +102,10 @@ Global
 		{35E567D1-EF40-4479-A5FB-631DF7F0A8A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35E567D1-EF40-4479-A5FB-631DF7F0A8A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35E567D1-EF40-4479-A5FB-631DF7F0A8A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE186520-5524-4CDD-BDED-D63001FD0312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE186520-5524-4CDD-BDED-D63001FD0312}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE186520-5524-4CDD-BDED-D63001FD0312}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE186520-5524-4CDD-BDED-D63001FD0312}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
