@@ -117,8 +117,9 @@
     <Build Include="FairPlayDating\UserActivity.sql" />
     <Build Include="FairPlayDating\UserMessage.sql" />
     <Build Include="FairPlayDating\UserProfile.sql" />
+    <None Include="Scripts\2-FairPlayDating.sql" />
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="Scripts\Script.PostDeployment1.sql" />
+    <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
   </ItemGroup>
 </Project>
