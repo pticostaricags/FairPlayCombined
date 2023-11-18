@@ -5,7 +5,10 @@
 @using FairPlayCombined.Models.Role
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using FairPlayCombined.Models.Pagination
+@using Microsoft.AspNetCore.Identity
 @inject IRoleService roleService
+@inject IServiceScopeFactory serviceScopeFactory
+@inject IToastService toastService
 @rendermode RenderMode.InteractiveServer
 @attribute [StreamRendering(enabled: true)]
 <h3>RoleList</h3>
@@ -13,6 +16,10 @@
 <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
     <PropertyColumn Property="@(p=>p.Id)" Sortable="true"></PropertyColumn>
     <PropertyColumn Property="@(p=>p.Name)" Sortable="true"></PropertyColumn>
+    <TemplateColumn>
+        <button type="button" class="btn btn-danger" 
+        @onclick="@(async ()=> await OnDeleteRoleAsync(context.Id))">Delete</button>
+    </TemplateColumn>
 </QuickGrid>
 
 <Paginator State="@pagination">
@@ -54,6 +61,27 @@
                 // StateHasChanged();
                 return result;
             };
+    }
+
+    private async Task OnDeleteRoleAsync(string? roleId)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var role = await roleManager.FindByIdAsync(roleId!);
+        if (role != null)
+        {
+            var result = await roleManager.DeleteAsync(role);
+            if (result.Succeeded)
+            {
+                this.toastService.ShowSuccess($"Role '{role.Name}' deleted");
+                await this.pagination.SetCurrentPageIndexAsync(0);
+            }
+            else
+            {
+                var message = String.Join(",", result.Errors.Select(p => p.Description));
+                this.toastService!.ShowError(message);
+            }
+        }
     }
 
 }

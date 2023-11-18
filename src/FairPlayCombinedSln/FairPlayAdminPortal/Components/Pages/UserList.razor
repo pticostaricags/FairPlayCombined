@@ -20,14 +20,14 @@
         @if (context.LockoutEnabled)
         {
             <button type="button" class="btn btn-secondary"
-                    @onclick=@( ()=> OnDisableLockoutClicked(context.Id))>
+                    @onclick=@( async ()=> await OnDisableLockoutClicked(context.Id))>
                 Disable Lockout
             </button>
         }
         else
         {
             <button type="button" class="btn btn-secondary"
-                    @onclick=@( ()=> OnEnableLockoutClicked(context.Id))>
+                    @onclick=@( async ()=> await OnEnableLockoutClicked(context.Id))>
                 Enable Lockout
             </button>
         }
