@@ -37,7 +37,9 @@ builder.Services.AddAuthentication(options =>
 var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString),
+    contextLifetime: ServiceLifetime.Transient,
+    optionsLifetime: ServiceLifetime.Transient);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

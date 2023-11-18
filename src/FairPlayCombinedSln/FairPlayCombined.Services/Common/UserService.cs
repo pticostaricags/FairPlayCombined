@@ -29,6 +29,7 @@ namespace FairPlayCombined.Services.Common
                 {
                     Id = p.Id,
                     UserName = p.UserName,
+                    LockoutEnabled = p.LockoutEnabled
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);

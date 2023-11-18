@@ -1,10 +1,13 @@
 ﻿@page "/UserList"
+@using FairPlayAdminPortal.Data
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using FairPlayCombined.Models.Pagination
+@using Microsoft.AspNetCore.Identity
 @inject IUserService userService
+@inject IServiceScopeFactory serviceScopeFactory
 @rendermode RenderMode.InteractiveServer
 @attribute [StreamRendering(enabled: true)]
 <h3>UserList</h3>
@@ -12,6 +15,23 @@
 <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
     <PropertyColumn Property="@(p=>p.Id)" Sortable="true"></PropertyColumn>
     <PropertyColumn Property="@(p=>p.UserName)" Sortable="true"></PropertyColumn>
+    <PropertyColumn Property="@(p=>p.LockoutEnabled)" Sortable="true"></PropertyColumn>
+    <TemplateColumn>
+        @if (context.LockoutEnabled)
+        {
+            <button type="button" class="btn btn-secondary"
+                    @onclick=@( ()=> OnDisableLockoutClicked(context.Id))>
+                Disable Lockout
+            </button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-secondary"
+                    @onclick=@( ()=> OnEnableLockoutClicked(context.Id))>
+                Enable Lockout
+            </button>
+        }
+    </TemplateColumn>
 </QuickGrid>
 
 <Paginator State="@pagination">
@@ -29,19 +49,19 @@
         ItemsProvider ??= async req =>
             {
                 // this.IsBusy = true;
-                // StateHasChanged();
+                StateHasChanged();
                 PaginationRequest paginationRequest = new PaginationRequest()
                     {
                         StartIndex = req.StartIndex,
                         SortingItems = req.GetSortByProperties()
-                                            .Select(p => new SortingItem()
-                                            {
-                                                PropertyName = p.PropertyName,
-                                                SortType = (p.Direction == SortDirection.Ascending) ?
-                                                SortType.Ascending
-                                                :
-                                                SortType.Descending
-                                            }).ToArray()
+                                .Select(p => new SortingItem()
+                                {
+                                    PropertyName = p.PropertyName,
+                                    SortType = (p.Direction == SortDirection.Ascending) ?
+                                    SortType.Ascending
+                                    :
+                                    SortType.Descending
+                                }).ToArray()
                     };
                 var paginationResult = await this.userService!.GetPaginatedUserListAsync(
                     paginationRequest, this.cancellationTokenSource.Token);
@@ -50,9 +70,37 @@
                 items: paginationResult.Items!,
                 totalItemCount: paginationResult!.TotalItems);
                 // this.IsBusy = false;
-                // StateHasChanged();
+                StateHasChanged();
                 return result;
             };
+    }
+
+    private async Task OnDisableLockoutClicked(string? userId)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider
+        .GetRequiredService<UserManager<ApplicationUser>>();
+        var user = await userManager.FindByIdAsync(userId!);
+        if (user != null)
+        {
+            await userManager.SetLockoutEnabledAsync(user, false);
+        }
+        await pagination.SetCurrentPageIndexAsync(0);
+        StateHasChanged();
+    }
+
+    private async Task OnEnableLockoutClicked(string? userId)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider
+        .GetRequiredService<UserManager<ApplicationUser>>();
+        var user = await userManager.FindByIdAsync(userId!);
+        if (user != null)
+        {
+            await userManager.SetLockoutEnabledAsync(user, true);
+        }
+        await pagination.SetCurrentPageIndexAsync(0);
+        StateHasChanged();
     }
 
 }
