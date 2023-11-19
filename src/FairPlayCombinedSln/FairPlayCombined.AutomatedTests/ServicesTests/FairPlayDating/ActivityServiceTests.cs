@@ -54,7 +54,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             {
                 Name = "TestModel"
             };
-            await activityService.CreateActivityModelAsync(createActivityModel, CancellationToken.None);
+            await activityService.CreateActivityAsync(createActivityModel, CancellationToken.None);
             var result = await dbContext.Activity.SingleOrDefaultAsync();
             Assert.IsNotNull(result);
             Assert.AreEqual(createActivityModel.Name, result.Name);

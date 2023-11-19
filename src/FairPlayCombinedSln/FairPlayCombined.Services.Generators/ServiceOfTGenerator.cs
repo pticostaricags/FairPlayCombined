@@ -101,8 +101,8 @@ namespace FairPlayCombined.Services.Generators
                                         IDbContextFactory<{{dbContextArgument.Name}}> dbContextFactory
                                         )
                                         {
-                                            public async Task {{createtypeName}}Async(
-                                            {{createtypeName}} createModel,
+                                            public async Task Create{{entityName}}Async(
+                                            {{createModel.Name}} createModel,
                                             CancellationToken cancellationToken
                                             )
                                             {
