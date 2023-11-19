@@ -46,41 +46,53 @@ namespace FairPlayCombined.Services.Generators
                             var attributeClass = attribute.AttributeClass as INamedTypeSymbol;
                             if (attributeClass?.Name == "ServiceOfTAttribute")
                             {
-                                var createActivityModel = attributeClass.TypeArguments[0];
-                                var updateActivityModel = attributeClass.TypeArguments[1];
+                                var createModel = attributeClass.TypeArguments[0];
+                                var updateModel = attributeClass.TypeArguments[1];
                                 var listActivityModel = attributeClass.TypeArguments[2];
                                 var dbContextArgument = attributeClass.TypeArguments[3];
                                 var dbEntityArgument = attributeClass.TypeArguments[4];
-                                if (createActivityModel != null &&
-                                    updateActivityModel != null &&
+                                if (createModel != null &&
+                                    updateModel != null &&
                                     listActivityModel != null)
                                 {
                                     var namespaceStrng =
-                                        createActivityModel!
+                                        createModel!
                                         .ContainingNamespace.ToString();
-                                    var createtypeName = createActivityModel!.Name;
+                                    var createtypeName = createModel!.Name;
                                     var fullQualifiedName = $"{namespaceStrng}.{createtypeName}";
                                     var symbolNamespace = symbol.ContainingNamespace.ToString();
                                     var entityName = dbEntityArgument.Name;
-                                    var createModelProperties = createActivityModel.GetMembers()
+                                    var createModelProperties = createModel.GetMembers()
+                                        .Where(p => p.Kind == SymbolKind.Property)
+                                        .Select(p => p.Name);
+                                    var listModelProperties = listActivityModel.GetMembers()
                                         .Where(p => p.Kind == SymbolKind.Property)
                                         .Select(p => p.Name);
                                     var dbEntityProperties =
                                         dbEntityArgument.GetMembers()
                                         .Where(p => p.Kind == SymbolKind.Property)
                                         .Select(p => p.Name);
-                                    var propertiesInBoth =
+                                    var propertiesInBothCreateModelAndDbEntity =
                                         createModelProperties.Join(dbEntityProperties,
                                         Inner => Inner, Outer => Outer,
                                         (a, b) => a);
+                                    var propertiesInBothListModelAndDbEntity =
+                                        listModelProperties.Join(dbEntityProperties,
+                                        Inner => Inner, Outer => Outer,
+                                        (a, b) => a);
                                     StringBuilder createAssignment = new StringBuilder();
-                                    foreach (var property in propertiesInBoth)
+                                    foreach (var property in propertiesInBothCreateModelAndDbEntity)
                                     {
                                         createAssignment.AppendLine($"{property} = createModel.{property},");
                                     };
+                                    StringBuilder listAssignment = new StringBuilder();
+                                    foreach (var property in propertiesInBothListModelAndDbEntity)
+                                    {
+                                        listAssignment.AppendLine($"{property} = p.{property},");
+                                    };
                                     string classContent = $$"""
                                         using System.Threading.Tasks;
-                                        using {{createActivityModel.ContainingNamespace.ToString()}};
+                                        using {{createModel.ContainingNamespace.ToString()}};
                                         using {{dbContextArgument.ContainingNamespace}};
                                         using Microsoft.EntityFrameworkCore;
                                         using {{dbEntityArgument.ContainingNamespace}};
@@ -101,6 +113,18 @@ namespace FairPlayCombined.Services.Generators
                                                 };
                                                 await dbContext.{{entityName}}.AddAsync(entity, cancellationToken);
                                                 await dbContext.SaveChangesAsync(cancellationToken);
+                                            }
+
+                                            public async Task<{{listActivityModel.Name}}[]> GetAll{{entityName}}Async(
+                                            CancellationToken cancellationToken)
+                                            {
+                                                var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+                                                var result = await dbContext.{{entityName}}
+                                                .Select(p=>new {{listActivityModel.Name}}()
+                                                {
+                                                    {{listAssignment.ToString()}}
+                                                }).ToArrayAsync(cancellationToken);
+                                                return result;
                                             }
                                         }
                                         """;
