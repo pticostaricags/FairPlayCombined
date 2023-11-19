@@ -90,6 +90,13 @@ namespace FairPlayCombined.Services.Generators
                                     {
                                         listAssignment.AppendLine($"{property} = p.{property},");
                                     };
+                                    var primaryKeyProperty =
+                                        dbEntityArgument.GetMembers()
+                                        .Where(p => p.Kind == SymbolKind.Property
+                                        &&
+                                        (p.GetAttributes().Any(x=>x.AttributeClass != null
+                                        && x.AttributeClass.Name.Contains("Key")))
+                                        ).SingleOrDefault() as IPropertySymbol;
                                     string classContent = $$"""
                                         using System.Threading.Tasks;
                                         using {{createModel.ContainingNamespace.ToString()}};
@@ -125,6 +132,14 @@ namespace FairPlayCombined.Services.Generators
                                                     {{listAssignment.ToString()}}
                                                 }).ToArrayAsync(cancellationToken);
                                                 return result;
+                                            }
+
+                                            public async Task Delete{{entityName}}ById(
+                                            {{primaryKeyProperty!.Type.ToDisplayString()}} id,
+                                            CancellationToken cancellationToken)
+                                            {
+                                                var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+                                                await dbContext.{{entityName}}.ExecuteDeleteAsync(cancellationToken);
                                             }
                                         }
                                         """;
