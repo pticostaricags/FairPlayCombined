@@ -22,7 +22,6 @@ public partial class DateObjective
 
     [Required]
     [StringLength(20)]
-    [Unicode(false)]
     public string Name { get; set; }
 
     [InverseProperty("CurrentDateObjective")]
