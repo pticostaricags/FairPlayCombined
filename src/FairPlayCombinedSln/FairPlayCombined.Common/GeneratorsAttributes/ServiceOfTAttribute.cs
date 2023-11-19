@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 namespace FairPlayCombined.Common.GeneratorsAttributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class ServiceOfTAttribute<TCreateMode, TUpdateModel, TListModel> : Attribute 
+    public class ServiceOfTAttribute<TCreateMode, TUpdateModel, TListModel, TDbContext,
+        TDbModel> : Attribute 
         where TCreateMode : ICreateModel
         where TUpdateModel : IUpdateModel
         where TListModel : IListModel
+        where TDbContext : IDbContext
     {
     }
 }

@@ -3,6 +3,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Immutable;
+using System.Collections.Specialized;
+using System.Text;
 
 namespace FairPlayCombined.Services.Generators
 {
@@ -47,6 +49,8 @@ namespace FairPlayCombined.Services.Generators
                                 var createActivityModel = attributeClass.TypeArguments[0];
                                 var updateActivityModel = attributeClass.TypeArguments[1];
                                 var listActivityModel = attributeClass.TypeArguments[2];
+                                var dbContextArgument = attributeClass.TypeArguments[3];
+                                var dbEntityArgument = attributeClass.TypeArguments[4];
                                 if (createActivityModel != null &&
                                     updateActivityModel != null &&
                                     listActivityModel != null)
@@ -57,17 +61,46 @@ namespace FairPlayCombined.Services.Generators
                                     var createtypeName = createActivityModel!.Name;
                                     var fullQualifiedName = $"{namespaceStrng}.{createtypeName}";
                                     var symbolNamespace = symbol.ContainingNamespace.ToString();
+                                    var entityName = dbEntityArgument.Name;
+                                    var createModelProperties = createActivityModel.GetMembers()
+                                        .Where(p => p.Kind == SymbolKind.Property)
+                                        .Select(p => p.Name);
+                                    var dbEntityProperties =
+                                        dbEntityArgument.GetMembers()
+                                        .Where(p => p.Kind == SymbolKind.Property)
+                                        .Select(p => p.Name);
+                                    var propertiesInBoth =
+                                        createModelProperties.Join(dbEntityProperties,
+                                        Inner => Inner, Outer => Outer,
+                                        (a, b) => a);
+                                    StringBuilder createAssignment = new StringBuilder();
+                                    foreach (var property in propertiesInBoth)
+                                    {
+                                        createAssignment.AppendLine($"{property} = createModel.{property},");
+                                    };
                                     string classContent = $$"""
                                         using System.Threading.Tasks;
                                         using {{createActivityModel.ContainingNamespace.ToString()}};
+                                        using {{dbContextArgument.ContainingNamespace}};
+                                        using Microsoft.EntityFrameworkCore;
+                                        using {{dbEntityArgument.ContainingNamespace}};
                                         namespace {{symbolNamespace}};
-                                        public partial class {{symbol.Name}}
+                                        public partial class {{symbol.Name}}(
+                                        IDbContextFactory<{{dbContextArgument.Name}}> dbContextFactory
+                                        )
                                         {
-                                            public void {{createtypeName}}Async(
+                                            public async Task {{createtypeName}}Async(
                                             {{createtypeName}} createModel,
                                             CancellationToken cancellationToken
                                             )
                                             {
+                                                var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+                                                {{entityName}} entity = new()
+                                                {
+                                                    {{createAssignment.ToString()}}
+                                                };
+                                                await dbContext.{{entityName}}.AddAsync(entity, cancellationToken);
+                                                await dbContext.SaveChangesAsync(cancellationToken);
                                             }
                                         }
                                         """;
