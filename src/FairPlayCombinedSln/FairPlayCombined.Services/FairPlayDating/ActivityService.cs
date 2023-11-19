@@ -2,6 +2,7 @@
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.FairPlayDating;
+using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,15 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.FairPlayDating
 {
-    [ServiceOfT<CreateActivityModel,UpdateActivityModel, ActivityModel,
+    [ServiceOfT<
+        CreateActivityModel,
+        UpdateActivityModel,
+        ActivityModel,
         FairPlayCombinedDbContext,
-        Activity>]
+        Activity,
+        PaginationRequest,
+        PaginationOfT<ActivityModel>>
+        ]
     public partial class ActivityService
     {
     }

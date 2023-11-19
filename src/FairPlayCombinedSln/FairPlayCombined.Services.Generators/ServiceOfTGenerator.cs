@@ -51,6 +51,8 @@ namespace FairPlayCombined.Services.Generators
                                 var listActivityModel = attributeClass.TypeArguments[2];
                                 var dbContextArgument = attributeClass.TypeArguments[3];
                                 var dbEntityArgument = attributeClass.TypeArguments[4];
+                                var paginationRequestArgument = attributeClass.TypeArguments[5];
+                                var paginationResultArgument = attributeClass.TypeArguments[6];
                                 if (createModel != null &&
                                     updateModel != null &&
                                     listActivityModel != null)
@@ -103,6 +105,7 @@ namespace FairPlayCombined.Services.Generators
                                         using {{dbContextArgument.ContainingNamespace}};
                                         using Microsoft.EntityFrameworkCore;
                                         using {{dbEntityArgument.ContainingNamespace}};
+                                        using {{paginationResultArgument.ContainingNamespace}};
                                         namespace {{symbolNamespace}};
                                         public partial class {{symbol.Name}}(
                                         IDbContextFactory<{{dbContextArgument.Name}}> dbContextFactory
@@ -140,6 +143,29 @@ namespace FairPlayCombined.Services.Generators
                                             {
                                                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
                                                 await dbContext.{{entityName}}.ExecuteDeleteAsync(cancellationToken);
+                                            }
+
+                                            public async Task<{{paginationResultArgument.Name}}<{{listActivityModel.Name}}>> GetPaginated{{entityName}}Async(
+                                            {{paginationRequestArgument.Name}} paginationRequest,
+                                            CancellationToken cancellationToken
+                                            )
+                                            {
+                                                await Task.Yield();
+                                                {{paginationResultArgument.Name}}<{{listActivityModel.Name}}> result=new();
+                                                var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+                                                var query = dbContext.{{entityName}};
+                                                result.TotalItems = await query.CountAsync(cancellationToken);
+                                                result.PageSize = paginationRequest.PageSize;
+                                                result.TotalPages = (int)Math.Ceiling((decimal)result.TotalItems / result.PageSize);
+                                                result.Items = await query
+                                                .Select(p=>new {{listActivityModel}}
+                                                {
+                                                    {{listAssignment.ToString()}}
+                                                })
+                                                .Skip(paginationRequest.StartIndex)
+                                                .Take(paginationRequest.PageSize)
+                                                .ToArrayAsync(cancellationToken);
+                                                return result;
                                             }
                                         }
                                         """;

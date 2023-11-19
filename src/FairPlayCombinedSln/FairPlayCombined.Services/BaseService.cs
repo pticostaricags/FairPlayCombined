@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Models.Pagination;
+﻿using FairPlayCombined.Common.GeneratorsAttributes;
+using FairPlayCombined.Models.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;

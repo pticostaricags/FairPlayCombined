@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FairPlayCombined.Common.GeneratorsAttributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Models.Pagination
 {
-    public class PaginationOfT<T>
+    public class PaginationOfT<T> : IPaginationOfT<T>
     {
         public int TotalItems { get; set; }
         public T[]? Items { get; set; }
