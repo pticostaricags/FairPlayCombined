@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Diagnostics;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using Microsoft.AspNetCore.Mvc;
 using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces;
+using FairPlayCombined.Services.Common;
+using FairPlayCombined.DataAccess.Interceptors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,16 +44,21 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
-builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(optionsAction =>
-{
-    optionsAction.UseSqlServer(connectionString,
-        sqlServerOptionsAction =>
-        {
-            sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
-                maxRetryDelay: TimeSpan.FromSeconds(3),
-                errorNumbersToAdd: null);
-        });
-});
+
+builder.Services.AddTransient<IUserProviderService, UserProviderService>();
+builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
+    (sp, optionsAction) =>
+    {
+        IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
+        optionsAction.AddInterceptors(new SaveChangesInterceptor(userProviderService));
+        optionsAction.UseSqlServer(connectionString,
+            sqlServerOptionsAction =>
+            {
+                sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(3),
+                    errorNumbersToAdd: null);
+            });
+    });
 
 builder.Services.AddProblemDetails();
 // Add services to the container.

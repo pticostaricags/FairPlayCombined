@@ -10,6 +10,8 @@ using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using Blazored.Toast;
+using FairPlayCombined.DataAccess.Interceptors;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,11 +50,15 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
-    .AddDefaultTokenProviders();
+.AddDefaultTokenProviders();
 
+
+builder.Services.AddTransient<IUserProviderService, UserProviderService>();
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
-    optionsAction =>
+    (sp,optionsAction) =>
     {
+        IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
+        optionsAction.AddInterceptors(new SaveChangesInterceptor(userProviderService));
         optionsAction.UseSqlServer(connectionString,
             sqlServerOptionsAction =>
             {
