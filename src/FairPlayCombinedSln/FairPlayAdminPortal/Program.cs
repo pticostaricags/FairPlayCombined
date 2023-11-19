@@ -12,6 +12,7 @@ using FairPlayCombined.Shared.CustomLocalization.EF;
 using Blazored.Toast;
 using FairPlayCombined.DataAccess.Interceptors;
 using Microsoft.Extensions.Options;
+using FairPlayCombined.Services.FairPlayDating;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,6 +74,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
+builder.Services.AddTransient<ApplicationUserVouchService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

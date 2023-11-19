@@ -1,0 +1,44 @@
+﻿@page "/FairPlayDating/ApplicationUserVouchCreate"
+@using FairPlayCombined.Models.FairPlayDating.ApplicationUserVouch
+@using FairPlayCombined.Services.FairPlayDating
+@inject ApplicationUserVouchService applicationUserVouchService
+<h3>ApplicationUserVouchCreate</h3>
+
+<EditForm FormName="frmCreateApplicationUserVouch"
+          Model="this.createApplicationUserVouchModel"
+          OnValidSubmit="OnValidSubmitAsync">
+    <div class="mb-3">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">From User</label>
+        <InputText class="form-control"
+                     @bind-Value="this.createApplicationUserVouchModel.FromApplicationUserId"></InputText>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">To User</label>
+        <InputText class="form-control"
+                     @bind-Value="this.createApplicationUserVouchModel.ToApplicationUserId"></InputText>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <InputText class="form-control"
+                   @bind-Value="this.createApplicationUserVouchModel.Description"></InputText>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-primary">Save</button>
+    </div>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    private CreateApplicationUserVouchModel createApplicationUserVouchModel { get; set; } = new();
+    private CancellationTokenSource cancellationTokenSource = new();
+    private async Task OnValidSubmitAsync()
+    {
+        await this.applicationUserVouchService
+        .CreateApplicationUserVouchAsync(this.createApplicationUserVouchModel,
+        this.cancellationTokenSource.Token);
+    }
+}

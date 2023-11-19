@@ -1,4 +1,5 @@
 ﻿using FairPlayCombined.Common;
+using FairPlayCombined.DataAccess.Interceptors.Interfaces;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Interfaces;
 using Microsoft.Data.SqlClient;
@@ -22,16 +23,16 @@ namespace FairPlayCombined.DataAccess.Interceptors
             var changedEntities = eventData!.Context!.ChangeTracker.Entries();
             foreach (var entityEntry in changedEntities)
             {
-                if (entityEntry.Entity is ApplicationUserVouch)
+                if (entityEntry.Entity is IOriginatorInfo)
                 {
-                    var entity = entityEntry.Entity as ApplicationUserVouch;
+                    var entity = entityEntry.Entity as IOriginatorInfo;
                     if (entity != null)
                     {
                         var connectionString = eventData.Context.Database.GetConnectionString();
                         SqlConnectionStringBuilder sqlConnectionStringBuilder = new(connectionString);
                         var applicationName = sqlConnectionStringBuilder.ApplicationName ?? "Unknown App";
                         var userName = userProviderService.GetCurrentUserId();
-                        entity.SourceApplication = nameof(applicationName);
+                        entity.SourceApplication = applicationName;
                         entity.RowCreationDateTime = DateTime.UtcNow;
                         entity.RowCreationUser = nameof(userName);
                         entity.OriginatorIpaddress = String.Join(",", await IpAddressProvider.GetCurrentHostIPv4AddressesAsync());
