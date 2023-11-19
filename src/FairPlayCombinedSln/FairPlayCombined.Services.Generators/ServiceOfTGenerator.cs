@@ -131,6 +131,7 @@ namespace FairPlayCombined.Services.Generators
                                             {
                                                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
                                                 var result = await dbContext.{{entityName}}
+                                                .AsNoTracking()
                                                 .Select(p=>new {{listActivityModel.Name}}()
                                                 {
                                                     {{listAssignment.ToString()}}
@@ -138,7 +139,22 @@ namespace FairPlayCombined.Services.Generators
                                                 return result;
                                             }
 
-                                            public async Task Delete{{entityName}}ById(
+                                            public async Task<{{listActivityModel.Name}}> Get{{entityName}}ByIdAsync(
+                                            {{primaryKeyProperty!.Type.ToDisplayString()}} id,
+                                            CancellationToken cancellationToken)
+                                            {
+                                                var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+                                                var result = await dbContext.{{entityName}}
+                                                .AsNoTracking()
+                                                .Select(p=>new {{listActivityModel.Name}}
+                                                {
+                                                    {{listAssignment.ToString()}}
+                                                })
+                                                .SingleOrDefaultAsync(cancellationToken);
+                                                return result;
+                                            }
+
+                                            public async Task Delete{{entityName}}ByIdAsync(
                                             {{primaryKeyProperty!.Type.ToDisplayString()}} id,
                                             CancellationToken cancellationToken)
                                             {

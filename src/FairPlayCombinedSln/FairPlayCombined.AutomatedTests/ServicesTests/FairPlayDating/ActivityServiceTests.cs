@@ -37,6 +37,26 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             }
         }
 
+        [TestCleanup]
+        public async Task TestCleanupAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            var cs = _msSqlContainer.GetConnectionString();
+            services.AddDbContextFactory<FairPlayCombinedDbContext>(
+                optionsAction =>
+                {
+                    optionsAction.UseSqlServer(cs);
+                });
+            services.AddTransient<ActivityService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            foreach (var singleActivity in dbContext.Activity)
+            {
+                dbContext.Activity.Remove(singleActivity);
+            }
+            await dbContext.SaveChangesAsync();
+        }
+
         [TestMethod]
         public async Task Test_CreateActivityAsync()
         {
@@ -84,7 +104,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Activity.AddAsync(entity, CancellationToken.None);
             await dbContext.SaveChangesAsync();
             Assert.AreNotEqual(0, entity.ActivityId);
-            await activityService.DeleteActivityById(entity.ActivityId, CancellationToken.None);
+            await activityService.DeleteActivityByIdAsync(entity.ActivityId, CancellationToken.None);
             var itemsCount = await dbContext.Activity.CountAsync(CancellationToken.None);
             Assert.AreEqual(0,itemsCount);
         }
@@ -127,6 +147,33 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 }, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Items![0].ActivityId, entity.ActivityId);
+        }
+
+        [TestMethod]
+        public async Task Test_GetActivityByIdAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            var cs = _msSqlContainer.GetConnectionString();
+            services.AddDbContextFactory<FairPlayCombinedDbContext>(
+                optionsAction =>
+                {
+                    optionsAction.UseSqlServer(cs);
+                });
+            services.AddTransient<ActivityService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+            var activityService = sp.GetRequiredService<ActivityService>();
+            Activity entity = new Activity()
+            {
+                Name = "TestModel"
+            };
+            await dbContext.Activity.AddAsync(entity, CancellationToken.None);
+            await dbContext.SaveChangesAsync();
+            Assert.AreNotEqual(0, entity.ActivityId);
+            var result = await activityService.GetActivityByIdAsync(entity.ActivityId, CancellationToken.None);
+            Assert.IsNotNull (result);
+            Assert.AreEqual(entity.Name, result.Name);
         }
     }
 }
