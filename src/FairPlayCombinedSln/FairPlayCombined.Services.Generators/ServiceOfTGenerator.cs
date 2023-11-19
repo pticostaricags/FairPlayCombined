@@ -97,7 +97,7 @@ namespace FairPlayCombined.Services.Generators
                                         .Where(p => p.Kind == SymbolKind.Property
                                         &&
                                         (p.GetAttributes().Any(x=>x.AttributeClass != null
-                                        && x.AttributeClass.Name.Contains("Key")))
+                                        && x.AttributeClass.Name == "KeyAttribute"))
                                         ).SingleOrDefault() as IPropertySymbol;
                                     string classContent = $$"""
                                         using System.Threading.Tasks;

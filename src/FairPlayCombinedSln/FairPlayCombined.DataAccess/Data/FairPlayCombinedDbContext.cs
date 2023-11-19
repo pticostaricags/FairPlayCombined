@@ -107,8 +107,6 @@ public partial class FairPlayCombinedDbContext : DbContext
     {
         modelBuilder.Entity<ApplicationUserVouch>(entity =>
         {
-            entity.Property(e => e.ApplicationUserVouchId).ValueGeneratedNever();
-
             entity.HasOne(d => d.FromApplicationUser).WithMany(p => p.ApplicationUserVouchFromApplicationUser)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ApplicationUserVouch_FromUser");

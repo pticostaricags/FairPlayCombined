@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [FairPlayDating].[ApplicationUserVouch]
 (
-	[ApplicationUserVouchId] BIGINT NOT NULL CONSTRAINT PK_ApplicationUserVouch PRIMARY KEY,
+	[ApplicationUserVouchId] BIGINT NOT NULL CONSTRAINT PK_ApplicationUserVouch PRIMARY KEY IDENTITY,
 	[FromApplicationUserId] NVARCHAR(450) NOT NULL,
 	[ToApplicationUserId] NVARCHAR(450) NOT NULL,
 	[Description] NVARCHAR(500) NOT NULL,
