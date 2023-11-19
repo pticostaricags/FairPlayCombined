@@ -148,11 +148,6 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_City_StateOrProvince");
         });
 
-        modelBuilder.Entity<Gender>(entity =>
-        {
-            entity.Property(e => e.GenderId).ValueGeneratedNever();
-        });
-
         modelBuilder.Entity<Group>(entity =>
         {
             entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.Group)
