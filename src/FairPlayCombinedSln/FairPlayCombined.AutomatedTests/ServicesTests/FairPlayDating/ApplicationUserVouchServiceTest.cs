@@ -10,6 +10,7 @@ using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayDating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Testcontainers.MsSql;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
@@ -86,6 +87,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         private static void RegisterDbContext(ServiceCollection services)
         {
             var cs = _msSqlContainer.GetConnectionString();
+            Extensions.EnhanceConnectionString(nameof(FairPlayCombined.AutomatedTests), ref cs);
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {

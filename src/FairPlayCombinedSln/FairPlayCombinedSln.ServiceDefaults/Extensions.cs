@@ -13,6 +13,7 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.Data.SqlClient;
 namespace Microsoft.Extensions.Hosting;
 
 public static class Extensions
@@ -34,6 +35,13 @@ public static class Extensions
             http.UseServiceDiscovery();
         });
         return builder;
+    }
+
+    public static void EnhanceConnectionString(string appName, ref string connectionString)
+    {
+        SqlConnectionStringBuilder connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
+        connectionStringBuilder.ApplicationName = appName;
+        connectionString = connectionStringBuilder.ConnectionString;
     }
 
     public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)

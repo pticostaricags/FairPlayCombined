@@ -37,6 +37,7 @@ builder.Services.AddAuthentication(options =>
 
 var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
+Extensions.EnhanceConnectionString(nameof(FairPlayAdminPortal), ref connectionString);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString),
     contextLifetime: ServiceLifetime.Transient,
