@@ -1,9 +1,12 @@
-﻿using FairPlayCombined.DataAccess.Data;
+﻿using FairPlayCombined.AutomatedTests.ServicesTests.Providers;
+using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
+using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.FairPlayDating.ApplicationUserVouch;
 using FairPlayCombined.Models.Pagination;
+using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayDating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -87,10 +90,11 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 optionsAction =>
                 {
                     optionsAction.AddInterceptors(
-                        new SaveChangesInterceptor()
+                        new SaveChangesInterceptor(new TestUserProviderService())
                         );
                     optionsAction.UseSqlServer(cs);
                 });
+            services.AddTransient<IUserProviderService, TestUserProviderService>();
         }
 
         private static async Task<(AspNetUsers fromUser, AspNetUsers toUser)> CreateTestRecordsAsync(FairPlayCombinedDbContext dbContext)

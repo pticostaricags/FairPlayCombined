@@ -1,4 +1,6 @@
-﻿using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
+﻿using FairPlayCombined.Common;
+using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
+using FairPlayCombined.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.DataAccess.Interceptors
 {
-    public class SaveChangesInterceptor : ISaveChangesInterceptor
+    public class SaveChangesInterceptor(IUserProviderService userProviderService) : ISaveChangesInterceptor
     {
         public async ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
@@ -28,11 +30,11 @@ namespace FairPlayCombined.DataAccess.Interceptors
                         var connectionString = eventData.Context.Database.GetConnectionString();
                         SqlConnectionStringBuilder sqlConnectionStringBuilder = new(connectionString);
                         var applicationName = sqlConnectionStringBuilder.ApplicationName ?? "Unknown App";
-                        var userName = applicationName;
+                        var userName = userProviderService.GetCurrentUserId();
                         entity.SourceApplication = nameof(applicationName);
                         entity.RowCreationDateTime = DateTime.UtcNow;
                         entity.RowCreationUser = nameof(userName);
-                        entity.OriginatorIpaddress = "127.0.0.1";
+                        entity.OriginatorIpaddress = String.Join(",", await IpAddressProvider.GetCurrentHostIPv4AddressesAsync());
                     }
                 }
             }

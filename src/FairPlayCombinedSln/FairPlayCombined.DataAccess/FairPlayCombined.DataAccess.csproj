@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>
