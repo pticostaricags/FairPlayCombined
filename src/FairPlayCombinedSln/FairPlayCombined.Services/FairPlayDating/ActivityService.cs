@@ -21,7 +21,7 @@ namespace FairPlayCombined.Services.FairPlayDating
         PaginationRequest,
         PaginationOfT<ActivityModel>>
         ]
-    public partial class ActivityService
+    public partial class ActivityService : BaseService
     {
     }
 }

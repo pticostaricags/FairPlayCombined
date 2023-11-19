@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.FairPlayDating;
+using FairPlayCombined.Models.Pagination;
 using FairPlayCombined.Services.FairPlayDating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -114,7 +115,15 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 paginationRequest: new Models.Pagination.PaginationRequest()
                 {
                     PageSize = 10,
-                    StartIndex = 0
+                    StartIndex = 0,
+                    SortingItems=new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName = nameof(ActivityModel.Name),
+                            SortType = Common.GeneratorsAttributes.SortType.Descending
+                        }
+                    }
                 }, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Items![0].ActivityId, entity.ActivityId);

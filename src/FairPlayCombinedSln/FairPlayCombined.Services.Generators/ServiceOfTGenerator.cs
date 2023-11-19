@@ -106,6 +106,7 @@ namespace FairPlayCombined.Services.Generators
                                         using Microsoft.EntityFrameworkCore;
                                         using {{dbEntityArgument.ContainingNamespace}};
                                         using {{paginationResultArgument.ContainingNamespace}};
+                                        using System.Linq.Dynamic.Core;
                                         namespace {{symbolNamespace}};
                                         public partial class {{symbol.Name}}(
                                         IDbContextFactory<{{dbContextArgument.Name}}> dbContextFactory
@@ -150,18 +151,24 @@ namespace FairPlayCombined.Services.Generators
                                             CancellationToken cancellationToken
                                             )
                                             {
-                                                await Task.Yield();
                                                 {{paginationResultArgument.Name}}<{{listActivityModel.Name}}> result=new();
                                                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-                                                var query = dbContext.{{entityName}};
+                                                string orderByString = string.Empty;
+                                                if (paginationRequest.SortingItems?.Length > 0)
+                                                    orderByString =
+                                                        String.Join(",",
+                                                        paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
+                                                var query = dbContext.{{entityName}}
+                                                    .Select(p=>new {{listActivityModel}}
+                                                    {
+                                                        {{listAssignment.ToString()}}
+                                                    });
+                                                if (!String.IsNullOrEmpty(orderByString))
+                                                    query = query.OrderBy(orderByString);
                                                 result.TotalItems = await query.CountAsync(cancellationToken);
                                                 result.PageSize = paginationRequest.PageSize;
                                                 result.TotalPages = (int)Math.Ceiling((decimal)result.TotalItems / result.PageSize);
                                                 result.Items = await query
-                                                .Select(p=>new {{listActivityModel}}
-                                                {
-                                                    {{listAssignment.ToString()}}
-                                                })
                                                 .Skip(paginationRequest.StartIndex)
                                                 .Take(paginationRequest.PageSize)
                                                 .ToArrayAsync(cancellationToken);
