@@ -87,5 +87,37 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var itemsCount = await dbContext.Activity.CountAsync(CancellationToken.None);
             Assert.AreEqual(0,itemsCount);
         }
+
+        [TestMethod]
+        public async Task Test_GetPaginatedActivityAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            var cs = _msSqlContainer.GetConnectionString();
+            services.AddDbContextFactory<FairPlayCombinedDbContext>(
+                optionsAction =>
+                {
+                    optionsAction.UseSqlServer(cs);
+                });
+            services.AddTransient<ActivityService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+            var activityService = sp.GetRequiredService<ActivityService>();
+            Activity entity = new Activity()
+            {
+                Name = "TestModel"
+            };
+            await dbContext.Activity.AddAsync(entity, CancellationToken.None);
+            await dbContext.SaveChangesAsync();
+            Assert.AreNotEqual(0, entity.ActivityId);
+            var result = await activityService.GetPaginatedActivityAsync(
+                paginationRequest: new Models.Pagination.PaginationRequest()
+                {
+                    PageSize = 10,
+                    StartIndex = 0
+                }, CancellationToken.None);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(result.Items![0].ActivityId, entity.ActivityId);
+        }
     }
 }
