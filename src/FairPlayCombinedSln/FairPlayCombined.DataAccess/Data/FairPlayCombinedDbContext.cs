@@ -243,11 +243,6 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.Property(e => e.ProductStatusId).ValueGeneratedOnAdd();
         });
 
-        modelBuilder.Entity<Religion>(entity =>
-        {
-            entity.Property(e => e.ReligionId).ValueGeneratedNever();
-        });
-
         modelBuilder.Entity<Resource>(entity =>
         {
             entity.HasOne(d => d.Culture).WithMany(p => p.Resource)
