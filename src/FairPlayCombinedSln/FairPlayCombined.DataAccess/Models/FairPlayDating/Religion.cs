@@ -18,7 +18,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 public partial class Religion
 {
     [Key]
-    public short ReligionId { get; set; }
+    public int ReligionId { get; set; }
 
     [Required]
     [StringLength(20)]

@@ -18,7 +18,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 public partial class DateObjective
 {
     [Key]
-    public short DateObjectiveId { get; set; }
+    public int DateObjectiveId { get; set; }
 
     [Required]
     [StringLength(20)]

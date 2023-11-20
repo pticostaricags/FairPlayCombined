@@ -18,7 +18,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 public partial class Activity
 {
     [Key]
-    public short ActivityId { get; set; }
+    public int ActivityId { get; set; }
 
     [Required]
     [StringLength(50)]

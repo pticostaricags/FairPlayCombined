@@ -11,7 +11,7 @@ namespace FairPlayCombined.Models.FairPlayDating.Religion
     public class UpdateReligionModel : IUpdateModel
     {
         [Required]
-        public short? ReligionId { get; set; }
+        public int? ReligionId { get; set; }
 
         [Required]
         [StringLength(20)]

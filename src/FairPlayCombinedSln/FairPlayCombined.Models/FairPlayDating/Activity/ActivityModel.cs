@@ -10,7 +10,7 @@ namespace FairPlayCombined.Models.FairPlayDating
 {
     public partial class ActivityModel : IListModel
     {
-        public short ActivityId { get; set; }
+        public int ActivityId { get; set; }
         public string? Name { get; set; }
     }
 }

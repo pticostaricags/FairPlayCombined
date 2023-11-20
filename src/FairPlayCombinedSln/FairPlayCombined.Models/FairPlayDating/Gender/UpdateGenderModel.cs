@@ -11,7 +11,7 @@ namespace FairPlayCombined.Models.FairPlayDating.Gender
     public class UpdateGenderModel : IUpdateModel
     {
         [Required]
-        public short? GenderId { get; set; }
+        public int? GenderId { get; set; }
 
         [Required]
         [StringLength(20)]

@@ -11,7 +11,7 @@ namespace FairPlayCombined.Models.FairPlayDating.KidStatus
     public class UpdateKidStatusModel : IUpdateModel
     {
         [Required]
-        public short? KidStatusId { get; set; }
+        public int? KidStatusId { get; set; }
 
         [Required]
         [StringLength(50)]

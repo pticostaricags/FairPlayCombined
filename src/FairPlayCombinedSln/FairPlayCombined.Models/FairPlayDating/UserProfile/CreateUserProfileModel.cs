@@ -16,37 +16,36 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         [Required]
         [StringLength(100)]
         public string? About { get; set; }
-
-        public short HairColorId { get; set; }
-
-        public short PreferredHairColorId { get; set; }
-
-        public short EyesColorId { get; set; }
-
-        public short PreferredEyesColorId { get; set; }
         [DeniedValues(0)]
-        public short BiologicalGenderId { get; set; }
-
-        public short CurrentDateObjectiveId { get; set; }
-
-        public short ReligionId { get; set; }
-
-        public short PreferredReligionId { get; set; }
-
+        public int HairColorId { get; set; }
+        [DeniedValues(0)]
+        public int PreferredHairColorId { get; set; }
+        [DeniedValues(0)]
+        public int EyesColorId { get; set; }
+        [DeniedValues(0)]
+        public int PreferredEyesColorId { get; set; }
+        [DeniedValues(0)]
+        public int BiologicalGenderId { get; set; }
+        [DeniedValues(0)]
+        public int CurrentDateObjectiveId { get; set; }
+        [DeniedValues(0)]
+        public int ReligionId { get; set; }
+        [DeniedValues(0)]
+        public int PreferredReligionId { get; set; }
+        [DeniedValues(0)]
         public double CurrentLatitude { get; set; }
-
+        [DeniedValues(0)]
         public double CurrentLongitude { get; set; }
-
+        [DeniedValues(0)]
         public long ProfilePhotoId { get; set; }
-
-        public short KidStatusId { get; set; }
-
-        public short PreferredKidStatusId { get; set; }
-
-        public short TattooStatusId { get; set; }
-
-        public short PreferredTattooStatusId { get; set; }
-
+        [DeniedValues(0)]
+        public int KidStatusId { get; set; }
+        [DeniedValues(0)]
+        public int PreferredKidStatusId { get; set; }
+        [DeniedValues(0)]
+        public int TattooStatusId { get; set; }
+        [DeniedValues(0)]
+        public int PreferredTattooStatusId { get; set; }
         public DateTimeOffset BirthDate { get; set; }
     }
 }

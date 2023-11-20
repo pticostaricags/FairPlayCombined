@@ -18,7 +18,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 public partial class Gender
 {
     [Key]
-    public short GenderId { get; set; }
+    public int GenderId { get; set; }
 
     [Required]
     [StringLength(20)]

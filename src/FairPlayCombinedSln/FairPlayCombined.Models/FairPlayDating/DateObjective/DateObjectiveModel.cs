@@ -10,7 +10,7 @@ namespace FairPlayCombined.Models.FairPlayDating.DateObjective
 {
     public class DateObjectiveModel : IListModel
     {
-        public short? DateObjectiveId { get; set; }
+        public int? DateObjectiveId { get; set; }
         public string? Name { get; set; }
     }
 }

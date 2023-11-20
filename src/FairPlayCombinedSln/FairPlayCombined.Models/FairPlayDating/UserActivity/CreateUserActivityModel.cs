@@ -13,8 +13,8 @@ namespace FairPlayCombined.Models.FairPlayDating.UserActivity
         [Required]
         public string? ApplicationUserId { get; set; }
         [Required]
-        public short ActivityId { get; set; }
+        public int ActivityId { get; set; }
         [Required]
-        public short FrequencyId { get; set; }
+        public int FrequencyId { get; set; }
     }
 }

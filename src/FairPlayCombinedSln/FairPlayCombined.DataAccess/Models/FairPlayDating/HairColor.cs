@@ -18,7 +18,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 public partial class HairColor
 {
     [Key]
-    public short HairColorId { get; set; }
+    public int HairColorId { get; set; }
 
     [Required]
     [StringLength(50)]

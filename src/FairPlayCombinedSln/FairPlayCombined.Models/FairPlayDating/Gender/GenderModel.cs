@@ -10,7 +10,7 @@ namespace FairPlayCombined.Models.FairPlayDating.Gender
 {
     public class GenderModel : IListModel
     {
-        public short? GenderId { get; set; }
+        public int? GenderId { get; set; }
         public string? Name { get; set; }
     }
 }

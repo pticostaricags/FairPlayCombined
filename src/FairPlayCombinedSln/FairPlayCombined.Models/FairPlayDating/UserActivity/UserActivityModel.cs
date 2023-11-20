@@ -12,7 +12,7 @@ namespace FairPlayCombined.Models.FairPlayDating.UserActivity
     {
         public long? UserActivityId { get; set; }
         public string? ApplicationUserId { get; set; }
-        public short? ActivityId { get; set; }
-        public short? FrequencyId { get; set; }
+        public int? ActivityId { get; set; }
+        public int? FrequencyId { get; set; }
     }
 }

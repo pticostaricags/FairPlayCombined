@@ -11,7 +11,7 @@ namespace FairPlayCombined.Models.FairPlayDating.TattooStatus
     public class UpdateTattooStatusModel : IUpdateModel
     {
         [Required]
-        public short? TattooStatusId { get; set; }
+        public int? TattooStatusId { get; set; }
 
         [Required]
         [StringLength(50)]

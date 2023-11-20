@@ -11,7 +11,7 @@ namespace FairPlayCombined.Models.FairPlayDating.HairColor
     public class UpdateHairColorModel : IUpdateModel
     {
         [Required]
-        public short? HairColorId { get; set; }
+        public int? HairColorId { get; set; }
 
         [Required]
         [StringLength(50)]

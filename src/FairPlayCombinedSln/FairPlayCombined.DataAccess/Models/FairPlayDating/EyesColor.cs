@@ -18,7 +18,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 public partial class EyesColor
 {
     [Key]
-    public short EyesColorId { get; set; }
+    public int EyesColorId { get; set; }
 
     [Required]
     [StringLength(50)]

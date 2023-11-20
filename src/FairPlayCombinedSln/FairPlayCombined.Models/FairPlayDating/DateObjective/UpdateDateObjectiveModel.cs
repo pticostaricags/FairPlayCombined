@@ -11,7 +11,7 @@ namespace FairPlayCombined.Models.FairPlayDating.DateObjective
     public class UpdateDateObjectiveModel : IUpdateModel
     {
         [Required]
-        public short? DateObjectiveId { get; set; }
+        public int? DateObjectiveId { get; set; }
 
         [Required]
         [StringLength(20)]

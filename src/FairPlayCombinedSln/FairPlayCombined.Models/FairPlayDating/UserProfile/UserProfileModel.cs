@@ -20,21 +20,21 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         [StringLength(100)]
         public string? About { get; set; }
 
-        public short HairColorId { get; set; }
+        public int HairColorId { get; set; }
 
-        public short PreferredHairColorId { get; set; }
+        public int PreferredHairColorId { get; set; }
 
-        public short EyesColorId { get; set; }
+        public int EyesColorId { get; set; }
 
-        public short PreferredEyesColorId { get; set; }
+        public int PreferredEyesColorId { get; set; }
 
-        public short BiologicalGenderId { get; set; }
+        public int BiologicalGenderId { get; set; }
 
-        public short CurrentDateObjectiveId { get; set; }
+        public int CurrentDateObjectiveId { get; set; }
 
-        public short ReligionId { get; set; }
+        public int ReligionId { get; set; }
 
-        public short PreferredReligionId { get; set; }
+        public int PreferredReligionId { get; set; }
 
         public double CurrentLatitude { get; set; }
 
@@ -42,13 +42,13 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
 
         public long ProfilePhotoId { get; set; }
 
-        public short KidStatusId { get; set; }
+        public int KidStatusId { get; set; }
 
-        public short PreferredKidStatusId { get; set; }
+        public int PreferredKidStatusId { get; set; }
 
-        public short TattooStatusId { get; set; }
+        public int TattooStatusId { get; set; }
 
-        public short PreferredTattooStatusId { get; set; }
+        public int PreferredTattooStatusId { get; set; }
 
         public DateTimeOffset BirthDate { get; set; }
     }

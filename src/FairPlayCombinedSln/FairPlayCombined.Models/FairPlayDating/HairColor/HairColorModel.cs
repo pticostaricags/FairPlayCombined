@@ -10,7 +10,7 @@ namespace FairPlayCombined.Models.FairPlayDating.HairColor
 {
     public class HairColorModel : IListModel
     {
-        public short? HairColorId { get; set; }
+        public int? HairColorId { get; set; }
         public string? Name { get; set; }
     }
 }

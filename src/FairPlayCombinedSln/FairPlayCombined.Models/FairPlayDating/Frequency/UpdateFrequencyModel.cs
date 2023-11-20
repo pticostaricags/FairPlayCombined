@@ -11,7 +11,7 @@ namespace FairPlayCombined.Models.FairPlayDating.Frequency
     public class UpdateFrequencyModel : IUpdateModel
     {
         [Required]
-        public short? FrequencyId { get; set; }
+        public int? FrequencyId { get; set; }
 
         [Required]
         [StringLength(50)]

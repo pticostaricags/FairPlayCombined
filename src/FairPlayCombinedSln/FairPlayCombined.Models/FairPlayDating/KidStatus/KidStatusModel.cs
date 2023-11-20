@@ -10,7 +10,7 @@ namespace FairPlayCombined.Models.FairPlayDating.KidStatus
 {
     public class KidStatusModel : IListModel
     {
-        public short? KidStatusId { get; set; }
+        public int? KidStatusId { get; set; }
         public string? Name { get; set; }
     }
 }

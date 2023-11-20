@@ -19,7 +19,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 public partial class TattooStatus
 {
     [Key]
-    public short TattooStatusId { get; set; }
+    public int TattooStatusId { get; set; }
 
     [Required]
     [StringLength(50)]

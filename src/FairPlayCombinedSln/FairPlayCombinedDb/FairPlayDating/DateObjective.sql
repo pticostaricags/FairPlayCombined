@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [FairPlayDating].[DateObjective]
 (
-	[DateObjectiveId] SMALLINT NOT NULL CONSTRAINT PK_DateObjective PRIMARY KEY IDENTITY,
+	[DateObjectiveId] INT NOT NULL CONSTRAINT PK_DateObjective PRIMARY KEY IDENTITY,
 	[Name] NVARCHAR(20) NOT NULL
 )

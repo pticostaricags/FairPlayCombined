@@ -18,7 +18,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 public partial class KidStatus
 {
     [Key]
-    public short KidStatusId { get; set; }
+    public int KidStatusId { get; set; }
 
     [Required]
     [StringLength(50)]

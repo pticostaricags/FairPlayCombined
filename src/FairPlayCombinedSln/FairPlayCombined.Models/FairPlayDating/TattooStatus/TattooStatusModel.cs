@@ -10,7 +10,7 @@ namespace FairPlayCombined.Models.FairPlayDating.TattooStatus
 {
     public class TattooStatusModel : IListModel
     {
-        public short? TattooStatusId { get; set; }
+        public int? TattooStatusId { get; set; }
         public string? Name { get; set; }
     }
 }

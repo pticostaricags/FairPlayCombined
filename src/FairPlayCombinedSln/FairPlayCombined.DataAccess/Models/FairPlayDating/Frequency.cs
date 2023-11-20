@@ -18,7 +18,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 public partial class Frequency
 {
     [Key]
-    public short FrequencyId { get; set; }
+    public int FrequencyId { get; set; }
 
     [Required]
     [StringLength(50)]

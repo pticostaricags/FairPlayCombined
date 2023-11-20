@@ -10,7 +10,7 @@ namespace FairPlayCombined.Models.FairPlayDating.Frequency
 {
     public class FrequencyModel : IListModel
     {
-        public short? FrequencyId { get; set; }
+        public int? FrequencyId { get; set; }
         public string? Name { get; set; }
     }
 }
