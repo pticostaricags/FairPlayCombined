@@ -1,13 +1,16 @@
 ﻿@page "/MyUserProfile"
+@using FairPlayCombined.Models.FairPlayDating.DateObjective
 @using FairPlayCombined.Models.FairPlayDating.Gender
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
+@attribute [StreamRendering(enabled:true)]
 @rendermode RenderMode.InteractiveServer
 
 @inject GenderService genderService
+@inject DateObjectiveService dateObjectiveService
 
 <h3>MyUserProfile</h3>
 
@@ -32,18 +35,47 @@
         </InputSelect>
     </div>
     <div class="mb-3">
+        <label class="form-label">About</label>
+        <InputTextArea class="form-control" @bind-Value="this.createUserProfileModel.About"></InputTextArea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Birth Date</label>
+        <InputDate class="form-control" @bind-Value="this.createUserProfileModel.BirthDate"></InputDate>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Date Objective</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.CurrentDateObjectiveId">
+            <option value="0">Select Date Objective</option>
+            @if (this.dateObjectives != null)
+            {
+                foreach (var singleDateObjective in this.dateObjectives)
+                {
+                    <option value="@singleDateObjective.DateObjectiveId">
+                        @singleDateObjective.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
         <button class="btn btn-primary">Save</button>
     </div>
 </EditForm>
 
 @code {
     [SupplyParameterFromForm]
-    private CreateUserProfileModel createUserProfileModel { get; set; } = new();
+    private CreateUserProfileModel createUserProfileModel { get; set; } = new()
+        {
+            BirthDate = DateTimeOffset.UtcNow
+        };
+    private CancellationTokenSource cancellationTokenSource = new();
     private GenderModel[]? genders;
-
+    private DateObjectiveModel[]? dateObjectives;
     protected override async Task OnInitializedAsync()
     {
-        this.genders = await this.genderService.GetAllGenderAsync(CancellationToken.None);
+        this.genders = await this.genderService.GetAllGenderAsync(cancellationTokenSource.Token);
+        this.dateObjectives = await this.dateObjectiveService.GetAllDateObjectiveAsync(cancellationTokenSource.Token);
     }
 
     private async Task OnValidSubmitAsync()

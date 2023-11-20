@@ -70,6 +70,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 builder.Services.AddTransient<GenderService>();
+builder.Services.AddTransient<DateObjectiveService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
