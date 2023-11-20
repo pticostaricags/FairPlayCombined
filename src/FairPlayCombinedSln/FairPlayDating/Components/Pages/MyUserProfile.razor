@@ -1,0 +1,14 @@
+﻿@page "/MyUserProfile"
+@using FairPlayCombined.Services.FairPlayDating
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+@rendermode RenderMode.InteractiveServer
+
+@inject GenderService genderService
+
+<h3>MyUserProfile</h3>
+
+@code {
+
+}
