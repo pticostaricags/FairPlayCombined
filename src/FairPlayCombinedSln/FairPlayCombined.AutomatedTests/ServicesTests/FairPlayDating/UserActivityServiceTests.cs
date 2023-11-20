@@ -1,0 +1,253 @@
+﻿using FairPlayCombined.AutomatedTests.ServicesTests.Providers;
+using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Interceptors;
+using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
+using FairPlayCombined.Interfaces;
+using FairPlayCombined.Models.FairPlayDating.UserActivity;
+using FairPlayCombined.Models.Pagination;
+using FairPlayCombined.Services.FairPlayDating;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Testcontainers.MsSql;
+
+namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
+{
+    [TestClass]
+    public class UserActivityServiceTests
+    {
+        public static readonly MsSqlContainer _msSqlContainer
+        = new MsSqlBuilder().Build();
+        [ClassInitialize]
+#pragma warning disable IDE0060 // Remove unused parameter
+        public static async Task ClassInitializeAsync(TestContext testContext)
+#pragma warning restore IDE0060 // Remove unused parameter
+        {
+            await _msSqlContainer.StartAsync();
+        }
+
+        [ClassCleanup()]
+        public static async Task ClassCleanupAsync()
+        {
+            if (_msSqlContainer.State == DotNet.Testcontainers.Containers.TestcontainersStates.Running)
+            {
+                await _msSqlContainer.StopAsync();
+            }
+        }
+
+        [TestCleanup]
+        public async Task TestCleanupAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            var cs = _msSqlContainer.GetConnectionString();
+            services.AddDbContextFactory<FairPlayCombinedDbContext>(
+                optionsAction =>
+                {
+                    optionsAction.UseSqlServer(cs);
+                });
+            services.AddTransient<UserActivityService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            foreach (var singleUserActivity in dbContext.UserActivity)
+            {
+                dbContext.UserActivity.Remove(singleUserActivity);
+            }
+            foreach (var singleFrequency in dbContext.Frequency)
+            {
+                dbContext.Frequency.Remove(singleFrequency);
+            }
+            foreach (var singleActivity in dbContext.Activity)
+            {
+                dbContext.Activity.Remove(singleActivity);
+            }
+            foreach (var singleUser in dbContext.AspNetUsers)
+            {
+                dbContext.Remove(singleUser);
+            }
+            await dbContext.SaveChangesAsync();
+        }
+
+        [TestMethod]
+        public async Task Test_CreateUserActivityAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            RegisterDbContext(services);
+            services.AddTransient<UserActivityService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+            (AspNetUsers fromUser, AspNetUsers toUser, Activity activity) = await CreateTestRecordsAsync(dbContext);
+            var UserActivityService = sp.GetRequiredService<UserActivityService>();
+            Frequency frequency = new Frequency()
+            {
+                Name = "TEST FREQUENCY",
+            };
+            await dbContext.Frequency.AddAsync(frequency);
+            await dbContext.SaveChangesAsync();
+            CreateUserActivityModel createUserActivityModel = new CreateUserActivityModel()
+            {
+                FrequencyId = frequency.FrequencyId,
+                ApplicationUserId = fromUser.Id,
+                ActivityId = activity.ActivityId
+            };
+            await UserActivityService.CreateUserActivityAsync(createUserActivityModel, CancellationToken.None);
+            var result = await dbContext.UserActivity.SingleOrDefaultAsync();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(createUserActivityModel.ApplicationUserId, result.ApplicationUserId);
+        }
+
+        private static void RegisterDbContext(ServiceCollection services)
+        {
+            var cs = _msSqlContainer.GetConnectionString();
+            Extensions.EnhanceConnectionString(nameof(FairPlayCombined.AutomatedTests), ref cs);
+            services.AddDbContextFactory<FairPlayCombinedDbContext>(
+                optionsAction =>
+                {
+                    optionsAction.AddInterceptors(
+                        new SaveChangesInterceptor(new TestUserProviderService())
+                        );
+                    optionsAction.UseSqlServer(cs);
+                });
+            services.AddTransient<IUserProviderService, TestUserProviderService>();
+        }
+
+        private static async Task<(AspNetUsers fromUser, AspNetUsers toUser, Activity activity)> 
+            CreateTestRecordsAsync(FairPlayCombinedDbContext dbContext)
+        {
+            string fromUserName = "fromuser@test.test";
+            string toUserName = "toUser@test.test";
+            AspNetUsers fromUser = new AspNetUsers()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = fromUserName,
+                NormalizedUserName = fromUserName.Normalize(),
+                Email = fromUserName,
+                NormalizedEmail = fromUserName.Normalize()
+            };
+            AspNetUsers toUser = new AspNetUsers()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = toUserName,
+                NormalizedUserName = toUserName.Normalize(),
+                Email = toUserName,
+                NormalizedEmail = toUserName.Normalize()
+            };
+            await dbContext.AspNetUsers.AddRangeAsync(fromUser);
+            await dbContext.AspNetUsers.AddRangeAsync(toUser);
+            Activity activity = new Activity()
+            {
+                Name = "TEST ACTIVITY"
+            };
+            await dbContext.Activity.AddAsync(activity);
+            await dbContext.SaveChangesAsync();
+            return (fromUser, toUser, activity);
+        }
+
+        [TestMethod]
+        public async Task Test_DeleteUserActivityAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            RegisterDbContext(services);
+            services.AddTransient<UserActivityService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+            (AspNetUsers fromUser, AspNetUsers toUser, Activity activity) = await CreateTestRecordsAsync(dbContext);
+            var UserActivityService = sp.GetRequiredService<UserActivityService>();
+            Frequency frequency = new Frequency()
+            {
+                Name = "TEST FREQUENCY",
+            };
+            await dbContext.Frequency.AddAsync(frequency);
+            await dbContext.SaveChangesAsync();
+            UserActivity entity = new UserActivity()
+            {
+                ApplicationUserId = fromUser.Id,
+                FrequencyId = frequency.FrequencyId,
+                ActivityId = activity.ActivityId
+            };
+            await dbContext.UserActivity.AddAsync(entity, CancellationToken.None);
+            await dbContext.SaveChangesAsync();
+            Assert.AreNotEqual(0, entity.UserActivityId);
+            await UserActivityService.DeleteUserActivityByIdAsync(entity.UserActivityId, CancellationToken.None);
+            var itemsCount = await dbContext.UserActivity.CountAsync(CancellationToken.None);
+            Assert.AreEqual(0, itemsCount);
+        }
+
+        [TestMethod]
+        public async Task Test_GetPaginatedUserActivityAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            RegisterDbContext(services);
+            services.AddTransient<UserActivityService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+            (AspNetUsers fromUser, AspNetUsers toUser, Activity activity) = await CreateTestRecordsAsync(dbContext);
+            var UserActivityService = sp.GetRequiredService<UserActivityService>();
+            Frequency frequency = new Frequency()
+            {
+                Name = "TEST FREQUENCY",
+            };
+            await dbContext.Frequency.AddAsync(frequency);
+            await dbContext.SaveChangesAsync();
+            UserActivity entity = new UserActivity()
+            {
+                ApplicationUserId = fromUser.Id,
+                FrequencyId = frequency.FrequencyId,
+                ActivityId = activity.ActivityId
+            };
+            await dbContext.UserActivity.AddAsync(entity, CancellationToken.None);
+            await dbContext.SaveChangesAsync();
+            Assert.AreNotEqual(0, entity.UserActivityId);
+            var result = await UserActivityService.GetPaginatedUserActivityAsync(
+                paginationRequest: new Models.Pagination.PaginationRequest()
+                {
+                    PageSize = 10,
+                    StartIndex = 0,
+                    SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName = nameof(UserActivityModel.UserActivityId),
+                            SortType = Common.GeneratorsAttributes.SortType.Descending
+                        }
+                    }
+                }, CancellationToken.None);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(result.Items![0].UserActivityId, entity.UserActivityId);
+        }
+
+        [TestMethod]
+        public async Task Test_GetUserActivityByIdAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            RegisterDbContext(services);
+            services.AddTransient<UserActivityService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+            (AspNetUsers fromUser, AspNetUsers toUser, Activity activity) = await CreateTestRecordsAsync(dbContext);
+            var UserActivityService = sp.GetRequiredService<UserActivityService>();
+            Frequency frequency = new Frequency()
+            {
+                Name = "TEST FREQUENCY",
+            };
+            await dbContext.Frequency.AddAsync(frequency);
+            await dbContext.SaveChangesAsync();
+            UserActivity entity = new UserActivity()
+            {
+                ApplicationUserId = fromUser.Id,
+                FrequencyId = frequency.FrequencyId,
+                ActivityId = activity.ActivityId
+            };
+            await dbContext.UserActivity.AddAsync(entity, CancellationToken.None);
+            await dbContext.SaveChangesAsync();
+            Assert.AreNotEqual(0, entity.UserActivityId);
+            var result = await UserActivityService.GetUserActivityByIdAsync(entity.UserActivityId, CancellationToken.None);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(entity.UserActivityId, result.UserActivityId);
+        }
+    }
+}
