@@ -24,7 +24,7 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         public short EyesColorId { get; set; }
 
         public short PreferredEyesColorId { get; set; }
-
+        [DeniedValues(0)]
         public short BiologicalGenderId { get; set; }
 
         public short CurrentDateObjectiveId { get; set; }

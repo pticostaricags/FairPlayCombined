@@ -1,4 +1,6 @@
 ﻿@page "/MyUserProfile"
+@using FairPlayCombined.Models.FairPlayDating.Gender
+@using FairPlayCombined.Models.FairPlayDating.UserProfile
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
 
@@ -9,6 +11,43 @@
 
 <h3>MyUserProfile</h3>
 
-@code {
+<EditForm FormName="frmCreateMyUserProfile" Model="this.createUserProfileModel"
+          OnValidSubmit="OnValidSubmitAsync">
+    <div class="mb-3">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Gender</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.BiologicalGenderId">
+            <option value="0">Select Gender</option>
+            @if (this.genders != null)
+            {
+                foreach (var singleGender in this.genders)
+                {
+                    <option value="@singleGender.GenderId">@singleGender.Name</option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-primary">Save</button>
+    </div>
+</EditForm>
 
+@code {
+    [SupplyParameterFromForm]
+    private CreateUserProfileModel createUserProfileModel { get; set; } = new();
+    private GenderModel[]? genders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.genders = await this.genderService.GetAllGenderAsync(CancellationToken.None);
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        await Task.Yield();
+    }
 }
