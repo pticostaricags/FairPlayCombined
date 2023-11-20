@@ -112,7 +112,7 @@ namespace FairPlayCombined.Services.Generators
                                         IDbContextFactory<{{dbContextArgument.Name}}> dbContextFactory
                                         )
                                         {
-                                            public async Task Create{{entityName}}Async(
+                                            public async Task<{{primaryKeyProperty!.Type.ToDisplayString()}}> Create{{entityName}}Async(
                                             {{createModel.Name}} createModel,
                                             CancellationToken cancellationToken
                                             )
@@ -124,6 +124,7 @@ namespace FairPlayCombined.Services.Generators
                                                 };
                                                 await dbContext.{{entityName}}.AddAsync(entity, cancellationToken);
                                                 await dbContext.SaveChangesAsync(cancellationToken);
+                                                return entity.{{primaryKeyProperty.Name}};
                                             }
 
                                             public async Task<{{listActivityModel.Name}}[]> GetAll{{entityName}}Async(

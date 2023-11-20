@@ -1,16 +1,34 @@
 ﻿@page "/MyUserProfile"
+@using Blazored.Toast.Services
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.Common.Photo
 @using FairPlayCombined.Models.FairPlayDating.DateObjective
+@using FairPlayCombined.Models.FairPlayDating.EyesColor
 @using FairPlayCombined.Models.FairPlayDating.Gender
+@using FairPlayCombined.Models.FairPlayDating.HairColor
+@using FairPlayCombined.Models.FairPlayDating.KidStatus
+@using FairPlayCombined.Models.FairPlayDating.Religion
+@using FairPlayCombined.Models.FairPlayDating.TattooStatus
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
+@using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
-@attribute [StreamRendering(enabled:true)]
+@attribute [StreamRendering(enabled: true)]
 @rendermode RenderMode.InteractiveServer
 
 @inject GenderService genderService
 @inject DateObjectiveService dateObjectiveService
+@inject EyesColorService eyesColorService
+@inject HairColorService hairColorService
+@inject KidStatusService kidStatusService
+@inject ReligionService religionService
+@inject TattooStatusService tattooStatusService
+@inject IUserProviderService userProviderService
+@inject UserProfileService userProfileService
+@inject IToastService toastService
+@inject PhotoService photoService
 
 <h3>MyUserProfile</h3>
 
@@ -19,6 +37,10 @@
     <div class="mb-3">
         <DataAnnotationsValidator></DataAnnotationsValidator>
         <ValidationSummary></ValidationSummary>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Photo</label>
+        <InputFile accept="image/*" OnChange="OnPhotoSelectionChangedAsync"></InputFile>
     </div>
     <div class="mb-3">
         <label class="form-label">Gender</label>
@@ -59,6 +81,166 @@
         </InputSelect>
     </div>
     <div class="mb-3">
+        <label class="form-label">Eyes Color</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.EyesColorId">
+            <option value="0">Select Eyes Color</option>
+            @if (this.eyesColors != null)
+            {
+                foreach (var singleEyesColor in this.eyesColors)
+                {
+                    <option value="@singleEyesColor.EyesColorId">
+                        @singleEyesColor.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Hair Color</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.HairColorId">
+            <option value="0">Select Hair Color</option>
+            @if (this.hairColors != null)
+            {
+                foreach (var singleHairColor in this.hairColors)
+                {
+                    <option value="@singleHairColor.HairColorId">
+                        @singleHairColor.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Kid Status</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.KidStatusId">
+            <option value="0">Select Kid Status</option>
+            @if (this.kidStatuses != null)
+            {
+                foreach (var singleKidStatus in this.kidStatuses)
+                {
+                    <option value="@singleKidStatus.KidStatusId">
+                        @singleKidStatus.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Preferred Eyes Color</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.PreferredEyesColorId">
+            <option value="0">Select Preferred Eyes Color</option>
+            @if (this.eyesColors != null)
+            {
+                foreach (var singleEyesColor in this.eyesColors)
+                {
+                    <option value="@singleEyesColor.EyesColorId">
+                        @singleEyesColor.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Preferred Hair Color</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.PreferredHairColorId">
+            <option value="0">Select Preferred Hair Color</option>
+            @if (this.hairColors != null)
+            {
+                foreach (var singleHairColor in this.hairColors)
+                {
+                    <option value="@singleHairColor.HairColorId">
+                        @singleHairColor.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Preferred Kid Status</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.PreferredKidStatusId">
+            <option value="0">Select Preferred Kid Status</option>
+            @if (this.kidStatuses != null)
+            {
+                foreach (var singleKidStatus in this.kidStatuses)
+                {
+                    <option value="@singleKidStatus.KidStatusId">
+                        @singleKidStatus.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Preferred Religion</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.PreferredReligionId">
+            <option value="0">Select Preferred Religion</option>
+            @if (this.religions != null)
+            {
+                foreach (var singleReligion in this.religions)
+                {
+                    <option value="@singleReligion.ReligionId">
+                        @singleReligion.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Preferred Tattoo Status</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.PreferredTattooStatusId">
+            <option value="0">Select Preferred Tattoo Status</option>
+            @if (this.tattooStatuses != null)
+            {
+                foreach (var singletattooStatus in this.tattooStatuses)
+                {
+                    <option value="@singletattooStatus.TattooStatusId">
+                        @singletattooStatus.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Religion</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.ReligionId">
+            <option value="0">Select Religion</option>
+            @if (this.religions != null)
+            {
+                foreach (var singleReligion in this.religions)
+                {
+                    <option value="@singleReligion.ReligionId">
+                        @singleReligion.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Tattoo Status</label>
+        <InputSelect class="form-control"
+                     @bind-Value="this.createUserProfileModel.TattooStatusId">
+            <option value="0">Select Tattoo Status</option>
+            @if (this.tattooStatuses != null)
+            {
+                foreach (var singletattooStatus in this.tattooStatuses)
+                {
+                    <option value="@singletattooStatus.TattooStatusId">
+                        @singletattooStatus.Name
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
         <button class="btn btn-primary">Save</button>
     </div>
 </EditForm>
@@ -67,19 +249,78 @@
     [SupplyParameterFromForm]
     private CreateUserProfileModel createUserProfileModel { get; set; } = new()
         {
-            BirthDate = DateTimeOffset.UtcNow
+            BirthDate = DateTimeOffset.UtcNow,
+            CurrentLatitude = 10,
+            CurrentLongitude = 10
         };
     private CancellationTokenSource cancellationTokenSource = new();
     private GenderModel[]? genders;
     private DateObjectiveModel[]? dateObjectives;
+    private EyesColorModel[]? eyesColors;
+    private HairColorModel[]? hairColors;
+    private KidStatusModel[]? kidStatuses;
+    private ReligionModel[]? religions;
+    private TattooStatusModel[]? tattooStatuses;
+
     protected override async Task OnInitializedAsync()
     {
+        this.createUserProfileModel.ApplicationUserId = this.userProviderService.GetCurrentUserId();
         this.genders = await this.genderService.GetAllGenderAsync(cancellationTokenSource.Token);
         this.dateObjectives = await this.dateObjectiveService.GetAllDateObjectiveAsync(cancellationTokenSource.Token);
+        this.eyesColors = await this.eyesColorService.GetAllEyesColorAsync(cancellationTokenSource.Token);
+        this.hairColors = await this.hairColorService.GetAllHairColorAsync(cancellationTokenSource.Token);
+        this.kidStatuses = await this.kidStatusService.GetAllKidStatusAsync(cancellationTokenSource.Token);
+        this.religions = await this.religionService.GetAllReligionAsync(cancellationTokenSource.Token);
+        this.tattooStatuses = await this.tattooStatusService.GetAllTattooStatusAsync(cancellationTokenSource.Token);
+    }
+
+    private async Task OnPhotoSelectionChangedAsync(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        try
+        {
+            if (inputFileChangeEventArgs.FileCount == 1)
+            {
+                using var stream = inputFileChangeEventArgs.File.OpenReadStream();
+                MemoryStream memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                var fileName = "test";
+                if (this.createUserProfileModel.ProfilePhotoId == default)
+                {
+                    CreatePhotoModel createPhotoModel = new();
+                    createPhotoModel.Name = fileName;
+                    createPhotoModel.Filename = fileName;
+                    createPhotoModel.PhotoBytes = memoryStream.ToArray();
+                    this.createUserProfileModel.ProfilePhotoId = 
+                    await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
+                }
+                else
+                {
+                    UpdatePhotoModel updatePhotoModel = new();
+                    updatePhotoModel.PhotoId = this.createUserProfileModel.ProfilePhotoId;
+                    updatePhotoModel.Name = fileName;
+                    updatePhotoModel.Filename = fileName;
+                    updatePhotoModel.PhotoBytes = memoryStream.ToArray();
+                    //await photoService.UpdatePhotoAsync(updatePhotoModel, cancellationTokenSource.Token);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        await Task.Yield();
     }
 
     private async Task OnValidSubmitAsync()
     {
-        await Task.Yield();
+        try
+        {
+            await this.userProfileService.CreateUserProfileAsync(this.createUserProfileModel,
+            cancellationTokenSource.Token);
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
     }
 }

@@ -13,6 +13,7 @@ using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Services.FairPlayDating;
+using Blazored.Toast;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,8 +70,16 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+builder.Services.AddBlazoredToast();
 builder.Services.AddTransient<GenderService>();
 builder.Services.AddTransient<DateObjectiveService>();
+builder.Services.AddTransient<EyesColorService>();
+builder.Services.AddTransient<HairColorService>();
+builder.Services.AddTransient<KidStatusService>();
+builder.Services.AddTransient<ReligionService>();
+builder.Services.AddTransient<TattooStatusService>();
+builder.Services.AddTransient<UserProfileService>();
+builder.Services.AddTransient<PhotoService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
