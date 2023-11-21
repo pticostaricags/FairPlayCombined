@@ -48,30 +48,33 @@ namespace FairPlayCombined.Services.FairPlayDating
                 .Any(x => x.LikingApplicationUserId == myUserProfile.ApplicationUserId) == false)
                 .Select(p => new UserProfileModel()
                 {
+                    Age = EF.Functions.DateDiffYear(p.BirthDate, DateTimeOffset.UtcNow),
                     About = p.About,
                     ApplicationUserId = p.ApplicationUserId,
-                    BiologicalGenderId = p.BiologicalGenderId,
+                    BiologicalGenderText = p.BiologicalGender.Name,
                     BirthDate = p.BirthDate,
-                    CurrentDateObjectiveId = p.CurrentDateObjectiveId,
+                    CurrentDateObjectiveText = p.CurrentDateObjective.Name,
                     CurrentLatitude = p.CurrentLatitude,
                     CurrentLongitude = p.CurrentLongitude,
-                    EyesColorId = p.EyesColorId,
-                    HairColorId = p.HairColorId,
-                    KidStatusId = p.KidStatusId,
-                    PreferredEyesColorId = p.PreferredEyesColorId,
-                    PreferredHairColorId = p.PreferredHairColorId,
-                    PreferredKidStatusId = p.PreferredKidStatusId,
-                    PreferredReligionId = p.PreferredReligionId,
-                    PreferredTattooStatusId = p.PreferredTattooStatusId,
+                    EyesColorText = p.EyesColor.Name,
+                    HairColorText = p.HairColor.Name,
+                    KidStatusText = p.KidStatus.Name,
+                    PreferredEyesColorText = p.PreferredEyesColor.Name,
+                    PreferredHairColorText = p.PreferredHairColor.Name,
+                    PreferredKidStatusText = p.PreferredKidStatus.Name,
+                    PreferredReligionText = p.PreferredReligion.Name,
+                    PreferredTattooStatusText = p.PreferredTattooStatus.Name,
                     ProfilePhotoId = p.ProfilePhotoId,
-                    ReligionId = p.ReligionId,
-                    TattooStatusId = p.TattooStatusId,
+                    ReligionText = p.Religion.Name,
+                    TattooStatusText = p.TattooStatus.Name,
                     UserProfileId = p.UserProfileId
                 });
                 if (!String.IsNullOrEmpty(orderByString))
                     query = query.OrderBy(orderByString);
+                else
+                    query = query.OrderByDescending(p=>p.Age);
                 result = new();
-                result.PageSize = Constants.Pagination.PageSize;
+                result.PageSize = paginationRequest.PageSize;
                 result.TotalItems = await query.CountAsync(cancellationToken);
                 result.TotalPages = (int)Math.Ceiling((decimal)result.TotalItems / result.PageSize);
                 result.Items = await query

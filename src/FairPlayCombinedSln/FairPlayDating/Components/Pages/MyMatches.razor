@@ -15,37 +15,69 @@
 
 <div class="grid-container">
     <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
-        <PropertyColumn Property="@( p=> p.UserProfileId)" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.CurrentLatitude)" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.CurrentLongitude)" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.CurrentDateObjectiveId)" Sortable="true"></PropertyColumn>
-        <TemplateColumn Title="Image">
-            <img 
-                class="img igm-fluid" 
-                style="max-height:300px"
-            src="@($"api/photoimage/{context.ProfilePhotoId}")" />
+        <TemplateColumn Title="Profile">
+            <div class="card" style="width: 100%;">
+                <img class="card-img-top"
+                     style="max-height:300px"
+                     src="@($"api/photoimage/{context.ProfilePhotoId}")" />
+                <div class="card-body">
+                    <h5 class="card-title">Age: @context.Age</h5>
+                    <p>@context.About</p>
+                    <a class="btn btn-primary"
+                       @onclick="@( ()=> OnViewDetailsClicked(context))">View Details</a>
+                </div>
+            </div>
         </TemplateColumn>
-        <PropertyColumn Property="@( p=> p.BiologicalGenderId)" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.BirthDate)" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.EyesColorId)" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.HairColorId)" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.KidStatusId)" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.ReligionId)" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.TattooStatusId)" Sortable="true"></PropertyColumn>
     </QuickGrid>
 </div>
 <Paginator State="this.paginationState"></Paginator>
+@if (this.showDetailsDialog && this.selectedUserProfileModel != null)
+{
+    <div class="modal fade show" tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Selection Info</h1>
+                    <button @onclick="OnCloseSelectedProfile"
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Age: @selectedUserProfileModel.Age</p>
+                    <p>
+                        About me:
+                        @selectedUserProfileModel.About
+                    </p>
+                    <p>Kids Status: @selectedUserProfileModel.KidStatusText</p>
+                    <p>Gender: @selectedUserProfileModel.BiologicalGenderText</p>
+                    <p>Date Objective: @selectedUserProfileModel.CurrentDateObjectiveText</p>
+                    <p>Eyes Color: @selectedUserProfileModel.EyesColorText</p>
+                    <p>Hair Color: @selectedUserProfileModel.HairColorText</p>
+                    <p>Religion: @selectedUserProfileModel.ReligionText</p>
+                    <p>Tattoo Status : @selectedUserProfileModel.TattooStatusText</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 @code {
     private GridItemsProvider<UserProfileModel>? ItemsProvider;
     private CancellationTokenSource cancellationTokenSource = new();
+    private bool showDetailsDialog = false;
+    private UserProfileModel? selectedUserProfileModel;
     PaginationState paginationState = new()
         {
-            ItemsPerPage = Constants.Pagination.PageSize
+            ItemsPerPage = 1
         };
     protected override void OnInitialized()
     {
         ItemsProvider = async req =>
         {
+            this.showDetailsDialog = false;
+            this.selectedUserProfileModel = null;
             PaginationRequest paginationRequest = new PaginationRequest()
                 {
                     PageSize = paginationState.ItemsPerPage,
@@ -62,5 +94,17 @@
             var result = GridItemsProviderResult.From<UserProfileModel>(items!.Items!, items.TotalItems);
             return result;
         };
+    }
+
+    private void OnViewDetailsClicked(UserProfileModel userProfileModel)
+    {
+        this.selectedUserProfileModel = userProfileModel;
+        this.showDetailsDialog = true;
+    }
+
+    private void OnCloseSelectedProfile()
+    {
+        this.showDetailsDialog = false;
+        this.selectedUserProfileModel = null;
     }
 }

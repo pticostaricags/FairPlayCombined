@@ -51,5 +51,18 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         public int PreferredTattooStatusId { get; set; }
 
         public DateTimeOffset BirthDate { get; set; }
+        public int Age { get; set; }
+        public string? BiologicalGenderText { get; set; }
+        public string? CurrentDateObjectiveText { get; set; }
+        public string? EyesColorText { get; set; }
+        public string? HairColorText { get; set; }
+        public string? KidStatusText { get; set; }
+        public string? PreferredEyesColorText { get; set; }
+        public string? PreferredHairColorText { get; set; }
+        public string? PreferredKidStatusText { get; set; }
+        public string? PreferredReligionText { get; set; }
+        public string? PreferredTattooStatusText { get; set; }
+        public string? ReligionText { get; set; }
+        public string? TattooStatusText { get; set; }
     }
 }
