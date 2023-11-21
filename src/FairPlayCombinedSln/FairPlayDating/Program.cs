@@ -14,6 +14,7 @@ using FairPlayCombined.Services.Common;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Services.FairPlayDating;
 using Blazored.Toast;
+using FairPlayDating.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +81,7 @@ builder.Services.AddTransient<ReligionService>();
 builder.Services.AddTransient<TattooStatusService>();
 builder.Services.AddTransient<UserProfileService>();
 builder.Services.AddTransient<PhotoService>();
+builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

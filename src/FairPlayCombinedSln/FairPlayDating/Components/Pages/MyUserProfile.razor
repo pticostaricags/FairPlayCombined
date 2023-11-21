@@ -29,6 +29,7 @@
 @inject UserProfileService userProfileService
 @inject IToastService toastService
 @inject PhotoService photoService
+@inject IGeoLocationService geolocationService
 
 <h3>MyUserProfile</h3>
 
@@ -241,6 +242,10 @@
         </InputSelect>
     </div>
     <div class="mb-3">
+        <label class="form-label">Current Latitude: @this.createUserProfileModel.CurrentLatitude</label>
+        <label class="form-label">Current Longitude: @this.createUserProfileModel.CurrentLongitude</label>
+    </div>
+    <div class="mb-3">
         <button class="btn btn-primary">Save</button>
     </div>
 </EditForm>
@@ -274,6 +279,21 @@
         this.tattooStatuses = await this.tattooStatusService.GetAllTattooStatusAsync(cancellationTokenSource.Token);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var geoLocation = await
+            this.geolocationService.GetCurrentPositionAsync();
+            if (geoLocation != null)
+            {
+                this.createUserProfileModel.CurrentLatitude = geoLocation.Latitude;
+                this.createUserProfileModel.CurrentLongitude = geoLocation.Longitude;
+                StateHasChanged();
+            }
+        }
+    }
+
     private async Task OnPhotoSelectionChangedAsync(InputFileChangeEventArgs inputFileChangeEventArgs)
     {
         try
@@ -290,7 +310,7 @@
                     createPhotoModel.Name = fileName;
                     createPhotoModel.Filename = fileName;
                     createPhotoModel.PhotoBytes = memoryStream.ToArray();
-                    this.createUserProfileModel.ProfilePhotoId = 
+                    this.createUserProfileModel.ProfilePhotoId =
                     await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
                 }
                 else

@@ -32,11 +32,11 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         public int ReligionId { get; set; }
         [DeniedValues(0)]
         public int PreferredReligionId { get; set; }
-        [DeniedValues(0)]
+        [DeniedValues(default(double))]
         public double CurrentLatitude { get; set; }
-        [DeniedValues(0)]
+        [DeniedValues(default(double))]
         public double CurrentLongitude { get; set; }
-        [DeniedValues(0)]
+        [DeniedValues(default(long))]
         public long ProfilePhotoId { get; set; }
         [DeniedValues(0)]
         public int KidStatusId { get; set; }
