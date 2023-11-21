@@ -15,6 +15,10 @@ using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Services.FairPlayDating;
 using Blazored.Toast;
 using FairPlayDating.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Net.Http.Headers;
+using System.Net.Mime;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,6 +89,16 @@ builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+app.MapGet("api/photoimage/{photoId}", async (
+    [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+    CancellationToken cancellationToken,
+    long photoId) =>
+{
+    var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+    var photoEntity = await dbContext.Photo.AsNoTracking().SingleAsync(p=>p.PhotoId == photoId);
+    var mimeType = MediaTypeNames.Image.Png;
+    return Results.File(photoEntity.PhotoBytes, contentType: mimeType);
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

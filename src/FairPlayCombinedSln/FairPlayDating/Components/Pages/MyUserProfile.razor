@@ -43,6 +43,12 @@
         <label class="form-label">Photo</label>
         <InputFile accept="image/*" OnChange="OnPhotoSelectionChangedAsync"></InputFile>
     </div>
+    @if (this.createUserProfileModel.ProfilePhotoId != default(long))
+    {
+        <div class="mb-3">
+            <img src="@($"api/photoimage/{this.createUserProfileModel.ProfilePhotoId}")" />
+        </div>
+    }
     <div class="mb-3">
         <label class="form-label">Gender</label>
         <InputSelect class="form-control"
@@ -270,6 +276,35 @@
     protected override async Task OnInitializedAsync()
     {
         this.createUserProfileModel.ApplicationUserId = this.userProviderService.GetCurrentUserId();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        var existentUserProfile = await this.userProfileService
+        .GetUserProfileByUserIdAsync(this.createUserProfileModel!.ApplicationUserId!,
+            this.cancellationTokenSource.Token);
+        if (existentUserProfile != null)
+        {
+            this.createUserProfileModel = new()
+                {
+                    About = existentUserProfile.About,
+                    ApplicationUserId = existentUserProfile.ApplicationUserId,
+                    BiologicalGenderId = existentUserProfile.BiologicalGenderId,
+                    BirthDate = existentUserProfile.BirthDate,
+                    CurrentDateObjectiveId = existentUserProfile.CurrentDateObjectiveId,
+                    EyesColorId = existentUserProfile.EyesColorId,
+                    HairColorId = existentUserProfile.HairColorId,
+                    KidStatusId = existentUserProfile.KidStatusId,
+                    PreferredEyesColorId = existentUserProfile.PreferredEyesColorId,
+                    PreferredHairColorId = existentUserProfile.PreferredHairColorId,
+                    PreferredKidStatusId = existentUserProfile.PreferredKidStatusId,
+                    PreferredReligionId = existentUserProfile.PreferredReligionId,
+                    PreferredTattooStatusId = existentUserProfile.PreferredTattooStatusId,
+                    ProfilePhotoId = existentUserProfile.ProfilePhotoId,
+                    ReligionId = existentUserProfile.ReligionId,
+                    TattooStatusId = existentUserProfile.TattooStatusId
+                };
+        }
         this.genders = await this.genderService.GetAllGenderAsync(cancellationTokenSource.Token);
         this.dateObjectives = await this.dateObjectiveService.GetAllDateObjectiveAsync(cancellationTokenSource.Token);
         this.eyesColors = await this.eyesColorService.GetAllEyesColorAsync(cancellationTokenSource.Token);
@@ -283,14 +318,15 @@
     {
         if (firstRender)
         {
+            await LoadDataAsync();
             var geoLocation = await
             this.geolocationService.GetCurrentPositionAsync();
             if (geoLocation != null)
             {
                 this.createUserProfileModel.CurrentLatitude = geoLocation.Latitude;
                 this.createUserProfileModel.CurrentLongitude = geoLocation.Longitude;
-                StateHasChanged();
             }
+            StateHasChanged();
         }
     }
 
@@ -335,6 +371,15 @@
     {
         try
         {
+            var existentUserProfileId = await this.userProfileService
+            .GetUserProfileIdByUserIdAsync(this.createUserProfileModel!.ApplicationUserId!,
+            this.cancellationTokenSource.Token);
+            if (existentUserProfileId != null)
+            {
+                await this.userProfileService
+                .DeleteUserProfileByIdAsync(existentUserProfileId.Value,
+                this.cancellationTokenSource.Token);
+            }
             await this.userProfileService.CreateUserProfileAsync(this.createUserProfileModel,
             cancellationTokenSource.Token);
         }

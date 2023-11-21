@@ -3,6 +3,8 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.FairPlayDating.UserProfile;
 using FairPlayCombined.Models.Pagination;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,5 +24,49 @@ namespace FairPlayCombined.Services.FairPlayDating
         >]
     public partial class UserProfileService : BaseService
     {
+        public async Task<long?> GetUserProfileIdByUserIdAsync(string userId,
+            CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var result = await dbContext.UserProfile
+                .AsNoTracking()
+                .Where(p => p.ApplicationUserId == userId)
+                .Select(p => p.UserProfileId)
+                .SingleAsync(cancellationToken);
+            return result;
+        }
+
+        public async Task<UserProfileModel?> GetUserProfileByUserIdAsync(string userId,
+            CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var result = await dbContext.UserProfile
+                .AsNoTracking()
+                .Where(p => p.ApplicationUserId == userId)
+                .Select(p => new UserProfileModel()
+                {
+                    About = p.About,
+                    ApplicationUserId = p.ApplicationUserId,
+                    BiologicalGenderId = p.BiologicalGenderId,
+                    BirthDate = p.BirthDate,
+                    CurrentDateObjectiveId = p.CurrentDateObjectiveId,
+                    CurrentLatitude = p.CurrentLatitude,
+                    CurrentLongitude = p.CurrentLongitude,
+                    EyesColorId = p.EyesColorId,
+                    HairColorId = p.HairColorId,
+                    KidStatusId = p.KidStatusId,
+                    PreferredEyesColorId = p.PreferredEyesColorId,
+                    PreferredHairColorId = p.PreferredHairColorId,
+                    PreferredKidStatusId = p.PreferredKidStatusId,
+                    PreferredReligionId = p.PreferredReligionId,
+                    PreferredTattooStatusId = p.PreferredTattooStatusId,
+                    ProfilePhotoId = p.ProfilePhotoId,
+                    ReligionId = p.ReligionId,
+                    TattooStatusId = p.TattooStatusId,
+                    UserProfileId = p.UserProfileId
+                })
+                .SingleOrDefaultAsync(cancellationToken);
+            return result;
+        }
     }
 }
