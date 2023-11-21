@@ -50,12 +50,20 @@ builder.AddProject<Projects.FairPlaySocial>(nameof(Projects.FairPlaySocial).ToLo
         callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
     });
 
-
-//builder.AddProject<Projects.FairPlayDating_TestDataGenerator>("fairplaydating.testdatagenerator")
-//    .WithEnvironment(callback =>
-//    {
-//        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
-//    });
-
+AddTestDataGenerator(builder, fairPlayCombinedDbCS);
 
 builder.Build().Run();
+
+static void AddTestDataGenerator(IDistributedApplicationBuilder builder, string fairPlayCombinedDbCS)
+{
+    var humansPhotosDirectory = builder.Configuration["HumansPhotosDirectory"];
+    builder.AddProject<Projects.FairPlayDating_TestDataGenerator>("fairplaydatingtestdatagenerator")
+        .WithEnvironment(callback =>
+        {
+            callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+            if (!String.IsNullOrWhiteSpace(humansPhotosDirectory))
+            {
+                callback.EnvironmentVariables.Add("HumansPhotosDirectory", humansPhotosDirectory);
+            }
+        });
+}

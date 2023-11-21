@@ -31,10 +31,33 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             var allKidStatus = await dbContext.KidStatus.ToArrayAsync(stoppingToken);
             var allReligions = await dbContext.Religion.ToArrayAsync(stoppingToken);
             var allTattooStatuses = await dbContext.TattooStatus.ToArrayAsync(stoppingToken);
+            var humansPhotosDirectory = Environment.GetEnvironmentVariable("HumansPhotosDirectory");
+            string[]? allHumansPhotosPaths = null;
+            if (!String.IsNullOrWhiteSpace(humansPhotosDirectory))
+            {
+                allHumansPhotosPaths = Directory.GetFiles(humansPhotosDirectory, "*.jpg", SearchOption.AllDirectories);
+            }
             for (int i = 0; i < 10000; i++)
             {
+                Photo photo = new Photo()
+                {
+                    Filename = "test",
+                    Name = "test"
+                };
+                if (allHumansPhotosPaths?.Length > 0)
+                {
+                    string randomPath = Random.Shared.GetItems<string>(allHumansPhotosPaths, 1)[0];
+                    photo.PhotoBytes = File.ReadAllBytes(randomPath);
+                }
+                else
+                {
+                    photo.PhotoBytes = Properties.Resources.EmptyProfilePhoto;
+                }
                 string email = $"GTEST-{Random.Shared.Next(1000000)}-{Faker.Internet.Email()}";
                 string emailNormalized = email.Normalize();
+                string strAbout = Faker.Lorem.Sentence();
+                if (strAbout.Length > 50)
+                    strAbout = strAbout.Substring(0, 50);
                 await dbContext.AspNetUsers.AddAsync(new AspNetUsers()
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -48,7 +71,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                     UserProfile = new UserProfile()
                     {
                         BiologicalGenderId = Random.Shared.GetItems<Gender>(allGenders, 1)[0].GenderId,
-                        About = Faker.Lorem.Sentence(),
+                        About = strAbout,
                         BirthDate = Faker.Identification.DateOfBirth(),
                         CurrentDateObjectiveId = Random.Shared.GetItems<DateObjective>(allDateObjectives, 1)[0].DateObjectiveId,
                         EyesColorId = Random.Shared.GetItems<EyesColor>(allEyesColors, 1)[0].EyesColorId,
@@ -61,12 +84,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                         ReligionId = Random.Shared.GetItems<Religion>(allReligions, 1)[0].ReligionId,
                         TattooStatusId = Random.Shared.GetItems<TattooStatus>(allTattooStatuses, 1)[0].TattooStatusId,
                         PreferredTattooStatusId = Random.Shared.GetItems<TattooStatus>(allTattooStatuses, 1)[0].TattooStatusId,
-                        ProfilePhoto = new Photo()
-                        {
-                            Filename = "test",
-                            Name = "test",
-                            PhotoBytes = Properties.Resources.EmptyProfilePhoto
-                        }
+                        ProfilePhoto = photo
                     }
                 }, stoppingToken);
             }

@@ -160,7 +160,9 @@ namespace FairPlayCombined.Services.Generators
                                             CancellationToken cancellationToken)
                                             {
                                                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-                                                await dbContext.{{entityName}}.ExecuteDeleteAsync(cancellationToken);
+                                                await dbContext.{{entityName}}
+                                                .Where(p=> p.{{primaryKeyProperty.Name}} == id)
+                                                .ExecuteDeleteAsync(cancellationToken);
                                             }
 
                                             public async Task<{{paginationResultArgument.Name}}<{{listActivityModel.Name}}>> GetPaginated{{entityName}}Async(

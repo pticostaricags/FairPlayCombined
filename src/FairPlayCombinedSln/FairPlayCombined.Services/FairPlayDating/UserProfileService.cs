@@ -32,7 +32,7 @@ namespace FairPlayCombined.Services.FairPlayDating
                 .AsNoTracking()
                 .Where(p => p.ApplicationUserId == userId)
                 .Select(p => p.UserProfileId)
-                .SingleAsync(cancellationToken);
+                .SingleOrDefaultAsync(cancellationToken);
             return result;
         }
 
