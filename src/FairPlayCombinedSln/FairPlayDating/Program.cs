@@ -85,6 +85,7 @@ builder.Services.AddTransient<ReligionService>();
 builder.Services.AddTransient<TattooStatusService>();
 builder.Services.AddTransient<UserProfileService>();
 builder.Services.AddTransient<PhotoService>();
+builder.Services.AddTransient<MyMatchesService>();
 builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();
 var app = builder.Build();
 

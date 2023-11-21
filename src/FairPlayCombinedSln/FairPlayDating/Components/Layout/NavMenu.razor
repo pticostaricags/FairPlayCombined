@@ -49,6 +49,11 @@
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/MyMatches">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> My Matches
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
                     <form action="Account/Logout" method="post">
                         <AntiforgeryToken />
                         <input type="hidden" name="ReturnUrl" value="@currentUrl" />

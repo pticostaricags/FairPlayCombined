@@ -2,6 +2,10 @@
 {
     public class Constants
     {
+        public static class Matches
+        {
+            public const int MaxAllowedAgeDifference = 10;
+        }
         public class RoleName
         {
             const string SystemAdmin = nameof(SystemAdmin);

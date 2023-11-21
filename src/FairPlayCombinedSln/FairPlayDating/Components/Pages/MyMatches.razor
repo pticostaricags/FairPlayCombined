@@ -1,0 +1,66 @@
+﻿@page "/MyMatches"
+@using FairPlayCombined.Common
+@using FairPlayCombined.Common.GeneratorsAttributes
+@using FairPlayCombined.Models.FairPlayDating.UserProfile
+@using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.FairPlayDating
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
+@attribute [Authorize]
+@rendermode RenderMode.InteractiveServer
+@attribute [StreamRendering(enabled: true)]
+@inject MyMatchesService myMatchesService
+
+<h3>MyMatches</h3>
+
+<div class="grid-container">
+    <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
+        <PropertyColumn Property="@( p=> p.UserProfileId)" Sortable="true"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.CurrentLatitude)" Sortable="true"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.CurrentLongitude)" Sortable="true"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.CurrentDateObjectiveId)" Sortable="true"></PropertyColumn>
+        <TemplateColumn Title="Image">
+            <img 
+                class="img igm-fluid" 
+                style="max-height:300px"
+            src="@($"api/photoimage/{context.ProfilePhotoId}")" />
+        </TemplateColumn>
+        <PropertyColumn Property="@( p=> p.BiologicalGenderId)" Sortable="true"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.BirthDate)" Sortable="true"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.EyesColorId)" Sortable="true"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.HairColorId)" Sortable="true"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.KidStatusId)" Sortable="true"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.ReligionId)" Sortable="true"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.TattooStatusId)" Sortable="true"></PropertyColumn>
+    </QuickGrid>
+</div>
+<Paginator State="this.paginationState"></Paginator>
+@code {
+    private GridItemsProvider<UserProfileModel>? ItemsProvider;
+    private CancellationTokenSource cancellationTokenSource = new();
+    PaginationState paginationState = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
+    protected override void OnInitialized()
+    {
+        ItemsProvider = async req =>
+        {
+            PaginationRequest paginationRequest = new PaginationRequest()
+                {
+                    PageSize = paginationState.ItemsPerPage,
+                    StartIndex = req.StartIndex,
+                    SortingItems = req.GetSortByProperties().Select(p => new SortingItem()
+                    {
+                        PropertyName = p.PropertyName,
+                        SortType = p.Direction == SortDirection.Ascending ? SortType.Ascending : SortType.Descending
+                    }).ToArray()
+                };
+
+            var items = await this.myMatchesService
+            .GetPagedMyPotentialMatchesAsync(paginationRequest, cancellationTokenSource.Token);
+            var result = GridItemsProviderResult.From<UserProfileModel>(items!.Items!, items.TotalItems);
+            return result;
+        };
+    }
+}

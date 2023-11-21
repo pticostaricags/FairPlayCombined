@@ -51,11 +51,11 @@ builder.AddProject<Projects.FairPlaySocial>(nameof(Projects.FairPlaySocial).ToLo
     });
 
 
-builder.AddProject<Projects.FairPlayDating_TestDataGenerator>("fairplaydating.testdatagenerator")
-    .WithEnvironment(callback =>
-    {
-        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
-    });
+//builder.AddProject<Projects.FairPlayDating_TestDataGenerator>("fairplaydating.testdatagenerator")
+//    .WithEnvironment(callback =>
+//    {
+//        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+//    });
 
 
 builder.Build().Run();
