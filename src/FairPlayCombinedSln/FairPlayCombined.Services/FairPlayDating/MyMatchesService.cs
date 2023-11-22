@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
+using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
+using System.Linq.Expressions;
 
 namespace FairPlayCombined.Services.FairPlayDating
 {
@@ -25,17 +27,12 @@ namespace FairPlayCombined.Services.FairPlayDating
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var myUserProfile = await dbContext.AspNetUsers
                 .AsNoTracking()
-                .Include(p=>p.UserProfile)
-                .Where(p=>p.Id == myUserId)
-                .Select(p=>p.UserProfile)
+                .Include(p => p.UserProfile)
+                .Where(p => p.Id == myUserId)
+                .Select(p => p.UserProfile)
                 .SingleOrDefaultAsync();
             if (myUserProfile != null)
             {
-                string orderByString = string.Empty;
-                if (paginationRequest.SortingItems?.Length > 0)
-                    orderByString =
-                        String.Join(",",
-                        paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
                 var query = dbContext.UserProfile
                 .Include(p => p.ProfilePhoto)
                 .Include(p => p.ApplicationUser).ThenInclude(p => p.LikedUserProfileLikedApplicationUser)
@@ -45,7 +42,15 @@ namespace FairPlayCombined.Services.FairPlayDating
                 p.ApplicationUserId != myUserProfile.ApplicationUserId
                 &&
                 p.ApplicationUser.LikedUserProfileLikedApplicationUser
-                .Any(x => x.LikingApplicationUserId == myUserProfile.ApplicationUserId) == false)
+                .Any(x => x.LikingApplicationUserId == myUserProfile.ApplicationUserId) == false);
+                result = new();
+                result.PageSize = paginationRequest.PageSize;
+                result.TotalItems = await query.CountAsync(cancellationToken);
+                result.TotalPages = (int)Math.Ceiling((decimal)result.TotalItems / result.PageSize);
+                result.Items = await query
+                    .OrderByDescending(GetSortByBetterMatchExpression(myUserProfile))
+                    .Skip(paginationRequest.StartIndex)
+                    .Take(paginationRequest.PageSize)
                 .Select(p => new UserProfileModel()
                 {
                     Age = EF.Functions.DateDiffYear(p.BirthDate, DateTimeOffset.UtcNow),
@@ -67,22 +72,20 @@ namespace FairPlayCombined.Services.FairPlayDating
                     ProfilePhotoId = p.ProfilePhotoId,
                     ReligionText = p.Religion.Name,
                     TattooStatusText = p.TattooStatus.Name,
-                    UserProfileId = p.UserProfileId
-                });
-                if (!String.IsNullOrEmpty(orderByString))
-                    query = query.OrderBy(orderByString);
-                else
-                    query = query.OrderByDescending(p=>p.Age);
-                result = new();
-                result.PageSize = paginationRequest.PageSize;
-                result.TotalItems = await query.CountAsync(cancellationToken);
-                result.TotalPages = (int)Math.Ceiling((decimal)result.TotalItems / result.PageSize);
-                result.Items = await query
-                    .Skip(paginationRequest.StartIndex)
-                    .Take(paginationRequest.PageSize)
-                    .ToArrayAsync(cancellationToken);
+                    UserProfileId = p.UserProfileId,
+                    Distance = p.CurrentGeoLocation!.Distance(myUserProfile.CurrentGeoLocation)
+                })
+                .ToArrayAsync(cancellationToken);
             }
             return result;
+        }
+
+        private static Expression<Func<UserProfile, double>> GetSortByBetterMatchExpression(UserProfile myUserProfile)
+        {
+            return p =>
+            (-1 * myUserProfile.CurrentGeoLocation!.Distance(p.CurrentGeoLocation!)) +
+                            (myUserProfile.CurrentDateObjectiveId == p.CurrentDateObjectiveId ? 1 : 0) +
+                            (myUserProfile.PreferredEyesColorId == p.EyesColorId ? 1 : 0);
         }
     }
 }

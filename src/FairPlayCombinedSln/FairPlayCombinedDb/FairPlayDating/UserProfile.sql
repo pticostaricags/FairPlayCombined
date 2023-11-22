@@ -19,6 +19,7 @@
     [TattooStatusId] INT NOT NULL, 
     [PreferredTattooStatusId] INT NOT NULL, 
     [BirthDate] DATETIMEOFFSET NOT NULL, 
+    [CurrentGeoLocation] [sys].[geography] NOT NULL, 
     CONSTRAINT [FK_UserProfile_HairColor] FOREIGN KEY ([HairColorId]) REFERENCES [FairPlayDating].[HairColor]([HairColorId]),
 	CONSTRAINT [FK_UserProfile_PreferredHairColor] FOREIGN KEY ([PreferredHairColorId]) REFERENCES [FairPlayDating].[HairColor]([HairColorId]),
     CONSTRAINT [FK_UserProfile_EyesColor] FOREIGN KEY ([EyesColorId]) REFERENCES [FairPlayDating].[EyesColor]([EyesColorId]),

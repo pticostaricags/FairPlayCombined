@@ -64,5 +64,7 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         public string? PreferredTattooStatusText { get; set; }
         public string? ReligionText { get; set; }
         public string? TattooStatusText { get; set; }
+        public NetTopologySuite.Geometries.Point? CurrentGeoLocation { get; set; }
+        public double Distance { get; set; }
     }
 }

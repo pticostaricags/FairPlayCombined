@@ -1,4 +1,7 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
+using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;

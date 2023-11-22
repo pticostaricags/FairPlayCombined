@@ -1,10 +1,14 @@
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
+using FairPlayCombined.Models.Common.GeoNames;
+using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Utilities;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
+using static Azure.Core.HttpHeader;
 
 namespace FairPlayDating.TestDataGenerator;
 
@@ -37,8 +41,45 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             {
                 allHumansPhotosPaths = Directory.GetFiles(humansPhotosDirectory, "*.jpg", SearchOption.AllDirectories);
             }
-            for (int i = 0; i < 10000; i++)
+            HttpClient httpClient = new HttpClient();
+            GeoNamesService geoNamesService = new(httpClient);
+            List<geodata> geoDataCollection = new List<geodata>();
+            for (int i = 0; i < 50; i++)
             {
+                geodata? randomGeoLocation = null;
+                logger.LogInformation("Getting random location {i} of 50",i);
+                try
+                {
+                    randomGeoLocation = await geoNamesService.GeoRandomLocationAsync(CancellationToken.None);
+                }
+                catch (Exception ex)
+                {
+                    randomGeoLocation = new geodata()
+                    {
+                        nearest = new geodataNearest()
+                        {
+                            latt = 3.5158M,
+                            longt = -74.37231M
+                        }
+                    };
+                }
+                geoDataCollection.Add(randomGeoLocation);
+            }
+            int itemsCount = 10000;
+            var geoDataArray = geoDataCollection.ToArray();
+            for (int i = 0; i < itemsCount; i++)
+            {
+                geodata? randomGeoLocation =
+                    Random.Shared.GetItems<geodata>(geoDataArray.ToArray(), 1)[0];
+                var currentGeoLocation = new NetTopologySuite.Geometries
+                        .Point
+                        (
+                        (double)randomGeoLocation.nearest.longt,
+                        (double)randomGeoLocation.nearest.latt
+                        )
+                {
+                    SRID = FairPlayCombined.Common.Constants.GeoCoordinates.SRID
+                };
                 Photo photo = new Photo()
                 {
                     Filename = "test",
@@ -57,8 +98,9 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 string emailNormalized = email.Normalize();
                 var maxDateOfBirthAllowed = DateTimeOffset.UtcNow.AddYears(-20);
                 var minDateOfBirthDallowed = DateTimeOffset.UtcNow.AddYears(-40);
-                var dateOfBirthTicks = 
+                var dateOfBirthTicks =
                 Random.Shared.NextInt64(minDateOfBirthDallowed.Ticks, maxDateOfBirthAllowed.Ticks);
+                logger.LogInformation("Adding item {x} of {y}", i, itemsCount);
                 await dbContext.AspNetUsers.AddAsync(new AspNetUsers()
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -85,7 +127,10 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                         ReligionId = Random.Shared.GetItems<Religion>(allReligions, 1)[0].ReligionId,
                         TattooStatusId = Random.Shared.GetItems<TattooStatus>(allTattooStatuses, 1)[0].TattooStatusId,
                         PreferredTattooStatusId = Random.Shared.GetItems<TattooStatus>(allTattooStatuses, 1)[0].TattooStatusId,
-                        ProfilePhoto = photo
+                        ProfilePhoto = photo,
+                        CurrentGeoLocation = currentGeoLocation,
+                        CurrentLatitude = (double)randomGeoLocation.nearest.latt,
+                        CurrentLongitude =(double)randomGeoLocation.nearest.longt
                     }
                 }, stoppingToken);
             }

@@ -63,6 +63,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
         optionsAction.UseSqlServer(connectionString,
             sqlServerOptionsAction =>
             {
+                sqlServerOptionsAction.UseNetTopologySuite();
                 sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
                     maxRetryDelay: TimeSpan.FromSeconds(3),
                     errorNumbersToAdd: null);

@@ -22,11 +22,22 @@
                         <img class="card-img-top"
                              src="@($"api/photoimage/{context.ProfilePhotoId}")" />
                         <div class="card-body">
-                            <h5 class="card-title">Age: @context.Age</h5>
+                            <h5 class="card-title">
+                            </h5>
                         </div>
                     </div>
                 </div>
                 <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            Age: @context.Age
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Distance: @context.Distance
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col">
                             <p>@context.About</p>

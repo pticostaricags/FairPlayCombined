@@ -1,5 +1,6 @@
 ﻿@page "/MyUserProfile"
 @using Blazored.Toast.Services
+@using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.Common.Photo
 @using FairPlayCombined.Models.FairPlayDating.DateObjective
@@ -325,6 +326,13 @@
             {
                 this.createUserProfileModel.CurrentLatitude = geoLocation.Latitude;
                 this.createUserProfileModel.CurrentLongitude = geoLocation.Longitude;
+                this.createUserProfileModel.CurrentGeoLocation = 
+                new NetTopologySuite.Geometries.Point(
+                        x: geoLocation.Longitude,
+                        y: geoLocation.Latitude)
+                    {
+                        SRID = Constants.GeoCoordinates.SRID
+                    };
             }
             StateHasChanged();
         }

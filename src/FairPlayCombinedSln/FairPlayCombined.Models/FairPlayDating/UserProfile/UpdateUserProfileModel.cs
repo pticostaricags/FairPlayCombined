@@ -51,5 +51,7 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         public int PreferredTattooStatusId { get; set; }
 
         public DateTimeOffset BirthDate { get; set; }
+        [Required]
+        public NetTopologySuite.Geometries.Point? CurrentGeoLocation { get; set; }
     }
 }

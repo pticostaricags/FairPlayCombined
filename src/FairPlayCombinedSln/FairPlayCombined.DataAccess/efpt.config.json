@@ -208,6 +208,6 @@
    "UseNullableReferences": false,
    "UseSchemaFolders": true,
    "UseSchemaNamespaces": true,
-   "UseSpatial": false,
+   "UseSpatial": true,
    "UseT4": false
 }
