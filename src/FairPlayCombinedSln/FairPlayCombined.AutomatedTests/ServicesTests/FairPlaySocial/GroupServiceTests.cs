@@ -1,0 +1,228 @@
+﻿using FairPlayCombined.AutomatedTests.ServicesTests.Providers;
+using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Interceptors;
+using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Models.FairPlaySocial.Group;
+using FairPlayCombined.Models.Pagination;
+using FairPlayCombined.Services.FairPlaySocial;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
+{
+    [TestClass]
+    public class GroupServiceTests : ServicesBase
+    {
+
+        [TestCleanup]
+        public async Task TestCleanupAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            var cs = _msSqlContainer!.GetConnectionString();
+            services.AddDbContextFactory<FairPlayCombinedDbContext>(
+                optionsAction =>
+                {
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
+                });
+            services.AddTransient<GroupService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            foreach (var singleGroup in dbContext.Group)
+            {
+                dbContext.Group.Remove(singleGroup);
+            }
+            foreach (var singleUser in dbContext.AspNetUsers)
+            {
+                dbContext.AspNetUsers.Remove(singleUser);
+            }
+            await dbContext.SaveChangesAsync();
+        }
+
+        [TestMethod]
+        public async Task Test_CreateGroupAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            var cs = _msSqlContainer!.GetConnectionString();
+            services.AddDbContextFactory<FairPlayCombinedDbContext>(
+                optionsAction =>
+                {
+                    optionsAction.AddInterceptors(
+                        new SaveChangesInterceptor(new TestUserProviderService())
+                        );
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
+                });
+            services.AddTransient<GroupService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+            string testUserName = "fromuser@test.test";
+            AspNetUsers testUser = new AspNetUsers()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = testUserName,
+                NormalizedUserName = testUserName.Normalize(),
+                Email = testUserName,
+                NormalizedEmail = testUserName.Normalize(),
+            };
+            await dbContext.AspNetUsers.AddAsync(testUser);
+            await dbContext.SaveChangesAsync();
+            var GroupService = sp.GetRequiredService<GroupService>();
+            CreateGroupModel createGroupModel = new CreateGroupModel()
+            {
+                Name = "TestModel",
+                Description = "Description",
+                OwnerApplicationUserId=testUser.Id,
+                TopicTag = "AT Tag"
+            };
+            await GroupService.CreateGroupAsync(createGroupModel, CancellationToken.None);
+            var result = await dbContext.Group.SingleOrDefaultAsync();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(createGroupModel.Name, result.Name);
+        }
+
+        [TestMethod]
+        public async Task Test_DeleteGroupAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            var cs = _msSqlContainer!.GetConnectionString();
+            services.AddDbContextFactory<FairPlayCombinedDbContext>(
+                optionsAction =>
+                {
+                    optionsAction.AddInterceptors(
+                        new SaveChangesInterceptor(new TestUserProviderService())
+                        );
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
+                });
+            services.AddTransient<GroupService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+            var GroupService = sp.GetRequiredService<GroupService>();
+            string testUserName = "fromuser@test.test";
+            AspNetUsers testUser = new AspNetUsers()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = testUserName,
+                NormalizedUserName = testUserName.Normalize(),
+                Email = testUserName,
+                NormalizedEmail = testUserName.Normalize()
+            };
+            await dbContext.AspNetUsers.AddAsync(testUser);
+            await dbContext.SaveChangesAsync();
+            DataAccess.Models.FairPlaySocialSchema.Group entity = new ()
+            {
+                Name = "TestModel",
+                Description = "Description",
+                OwnerApplicationUserId = testUser.Id,
+                TopicTag = "AT Tag"
+            };
+            await dbContext.Group.AddAsync(entity, CancellationToken.None);
+            await dbContext.SaveChangesAsync();
+            Assert.AreNotEqual(0, entity.GroupId);
+            await GroupService.DeleteGroupByIdAsync(entity.GroupId, CancellationToken.None);
+            var itemsCount = await dbContext.Group.CountAsync(CancellationToken.None);
+            Assert.AreEqual(0, itemsCount);
+        }
+
+        [TestMethod]
+        public async Task Test_GetPaginatedGroupAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            var cs = _msSqlContainer!.GetConnectionString();
+            services.AddDbContextFactory<FairPlayCombinedDbContext>(
+                optionsAction =>
+                {
+                    optionsAction.AddInterceptors(
+                        new SaveChangesInterceptor(new TestUserProviderService())
+                        );
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
+                });
+            services.AddTransient<GroupService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+            var GroupService = sp.GetRequiredService<GroupService>();
+            string testUserName = "fromuser@test.test";
+            AspNetUsers testUser = new AspNetUsers()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = testUserName,
+                NormalizedUserName = testUserName.Normalize(),
+                Email = testUserName,
+                NormalizedEmail = testUserName.Normalize()
+            };
+            await dbContext.AspNetUsers.AddAsync(testUser);
+            await dbContext.SaveChangesAsync();
+            DataAccess.Models.FairPlaySocialSchema.Group entity = new()
+            {
+                Name = "TestModel",
+                Description = "Description",
+                OwnerApplicationUserId = testUser.Id,
+                TopicTag = "AT Tag"
+            };
+            await dbContext.Group.AddAsync(entity, CancellationToken.None);
+            await dbContext.SaveChangesAsync();
+            Assert.AreNotEqual(0, entity.GroupId);
+            var result = await GroupService.GetPaginatedGroupAsync(
+                paginationRequest: new Models.Pagination.PaginationRequest()
+                {
+                    PageSize = 10,
+                    StartIndex = 0,
+                    SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName = nameof(GroupModel.Name),
+                            SortType = Common.GeneratorsAttributes.SortType.Descending
+                        }
+                    }
+                }, CancellationToken.None);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(result.Items![0].GroupId, entity.GroupId);
+        }
+
+        [TestMethod]
+        public async Task Test_GetGroupByIdAsync()
+        {
+            ServiceCollection services = new ServiceCollection();
+            var cs = _msSqlContainer!.GetConnectionString();
+            services.AddDbContextFactory<FairPlayCombinedDbContext>(
+                optionsAction =>
+                {
+                    optionsAction.AddInterceptors(
+                        new SaveChangesInterceptor(new TestUserProviderService())
+                        );
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
+                });
+            services.AddTransient<GroupService>();
+            var sp = services.BuildServiceProvider();
+            var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+            var GroupService = sp.GetRequiredService<GroupService>();
+            string testUserName = "fromuser@test.test";
+            AspNetUsers testUser = new AspNetUsers()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = testUserName,
+                NormalizedUserName = testUserName.Normalize(),
+                Email = testUserName,
+                NormalizedEmail = testUserName.Normalize()
+            };
+            await dbContext.AspNetUsers.AddAsync(testUser);
+            await dbContext.SaveChangesAsync();
+            DataAccess.Models.FairPlaySocialSchema.Group entity = new()
+            {
+                Name = "TestModel",
+                Description = "Description",
+                OwnerApplicationUserId = testUser.Id,
+                TopicTag = "AT Tag"
+            };
+            await dbContext.Group.AddAsync(entity, CancellationToken.None);
+            await dbContext.SaveChangesAsync();
+            Assert.AreNotEqual(0, entity.GroupId);
+            var result = await GroupService.GetGroupByIdAsync(entity.GroupId, CancellationToken.None);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(entity.Name, result.Name);
+        }
+    }
+}
