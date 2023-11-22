@@ -19,26 +19,32 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
             var configuration = configurationBuilder.Build();
-            string testSexuallyOffensivePhrase = configuration["testSexuallyOffensivePhrase"];
-            string testSexuallyExplicityPhrase = configuration["testSexuallyExplicityPhrase"];
-            string testOffensivePhrase = configuration["testOffensivePhrase"];
-            var endpoint = configuration["AzureOpenAI:Endpoint"];
-            var key = configuration["AzureOpenAI:Key"];
+            string testSexuallyOffensivePhrase = 
+                configuration["testSexuallyOffensivePhrase"] ??
+                throw new Exception("'testSexuallyOffensivePhrase' key is not in configuration");
+            string testSexuallyExplicityPhrase = configuration["testSexuallyExplicityPhrase"] ?? 
+                throw new Exception("'testSexuallyExplicityPhrase' key is not in configuration");
+            string testOffensivePhrase = configuration["testOffensivePhrase"] ?? 
+                throw new Exception("'testOffensivePhrase' is not in configuration");
+            var endpoint = configuration["AzureOpenAI:Endpoint"] ?? 
+                throw new Exception("'AzureOpenAI:Endpoint' is not in configuration");
+            var key = configuration["AzureOpenAI:Key"] ?? 
+                throw new Exception("'AzureOpenAI:Key' is not in configuration");
             OpenAIClient openAIClient=new(endpoint:new(endpoint),
                 keyCredential:new Azure.AzureKeyCredential(key));
             AzureOpenAIService azureOpenAIService = new AzureOpenAIService(openAIClient);
             var result = await azureOpenAIService.ModerateTextContentAsync("My name correo is fulainto at somewhere dot com",
                 CancellationToken.None);
-            Assert.IsTrue(result.HasPersonalIdentifiableInformation, $"Has PII: {result.PersonalIdentifiableInformation}");
+            Assert.IsTrue(result!.HasPersonalIdentifiableInformation, $"Has PII: {result.PersonalIdentifiableInformation}");
             result = await azureOpenAIService.ModerateTextContentAsync(testOffensivePhrase,
                 CancellationToken.None);
-            Assert.IsTrue(result.IsOffensive, $"Has Profanity: {result.Profanity}");
+            Assert.IsTrue(result!.IsOffensive, $"Has Profanity: {result.Profanity}");
             result = await azureOpenAIService.ModerateTextContentAsync(testSexuallyExplicityPhrase,
                 CancellationToken.None);
-            Assert.IsTrue(result.IsSexuallyExplicit, $"Is Sexually Explicit: {result.SexuallyExplicitPhrases}");
+            Assert.IsTrue(result!.IsSexuallyExplicit, $"Is Sexually Explicit: {result.SexuallyExplicitPhrases}");
             result = await azureOpenAIService.ModerateTextContentAsync(testSexuallyOffensivePhrase,
                 CancellationToken.None);
-            Assert.IsTrue(result.IsSexuallySuggestive, $"Is Sexually Suggestive: {result.SexuallySuggestivePhrases}");
+            Assert.IsTrue(result!.IsSexuallySuggestive, $"Is Sexually Suggestive: {result.SexuallySuggestivePhrases}");
         }
     }
 }

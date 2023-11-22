@@ -34,6 +34,7 @@ namespace FairPlayCombined.Services.FairPlayDating
             if (myUserProfile != null)
             {
                 var query = dbContext.UserProfile
+                    .AsNoTracking()
                 .Include(p => p.ProfilePhoto)
                 .Include(p => p.ApplicationUser).ThenInclude(p => p.LikedUserProfileLikedApplicationUser)
                 .Where(p =>

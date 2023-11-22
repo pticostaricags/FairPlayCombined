@@ -11,21 +11,21 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests
     [TestClass]
     public class ServicesBase
     {
-        protected static MsSqlContainer _msSqlContainer;
+        protected static MsSqlContainer? _msSqlContainer;
 
         [AssemblyInitialize()]
         public static void AssemblyInit(TestContext context)
         {
             _msSqlContainer = new MsSqlBuilder().Build();
-            _msSqlContainer.StartAsync().Wait();
+            _msSqlContainer!.StartAsync().Wait();
         }
 
         [AssemblyCleanup()]
         public static void AssemblyCleanup()
         {
-            if (_msSqlContainer.State == DotNet.Testcontainers.Containers.TestcontainersStates.Running)
+            if (_msSqlContainer!.State == DotNet.Testcontainers.Containers.TestcontainersStates.Running)
             {
-                _msSqlContainer.StopAsync().Wait();
+                _msSqlContainer!.StopAsync().Wait();
             }
         }
     }

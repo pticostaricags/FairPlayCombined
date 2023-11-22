@@ -12,25 +12,27 @@ namespace FairPlayCombined.Models.Common.GeoNames
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
+#pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
     public partial class geodata
+#pragma warning restore CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
     {
 
-        private geodataNearest nearestField;
+        private geodataNearest? nearestField;
 
-        private geodataOsmtags osmtagsField;
+        private geodataOsmtags? osmtagsField;
 
-        private geodataAdminareas adminareasField;
+        private geodataAdminareas? adminareasField;
 
-        private geodataMajor majorField;
+        private geodataMajor? majorField;
 
-        private string geocodeField;
+        private string? geocodeField;
 
         private ulong geonumberField;
 
-        private string threegeonamesField;
+        private string? threegeonamesField;
 
         /// <remarks/>
-        public geodataNearest nearest
+        public geodataNearest? nearest
         {
             get
             {
@@ -43,7 +45,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public geodataOsmtags osmtags
+        public geodataOsmtags? osmtags
         {
             get
             {
@@ -56,7 +58,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public geodataAdminareas adminareas
+        public geodataAdminareas? adminareas
         {
             get
             {
@@ -69,7 +71,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public geodataMajor major
+        public geodataMajor? major
         {
             get
             {
@@ -82,7 +84,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string geocode
+        public string? geocode
         {
             get
             {
@@ -108,7 +110,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string threegeonames
+        public string? threegeonames
         {
             get
             {
@@ -134,21 +136,21 @@ namespace FairPlayCombined.Models.Common.GeoNames
 
         private ushort elevationField;
 
-        private string timezoneField;
+        private string? timezoneField;
 
-        private string cityField;
+        private string? cityField;
 
-        private string provField;
+        private string? provField;
 
-        private object regionField;
+        private object? regionField;
 
-        private string stateField;
+        private string? stateField;
 
         private decimal inlattField;
 
         private decimal inlongtField;
 
-        private string altgeocodeField;
+        private string? altgeocodeField;
 
         private decimal distanceField;
 
@@ -192,7 +194,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string timezone
+        public string? timezone
         {
             get
             {
@@ -205,7 +207,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string city
+        public string? city
         {
             get
             {
@@ -218,7 +220,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string prov
+        public string? prov
         {
             get
             {
@@ -231,7 +233,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public object region
+        public object? region
         {
             get
             {
@@ -244,7 +246,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string state
+        public string? state
         {
             get
             {
@@ -283,7 +285,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string altgeocode
+        public string? altgeocode
         {
             get
             {
@@ -316,24 +318,24 @@ namespace FairPlayCombined.Models.Common.GeoNames
     public partial class geodataOsmtags
     {
 
-        private string boundaryField;
+        private string? boundaryField;
 
-        private string nameField;
+        private string? nameField;
 
-        private string typeField;
+        private string? typeField;
 
-        private string land_areaField;
+        private string? land_areaField;
 
         private byte admin_levelField;
 
-        private string stateField;
+        private string? stateField;
 
-        private string borderField;
+        private string? borderField;
 
         private uint idField;
 
         /// <remarks/>
-        public string boundary
+        public string? boundary
         {
             get
             {
@@ -346,7 +348,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string name
+        public string? name
         {
             get
             {
@@ -359,7 +361,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string type
+        public string? type
         {
             get
             {
@@ -372,7 +374,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string land_area
+        public string? land_area
         {
             get
             {
@@ -398,7 +400,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string state
+        public string? state
         {
             get
             {
@@ -411,7 +413,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string border
+        public string? border
         {
             get
             {
@@ -444,10 +446,10 @@ namespace FairPlayCombined.Models.Common.GeoNames
     public partial class geodataAdminareas
     {
 
-        private geodataAdminareasAdmin5 admin5Field;
+        private geodataAdminareasAdmin5? admin5Field;
 
         /// <remarks/>
-        public geodataAdminareasAdmin5 admin5
+        public geodataAdminareasAdmin5? admin5
         {
             get
             {
@@ -473,13 +475,13 @@ namespace FairPlayCombined.Models.Common.GeoNames
 
         private byte admin_levelField;
 
-        private string boundaryField;
+        private string? boundaryField;
 
-        private string land_areaField;
+        private string? land_areaField;
 
-        private string nameField;
+        private string? nameField;
 
-        private string typeField;
+        private string? typeField;
 
         /// <remarks/>
         public uint osmid
@@ -521,7 +523,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string boundary
+        public string? boundary
         {
             get
             {
@@ -534,7 +536,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string land_area
+        public string? land_area
         {
             get
             {
@@ -547,7 +549,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string name
+        public string? name
         {
             get
             {
@@ -560,7 +562,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string type
+        public string? type
         {
             get
             {
@@ -586,15 +588,15 @@ namespace FairPlayCombined.Models.Common.GeoNames
 
         private ushort elevationField;
 
-        private string timezoneField;
+        private string? timezoneField;
 
-        private string cityField;
+        private string? cityField;
 
-        private string provField;
+        private string? provField;
 
-        private object regionField;
+        private object? regionField;
 
-        private string stateField;
+        private string? stateField;
 
         private decimal inlattField;
 
@@ -642,7 +644,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string timezone
+        public string? timezone
         {
             get
             {
@@ -655,7 +657,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string city
+        public string? city
         {
             get
             {
@@ -668,7 +670,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string prov
+        public string? prov
         {
             get
             {
@@ -681,7 +683,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public object region
+        public object? region
         {
             get
             {
@@ -694,7 +696,7 @@ namespace FairPlayCombined.Models.Common.GeoNames
         }
 
         /// <remarks/>
-        public string state
+        public string? state
         {
             get
             {

@@ -22,7 +22,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         public async Task TestCleanupAsync()
         {
             ServiceCollection services = new ServiceCollection();
-            var cs = _msSqlContainer.GetConnectionString();
+            var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
@@ -122,7 +122,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
 
         private static void RegisterDbContext(ServiceCollection services)
         {
-            var cs = _msSqlContainer.GetConnectionString();
+            var cs = _msSqlContainer!.GetConnectionString();
             Extensions.EnhanceConnectionString(nameof(FairPlayCombined.AutomatedTests), ref cs);
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>

@@ -52,7 +52,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 {
                     randomGeoLocation = await geoNamesService.GeoRandomLocationAsync(CancellationToken.None);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     randomGeoLocation = new geodata()
                     {
@@ -74,7 +74,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 var currentGeoLocation = new NetTopologySuite.Geometries
                         .Point
                         (
-                        (double)randomGeoLocation.nearest.longt,
+                        (double)randomGeoLocation!.nearest!.longt,
                         (double)randomGeoLocation.nearest.latt
                         )
                 {

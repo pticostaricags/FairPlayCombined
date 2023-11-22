@@ -28,7 +28,7 @@ namespace FairPlayCombined.Services.Common
                 var result = (geodata)xmlSerializer.Deserialize(reader)!;
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

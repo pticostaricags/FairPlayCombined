@@ -17,7 +17,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         public async Task TestCleanupAsync()
         {
             ServiceCollection services = new ServiceCollection();
-            var cs = _msSqlContainer.GetConnectionString();
+            var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
@@ -37,7 +37,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         public async Task Test_CreateGenderAsync()
         {
             ServiceCollection services = new ServiceCollection();
-            var cs = _msSqlContainer.GetConnectionString();
+            var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
@@ -62,7 +62,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         public async Task Test_DeleteGenderAsync()
         {
             ServiceCollection services = new ServiceCollection();
-            var cs = _msSqlContainer.GetConnectionString();
+            var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
@@ -89,7 +89,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         public async Task Test_GetPaginatedGenderAsync()
         {
             ServiceCollection services = new ServiceCollection();
-            var cs = _msSqlContainer.GetConnectionString();
+            var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
@@ -129,7 +129,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         public async Task Test_GetGenderByIdAsync()
         {
             ServiceCollection services = new ServiceCollection();
-            var cs = _msSqlContainer.GetConnectionString();
+            var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {

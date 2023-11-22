@@ -57,11 +57,6 @@ namespace FairPlayCombined.Services.Generators
                                     updateModel != null &&
                                     listActivityModel != null)
                                 {
-                                    var namespaceStrng =
-                                        createModel!
-                                        .ContainingNamespace.ToString();
-                                    var createtypeName = createModel!.Name;
-                                    var fullQualifiedName = $"{namespaceStrng}.{createtypeName}";
                                     var symbolNamespace = symbol.ContainingNamespace.ToString();
                                     var entityName = dbEntityArgument.Name;
                                     var createModelProperties = createModel.GetMembers()
@@ -86,12 +81,12 @@ namespace FairPlayCombined.Services.Generators
                                     foreach (var property in propertiesInBothCreateModelAndDbEntity)
                                     {
                                         createAssignment.AppendLine($"{property} = createModel.{property},");
-                                    };
+                                    }
                                     StringBuilder listAssignment = new StringBuilder();
                                     foreach (var property in propertiesInBothListModelAndDbEntity)
                                     {
                                         listAssignment.AppendLine($"{property} = p.{property},");
-                                    };
+                                    }
                                     var primaryKeyProperty =
                                         dbEntityArgument.GetMembers()
                                         .Where(p => p.Kind == SymbolKind.Property

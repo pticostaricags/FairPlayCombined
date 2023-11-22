@@ -72,11 +72,11 @@ namespace FairPlayCombined.Services.Common
                     int endOfError = ex.Message.LastIndexOf("}");
                     string errorContent = ex.Message.Substring(startOfError, endOfError - startOfError + 1);
                     ContentFilterJsonException contentFilterJsonException =
-                        JsonSerializer.Deserialize<ContentFilterJsonException>(errorContent);
+                        JsonSerializer.Deserialize<ContentFilterJsonException>(errorContent)!;
                     return new TextModerationResponse()
                     {
-                        IsOffensive = contentFilterJsonException.error.innererror.content_filter_result.hate.filtered,
-                        IsSexuallyExplicit = contentFilterJsonException.error.innererror.content_filter_result.sexual.filtered,
+                        IsOffensive = contentFilterJsonException!.error!.innererror!.content_filter_result!.hate!.filtered,
+                        IsSexuallyExplicit = contentFilterJsonException.error.innererror.content_filter_result.sexual!.filtered,
                         IsSexuallySuggestive = contentFilterJsonException.error.innererror.content_filter_result.sexual.filtered,
                     };
                 }
@@ -144,55 +144,55 @@ namespace FairPlayCombined.Services.Common
 
     public class ContentFilterJsonException
     {
-        public Error error { get; set; }
+        public Error? error { get; set; }
     }
 
     public class Error
     {
-        public string message { get; set; }
-        public object type { get; set; }
-        public string param { get; set; }
-        public string code { get; set; }
+        public string? message { get; set; }
+        public object? type { get; set; }
+        public string? param { get; set; }
+        public string? code { get; set; }
         public int status { get; set; }
-        public Innererror innererror { get; set; }
+        public Innererror? innererror { get; set; }
     }
 
     public class Innererror
     {
-        public string code { get; set; }
-        public Content_Filter_Result content_filter_result { get; set; }
+        public string? code { get; set; }
+        public Content_Filter_Result? content_filter_result { get; set; }
     }
 
     public class Content_Filter_Result
     {
-        public Hate hate { get; set; }
-        public Self_Harm self_harm { get; set; }
-        public Sexual sexual { get; set; }
-        public Violence violence { get; set; }
+        public Hate? hate { get; set; }
+        public Self_Harm? self_harm { get; set; }
+        public Sexual? sexual { get; set; }
+        public Violence? violence { get; set; }
     }
 
     public class Hate
     {
         public bool filtered { get; set; }
-        public string severity { get; set; }
+        public string? severity { get; set; }
     }
 
     public class Self_Harm
     {
         public bool filtered { get; set; }
-        public string severity { get; set; }
+        public string? severity { get; set; }
     }
 
     public class Sexual
     {
         public bool filtered { get; set; }
-        public string severity { get; set; }
+        public string? severity { get; set; }
     }
 
     public class Violence
     {
         public bool filtered { get; set; }
-        public string severity { get; set; }
+        public string? severity { get; set; }
     }
 
 

@@ -7,6 +7,14 @@
     <UserSecretsId>aspnet-FairPlayDating-75eebc37-d037-4473-b59b-5d9332912838</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Blazored.Toast" Version="4.1.0" />
     <PackageReference Include="BrowserInterop" Version="1.1.2" />

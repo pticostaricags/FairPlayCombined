@@ -7,6 +7,14 @@
     <UserSecretsId>aspnet-FairPlayAdminPortal-312a4c70-28f4-4584-9852-34832b28fae4</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Blazored.Toast" Version="4.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.0" />

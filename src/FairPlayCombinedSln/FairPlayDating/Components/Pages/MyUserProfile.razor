@@ -274,7 +274,7 @@
     private ReligionModel[]? religions;
     private TattooStatusModel[]? tattooStatuses;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         this.createUserProfileModel.ApplicationUserId = this.userProviderService.GetCurrentUserId();
     }
