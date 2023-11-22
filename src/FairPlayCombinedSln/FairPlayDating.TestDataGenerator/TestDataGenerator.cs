@@ -55,9 +55,10 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 }
                 string email = $"GTEST-{Random.Shared.Next(1000000)}-{Faker.Internet.Email()}";
                 string emailNormalized = email.Normalize();
-                string strAbout = Faker.Lorem.Sentence();
-                if (strAbout.Length > 50)
-                    strAbout = strAbout.Substring(0, 50);
+                var maxDateOfBirthAllowed = DateTimeOffset.UtcNow.AddYears(-20);
+                var minDateOfBirthDallowed = DateTimeOffset.UtcNow.AddYears(-40);
+                var dateOfBirthTicks = 
+                Random.Shared.NextInt64(minDateOfBirthDallowed.Ticks, maxDateOfBirthAllowed.Ticks);
                 await dbContext.AspNetUsers.AddAsync(new AspNetUsers()
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -71,8 +72,8 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                     UserProfile = new UserProfile()
                     {
                         BiologicalGenderId = Random.Shared.GetItems<Gender>(allGenders, 1)[0].GenderId,
-                        About = strAbout,
-                        BirthDate = Faker.Identification.DateOfBirth(),
+                        About = "Photos from https://generated.photos",
+                        BirthDate = new DateTime(dateOfBirthTicks),
                         CurrentDateObjectiveId = Random.Shared.GetItems<DateObjective>(allDateObjectives, 1)[0].DateObjectiveId,
                         EyesColorId = Random.Shared.GetItems<EyesColor>(allEyesColors, 1)[0].EyesColorId,
                         HairColorId = Random.Shared.GetItems<HairColor>(allHairColor, 1)[0].HairColorId,

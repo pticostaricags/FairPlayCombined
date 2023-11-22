@@ -16,20 +16,34 @@
 <div class="grid-container">
     <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
         <TemplateColumn Title="Profile">
-            <div class="card" style="width: 100%;">
-                <img class="card-img-top"
-                     src="@($"api/photoimage/{context.ProfilePhotoId}")" />
-                <div class="card-body">
-                    <h5 class="card-title">Age: @context.Age</h5>
-                    <p>@context.About</p>
-                    <a class="btn btn-primary"
-                       @onclick="@( ()=> OnViewDetailsClicked(context))">View Details</a>
+            <div class="row">
+                <div class="col">
+                    <div class="card" style="width: 100%;">
+                        <img class="card-img-top"
+                             src="@($"api/photoimage/{context.ProfilePhotoId}")" />
+                        <div class="card-body">
+                            <h5 class="card-title">Age: @context.Age</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <p>@context.About</p>
+                            <a class="btn btn-primary"
+                               @onclick="@( ()=> OnViewDetailsClicked(context))">View Details</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <Paginator State="this.paginationState"></Paginator>
+                        </div>
+                    </div>
                 </div>
             </div>
         </TemplateColumn>
     </QuickGrid>
 </div>
-<Paginator State="this.paginationState"></Paginator>
 @if (this.showDetailsDialog && this.selectedUserProfileModel != null)
 {
     <div class="modal fade show" tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
@@ -45,7 +59,8 @@
                 </div>
                 <div class="modal-body">
                     <p>
-                        Age: @selectedUserProfileModel.Age</p>
+                        Age: @selectedUserProfileModel.Age
+                    </p>
                     <p>
                         About me:
                         @selectedUserProfileModel.About
