@@ -103,6 +103,7 @@
         {
             this.showDetailsDialog = false;
             this.selectedUserProfileModel = null;
+            StateHasChanged();
             PaginationRequest paginationRequest = new PaginationRequest()
                 {
                     PageSize = paginationState.ItemsPerPage,
@@ -117,6 +118,7 @@
             var items = await this.myMatchesService
             .GetPagedMyPotentialMatchesAsync(paginationRequest, cancellationTokenSource.Token);
             var result = GridItemsProviderResult.From<UserProfileModel>(items!.Items!, items.TotalItems);
+            StateHasChanged();
             return result;
         };
     }

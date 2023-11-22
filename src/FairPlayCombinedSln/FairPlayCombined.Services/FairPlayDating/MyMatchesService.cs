@@ -33,6 +33,7 @@ namespace FairPlayCombined.Services.FairPlayDating
                 .SingleOrDefaultAsync();
             if (myUserProfile != null)
             {
+#pragma warning disable S1125 // Boolean literals should not be redundant
                 var query = dbContext.UserProfile
                     .AsNoTracking()
                 .Include(p => p.ProfilePhoto)
@@ -43,7 +44,8 @@ namespace FairPlayCombined.Services.FairPlayDating
                 p.ApplicationUserId != myUserProfile.ApplicationUserId
                 &&
                 p.ApplicationUser.LikedUserProfileLikedApplicationUser
-                .Any(x => x.LikingApplicationUserId == myUserProfile.ApplicationUserId));
+                .Any(x => x.LikingApplicationUserId == myUserProfile.ApplicationUserId) == false);
+#pragma warning restore S1125 // Boolean literals should not be redundant
                 result = new();
                 result.PageSize = paginationRequest.PageSize;
                 result.TotalItems = await query.CountAsync(cancellationToken);
