@@ -11,13 +11,13 @@
 @attribute [StreamRendering(enabled: true)]
 @inject MyMatchesService myMatchesService
 
-<h3>MyMatches</h3>
+<h3>My Matches</h3>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <div class="grid-container">
     <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
-        <TemplateColumn Title="Profile">
+        <TemplateColumn>
             <div class="row">
                 <div class="col">
                     <div class="card" style="width: 100%;">
