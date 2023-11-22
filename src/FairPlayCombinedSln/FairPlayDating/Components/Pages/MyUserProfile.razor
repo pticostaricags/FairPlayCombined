@@ -34,6 +34,8 @@
 
 <h3>MyUserProfile</h3>
 
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
 <EditForm FormName="frmCreateMyUserProfile" Model="this.createUserProfileModel"
           OnValidSubmit="OnValidSubmitAsync">
     <div class="mb-3">
@@ -252,9 +254,12 @@
         <label class="form-label">Current Latitude: @this.createUserProfileModel.CurrentLatitude</label>
         <label class="form-label">Current Longitude: @this.createUserProfileModel.CurrentLongitude</label>
     </div>
-    <div class="mb-3">
-        <button class="btn btn-primary">Save</button>
-    </div>
+    @if (this.IsAllDataLoad)
+    {
+        <div class="mb-3">
+            <button class="btn btn-primary">Save</button>
+        </div>
+    }
 </EditForm>
 
 @code {
@@ -273,9 +278,12 @@
     private KidStatusModel[]? kidStatuses;
     private ReligionModel[]? religions;
     private TattooStatusModel[]? tattooStatuses;
+    private bool IsBusy { get; set; }
+    private bool IsAllDataLoad { get; set; }
 
     protected override void OnInitialized()
     {
+        this.IsAllDataLoad = false;
         this.createUserProfileModel.ApplicationUserId = this.userProviderService.GetCurrentUserId();
     }
 
@@ -313,20 +321,23 @@
         this.kidStatuses = await this.kidStatusService.GetAllKidStatusAsync(cancellationTokenSource.Token);
         this.religions = await this.religionService.GetAllReligionAsync(cancellationTokenSource.Token);
         this.tattooStatuses = await this.tattooStatusService.GetAllTattooStatusAsync(cancellationTokenSource.Token);
+        this.IsAllDataLoad = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            this.IsBusy = true;
             await LoadDataAsync();
+            StateHasChanged();
             var geoLocation = await
             this.geolocationService.GetCurrentPositionAsync();
             if (geoLocation != null)
             {
                 this.createUserProfileModel.CurrentLatitude = geoLocation.Latitude;
                 this.createUserProfileModel.CurrentLongitude = geoLocation.Longitude;
-                this.createUserProfileModel.CurrentGeoLocation = 
+                this.createUserProfileModel.CurrentGeoLocation =
                 new NetTopologySuite.Geometries.Point(
                         x: geoLocation.Longitude,
                         y: geoLocation.Latitude)
@@ -334,6 +345,7 @@
                         SRID = Constants.GeoCoordinates.SRID
                     };
             }
+            this.IsBusy = false;
             StateHasChanged();
         }
     }
@@ -342,6 +354,8 @@
     {
         try
         {
+            this.IsBusy = true;
+            StateHasChanged();
             if (inputFileChangeEventArgs.FileCount == 1)
             {
                 using var stream = inputFileChangeEventArgs.File.OpenReadStream();
@@ -371,6 +385,11 @@
         catch (Exception ex)
         {
             this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+            StateHasChanged();
         }
         await Task.Yield();
     }

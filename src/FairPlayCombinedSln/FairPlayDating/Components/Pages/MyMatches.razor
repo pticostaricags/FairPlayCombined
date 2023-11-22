@@ -13,6 +13,8 @@
 
 <h3>MyMatches</h3>
 
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
 <div class="grid-container">
     <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
         <TemplateColumn Title="Profile">
@@ -93,16 +95,19 @@
     private CancellationTokenSource cancellationTokenSource = new();
     private bool showDetailsDialog = false;
     private UserProfileModel? selectedUserProfileModel;
+    private bool IsBusy { get; set; }
     PaginationState paginationState = new()
         {
             ItemsPerPage = 1
         };
+
     protected override void OnInitialized()
     {
         ItemsProvider = async req =>
         {
             this.showDetailsDialog = false;
             this.selectedUserProfileModel = null;
+            this.IsBusy = true;
             StateHasChanged();
             PaginationRequest paginationRequest = new PaginationRequest()
                 {
@@ -118,6 +123,7 @@
             var items = await this.myMatchesService
             .GetPagedMyPotentialMatchesAsync(paginationRequest, cancellationTokenSource.Token);
             var result = GridItemsProviderResult.From<UserProfileModel>(items!.Items!, items.TotalItems);
+            this.IsBusy = false;
             StateHasChanged();
             return result;
         };
