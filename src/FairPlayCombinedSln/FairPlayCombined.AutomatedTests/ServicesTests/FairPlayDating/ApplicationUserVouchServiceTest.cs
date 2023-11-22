@@ -27,7 +27,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
-                    optionsAction.UseSqlServer(cs);
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<ApplicationUserVouchService>();
             var sp = services.BuildServiceProvider();
@@ -76,7 +76,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                     optionsAction.AddInterceptors(
                         new SaveChangesInterceptor(new TestUserProviderService())
                         );
-                    optionsAction.UseSqlServer(cs);
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<IUserProviderService, TestUserProviderService>();
         }

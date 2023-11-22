@@ -19,9 +19,6 @@ namespace FairPlayAdminPortal.Components.Pages
         {
             ItemsProvider ??= async req =>
             {
-
-                // this.IsBusy = true;
-                // StateHasChanged();
                 PaginationRequest paginationRequest = new PaginationRequest()
                 {
                     StartIndex = req.StartIndex,
@@ -41,8 +38,6 @@ namespace FairPlayAdminPortal.Components.Pages
                 var result = GridItemsProviderResult.From(
                 items: paginationResult.Items!,
                 totalItemCount: paginationResult!.TotalItems);
-                // this.IsBusy = false;
-                // StateHasChanged();
                 return result;
             };
         }

@@ -1,4 +1,5 @@
 ﻿using FairPlayCombined.Models.Common.GeoNames;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +9,16 @@ using System.Xml.Serialization;
 
 namespace FairPlayCombined.Services.Common
 {
-    public class GeoNamesService(HttpClient httpClient)
+    public class GeoNamesService(HttpClient httpClient, ILogger<GeoNamesService> logger)
     {
         public async Task<geodata> GeoRandomLocationAsync(CancellationToken cancellationToken)
         {
             string responseString = string.Empty;
             try
             {
+#pragma warning disable S1075 // URIs should not be hardcoded
                 var requestUrl = "https://api.3geonames.org/?randomland=yes";
+#pragma warning restore S1075 // URIs should not be hardcoded
                 responseString = await httpClient.GetStringAsync(requestUrl, cancellationToken);
                 if (responseString[0] != '<')
                 {
@@ -28,8 +31,9 @@ namespace FairPlayCombined.Services.Common
                 var result = (geodata)xmlSerializer.Deserialize(reader)!;
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.LogError("{Error}", ex.Message);
                 throw;
             }
         }

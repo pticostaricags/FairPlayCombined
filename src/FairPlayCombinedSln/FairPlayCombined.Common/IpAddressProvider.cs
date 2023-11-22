@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Common
 {
-    public class IpAddressProvider
+    public static class IpAddressProvider
     {
         public static async Task<List<string>> GetCurrentHostIPv4AddressesAsync(bool getPublicIpAddress = true)
         {
@@ -22,11 +22,12 @@ namespace FairPlayCombined.Common
             // order interfaces by speed and filter out down and loopback
             // take first of the remaining
             var allUpInterfaces = NetworkInterface.GetAllNetworkInterfaces()
-                .OrderByDescending(c => c.Speed)
                 .Where(c => c.NetworkInterfaceType != NetworkInterfaceType.Loopback &&
-                c.OperationalStatus == OperationalStatus.Up).ToList();
+                c.OperationalStatus == OperationalStatus.Up)
+                .OrderByDescending(c => c.Speed)
+                .ToList();
             List<string> lstIps = new();
-            if (allUpInterfaces != null && allUpInterfaces.Count > 0)
+            if (allUpInterfaces.Count > 0)
             {
                 foreach (var singleUpInterface in allUpInterfaces)
                 {

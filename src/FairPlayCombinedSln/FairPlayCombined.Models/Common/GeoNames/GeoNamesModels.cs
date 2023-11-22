@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace FairPlayCombined.Models.Common.GeoNames
 {
+#pragma warning disable S101 // Types should be named in PascalCase
+#pragma warning disable S2292 // Trivial properties should be auto-implemented
     // NOTE: Generated code may require at least .NET Framework 4.5 or .NET Core/Standard 2.0.
     /// <remarks/>
     [System.SerializableAttribute()]

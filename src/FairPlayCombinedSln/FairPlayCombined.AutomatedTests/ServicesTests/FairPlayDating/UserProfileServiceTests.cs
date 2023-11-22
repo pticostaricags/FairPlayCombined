@@ -26,7 +26,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
-                    optionsAction.UseSqlServer(cs);
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<UserProfileService>();
             var sp = services.BuildServiceProvider();
@@ -112,8 +112,13 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 PreferredReligionId = religion.ReligionId,
                 PreferredTattooStatusId = tattooStatus.TattooStatusId,
                 ReligionId = religion.ReligionId,
-                TattooStatusId = tattooStatus.TattooStatusId
-            };
+                TattooStatusId = tattooStatus.TattooStatusId,
+                CurrentGeoLocation = new NetTopologySuite.Geometries
+                        .Point(-74.37231,3.5158)
+                {
+                    SRID = FairPlayCombined.Common.Constants.GeoCoordinates.SRID
+                }
+        };
             await UserProfileService.CreateUserProfileAsync(createUserProfileModel, CancellationToken.None);
             var result = await dbContext.UserProfile.SingleOrDefaultAsync();
             Assert.IsNotNull(result);
@@ -130,7 +135,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                     optionsAction.AddInterceptors(
                         new SaveChangesInterceptor(new TestUserProviderService())
                         );
-                    optionsAction.UseSqlServer(cs);
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<IUserProviderService, TestUserProviderService>();
         }
@@ -248,6 +253,11 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 PreferredTattooStatusId = tattooStatus.TattooStatusId,
                 ReligionId = religion.ReligionId,
                 TattooStatusId = tattooStatus.TattooStatusId,
+                CurrentGeoLocation = new NetTopologySuite.Geometries
+                        .Point(-74.37231, 3.5158)
+                {
+                    SRID = FairPlayCombined.Common.Constants.GeoCoordinates.SRID
+                }
             };
             await dbContext.UserProfile.AddAsync(entity);
             await dbContext.SaveChangesAsync();
@@ -291,6 +301,11 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 PreferredTattooStatusId = tattooStatus.TattooStatusId,
                 ReligionId = religion.ReligionId,
                 TattooStatusId = tattooStatus.TattooStatusId,
+                CurrentGeoLocation = new NetTopologySuite.Geometries
+                        .Point(-74.37231, 3.5158)
+                {
+                    SRID = FairPlayCombined.Common.Constants.GeoCoordinates.SRID
+                }
             };
             await dbContext.UserProfile.AddAsync(entity);
             await dbContext.SaveChangesAsync();
@@ -347,6 +362,11 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 PreferredTattooStatusId = tattooStatus.TattooStatusId,
                 ReligionId = religion.ReligionId,
                 TattooStatusId = tattooStatus.TattooStatusId,
+                CurrentGeoLocation = new NetTopologySuite.Geometries
+                        .Point(-74.37231, 3.5158)
+                {
+                    SRID = FairPlayCombined.Common.Constants.GeoCoordinates.SRID
+                }
             };
             await dbContext.UserProfile.AddAsync(entity);
             await dbContext.SaveChangesAsync();

@@ -1,6 +1,6 @@
 ﻿namespace FairPlayCombined.Common
 {
-    public class Constants
+    public static class Constants
     {
         public static class GeoCoordinates
         {
@@ -14,7 +14,7 @@
         {
             public const int MaxAllowedAgeDifference = 10;
         }
-        public class RoleName
+        public static class RoleName
         {
             const string SystemAdmin = nameof(SystemAdmin);
         }

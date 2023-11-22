@@ -14,6 +14,7 @@ using FairPlayCombined.DataAccess.Models.dboSchema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Data.SqlClient;
+using FairPlayCombined.Common.CustomExceptions;
 namespace Microsoft.Extensions.Hosting;
 
 public static class Extensions
@@ -142,7 +143,7 @@ public static class Extensions
                 var error = exceptionHandlerPathFeature?.Error;
                 if (error != null)
                 {
-                    long? errorId;
+                    long? errorId = default;
                     try
                     {
                         FairPlayCombinedDbContext fairPlayCombinedDbContext =
@@ -159,17 +160,17 @@ public static class Extensions
                     }
                     catch (Exception)
                     {
-                        throw;
+                        //Global exception, not rethrowing so server app does not crash
                     }
                     ProblemDetails problemDetails = new ProblemDetails();
-                    //if (error is CustomValidationException)
-                    //{
-                    //    problemHttpResponse.Detail = error.Message;
-                    //}
-                    //else
+                    if (error is RuleException)
+                    {
+                        problemDetails.Detail = error.Message;
+                    }
+                    else
                     {
                         string userVisibleError = "An error ocurred.";
-                        if (errorId.HasValue)
+                        if (errorId.GetValueOrDefault(0) > 0)
                         {
                             userVisibleError += $" Error code: {errorId}";
                         }

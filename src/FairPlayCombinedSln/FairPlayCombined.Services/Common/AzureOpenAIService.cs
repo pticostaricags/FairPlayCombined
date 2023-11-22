@@ -52,7 +52,7 @@ namespace FairPlayCombined.Services.Common
                 response.Value.Choices[0].Message.Content;
                 if (contentResponse is null)
                 {
-                    var filter = response.Value.PromptFilterResults.First();
+                    var filter = response.Value.PromptFilterResults[0];
                     return new TextModerationResponse()
                     {
                         IsSexuallyExplicit = filter.ContentFilterResults.Sexual.Severity == ContentFilterSeverity.High,
@@ -142,6 +142,8 @@ namespace FairPlayCombined.Services.Common
 
 
 
+#pragma warning disable S2166 // Classes named like "Exception" should extend "Exception" or a subclass
+#pragma warning disable S101 // Types should be named in PascalCase
     public class ContentFilterJsonException
     {
         public Error? error { get; set; }

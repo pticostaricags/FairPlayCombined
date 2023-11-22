@@ -42,7 +42,13 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 allHumansPhotosPaths = Directory.GetFiles(humansPhotosDirectory, "*.jpg", SearchOption.AllDirectories);
             }
             HttpClient httpClient = new HttpClient();
-            GeoNamesService geoNamesService = new(httpClient);
+            var loggerFactory = 
+            LoggerFactory.Create(configure => 
+            {
+                configure.AddConsole();
+            });
+            var geoNamesServiceLogger = loggerFactory.CreateLogger<GeoNamesService>();
+            GeoNamesService geoNamesService = new(httpClient, geoNamesServiceLogger);
             List<geodata> geoDataCollection = new List<geodata>();
             for (int i = 0; i < 50; i++)
             {
@@ -115,7 +121,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                     {
                         BiologicalGenderId = Random.Shared.GetItems<Gender>(allGenders, 1)[0].GenderId,
                         About = "Photos from https://generated.photos",
-                        BirthDate = new DateTime(dateOfBirthTicks),
+                        BirthDate = new DateTime(dateOfBirthTicks, DateTimeKind.Utc),
                         CurrentDateObjectiveId = Random.Shared.GetItems<DateObjective>(allDateObjectives, 1)[0].DateObjectiveId,
                         EyesColorId = Random.Shared.GetItems<EyesColor>(allEyesColors, 1)[0].EyesColorId,
                         HairColorId = Random.Shared.GetItems<HairColor>(allHairColor, 1)[0].HairColorId,

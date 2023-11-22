@@ -21,24 +21,22 @@ namespace FairPlayCombined.DataAccess.Interceptors
         CancellationToken cancellationToken = default)
         {
             var changedEntities = eventData!.Context!.ChangeTracker.Entries();
-            foreach (var entityEntry in changedEntities)
+            foreach (var entityEntry in changedEntities.Where(entityEntry => entityEntry.Entity is IOriginatorInfo))
             {
-                if (entityEntry.Entity is IOriginatorInfo)
+                var entity = entityEntry.Entity as IOriginatorInfo;
+                if (entity != null)
                 {
-                    var entity = entityEntry.Entity as IOriginatorInfo;
-                    if (entity != null)
-                    {
-                        var connectionString = eventData.Context.Database.GetConnectionString();
-                        SqlConnectionStringBuilder sqlConnectionStringBuilder = new(connectionString);
-                        var applicationName = sqlConnectionStringBuilder.ApplicationName ?? "Unknown App";
-                        var userName = userProviderService.GetCurrentUserId();
-                        entity.SourceApplication = applicationName;
-                        entity.RowCreationDateTime = DateTime.UtcNow;
-                        entity.RowCreationUser = nameof(userName);
-                        entity.OriginatorIpaddress = String.Join(",", await IpAddressProvider.GetCurrentHostIPv4AddressesAsync());
-                    }
+                    var connectionString = eventData.Context.Database.GetConnectionString();
+                    SqlConnectionStringBuilder sqlConnectionStringBuilder = new(connectionString);
+                    var applicationName = sqlConnectionStringBuilder.ApplicationName ?? "Unknown App";
+                    var userName = userProviderService.GetCurrentUserId();
+                    entity.SourceApplication = applicationName;
+                    entity.RowCreationDateTime = DateTime.UtcNow;
+                    entity.RowCreationUser = nameof(userName);
+                    entity.OriginatorIpaddress = String.Join(",", await IpAddressProvider.GetCurrentHostIPv4AddressesAsync());
                 }
             }
+
             return result;
         }
 
