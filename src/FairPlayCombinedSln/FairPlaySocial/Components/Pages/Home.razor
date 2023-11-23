@@ -2,6 +2,7 @@
 @using Blazored.Toast.Services
 @using FairPlayCombined.Common.FairPlaySocial
 @using FairPlayCombined.Common.GeneratorsAttributes
+@using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlaySocial.Notification
 @using FairPlayCombined.Models.FairPlaySocial.Post
 @using FairPlayCombined.Models.Pagination
@@ -13,6 +14,7 @@
 @inject PostService postService
 @inject IToastService toastService
 @inject NavigationManager navigationManager
+@inject IUserProviderService userProviderSerice
 
 <PageTitle>Home</PageTitle>
 
@@ -38,10 +40,29 @@
         </TemplateColumn>
     </QuickGrid>
 </div>
-<Paginator State="paginationState"></Paginator>
+<div class="mb-3">
+    <Paginator State="paginationState"></Paginator>
+</div>
+<AuthorizeView Context="authContext">
+    <Authorized>
+        <EditForm FormName="frmCreatePost" Model="this.createPostModel"
+                  OnValidSubmit="OnValidCreatePostAsync" Enhance>
+            <div class="mb-3">
+                <label class="form-label">New Post Text</label>
+                <InputText class="form-control" @bind-Value="this.createPostModel.Text"></InputText>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-primary" type="submit">Send</button>
+            </div>
+        </EditForm>
+    </Authorized>
+</AuthorizeView>
 
 
 @code {
+    [SupplyParameterFromForm(FormName = "frmCreatePost")]
+    private CreatePostModel createPostModel { get; set; } = new();
+
     private const string PendingNotificationsMessage = """You have pending notifications. Refresh page to reflect latest changes""";
     private HubConnection? HubConnection { get; set; }
     private Queue<PostNotificationModel> NotificationsQueue { get; set; } = new();
@@ -52,9 +73,18 @@
         };
     private CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
-
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
     protected override async Task OnInitializedAsync()
     {
+        var state = await AuthenticationStateTask!;
+        if (state.User.Identity != null && state.User.Identity.IsAuthenticated)
+        {
+            this.createPostModel = new()
+                {
+                    OwnerApplicationUserId = this.userProviderSerice.GetCurrentUserId()
+                };
+        }
         ItemsProvider = async req =>
         {
             this.IsBusy = true;
@@ -107,5 +137,23 @@
             });
         }));
         await this.HubConnection.StartAsync();
+    }
+
+    private async Task OnValidCreatePostAsync()
+    {
+        try
+        {
+            var postId = 
+            await this.postService
+            .CreatePostAsync(this.createPostModel, this.cancellationTokenSource.Token);
+            this.createPostModel.Text = String.Empty;
+            await this.postService
+            .SendPostCreatedNotificationAsync(postId, this.cancellationTokenSource.Token);
+            await this.paginationState.SetCurrentPageIndexAsync(0);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
     }
 }
