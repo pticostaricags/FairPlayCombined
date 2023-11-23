@@ -22,8 +22,8 @@ namespace FairPlayCombined.Services.FairPlaySocial
     {
         public async Task<PaginationOfT<PostModel>> GetPaginatedPostWithCustomProjectionAsync(
     PaginationRequest paginationRequest,
-    CancellationToken cancellationToken,
-    Expression<Func<Post,PostModel>> customProjection
+    Expression<Func<Post, PostModel>> customProjection,
+    CancellationToken cancellationToken
     )
         {
             PaginationOfT<PostModel> result = new();

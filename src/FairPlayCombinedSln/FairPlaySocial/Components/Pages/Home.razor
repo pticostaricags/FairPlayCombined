@@ -24,7 +24,7 @@
                     </h5>
                     <p class="card-text">
                         @context.Text
-                        </p>
+                    </p>
                     <a href="#" class="btn btn-primary">Go somewhere</a>
                 </div>
             </div>
@@ -61,9 +61,9 @@
                 };
 
             var items = await this.postService
-        .GetPaginatedPostWithCustomProjectionAsync(paginationRequest, cancellationTokenSource.Token,
-        p=>new PostModel()
-        {
+        .GetPaginatedPostWithCustomProjectionAsync(paginationRequest,
+        p => new PostModel()
+            {
                 PostId = p.PostId,
                 PostVisibilityId = p.PostVisibilityId,
                 PhotoId = p.PhotoId,
@@ -73,7 +73,7 @@
                 Text = p.Text,
                 OwnerApplicationUserId = p.OwnerApplicationUserId,
                 OwnerApplicationUserName = p.OwnerApplicationUser.UserName
-        }
+            }, cancellationToken: this.cancellationTokenSource.Token
         );
             var result = GridItemsProviderResult.From<PostModel>(items!.Items!, items.TotalItems);
             this.IsBusy = false;
