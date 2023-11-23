@@ -1,0 +1,5 @@
+﻿.grid-container {
+    max-width: 830px;
+    overflow-x: auto;
+    height:200px;
+}
