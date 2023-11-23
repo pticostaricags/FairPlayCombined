@@ -1,6 +1,7 @@
 ﻿@page "/MyMatches"
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.GeneratorsAttributes
+@using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.FairPlayDating
@@ -10,11 +11,18 @@
 @rendermode RenderMode.InteractiveServer
 @attribute [StreamRendering(enabled: true)]
 @inject MyMatchesService myMatchesService
+@inject UserProfileService userProfileService
+@inject IUserProviderService userProviderService
+
 
 <h3>My Matches</h3>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
+@if (!this.HasUserProfile)
+{
+    <p>Please complete your User Profile first</p>
+}
 <div class="grid-container">
     <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
         <TemplateColumn>
@@ -96,37 +104,45 @@
     private bool showDetailsDialog = false;
     private UserProfileModel? selectedUserProfileModel;
     private bool IsBusy { get; set; }
+    private bool HasUserProfile { get; set; }
     PaginationState paginationState = new()
         {
             ItemsPerPage = 1
         };
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        ItemsProvider = async req =>
+        var userId = this.userProviderService.GetCurrentUserId();
+        var userProfile = await this.userProfileService.GetUserProfileByUserIdAsync(userId,
+        this.cancellationTokenSource.Token);
+        if (userProfile != null)
         {
-            this.showDetailsDialog = false;
-            this.selectedUserProfileModel = null;
-            this.IsBusy = true;
-            StateHasChanged();
-            PaginationRequest paginationRequest = new PaginationRequest()
-                {
-                    PageSize = paginationState.ItemsPerPage,
-                    StartIndex = req.StartIndex,
-                    SortingItems = req.GetSortByProperties().Select(p => new SortingItem()
+            ItemsProvider = async req =>
+            {
+                this.showDetailsDialog = false;
+                this.selectedUserProfileModel = null;
+                this.IsBusy = true;
+                StateHasChanged();
+                PaginationRequest paginationRequest = new PaginationRequest()
                     {
-                        PropertyName = p.PropertyName,
-                        SortType = p.Direction == SortDirection.Ascending ? SortType.Ascending : SortType.Descending
-                    }).ToArray()
-                };
+                        PageSize = paginationState.ItemsPerPage,
+                        StartIndex = req.StartIndex,
+                        SortingItems = req.GetSortByProperties().Select(p => new SortingItem()
+                        {
+                            PropertyName = p.PropertyName,
+                            SortType = p.Direction == SortDirection.Ascending ? SortType.Ascending : SortType.Descending
+                        }).ToArray()
+                    };
 
-            var items = await this.myMatchesService
-            .GetPagedMyPotentialMatchesAsync(paginationRequest, cancellationTokenSource.Token);
-            var result = GridItemsProviderResult.From<UserProfileModel>(items!.Items!, items.TotalItems);
-            this.IsBusy = false;
-            StateHasChanged();
-            return result;
-        };
+                var items = await this.myMatchesService
+                .GetPagedMyPotentialMatchesAsync(paginationRequest, cancellationTokenSource.Token);
+                var result = GridItemsProviderResult.From<UserProfileModel>(items!.Items!, items.TotalItems);
+                this.IsBusy = false;
+                StateHasChanged();
+                return result;
+            };
+        }
+        this.HasUserProfile = userProfile != null;
     }
 
     private void OnViewDetailsClicked(UserProfileModel userProfileModel)

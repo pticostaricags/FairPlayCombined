@@ -71,7 +71,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 }
                 geoDataCollection.Add(randomGeoLocation);
             }
-            int itemsCount = 10000;
+            int itemsCount = 5000;
             var geoDataArray = geoDataCollection.ToArray();
             for (int i = 0; i < itemsCount; i++)
             {
