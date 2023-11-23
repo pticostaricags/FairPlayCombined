@@ -1,0 +1,50 @@
+﻿@using FairPlayCombined.Common
+@using FairPlayCombined.Models.Common.Photo
+
+<EditForm Model="@this.Model">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+    <label class="form-label">Pick an Image</label>
+    <InputFile accept="image/*" OnChange="OnFileSelectionChangedAsync"></InputFile>
+</EditForm>
+
+@if (this.Model!.PhotoBytes != null)
+{
+    <img class="img igm-thumbnail"
+         style="max-height:@( $"{this.MaxHeightForPreview}px;" )"
+         src="data:@this.Model.PhotoBytes;base64, @Convert.ToBase64String(this.Model.PhotoBytes)" />
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public CreatePhotoModel? Model { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnFileSelected { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public int MaxHeightForPreview { get; set; }
+    private CancellationTokenSource cancellationTokenSource = new();
+
+    private async Task OnFileSelectionChangedAsync(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        if (inputFileChangeEventArgs.FileCount == 1)
+        {
+            //TODO: Invoke Content Moderation endpoints to reject prohibited images
+            //TODO: Invoke Face/Computer Vision APIs to reject images without a face
+            int allowedMegaBytes = 10;
+            int allowedBytes = allowedMegaBytes * 1024 * 1024;
+            using var fileStream = inputFileChangeEventArgs.File.OpenReadStream(maxAllowedSize: allowedBytes, 
+                this.cancellationTokenSource.Token);
+            using MemoryStream memoryStream = new();
+            await fileStream.CopyToAsync(memoryStream);
+            var fileBytes = memoryStream.ToArray();
+            this.Model!.Filename = inputFileChangeEventArgs.File.Name;
+            this.Model!.PhotoBytes = fileBytes;
+            //this.Model!.ImageType = inputFileChangeEventArgs.File.ContentType;
+            await this.OnFileSelected.InvokeAsync();
+        };
+    }
+               }

@@ -1,0 +1,97 @@
+﻿@page "/CreateMyPost"
+@using Blazored.Toast.Services
+@using FairPlayCombined.Common
+@using FairPlayCombined.Common.FairPlaySocial.Enums
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlaySocial.Post
+@using FairPlayCombined.Services.FairPlaySocial
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+@rendermode RenderMode.InteractiveServer
+@inject PostService postService
+@inject IUserProviderService userProviderService
+
+<h3>Create My Post</h3>
+
+<EditForm FormName="frmCreateMyPost" Model="@this.createPostModel"
+          OnValidSubmit="OnValidSubmitAsync">
+    <div class="mb-3">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">
+            Test
+        </label>
+        <InputTextArea class="form-control"
+                       @bind-Value="@this.createPostModel.Text"
+                       maxlength="500"></InputTextArea>
+        <ValidationMessage For="@( () => this.createPostModel.Text)"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">
+            Post Visibility
+        </label>
+        <InputSelect ValueChanged="@( (short value) => this.createPostModel.PostVisibilityId = value )"
+                     ValueExpression="@( ()=> this.createPostModel.PostVisibilityId)"
+                     Value="@this.createPostModel.PostVisibilityId"
+                     class="form-select">
+            <option value=""></option>
+            <option value="@((short)PostVisibility.Public)">@PostVisibility.Public.ToString()</option>
+            <option value="@((short)PostVisibility.Subscribers)">@PostVisibility.Subscribers.ToString()</option>
+        </InputSelect>
+        <ValidationMessage For="@( () => this.createPostModel.PostVisibilityId)"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <button type="submit"
+                class="btnav btn-primary">
+            Create Post
+        </button>
+    </div>
+</EditForm>
+
+@code
+{
+    [Inject]
+    private IToastService? ToastService { get; set; }
+
+    [SupplyParameterFromForm]
+    private CreatePostModel createPostModel { get; set; } = new();
+
+    private bool IsBusy { get; set; }
+    private CancellationTokenSource cancellationTokenSource = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.createPostModel.PostVisibilityId = (short)PostVisibility.Public;
+        this.createPostModel.PostTypeId = (byte)PostType.Post;
+        this.createPostModel.OwnerApplicationUserId = this.userProviderService.GetCurrentUserId();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            await this.postService!
+                .CreatePostAsync(this.createPostModel, cancellationTokenSource.Token);
+            this.ToastService!.ShowSuccess("Post has been created");
+        }
+        catch (Exception ex)
+        {
+            this.ToastService!.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private Task OnPostPhotoSelectedAsync()
+    {
+        //This should invoke a Content Moderation Service, similar to what FairPlayDating is doing
+        return Task.CompletedTask;
+    }
+}

@@ -1,4 +1,5 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
+using FairPlayCombined.Common.ValidationAttributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,19 +11,14 @@ namespace FairPlayCombined.Models.FairPlaySocial.Post
 {
     public class CreatePostModel : ICreateModel
     {
-        [DeniedValues(default(long))]
-        public long PostId { get; set; }
         [DeniedValues(default(short))]
         public short PostVisibilityId { get; set; }
-        [Required]
         [DeniedValues(default(long))]
         public long? PhotoId { get; set; }
         [DeniedValues(default(byte))]
         public byte PostTypeId { get; set; }
-        [Required]
         [DeniedValues(default(long))]
         public long? ReplyToPostId { get; set; }
-        [Required]
         [DeniedValues(default(long))]
         public long? GroupId { get; set; }
 
