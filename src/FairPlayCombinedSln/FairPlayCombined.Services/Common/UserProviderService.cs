@@ -10,6 +10,11 @@ namespace FairPlayCombined.Services.Common
 {
     public class UserProviderService(IHttpContextAccessor httpContextAccessor) : IUserProviderService
     {
+        public string? GetAccessToken()
+        {
+            throw new NotImplementedException();
+        }
+
         public string GetCurrentUserId()
         {
             var claimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";

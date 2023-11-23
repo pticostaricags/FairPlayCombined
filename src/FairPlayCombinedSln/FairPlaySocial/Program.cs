@@ -9,6 +9,11 @@ using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Services.FairPlaySocial;
+using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
+using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
+using Blazored.Toast;
+using FairPlaySocial;
+using FairPlaySocial.ClientServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,8 +63,17 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
             });
     });
 
+builder.Services.AddSignalR(hubOptions =>
+{
+    hubOptions.MaximumReceiveMessageSize = 20 * 1024 * 1024;
+});
+
+
+builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddTransient<HttpClientService>();
 builder.Services.AddTransient<PostService>();
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -86,5 +100,6 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
-
+app.MapHub<PostNotificationHub>(FairPlayCombined.Common.FairPlaySocial.Constants.Hubs.HomeFeedHub);
+app.MapHub<UserMessageNotificationHub>(FairPlayCombined.Common.FairPlaySocial.Constants.Hubs.UserMessageHub);
 app.Run();

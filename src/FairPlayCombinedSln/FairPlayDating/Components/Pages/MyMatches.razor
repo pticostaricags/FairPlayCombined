@@ -113,7 +113,7 @@
     protected override async Task OnInitializedAsync()
     {
         var userId = this.userProviderService.GetCurrentUserId();
-        var userProfile = await this.userProfileService.GetUserProfileByUserIdAsync(userId,
+        var userProfile = await this.userProfileService.GetUserProfileByUserIdAsync(userId!,
         this.cancellationTokenSource.Token);
         if (userProfile != null)
         {

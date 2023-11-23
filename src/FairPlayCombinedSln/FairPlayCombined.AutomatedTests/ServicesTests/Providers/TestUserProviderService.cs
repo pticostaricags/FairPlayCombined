@@ -9,6 +9,11 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.Providers
 {
     internal class TestUserProviderService : IUserProviderService
     {
+        public string? GetAccessToken()
+        {
+            throw new NotImplementedException();
+        }
+
         public string GetCurrentUserId()
         {
             return "AT User";

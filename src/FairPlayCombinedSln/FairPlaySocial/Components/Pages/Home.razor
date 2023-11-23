@@ -1,11 +1,17 @@
 ﻿@page "/"
+@using Blazored.Toast.Services
+@using FairPlayCombined.Common.FairPlaySocial
 @using FairPlayCombined.Common.GeneratorsAttributes
+@using FairPlayCombined.Models.FairPlaySocial.Notification
 @using FairPlayCombined.Models.FairPlaySocial.Post
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.FairPlaySocial
+@using Microsoft.AspNetCore.SignalR.Client
 @rendermode RenderMode.InteractiveServer
 @attribute [StreamRendering(enabled: true)]
 @inject PostService postService
+@inject IToastService toastService
+@inject NavigationManager navigationManager
 
 <PageTitle>Home</PageTitle>
 
@@ -35,6 +41,9 @@
 
 
 @code {
+    private const string PendingNotificationsMessage = """You have pending notifications. Use the "Refresh" button to reflect latest changes""";
+    private HubConnection? HubConnection { get; set; }
+    private Queue<PostNotificationModel> NotificationsQueue { get; set; } = new();
     private GridItemsProvider<PostModel>? ItemsProvider;
     PaginationState paginationState = new()
         {
@@ -43,7 +52,7 @@
     private CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         ItemsProvider = async req =>
         {
@@ -80,5 +89,20 @@
             StateHasChanged();
             return result;
         };
+        var hubUrl = navigationManager.ToAbsoluteUri(FairPlayCombined.Common.FairPlaySocial.Constants.Hubs.HomeFeedHub);
+        this.HubConnection = new HubConnectionBuilder()
+            .WithUrl(hubUrl)
+            .Build();
+        this.HubConnection.On(Constants.Hubs.ReceiveMessage,
+            (Action<PostNotificationModel>)((model) =>
+        {
+            this.NotificationsQueue.Enqueue(model);
+            if (this.NotificationsQueue.Count == 1)
+                this.toastService!
+                        .ShowSuccess(PendingNotificationsMessage);
+            StateHasChanged();
+        }));
+#pragma warning restore VSTHRD101 // Avoid unsupported async delegates
+        await this.HubConnection.StartAsync();
     }
 }
