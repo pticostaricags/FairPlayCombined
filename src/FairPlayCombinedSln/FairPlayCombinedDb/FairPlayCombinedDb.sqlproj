@@ -133,4 +133,7 @@
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\3-FairPlaySocial.sql" />
+  </ItemGroup>
 </Project>

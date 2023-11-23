@@ -33,6 +33,7 @@
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
     <ProjectReference Include="..\FairPlayShop\FairPlayShop.csproj" />
+    <ProjectReference Include="..\FairPlaySocial.TestDataGenerator\FairPlaySocial.TestDataGenerator.csproj" />
     <ProjectReference Include="..\FairPlaySocial\FairPlaySocial.csproj" />
     <ProjectReference Include="..\FairPlayTube\FairPlayTube.csproj">
       <ExcludeAssets>all</ExcludeAssets>

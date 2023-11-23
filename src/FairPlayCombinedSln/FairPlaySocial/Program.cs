@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using FairPlaySocial.Components;
 using FairPlaySocial.Components.Account;
 using FairPlaySocial.Data;
+using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces;
+using FairPlayCombined.Services.Common;
+using FairPlayCombined.DataAccess.Interceptors;
+using FairPlayCombined.Services.FairPlaySocial;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,8 +42,24 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddTransient<IUserProviderService, UserProviderService>();
+builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
+    (sp, optionsAction) =>
+    {
+        IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
+        optionsAction.AddInterceptors(new SaveChangesInterceptor(userProviderService));
+        optionsAction.UseSqlServer(connectionString,
+            sqlServerOptionsAction =>
+            {
+                sqlServerOptionsAction.UseNetTopologySuite();
+                sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(3),
+                    errorNumbersToAdd: null);
+            });
+    });
 
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddTransient<PostService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

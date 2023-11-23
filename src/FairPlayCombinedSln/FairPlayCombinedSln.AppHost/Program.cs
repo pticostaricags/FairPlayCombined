@@ -47,9 +47,18 @@ builder.AddProject<Projects.FairPlaySocial>(nameof(Projects.FairPlaySocial).ToLo
         callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
     });
 
-if (Convert.ToBoolean(builder.Configuration["AddTestDataGenerator"]))
+if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
 {
     AddTestDataGenerator(builder, fairPlayCombinedDbCS);
+}
+
+if (Convert.ToBoolean(builder.Configuration["AddFairPlaySocialTestDataGenerator"]))
+{
+    builder.AddProject<Projects.FairPlaySocial_TestDataGenerator>("fairplaysocialtestdatagenerator")
+        .WithEnvironment(callback =>
+        {
+            callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+        });
 }
 
 builder.Build().Run();

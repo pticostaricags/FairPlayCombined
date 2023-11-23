@@ -1,7 +1,71 @@
 ﻿@page "/"
+@using FairPlayCombined.Common.GeneratorsAttributes
+@using FairPlayCombined.Models.FairPlaySocial.Post
+@using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.FairPlaySocial
+@rendermode RenderMode.InteractiveServer
+@attribute [StreamRendering(enabled: true)]
+@inject PostService postService
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+@if (this.IsBusy)
+{
+    <p>Loading...</p>
+}
+<div class="grid-container">
+    <QuickGrid ItemsProvider="ItemsProvider" Pagination="paginationState">
+        <TemplateColumn>
+            <div class="card" style="width: 18rem;">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        @context.OwnerApplicationUserId
+                    </h5>
+                    <p class="card-text">
+                        @context.Text
+                        </p>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+            </div>
+        </TemplateColumn>
+    </QuickGrid>
+    <Paginator State="paginationState"></Paginator>
+</div>
 
-Welcome to your new app.
+
+@code {
+    private GridItemsProvider<PostModel>? ItemsProvider;
+    PaginationState paginationState = new()
+        {
+            ItemsPerPage = FairPlayCombined.Common.Constants.Pagination.PageSize
+        };
+    private CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ItemsProvider = async req =>
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            PaginationRequest paginationRequest = new PaginationRequest()
+                {
+                    PageSize = paginationState.ItemsPerPage,
+                    StartIndex = req.StartIndex,
+                    SortingItems = req.GetSortByProperties().Select(p => new SortingItem()
+                    {
+                        PropertyName = p.PropertyName,
+                        SortType = p.Direction == SortDirection.Ascending ? SortType.Ascending : SortType.Descending
+                    }).ToArray()
+                };
+
+            var items = await this.postService
+        .GetPaginatedPostAsync(paginationRequest, cancellationTokenSource.Token);
+            var result = GridItemsProviderResult.From<PostModel>(items!.Items!, items.TotalItems);
+            this.IsBusy = false;
+            StateHasChanged();
+            return result;
+        };
+    }
+}
