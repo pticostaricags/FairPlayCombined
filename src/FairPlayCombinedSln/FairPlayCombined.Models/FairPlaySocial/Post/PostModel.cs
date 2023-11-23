@@ -18,5 +18,6 @@ namespace FairPlayCombined.Models.FairPlaySocial.Post
         public long? GroupId { get; set; }
         public string? Text { get; set; }
         public string? OwnerApplicationUserId { get; set; }
+        public string? OwnerApplicationUserName { get; set; }
     }
 }

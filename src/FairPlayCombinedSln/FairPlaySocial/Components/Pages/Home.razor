@@ -16,11 +16,11 @@
 <div class="grid-container">
     <QuickGrid ItemsProvider="ItemsProvider" Pagination="paginationState">
         <TemplateColumn>
-            <div class="card" style="width: 18rem;">
+            <div class="card">
                 <img src="..." class="card-img-top" alt="...">
                 <div class="card-body">
                     <h5 class="card-title">
-                        @context.OwnerApplicationUserId
+                        @context.OwnerApplicationUserName
                     </h5>
                     <p class="card-text">
                         @context.Text
@@ -61,7 +61,20 @@
                 };
 
             var items = await this.postService
-        .GetPaginatedPostAsync(paginationRequest, cancellationTokenSource.Token);
+        .GetPaginatedPostWithCustomProjectionAsync(paginationRequest, cancellationTokenSource.Token,
+        p=>new PostModel()
+        {
+                PostId = p.PostId,
+                PostVisibilityId = p.PostVisibilityId,
+                PhotoId = p.PhotoId,
+                PostTypeId = p.PostTypeId,
+                ReplyToPostId = p.ReplyToPostId,
+                GroupId = p.GroupId,
+                Text = p.Text,
+                OwnerApplicationUserId = p.OwnerApplicationUserId,
+                OwnerApplicationUserName = p.OwnerApplicationUser.UserName
+        }
+        );
             var result = GridItemsProviderResult.From<PostModel>(items!.Items!, items.TotalItems);
             this.IsBusy = false;
             StateHasChanged();
