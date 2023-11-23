@@ -6,6 +6,7 @@
 @using FairPlayCombined.Models.FairPlaySocial.Post
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.FairPlaySocial
+@using FairPlaySocial.Components.Spinners
 @using Microsoft.AspNetCore.SignalR.Client
 @rendermode RenderMode.InteractiveServer
 @attribute [StreamRendering(enabled: true)]
@@ -15,15 +16,15 @@
 
 <PageTitle>Home</PageTitle>
 
-@if (this.IsBusy)
-{
-    <p>Loading...</p>
-}
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 <div class="grid-container">
     <QuickGrid ItemsProvider="ItemsProvider" Pagination="paginationState">
         <TemplateColumn>
             <div class="card">
-                <img src="..." class="card-img-top" alt="...">
+                @if (context.PhotoId != null)
+                {
+                    <img src="@($"api/photoimage/{context.PhotoId}")" class="card-img-top" alt="...">
+                }
                 <div class="card-body">
                     <h5 class="card-title">
                         @context.OwnerApplicationUserName
@@ -41,7 +42,7 @@
 
 
 @code {
-    private const string PendingNotificationsMessage = """You have pending notifications. Use the "Refresh" button to reflect latest changes""";
+    private const string PendingNotificationsMessage = """You have pending notifications. Refresh page to reflect latest changes""";
     private HubConnection? HubConnection { get; set; }
     private Queue<PostNotificationModel> NotificationsQueue { get; set; } = new();
     private GridItemsProvider<PostModel>? ItemsProvider;
@@ -94,15 +95,17 @@
             .WithUrl(hubUrl)
             .Build();
         this.HubConnection.On(Constants.Hubs.ReceiveMessage,
-            (Action<PostNotificationModel>)((model) =>
+            (Action<PostNotificationModel>)(async (model) =>
         {
-            this.NotificationsQueue.Enqueue(model);
-            if (this.NotificationsQueue.Count == 1)
-                this.toastService!
+            await InvokeAsync(() =>
+            {
+                this.NotificationsQueue.Enqueue(model);
+                if (this.NotificationsQueue.Count == 1)
+                    this.toastService!
                         .ShowSuccess(PendingNotificationsMessage);
-            StateHasChanged();
+                StateHasChanged();
+            });
         }));
-#pragma warning restore VSTHRD101 // Avoid unsupported async delegates
         await this.HubConnection.StartAsync();
     }
 }

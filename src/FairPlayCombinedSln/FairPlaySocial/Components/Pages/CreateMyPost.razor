@@ -75,9 +75,12 @@
         try
         {
             IsBusy = true;
+            var postId = 
             await this.postService!
                 .CreatePostAsync(this.createPostModel, cancellationTokenSource.Token);
             this.ToastService!.ShowSuccess("Post has been created");
+            await this.postService!.SendPostCreatedNotificationAsync(postId,
+            cancellationTokenSource.Token);
         }
         catch (Exception ex)
         {

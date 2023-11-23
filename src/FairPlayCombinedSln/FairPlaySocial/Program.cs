@@ -14,6 +14,8 @@ using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using Blazored.Toast;
 using FairPlaySocial;
 using FairPlaySocial.ClientServices;
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Mime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -100,6 +102,16 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+app.MapGet("api/photoimage/{photoId}", async (
+    [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+    CancellationToken cancellationToken,
+    long photoId) =>
+{
+    var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+    var photoEntity = await dbContext.Photo.AsNoTracking().SingleAsync(p => p.PhotoId == photoId);
+    var mimeType = MediaTypeNames.Image.Png;
+    return Results.File(photoEntity.PhotoBytes, contentType: mimeType);
+});
 app.MapHub<PostNotificationHub>(FairPlayCombined.Common.FairPlaySocial.Constants.Hubs.HomeFeedHub);
 app.MapHub<UserMessageNotificationHub>(FairPlayCombined.Common.FairPlaySocial.Constants.Hubs.UserMessageHub);
 app.Run();
