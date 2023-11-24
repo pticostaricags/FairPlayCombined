@@ -1,5 +1,6 @@
 ﻿@page "/MyMatches"
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
@@ -7,21 +8,26 @@
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.Extensions.Localization
 @attribute [Authorize]
 @rendermode RenderMode.InteractiveServer
 @attribute [StreamRendering(enabled: true)]
 @inject MyMatchesService myMatchesService
 @inject UserProfileService userProfileService
 @inject IUserProviderService userProviderService
+@inject IStringLocalizer<MyMatches> localizer
 
-
-<h3>My Matches</h3>
+<h3>
+    @localizer[MyMatchesTextKey]
+</h3>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 @if (!this.HasUserProfile)
 {
-    <p>Please complete your User Profile first</p>
+    <p>
+        @localizer[CompletProfileTextKey]
+    </p>
 }
 <div class="grid-container">
     <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
@@ -40,19 +46,19 @@
                 <div class="col">
                     <div class="row">
                         <div class="col">
-                            Age: @context.Age
+                            @localizer[AgeTextKey]: @context.Age
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            Distance: @context.Distance
+                            @localizer[DistanceTextKey]: @context.Distance
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <p>@context.About</p>
                             <a class="btn btn-primary"
-                               @onclick="@( ()=> OnViewDetailsClicked(context))">View Details</a>
+                               @onclick="@( ()=> OnViewDetailsClicked(context))">@localizer[ViewDetailsTextKey]</a>
                         </div>
                     </div>
                     <div class="row">
@@ -156,4 +162,15 @@
         this.showDetailsDialog = false;
         this.selectedUserProfileModel = null;
     }
+
+    [ResourceKey(defaultValue: "My Matches")]
+    public const string MyMatchesTextKey = "MyMatchesText";
+    [ResourceKey(defaultValue: "Please complete your User Profile first")]
+    public const string CompletProfileTextKey = "CompletProfileText";
+    [ResourceKey(defaultValue:"Age")]
+    public const string AgeTextKey = "AgeText";
+    [ResourceKey(defaultValue: "Distance")]
+    public const string DistanceTextKey = "DistanceText";
+    [ResourceKey(defaultValue: "View Details")]
+    public const string ViewDetailsTextKey = "ViewDetailsText";
 }
