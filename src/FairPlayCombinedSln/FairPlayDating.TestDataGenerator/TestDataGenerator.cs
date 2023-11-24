@@ -25,6 +25,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             }
             var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
             await dbContext.UserProfile.ExecuteDeleteAsync(stoppingToken);
+            await dbContext.Post.ExecuteDeleteAsync(stoppingToken);
             await dbContext.Photo.ExecuteDeleteAsync(stoppingToken);
             await dbContext.AspNetUsers.ExecuteDeleteAsync(stoppingToken);
             await dbContext.SaveChangesAsync(stoppingToken);
