@@ -26,6 +26,7 @@ builder.AddServiceDefaults();
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
 builder.Services.AddLocalization();
+builder.Services.AddControllers();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -78,6 +79,7 @@ builder.Services.AddSignalR(hubOptions =>
 
 builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<HttpClientService>();
 builder.Services.AddTransient<PostService>();
 builder.Services.AddTransient<PhotoService>();
@@ -118,6 +120,7 @@ app.UseRequestLocalization(localizationOptions);
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+app.MapControllers();
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 app.MapGet("api/photoimage/{photoId}", async (
