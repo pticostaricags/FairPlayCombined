@@ -75,6 +75,7 @@ builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<HttpClientService>();
 builder.Services.AddTransient<PostService>();
+builder.Services.AddTransient<PhotoService>();
 
 var app = builder.Build();
 

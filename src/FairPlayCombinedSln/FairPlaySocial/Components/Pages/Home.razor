@@ -3,9 +3,11 @@
 @using FairPlayCombined.Common.FairPlaySocial
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.Common.Photo
 @using FairPlayCombined.Models.FairPlaySocial.Notification
 @using FairPlayCombined.Models.FairPlaySocial.Post
 @using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlaySocial
 @using FairPlaySocial.Components.Spinners
 @using Microsoft.AspNetCore.SignalR.Client
@@ -15,7 +17,7 @@
 @inject IToastService toastService
 @inject NavigationManager navigationManager
 @inject IUserProviderService userProviderSerice
-
+@inject PhotoService photoService
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -50,6 +52,10 @@
             <div class="mb-3">
                 <label class="form-label">New Post Text</label>
                 <InputText class="form-control" @bind-Value="this.createPostModel.Text"></InputText>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Image:</label>
+                <InputFile class="form-control" OnChange="OnPostImageSelectionChangedAsync"></InputFile>
             </div>
             <div class="mb-3">
                 <button class="btn btn-primary" type="submit">Send</button>
@@ -143,13 +149,39 @@
     {
         try
         {
-            var postId = 
+            var postId =
             await this.postService
             .CreatePostAsync(this.createPostModel, this.cancellationTokenSource.Token);
             this.createPostModel.Text = String.Empty;
             await this.postService
             .SendPostCreatedNotificationAsync(postId, this.cancellationTokenSource.Token);
             await this.paginationState.SetCurrentPageIndexAsync(0);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnPostImageSelectionChangedAsync(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        try
+        {
+            if (inputFileChangeEventArgs.FileCount == 1)
+            {
+                using var stream = inputFileChangeEventArgs.File.OpenReadStream();
+                CreatePhotoModel createPhotoModel = new()
+                    {
+                        Filename = inputFileChangeEventArgs.File.Name,
+                        Name = inputFileChangeEventArgs.File.Name
+                    };
+                MemoryStream memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                createPhotoModel.PhotoBytes = memoryStream.ToArray();
+                var photoId = await this.photoService.CreatePhotoAsync(createPhotoModel,
+                this.cancellationTokenSource.Token);
+                this.createPostModel.PhotoId = photoId;
+            }
         }
         catch (Exception ex)
         {
