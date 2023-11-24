@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Blazored.Toast.Services
+@using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.FairPlaySocial
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
@@ -11,6 +12,7 @@
 @using FairPlayCombined.Services.FairPlaySocial
 @using FairPlaySocial.Components.Spinners
 @using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.Extensions.Localization
 @rendermode RenderMode.InteractiveServer
 @attribute [StreamRendering(enabled: true)]
 @inject PostService postService
@@ -18,7 +20,14 @@
 @inject NavigationManager navigationManager
 @inject IUserProviderService userProviderSerice
 @inject PhotoService photoService
-<PageTitle>Home</PageTitle>
+@inject IStringLocalizer<Home> localizer
+<PageTitle>
+    @localizer[HomeTextKey]
+</PageTitle>
+
+<h1>
+    @localizer[HomeTextKey]
+</h1>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 <div class="grid-container">
@@ -188,4 +197,7 @@
             this.toastService.ShowError(ex.Message);
         }
     }
+
+    [ResourceKey(defaultValue: "Home")]
+    public const string HomeTextKey = "HomeText";
 }

@@ -1,5 +1,4 @@
 using FairPlayCombined.CitiesImporter;
-using FairPlayCombined.Common.CustomExceptions;
 using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -60,6 +59,14 @@ if (Convert.ToBoolean(builder.Configuration["AddFairPlaySocialTestDataGenerator"
             callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
         });
 }
+
+builder.AddProject<Projects.FairPlayCombined_LocalizationGenerator>("fairplaycombinedlocalizationgenerator")
+    .WithEnvironment(callback =>
+    {
+        callback.EnvironmentVariables.Add("AzureOpenAIEndpoint", builder.Configuration["AzureOpenAIEndpoint"]!);
+        callback.EnvironmentVariables.Add("AzureOpenAIKey", builder.Configuration["AzureOpenAIKey"]!);
+        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+    });
 
 builder.Build().Run();
 

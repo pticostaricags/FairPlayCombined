@@ -26,15 +26,30 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FairPlayAdminPortal\FairPlayAdminPortal.csproj" />
-    <ProjectReference Include="..\FairPlayCombined.CitiesImporter\FairPlayCombined.CitiesImporter.csproj" />
-    <ProjectReference Include="..\FairPlayDating.TestDataGenerator\FairPlayDating.TestDataGenerator.csproj" />
+    <ProjectReference Include="..\FairPlayAdminPortal\FairPlayAdminPortal.csproj">
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\FairPlayCombined.CitiesImporter\FairPlayCombined.CitiesImporter.csproj">
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\FairPlayCombined.LocalizationGenerator\FairPlayCombined.LocalizationGenerator.csproj">
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\FairPlayDating.TestDataGenerator\FairPlayDating.TestDataGenerator.csproj">
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
     <ProjectReference Include="..\FairPlayDating\FairPlayDating.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
-    <ProjectReference Include="..\FairPlayShop\FairPlayShop.csproj" />
-    <ProjectReference Include="..\FairPlaySocial.TestDataGenerator\FairPlaySocial.TestDataGenerator.csproj" />
-    <ProjectReference Include="..\FairPlaySocial\FairPlaySocial.csproj" />
+    <ProjectReference Include="..\FairPlayShop\FairPlayShop.csproj">
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\FairPlaySocial.TestDataGenerator\FairPlaySocial.TestDataGenerator.csproj">
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\FairPlaySocial\FairPlaySocial.csproj">
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
     <ProjectReference Include="..\FairPlayTube\FairPlayTube.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>

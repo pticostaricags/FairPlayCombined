@@ -11,11 +11,11 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Data.SqlClient;
 using FairPlayCombined.Common.CustomExceptions;
+
 namespace Microsoft.Extensions.Hosting;
+
 
 public static class Extensions
 {
@@ -35,6 +35,7 @@ public static class Extensions
             // Turn on service discovery by default
             http.UseServiceDiscovery();
         });
+        builder.Services.AddMemoryCache();
         return builder;
     }
 

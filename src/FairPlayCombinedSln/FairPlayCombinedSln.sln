@@ -40,6 +40,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayDating.TestDataGene
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlaySocial.TestDataGenerator", "FairPlaySocial.TestDataGenerator\FairPlaySocial.TestDataGenerator.csproj", "{292D99FB-2FB1-47CF-9416-D75D882E25F6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.LocalizationGenerator", "FairPlayCombined.LocalizationGenerator\FairPlayCombined.LocalizationGenerator.csproj", "{C626F492-7DF4-40DB-A03E-B81A5D85043D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +126,10 @@ Global
 		{292D99FB-2FB1-47CF-9416-D75D882E25F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{292D99FB-2FB1-47CF-9416-D75D882E25F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{292D99FB-2FB1-47CF-9416-D75D882E25F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C626F492-7DF4-40DB-A03E-B81A5D85043D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C626F492-7DF4-40DB-A03E-B81A5D85043D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C626F492-7DF4-40DB-A03E-B81A5D85043D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C626F492-7DF4-40DB-A03E-B81A5D85043D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

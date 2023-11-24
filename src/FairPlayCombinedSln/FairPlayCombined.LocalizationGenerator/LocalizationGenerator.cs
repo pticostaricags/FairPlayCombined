@@ -22,6 +22,9 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         var adminPortalAssembly = typeof(FairPlayAdminPortal.Data.ApplicationUser).Assembly;
         var adminPortalTypes = adminPortalAssembly.GetTypes();
 
+        var fairplaySocialAssembly = typeof(FairPlaySocial.Components.App).Assembly;
+        var fairplaySocialTypes = fairplaySocialAssembly.GetTypes();
+
         var modelsAssembly = typeof(Models.UserModel).Assembly;
         var modelsTypes = modelsAssembly.GetTypes();
 
@@ -34,7 +37,8 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
             .. adminPortalTypes,
             .. modelsTypes, 
             .. serverSideServicesTypes,
-            .. commonTypes];
+            .. commonTypes,
+            .. fairplaySocialTypes];
 
         foreach (var singleTypeToCheck in typesToCheck)
         {
