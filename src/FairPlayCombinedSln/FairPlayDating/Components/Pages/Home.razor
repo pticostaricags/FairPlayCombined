@@ -1,7 +1,21 @@
 ﻿@page "/"
+@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Home> localizer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>
+    @localizer[HomeTextKey]
+</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>
+    @localizer[HomeTextKey]
+</h1>
 
-Welcome to your new app.
+@localizer[WelcomeToTextKey, nameof(FairPlayDating)]
+@code
+{
+    [ResourceKey(defaultValue: "Home")]
+    public const string HomeTextKey = "HomeText";
+    [ResourceKey(defaultValue: "Welcome to {0}")]
+    public const string WelcomeToTextKey = "WelcomeToText";
+}

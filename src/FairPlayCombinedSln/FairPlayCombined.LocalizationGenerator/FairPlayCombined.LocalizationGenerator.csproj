@@ -18,6 +18,7 @@
     </ProjectReference>
     <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\FairPlayDating\FairPlayDating.csproj" />
     <ProjectReference Include="..\FairPlaySocial\FairPlaySocial.csproj" />
   </ItemGroup>
 </Project>

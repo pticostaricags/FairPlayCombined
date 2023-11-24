@@ -10,7 +10,7 @@ using FairPlayDating.Components.Account.Pages;
 using FairPlayDating.Components.Account.Pages.Manage;
 using FairPlayDating.Data;
 
-namespace Microsoft.AspNetCore.Routing;
+namespace FairPlayDating.Components.Account;
 
 internal static class IdentityComponentsEndpointRouteBuilderExtensions
 {

@@ -25,6 +25,9 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         var fairplaySocialAssembly = typeof(FairPlaySocial.Components.App).Assembly;
         var fairplaySocialTypes = fairplaySocialAssembly.GetTypes();
 
+        var fairPlayDatingAssembly = typeof(FairPlayDating.Components.App).Assembly;
+        var fairPlayDatingTypes = fairPlayDatingAssembly.GetTypes();
+
         var modelsAssembly = typeof(Models.UserModel).Assembly;
         var modelsTypes = modelsAssembly.GetTypes();
 
@@ -35,10 +38,11 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         var commonTypes = commonAssembly.GetTypes();
         List<Type> typesToCheck = [
             .. adminPortalTypes,
-            .. modelsTypes, 
+            .. modelsTypes,
             .. serverSideServicesTypes,
             .. commonTypes,
-            .. fairplaySocialTypes];
+            .. fairplaySocialTypes,
+            .. fairPlayDatingTypes];
 
         foreach (var singleTypeToCheck in typesToCheck)
         {

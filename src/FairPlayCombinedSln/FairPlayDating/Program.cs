@@ -19,10 +19,16 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Net.Http.Headers;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Localization;
+using FairPlayCombined.Shared.CustomLocalization.EF;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
+builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
+builder.Services.AddLocalization();
+builder.Services.AddControllers();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -75,7 +81,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-
+builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddBlazoredToast();
 builder.Services.AddTransient<GenderService>();
 builder.Services.AddTransient<DateObjectiveService>();
@@ -121,8 +127,20 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+using var scope = app.Services.CreateScope();
+using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
+var supportedCultures = ctx.Culture.Select(p => p.Name).ToArray();
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapControllers();
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
