@@ -13,6 +13,7 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using Microsoft.Data.SqlClient;
 using FairPlayCombined.Common.CustomExceptions;
+using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -164,7 +165,7 @@ public static class Extensions
                         //Global exception, not rethrowing so server app does not crash
                     }
                     ProblemDetails problemDetails = new ProblemDetails();
-                    if (error is RuleException)
+                    if (error is RuleException || error is ValidationException)
                     {
                         problemDetails.Detail = error.Message;
                     }

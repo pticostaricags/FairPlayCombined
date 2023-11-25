@@ -1,5 +1,4 @@
 ﻿using FairPlayCombined.Common;
-using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.FairPlaySocial.Post;
@@ -7,8 +6,8 @@ using FairPlayCombined.Models.Pagination;
 using FairPlayCombined.Services.FairPlaySocial;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
-using System.Threading;
 
 namespace FairPlaySocial.MinimalApiEndpoints
 {
@@ -62,6 +61,8 @@ namespace FairPlaySocial.MinimalApiEndpoints
                 CreatePostModel createPostModel,
                 CancellationToken cancellationToken) =>
                 {
+                    Validator.ValidateObject(createPostModel, 
+                        new ValidationContext(createPostModel),validateAllProperties:true);
                     createPostModel.OwnerApplicationUserId = userProviderService.GetCurrentUserId();
                     var postId = await postService.CreatePostAsync(createPostModel,
                         cancellationToken: cancellationToken);
@@ -69,6 +70,7 @@ namespace FairPlaySocial.MinimalApiEndpoints
                         cancellationToken);
                     return postId;
                 })
+                .ProducesValidationProblem()
                 .RequireAuthorization(policyNames: clientAppsAuthPolicy);
             return app;
         }

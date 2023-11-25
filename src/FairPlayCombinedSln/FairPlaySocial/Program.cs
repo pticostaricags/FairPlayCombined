@@ -43,7 +43,11 @@ builder.Services.AddAuthentication(configureOptions =>
     configureOptions.DefaultScheme = IdentityConstants.ApplicationScheme;
     configureOptions.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
-    .AddBearerToken(IdentityConstants.BearerScheme)
+    .AddBearerToken(IdentityConstants.BearerScheme, configure => 
+    {
+        configure.BearerTokenExpiration = TimeSpan.FromMinutes(5);
+        configure.RefreshTokenExpiration = TimeSpan.FromMinutes(5);
+    })
     .AddIdentityCookies();
 var clientAppsAuthPolicy = "ClientAppsAuthPolicy";
 builder.Services.AddAuthorizationBuilder()

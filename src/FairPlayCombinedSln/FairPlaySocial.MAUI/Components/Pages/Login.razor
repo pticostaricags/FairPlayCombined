@@ -38,6 +38,9 @@
             if (!String.IsNullOrWhiteSpace(result!.AccessToken))
             {
                 UserContext.AccessToken = result.AccessToken;
+                UserContext.AccessTokenExpiresIn = result.ExpiresIn;
+                UserContext.RefreshToken = result.RefreshToken;
+                UserContext.TokenExpiraton = DateTimeOffset.UtcNow.AddMinutes(result!.ExpiresIn!.Value);
                 this.navingationManager!.NavigateTo("/Home");
             }
             else
