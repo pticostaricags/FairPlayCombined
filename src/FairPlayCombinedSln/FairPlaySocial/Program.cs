@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
+using FairPlaySocial.MinimalApiEndpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -133,20 +134,7 @@ app.MapControllers();
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
-app.MapGet("/api/authtest", () =>
-{
-    return "Auth worked!!!";
-}).RequireAuthorization(policyNames:clientAppsAuthPolicy);
-app.MapGet("api/photoimage/{photoId}", async (
-    [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-    CancellationToken cancellationToken,
-    long photoId) =>
-{
-    var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-    var photoEntity = await dbContext.Photo.AsNoTracking().SingleAsync(p => p.PhotoId == photoId);
-    var mimeType = MediaTypeNames.Image.Png;
-    return Results.File(photoEntity.PhotoBytes, contentType: mimeType);
-});
+app.MapClientAppsEndpoints(clientAppsAuthPolicy);
 app.MapHub<PostNotificationHub>(FairPlayCombined.Common.FairPlaySocial.Constants.Hubs.HomeFeedHub);
 app.MapHub<UserMessageNotificationHub>(FairPlayCombined.Common.FairPlaySocial.Constants.Hubs.UserMessageHub);
 
