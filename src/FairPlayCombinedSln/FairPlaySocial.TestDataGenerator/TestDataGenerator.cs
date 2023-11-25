@@ -62,7 +62,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                             }
                         ]
                     });
-                    if (i % 50 == 0)
+                    if (i % 10 == 0)
                     {
                         await dbContext.SaveChangesAsync(stoppingToken);
                     }

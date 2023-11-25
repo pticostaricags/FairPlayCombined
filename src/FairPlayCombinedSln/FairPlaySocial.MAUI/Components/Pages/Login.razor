@@ -1,6 +1,8 @@
 ﻿@page "/"
 @using FairPlaySocial.ClientServices
 @using FairPlaySocial.MAUI.Auth
+@using Microsoft.Kiota.Abstractions
+@using System.Net
 <h3>Login</h3>
 
 <EditForm Model="this.loginRequest" OnValidSubmit="OnValidSubmitAsync">
@@ -41,6 +43,15 @@
             else
             {
                 await Application.Current!.MainPage!.DisplayAlert("Error", "Unknown error", "OK");
+            }
+        }
+        catch (ApiException apiEx)
+        {
+            if (apiEx.ResponseStatusCode == (int)HttpStatusCode.Unauthorized)
+            {
+                await Application.Current!.MainPage!.DisplayAlert("Unable to login",
+                "Unable to login, please make soure you are using the correct credentials",
+                "OK");
             }
         }
         catch (Exception ex)

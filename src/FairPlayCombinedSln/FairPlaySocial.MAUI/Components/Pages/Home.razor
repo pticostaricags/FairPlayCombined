@@ -18,7 +18,8 @@
             <div class="card">
                 @if (context.PhotoId != null)
                 {
-                    <img src="@($"{ApiInfo.ApiBaseUrl}api/photoimage/{context.PhotoId}")" class="card-img-top" alt="...">
+                    <img src="@($"{ApiInfo.ApiBaseUrl}api/photoimage/{context.PhotoId}")" 
+                    class="card-img-top" alt="...">
                 }
                 <div class="card-body">
                     <h5 class="card-title">
@@ -71,7 +72,7 @@
             catch (Exception ex)
             {
                 await Application.Current!.MainPage!.DisplayAlert("Error", ex.Message, "OK");
-                return GridItemsProviderResult.From<PostModel>(null,0);
+                return GridItemsProviderResult.From<PostModel>(Array.Empty<PostModel>(),0);
             }
         };
     }

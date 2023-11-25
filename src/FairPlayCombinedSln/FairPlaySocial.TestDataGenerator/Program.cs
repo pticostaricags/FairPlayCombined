@@ -15,6 +15,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(optionsAction =>
     optionsAction.UseSqlServer(connectionString,
         sqlServerOptionsAction =>
         {
+            sqlServerOptionsAction.CommandTimeout((int)TimeSpan.FromMinutes(5).TotalSeconds);
             sqlServerOptionsAction.UseNetTopologySuite();
             sqlServerOptionsAction.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
             sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
