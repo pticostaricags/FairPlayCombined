@@ -36,13 +36,17 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
 
+builder.Services.AddAuthentication().AddBearerToken();
+builder.Services.AddAuthentication()
+    .AddBearerToken(IdentityConstants.BearerScheme)
+    .AddIdentityCookies();
+var clientAppsAuthPolicy = "ClientAppsAuthPolicy";
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(clientAppsAuthPolicy, policy => 
+    {
+        policy.RequireAuthenticatedUser().AddAuthenticationSchemes(IdentityConstants.BearerScheme);
+    });
 var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlaySocial), ref connectionString);
@@ -53,7 +57,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
+    .AddApiEndpoints()
     .AddDefaultTokenProviders();
+
 
 builder.Services.AddTransient<IUserProviderService, UserProviderService>();
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
@@ -83,6 +89,9 @@ builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<HttpClientService>();
 builder.Services.AddTransient<PostService>();
 builder.Services.AddTransient<PhotoService>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -122,7 +131,12 @@ app.MapRazorComponents<App>()
 
 app.MapControllers();
 // Add additional endpoints required by the Identity /Account Razor components.
+app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
+app.MapGet("/api/authtest", () =>
+{
+    return "Auth worked!!!";
+}).RequireAuthorization(policyNames:clientAppsAuthPolicy);
 app.MapGet("api/photoimage/{photoId}", async (
     [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
     CancellationToken cancellationToken,
@@ -135,4 +149,8 @@ app.MapGet("api/photoimage/{photoId}", async (
 });
 app.MapHub<PostNotificationHub>(FairPlayCombined.Common.FairPlaySocial.Constants.Hubs.HomeFeedHub);
 app.MapHub<UserMessageNotificationHub>(FairPlayCombined.Common.FairPlaySocial.Constants.Hubs.UserMessageHub);
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.Run();
