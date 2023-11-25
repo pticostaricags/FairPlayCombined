@@ -599,6 +599,37 @@
         }
       }
     },
+    "/api/posts/GetPaginatedPosts": {
+      "get": {
+        "tags": [
+          "FairPlaySocial"
+        ],
+        "parameters": [
+          {
+            "name": "startIndex",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostModelPaginationOfT"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/posts/createPost": {
       "post": {
         "tags": [
@@ -794,6 +825,76 @@
           "twoFactorRecoveryCode": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PostModel": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "postVisibilityId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "photoId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "postTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "replyToPostId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "groupId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "ownerApplicationUserId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ownerApplicationUserName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PostModelPaginationOfT": {
+        "type": "object",
+        "properties": {
+          "totalItems": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostModel"
+            },
+            "nullable": true
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

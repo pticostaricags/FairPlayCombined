@@ -1,20 +1,84 @@
 ﻿@page "/Home"
 @using FairPlaySocial.ClientServices
+@using FairPlaySocial.ClientServices.Models
+@using FairPlaySocial.MAUI.Components.Spinners
+@using FairPlaySocial.MAUI.Helpers
+@using Microsoft.AspNetCore.Components.QuickGrid
 @using Microsoft.Kiota.Abstractions.Authentication
 @using Microsoft.Kiota.Http.HttpClientLibrary
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<h1>Home</h1>
 
-<button @onclick="OnButtonClicked">Create Test Post</button>
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<div class="grid-container">
+    <QuickGrid ItemsProvider="ItemsProvider" Pagination="paginationState">
+        <TemplateColumn>
+            <div class="card">
+                @if (context.PhotoId != null)
+                {
+                    <img src="@($"{ApiInfo.ApiBaseUrl}api/photoimage/{context.PhotoId}")" class="card-img-top" alt="...">
+                }
+                <div class="card-body">
+                    <h5 class="card-title">
+                        @context.OwnerApplicationUserName
+                    </h5>
+                    <p class="card-text">
+                        @context.Text
+                    </p>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+            </div>
+        </TemplateColumn>
+    </QuickGrid>
+</div>
+<div class="mb-3">
+    <Paginator State="paginationState"></Paginator>
+</div>
 
 @code
 {
     [Inject(Key = "AuthenticatedApiClient")]
     private ApiClient? authenticatedApiClient { get; set; }
+    [Inject(Key = "AnonymousApiClient")]
+    private ApiClient? anonymousApiClient { get; set; }
+    private bool IsBusy { get; set; }
+    private GridItemsProvider<PostModel>? ItemsProvider;
+    private PaginationState paginationState = new()
+        {
+            ItemsPerPage = FairPlayCombined.Common.Constants.Pagination.PageSize
+        };
+
+    protected override void OnInitialized()
+    {
+        ItemsProvider = async req =>
+        {
+            try
+            {
+                this.IsBusy = true;
+                StateHasChanged();
+                var apiResult = await anonymousApiClient!.Api.Posts.GetPaginatedPosts.GetAsync(
+                    requestConfiguration =>
+                    {
+                        requestConfiguration.QueryParameters.StartIndex = req.StartIndex;
+                    });
+                var result = GridItemsProviderResult.From<PostModel>(apiResult!.Items!, apiResult!.TotalItems!.Value);
+                this.IsBusy = false;
+                StateHasChanged();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await Application.Current!.MainPage!.DisplayAlert("Error", ex.Message, "OK");
+                return GridItemsProviderResult.From<PostModel>(null,0);
+            }
+        };
+    }
+
     private async Task OnButtonClicked()
     {
+
         try
         {
             var result = await

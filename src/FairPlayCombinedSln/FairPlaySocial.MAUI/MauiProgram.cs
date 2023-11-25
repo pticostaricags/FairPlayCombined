@@ -1,5 +1,6 @@
 ﻿using FairPlaySocial.ClientServices;
 using FairPlaySocial.MAUI.Auth;
+using FairPlaySocial.MAUI.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Kiota.Abstractions.Authentication;
@@ -34,6 +35,7 @@ namespace FairPlaySocial.MAUI
 #else
             apiBaseUrl = "[CHANGE TO YOUR URL]";
 #endif
+            ApiInfo.ApiBaseUrl = apiBaseUrl;
             builder.Services.AddSingleton<IAccessTokenProvider, CustomAccessTokenAuthenticationProvider>();
             builder.Services.AddKeyedSingleton<ApiClient>("AnonymousApiClient",
                 (sp, key) =>

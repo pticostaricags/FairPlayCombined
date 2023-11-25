@@ -38,8 +38,11 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 
-builder.Services.AddAuthentication().AddBearerToken();
-builder.Services.AddAuthentication()
+builder.Services.AddAuthentication(configureOptions => 
+{
+    configureOptions.DefaultScheme = IdentityConstants.ApplicationScheme;
+    configureOptions.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
 var clientAppsAuthPolicy = "ClientAppsAuthPolicy";

@@ -1,6 +1,9 @@
-﻿using FairPlayCombined.DataAccess.Data;
+﻿using FairPlayCombined.Common;
+using FairPlayCombined.Common.GeneratorsAttributes;
+using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.FairPlaySocial.Post;
+using FairPlayCombined.Models.Pagination;
 using FairPlayCombined.Services.FairPlaySocial;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +32,31 @@ namespace FairPlaySocial.MinimalApiEndpoints
                 return Results.File(photoEntity.PhotoBytes, contentType: mimeType);
             });
             var postsGroup = app.MapGroup("/api/posts");
+            postsGroup.MapGet("GetPaginatedPosts", async (
+                [FromServices] PostService postService, 
+                [FromQuery]int startIndex,
+                CancellationToken cancellationToken) => 
+            {
+                PaginationRequest paginationRequest = new PaginationRequest()
+                {
+                    StartIndex = startIndex,
+                    PageSize = Constants.Pagination.PageSize
+                };
+                var result = await postService.GetPaginatedPostWithCustomProjectionAsync(paginationRequest,
+                    p => new PostModel()
+                    {
+                        PostId = p.PostId,
+                        PostVisibilityId = p.PostVisibilityId,
+                        PhotoId = p.PhotoId,
+                        PostTypeId = p.PostTypeId,
+                        ReplyToPostId = p.ReplyToPostId,
+                        GroupId = p.GroupId,
+                        Text = p.Text,
+                        OwnerApplicationUserId = p.OwnerApplicationUserId,
+                        OwnerApplicationUserName = p.OwnerApplicationUser.UserName
+                    }, cancellationToken);
+                return result;
+            });
             postsGroup.MapPost("createPost", async ([FromServices] PostService postService,
                 [FromServices] IUserProviderService userProviderService,
                 CreatePostModel createPostModel,
