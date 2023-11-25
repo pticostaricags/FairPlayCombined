@@ -1,5 +1,36 @@
-﻿@page "/"
+﻿@page "/Home"
+@using FairPlaySocial.ClientServices
+@using Microsoft.Kiota.Abstractions.Authentication
+@using Microsoft.Kiota.Http.HttpClientLibrary
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<button @onclick="OnButtonClicked">Create Test Post</button>
+
+@code
+{
+    [Inject(Key = "AuthenticatedApiClient")]
+    private ApiClient? authenticatedApiClient { get; set; }
+    private async Task OnButtonClicked()
+    {
+        try
+        {
+            var result = await
+            authenticatedApiClient!.Api.Posts.CreatePost.PostAsync(
+                new ClientServices.Models.CreatePostModel()
+                    {
+                        PostTypeId = 1,
+                        PostVisibilityId = 1,
+                        Text = "test"
+                    });
+            await Application.Current!.MainPage!.DisplayAlert("Success",
+            $"Test post has been created. PostId: {result.Value}", "OK");
+        }
+        catch (Exception ex)
+        {
+            await Application.Current!.MainPage!.DisplayAlert("Error", ex.Message, "OK");
+        }
+    }
+}

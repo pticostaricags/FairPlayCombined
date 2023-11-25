@@ -1,9 +1,11 @@
 ﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.FairPlaySocial.Post;
 using FairPlayCombined.Services.FairPlaySocial;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
+using System.Threading;
 
 namespace FairPlaySocial.MinimalApiEndpoints
 {
@@ -28,11 +30,15 @@ namespace FairPlaySocial.MinimalApiEndpoints
             });
             var postsGroup = app.MapGroup("/api/posts");
             postsGroup.MapPost("createPost", async ([FromServices] PostService postService,
+                [FromServices] IUserProviderService userProviderService,
                 CreatePostModel createPostModel,
                 CancellationToken cancellationToken) =>
                 {
+                    createPostModel.OwnerApplicationUserId = userProviderService.GetCurrentUserId();
                     var postId = await postService.CreatePostAsync(createPostModel,
                         cancellationToken: cancellationToken);
+                    await postService!.SendPostCreatedNotificationAsync(postId,
+                        cancellationToken);
                     return postId;
                 })
                 .RequireAuthorization(policyNames: clientAppsAuthPolicy);

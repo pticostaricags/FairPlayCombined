@@ -1,0 +1,51 @@
+﻿@page "/"
+@using FairPlaySocial.ClientServices
+@using FairPlaySocial.MAUI.Auth
+<h3>Login</h3>
+
+<EditForm Model="this.loginRequest" OnValidSubmit="OnValidSubmitAsync">
+    <div class="mb-3">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <InputText class="form-control" @bind-Value="this.loginRequest.Email"></InputText>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <InputText class="form-control" @bind-Value="this.loginRequest.Password" type="password"></InputText>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-primary">Login</button>
+    </div>
+</EditForm>
+
+@code {
+    [Inject(Key = "AnonymousApiClient")]
+    private ApiClient? apiClient { get; set; }
+    [Inject]
+    private NavigationManager? navingationManager { get; set; }
+    FairPlaySocial.ClientServices.Models.LoginRequest loginRequest = new();
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            var result = await this.apiClient!.Login.PostAsync(this.loginRequest);
+            if (!String.IsNullOrWhiteSpace(result!.AccessToken))
+            {
+                UserContext.AccessToken = result.AccessToken;
+                this.navingationManager!.NavigateTo("/Home");
+            }
+            else
+            {
+                await Application.Current!.MainPage!.DisplayAlert("Error", "Unknown error", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Application.Current!.MainPage!.DisplayAlert("Error", ex.Message, "OK");
+        }
+    }
+}
