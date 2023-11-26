@@ -13,6 +13,7 @@ using Blazored.Toast;
 using FairPlayCombined.DataAccess.Interceptors;
 using Microsoft.Extensions.Options;
 using FairPlayCombined.Services.FairPlayDating;
+using FairPlayCombined.Common.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,7 +72,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
     });
 
 builder.Services.AddMemoryCache();
-
+builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IRoleService, RoleService>();

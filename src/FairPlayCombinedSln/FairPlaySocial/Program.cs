@@ -12,13 +12,13 @@ using FairPlayCombined.Services.FairPlaySocial;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using Blazored.Toast;
-using FairPlaySocial;
 using FairPlaySocial.ClientServices;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlaySocial.MinimalApiEndpoints;
+using FairPlayCombined.Common.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,6 +93,7 @@ builder.Services.AddSignalR(hubOptions =>
 
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddBlazoredToast();
+builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<HttpClientService>();

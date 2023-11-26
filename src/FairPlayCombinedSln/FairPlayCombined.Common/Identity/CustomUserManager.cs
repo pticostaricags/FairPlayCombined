@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using FairPlaySocial.Data;
 using Microsoft.Extensions.Options;
 using FairPlayCombined.Common;
+using Microsoft.Extensions.Logging;
 
-namespace FairPlaySocial
+namespace FairPlayCombined.Common.Identity
 {
     public class CustomUserManager(IUserStore<ApplicationUser> store,
         IOptions<IdentityOptions> optionsAccessor, IPasswordHasher<ApplicationUser> passwordHasher,

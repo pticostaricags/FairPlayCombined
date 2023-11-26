@@ -9,6 +9,7 @@ using Microsoft.Extensions.Primitives;
 using FairPlayShop.Components.Account.Pages;
 using FairPlayShop.Components.Account.Pages.Manage;
 using FairPlayShop.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace Microsoft.AspNetCore.Routing;
 

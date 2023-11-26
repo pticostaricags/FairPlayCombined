@@ -9,6 +9,7 @@ using Microsoft.Extensions.Primitives;
 using FairPlayDating.Components.Account.Pages;
 using FairPlayDating.Components.Account.Pages.Manage;
 using FairPlayDating.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace FairPlayDating.Components.Account;
 

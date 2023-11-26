@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using FairPlayAdminPortal.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace FairPlayAdminPortal.Components.Account;
 

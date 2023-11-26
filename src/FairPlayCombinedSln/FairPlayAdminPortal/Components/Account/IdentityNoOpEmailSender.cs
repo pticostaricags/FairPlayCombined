@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using FairPlayAdminPortal.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace FairPlayAdminPortal.Components.Account;
 

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using FairPlaySocial.Components.Account.Pages;
 using FairPlaySocial.Components.Account.Pages.Manage;
-using FairPlaySocial.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace Microsoft.AspNetCore.Routing;
 

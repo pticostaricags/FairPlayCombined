@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using FairPlaySocial.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace FairPlaySocial.Components.Account;
 

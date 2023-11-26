@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using FairPlayDating.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace FairPlayDating.Components.Account;
 

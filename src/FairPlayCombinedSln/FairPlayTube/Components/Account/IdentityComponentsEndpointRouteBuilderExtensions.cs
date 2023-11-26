@@ -9,6 +9,7 @@ using Microsoft.Extensions.Primitives;
 using FairPlayTube.Components.Account.Pages;
 using FairPlayTube.Components.Account.Pages.Manage;
 using FairPlayTube.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace Microsoft.AspNetCore.Routing;
 

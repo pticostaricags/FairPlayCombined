@@ -1,4 +1,5 @@
 using FairPlayCombined.Common.CustomAttributes;
+using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
@@ -19,7 +20,7 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         var skipTranslations = Convert.ToBoolean(conf["skipTranslations"]);
         FairPlayCombinedDbContext fairPlayCombinedDbContext =
             scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
-        var adminPortalAssembly = typeof(FairPlayAdminPortal.Data.ApplicationUser).Assembly;
+        var adminPortalAssembly = typeof(ApplicationUser).Assembly;
         var adminPortalTypes = adminPortalAssembly.GetTypes();
 
         var fairplaySocialAssembly = typeof(FairPlaySocial.Components.App).Assembly;

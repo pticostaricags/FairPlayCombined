@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using Azure.AI.OpenAI;
+using FairPlayCombined.Common.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -94,7 +95,7 @@ builder.Services.AddTransient<OpenAIClient>((sp) =>
     return openAIClient;
 });
 builder.Services.AddTransient<AzureOpenAIService>();
-
+builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddBlazoredToast();

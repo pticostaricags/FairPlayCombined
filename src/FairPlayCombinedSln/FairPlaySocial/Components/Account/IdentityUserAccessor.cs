@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using FairPlaySocial.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace FairPlaySocial.Components.Account;
 

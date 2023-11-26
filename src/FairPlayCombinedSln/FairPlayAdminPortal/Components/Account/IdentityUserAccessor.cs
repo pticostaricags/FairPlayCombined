@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using FairPlayAdminPortal.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace FairPlayAdminPortal.Components.Account;
 

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using FairPlayDating.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace FairPlayDating.Components.Account;
 
