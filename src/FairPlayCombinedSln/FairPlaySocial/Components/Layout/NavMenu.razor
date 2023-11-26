@@ -1,4 +1,5 @@
-﻿@implements IDisposable
+﻿@using FairPlayCombined.Common
+@implements IDisposable
 
 @inject NavigationManager NavigationManager
 
@@ -36,13 +37,18 @@
             </NavLink>
         </div>
 
-        <AuthorizeView>
+        <AuthorizeView Roles="@Constants.RoleName.User">
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/CreateMyPost">
                         <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Create My Post
                     </NavLink>
                 </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView>
+            <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Manage">
                         <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name

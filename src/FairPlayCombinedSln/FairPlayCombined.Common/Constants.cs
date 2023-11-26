@@ -16,7 +16,8 @@
         }
         public static class RoleName
         {
-            const string SystemAdmin = nameof(SystemAdmin);
+            public const string SystemAdmin = nameof(SystemAdmin);
+            public const string User = nameof(User);
         }
         public static class Pagination
         {
