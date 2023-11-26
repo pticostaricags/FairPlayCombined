@@ -10,6 +10,18 @@ Post-Deployment Script Template
 --------------------------------------------------------------------------------------
 */
 BEGIN TRANSACTION
+--START OF DEFAULT ROLES
+IF NOT EXISTS(SELECT * FROM AspNetRoles WHERE Name = 'SystemAdmin')
+BEGIN
+    INSERT INTO AspNetRoles(Id, [Name], NormalizedName) 
+    VALUES (NEWID(), 'SystemAdmin', 'SystemAdmin')
+END
+IF NOT EXISTS(SELECT * FROM AspNetRoles WHERE Name = 'User')
+BEGIN
+    INSERT INTO AspNetRoles(Id, [Name], NormalizedName) 
+    VALUES (NEWID(), 'User', 'User')
+END
+--END OF DEFAULT ROLES
 --START OF DEFAULT CULTURES
 SET IDENTITY_INSERT [dbo].[Culture] ON
 DECLARE @CULTURE NVARCHAR(50) = 'en-US'
