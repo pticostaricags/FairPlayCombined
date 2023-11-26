@@ -83,24 +83,6 @@
         }
 
         Logger.LogInformation("User created a new account with password.");
-        var userRole = await RoleManager.FindByNameAsync(Constants.RoleName.User);
-        if (userRole is null)
-        {
-            var createRoleResult = await RoleManager
-            .CreateAsync(new IdentityRole(Constants.RoleName.User));
-            if (!createRoleResult.Succeeded)
-            {
-                identityErrors = createRoleResult.Errors;
-                return;
-            }
-        }
-        var addToRoleResult = await this.UserManager
-        .AddToRoleAsync(user, Constants.RoleName.User);
-        if (!addToRoleResult.Succeeded)
-        {
-            identityErrors = addToRoleResult.Errors;
-            return;
-        }
         var userId = await UserManager.GetUserIdAsync(user);
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

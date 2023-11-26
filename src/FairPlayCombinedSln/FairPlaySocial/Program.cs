@@ -38,12 +38,12 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 
-builder.Services.AddAuthentication(configureOptions => 
+builder.Services.AddAuthentication(configureOptions =>
 {
     configureOptions.DefaultScheme = IdentityConstants.ApplicationScheme;
     configureOptions.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
-    .AddBearerToken(IdentityConstants.BearerScheme, configure => 
+    .AddBearerToken(IdentityConstants.BearerScheme, configure =>
     {
         configure.BearerTokenExpiration = TimeSpan.FromMinutes(5);
         configure.RefreshTokenExpiration = TimeSpan.FromMinutes(5);
@@ -51,7 +51,7 @@ builder.Services.AddAuthentication(configureOptions =>
     .AddIdentityCookies();
 var clientAppsAuthPolicy = "ClientAppsAuthPolicy";
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(clientAppsAuthPolicy, policy => 
+    .AddPolicy(clientAppsAuthPolicy, policy =>
     {
         policy.RequireAuthenticatedUser().AddAuthenticationSchemes(IdentityConstants.BearerScheme);
     });
@@ -91,7 +91,7 @@ builder.Services.AddSignalR(hubOptions =>
     hubOptions.MaximumReceiveMessageSize = 20 * 1024 * 1024;
 });
 
-
+builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
