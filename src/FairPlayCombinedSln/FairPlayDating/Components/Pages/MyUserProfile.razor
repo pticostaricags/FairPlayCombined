@@ -31,6 +31,7 @@
 @inject IToastService toastService
 @inject PhotoService photoService
 @inject IGeoLocationService geolocationService
+@inject AzureOpenAIService azureOpenAIService
 
 <h3>MyUserProfile</h3>
 
@@ -398,6 +399,14 @@
     {
         try
         {
+            var moderateAboutTextResult = await this.azureOpenAIService
+            .ModerateTextContentAsync(this.createUserProfileModel!.About!, this.cancellationTokenSource.Token);
+            if (moderateAboutTextResult!.IsOffensive || moderateAboutTextResult.IsSexuallySuggestive || 
+            moderateAboutTextResult.IsSexuallyExplicit || moderateAboutTextResult.HasPersonalIdentifiableInformation)
+            {
+                this.toastService.ShowError("You cannot use the given text for the About section, please modify it and try again");
+                return;
+            }
             var existentUserProfileId = await this.userProfileService
             .GetUserProfileIdByUserIdAsync(this.createUserProfileModel!.ApplicationUserId!,
             this.cancellationTokenSource.Token);

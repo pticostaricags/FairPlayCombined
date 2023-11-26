@@ -21,6 +21,7 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
+using Azure.AI.OpenAI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +80,20 @@ builder.Services.AddProblemDetails();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var azureOpenAIKey = builder.Configuration["AzureOpenAIKey"] ??
+    throw new InvalidOperationException("'AzureOpenAIKey' not found");
+var azureOpenAIEndpoint = builder.Configuration["AzureOpenAIEndpoint"] ??
+    throw new InvalidOperationException("'AzureOpenAIEndpoint' not found");
+
+
+builder.Services.AddTransient<OpenAIClient>((sp) => 
+{
+    OpenAIClient openAIClient = new OpenAIClient(endpoint: new Uri(azureOpenAIEndpoint),
+        keyCredential: new Azure.AzureKeyCredential(azureOpenAIKey));
+    return openAIClient;
+});
+builder.Services.AddTransient<AzureOpenAIService>();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
