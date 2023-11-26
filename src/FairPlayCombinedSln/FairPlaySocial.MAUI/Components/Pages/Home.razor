@@ -1,6 +1,8 @@
 ﻿@page "/Home"
+@using FairPlayCombined.Common.FairPlaySocial.Enums
 @using FairPlaySocial.ClientServices
 @using FairPlaySocial.ClientServices.Models
+@using FairPlaySocial.MAUI.Auth
 @using FairPlaySocial.MAUI.Components.Spinners
 @using FairPlaySocial.MAUI.Helpers
 @using Microsoft.AspNetCore.Components.QuickGrid
@@ -18,8 +20,8 @@
             <div class="card">
                 @if (context.PhotoId != null)
                 {
-                    <img src="@($"{ApiInfo.ApiBaseUrl}api/photoimage/{context.PhotoId}")" 
-                    class="card-img-top" alt="...">
+                    <img src="@($"{ApiInfo.ApiBaseUrl}api/photoimage/{context.PhotoId}")"
+                         class="card-img-top" alt="...">
                 }
                 <div class="card-body">
                     <h5 class="card-title">
@@ -37,6 +39,26 @@
 <div class="mb-3">
     <Paginator State="paginationState"></Paginator>
 </div>
+@if (UserContext.IsAuthenticated)
+{
+    <EditForm Model="createPostModel" OnValidSubmit="OnValidSubmitAsync">
+        <div class="mb-3">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <ValidationSummary></ValidationSummary>
+        </div>
+        <div class="mb-3">
+            <button class="btn btn-secondary" type="button" 
+            @onclick="OnSelectImageButtonClickedAsync">Add Image</button>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Text</label>
+            <InputTextArea class="form-control" @bind-Value="this.createPostModel.Text"></InputTextArea>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+    </EditForm>
+}
 
 @code
 {
@@ -50,6 +72,13 @@
         {
             ItemsPerPage = FairPlayCombined.Common.Constants.Pagination.PageSize
         };
+    private CreatePostModel createPostModel = new()
+        {
+            PostTypeId = (int)PostType.Post,
+            PostVisibilityId = (int)PostVisibility.Public
+        };
+    private CreatePhotoModel createPhotoModel = new();
+
 
     protected override void OnInitialized()
     {
@@ -72,30 +101,42 @@
             catch (Exception ex)
             {
                 await Application.Current!.MainPage!.DisplayAlert("Error", ex.Message, "OK");
-                return GridItemsProviderResult.From<PostModel>(Array.Empty<PostModel>(),0);
+                return GridItemsProviderResult.From<PostModel>(Array.Empty<PostModel>(), 0);
             }
         };
     }
 
-    private async Task OnButtonClicked()
+    private async Task OnSelectImageButtonClickedAsync()
     {
-
-        try
+        if (MediaPicker.IsCaptureSupported)
         {
-            var result = await
-            authenticatedApiClient!.Api.Posts.CreatePost.PostAsync(
-                new ClientServices.Models.CreatePostModel()
-                    {
-                        PostTypeId = 1,
-                        PostVisibilityId = 1,
-                        Text = "test"
-                    });
-            await Application.Current!.MainPage!.DisplayAlert("Success",
-            $"Test post has been created. PostId: {result.Value}", "OK");
+            var result = await MediaPicker.PickPhotoAsync();
+            using var stream = await result.OpenReadAsync();
+            byte[] photoBytes = new byte[stream.Length];
+            stream.Read(photoBytes, 0, (int)stream.Length);
+            stream.Close();
+            this.createPhotoModel.Name = result.FileName;
+            this.createPhotoModel.Filename = result.FileName;
+            this.createPhotoModel.PhotoBytes = Convert.ToBase64String(photoBytes);
+            var createPhotoResult = 
+            await this.authenticatedApiClient!.Api.Photos.CreatePhoto.PostAsync(createPhotoModel);
+            if (createPhotoResult.HasValue)
+            {
+                this.createPostModel.PhotoId = createPhotoResult.Value;
+            }
         }
-        catch (Exception ex)
+        else
         {
-            await Application.Current!.MainPage!.DisplayAlert("Error", ex.Message, "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Not support", "Your devices does not support capturing photos","OK");
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        var result = await this.authenticatedApiClient!.Api.Posts.CreatePost.PostAsync(this.createPostModel);
+        if (result.HasValue)
+        {
+            await this.paginationState.SetCurrentPageIndexAsync(0);
         }
     }
 }

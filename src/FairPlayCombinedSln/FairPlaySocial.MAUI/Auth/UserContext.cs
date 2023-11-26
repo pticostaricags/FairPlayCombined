@@ -13,5 +13,6 @@ namespace FairPlaySocial.MAUI.Auth
         public static string? RefreshToken { get; set; }
         public static DateTimeOffset? TokenExpiraton { get; set; }
         public static bool IsExpired => DateTimeOffset.UtcNow >= TokenExpiraton;
+        public static bool IsAuthenticated => !IsExpired && !String.IsNullOrWhiteSpace(AccessToken);
     }
 }

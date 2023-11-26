@@ -599,6 +599,36 @@
         }
       }
     },
+    "/api/photos/createPhoto": {
+      "post": {
+        "tags": [
+          "FairPlaySocial"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePhotoModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/posts/GetPaginatedPosts": {
       "get": {
         "tags": [
@@ -656,6 +686,16 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -682,6 +722,31 @@
           "refreshToken": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePhotoModel": {
+        "required": [
+          "filename",
+          "name",
+          "photoBytes"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string"
+          },
+          "filename": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string"
+          },
+          "photoBytes": {
+            "type": "string",
+            "format": "byte"
           }
         },
         "additionalProperties": false

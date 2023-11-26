@@ -1,8 +1,10 @@
 ﻿using FairPlayCombined.Common;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Models.Common.Photo;
 using FairPlayCombined.Models.FairPlaySocial.Post;
 using FairPlayCombined.Models.Pagination;
+using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlaySocial;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,11 +32,23 @@ namespace FairPlaySocial.MinimalApiEndpoints
                 var mimeType = MediaTypeNames.Image.Png;
                 return Results.File(photoEntity.PhotoBytes, contentType: mimeType);
             });
+            var photosGroup = app.MapGroup("/api/photos");
+            photosGroup.MapPost("/createPhoto", async (
+                [FromServices] PhotoService photoService,
+                CreatePhotoModel createPhotoModel,
+                CancellationToken cancellationToken) =>
+            {
+                Validator.ValidateObject(createPhotoModel,
+                        new ValidationContext(createPhotoModel), validateAllProperties: true);
+                var photoId = await photoService.CreatePhotoAsync(createPhotoModel, cancellationToken);
+                return photoId;
+            }).ProducesValidationProblem()
+            .RequireAuthorization(policyNames: clientAppsAuthPolicy);
             var postsGroup = app.MapGroup("/api/posts");
             postsGroup.MapGet("GetPaginatedPosts", async (
-                [FromServices] PostService postService, 
-                [FromQuery]int startIndex,
-                CancellationToken cancellationToken) => 
+                [FromServices] PostService postService,
+                [FromQuery] int startIndex,
+                CancellationToken cancellationToken) =>
             {
                 PaginationRequest paginationRequest = new PaginationRequest()
                 {
@@ -61,9 +75,9 @@ namespace FairPlaySocial.MinimalApiEndpoints
                 CreatePostModel createPostModel,
                 CancellationToken cancellationToken) =>
                 {
-                    Validator.ValidateObject(createPostModel, 
-                        new ValidationContext(createPostModel),validateAllProperties:true);
                     createPostModel.OwnerApplicationUserId = userProviderService.GetCurrentUserId();
+                    Validator.ValidateObject(createPostModel,
+                        new ValidationContext(createPostModel), validateAllProperties: true);
                     var postId = await postService.CreatePostAsync(createPostModel,
                         cancellationToken: cancellationToken);
                     await postService!.SendPostCreatedNotificationAsync(postId,
