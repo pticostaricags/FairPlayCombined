@@ -11,7 +11,7 @@ using FairPlayTube.Components.Account.Pages.Manage;
 using FairPlayTube.Data;
 using FairPlayCombined.Common.Identity;
 
-namespace Microsoft.AspNetCore.Routing;
+namespace FairPlayTube.Components.Account;
 
 internal static class IdentityComponentsEndpointRouteBuilderExtensions
 {

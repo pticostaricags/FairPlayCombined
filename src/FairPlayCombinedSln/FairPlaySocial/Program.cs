@@ -43,11 +43,7 @@ builder.Services.AddAuthentication(configureOptions =>
     configureOptions.DefaultScheme = IdentityConstants.ApplicationScheme;
     configureOptions.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
-    .AddBearerToken(IdentityConstants.BearerScheme, configure =>
-    {
-        configure.BearerTokenExpiration = TimeSpan.FromMinutes(5);
-        configure.RefreshTokenExpiration = TimeSpan.FromMinutes(5);
-    })
+    .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
 var clientAppsAuthPolicy = "ClientAppsAuthPolicy";
 builder.Services.AddAuthorizationBuilder()
@@ -93,7 +89,6 @@ builder.Services.AddSignalR(hubOptions =>
 
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddBlazoredToast();
-builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<HttpClientService>();
