@@ -42,6 +42,45 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             Assert.IsNotNull(result);
         }
 
+        [TestMethod]
+        public async Task Test_IndexVideoFromBase64Format()
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            var configuration = configurationBuilder.Build();
+            var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"];
+            var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"];
+            var azureVideoIndexerResourceGroup = configuration["AzureVideoIndexerResourceGroup"];
+            var azureVideoIndexerResourceName = configuration["AzureVideoIndexerResourceName"];
+            var azureVideoIndexerSubscriptionId = configuration["AzureVideoIndexerSubscriptionId"];
+            var videoToIndexFullPath = configuration["VideoToIndexFullPath"];
+            AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration =
+                new()
+                {
+                    AccountId = azureVideoIndexerAccountId,
+                    IsArmAccount = true,
+                    Location = azureVideoIndexerLocation,
+                    ResourceGroup = azureVideoIndexerResourceGroup,
+                    ResourceName = azureVideoIndexerResourceName,
+                    SubscriptionId = azureVideoIndexerSubscriptionId,
+                };
+            AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
+                new HttpClient());
+            string armAccesstoken = await this.AuthenticatedToAzureArmAsync();
+            var getAccessTokenResult = await azureVideoIndexerService
+                .GetAccessTokenForArmAccountAsync(armAccesstoken, CancellationToken.None);
+            Assert.IsNotNull(getAccessTokenResult);
+            var fileBytes = File.ReadAllBytes(videoToIndexFullPath!);
+            var result = await azureVideoIndexerService.IndexVideoFromBytes(
+                new IndexVideoFromBase64FormatModel()
+                {
+                    FileBytes = fileBytes,
+                    Name = $"AT File {Random.Shared.Next(1,100)}"
+                }, 
+                viAccountAccessToken: getAccessTokenResult!.AccessToken!, CancellationToken.None);
+            Assert.IsNotNull(result);
+        }
+
         private async Task<string> AuthenticatedToAzureArmAsync()
         {
             var tokenRequestContext = new TokenRequestContext(new[] { "https://management.azure.com/.default" });
