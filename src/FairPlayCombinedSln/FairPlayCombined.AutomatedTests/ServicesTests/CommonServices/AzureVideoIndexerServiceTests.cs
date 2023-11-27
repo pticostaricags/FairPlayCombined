@@ -1,4 +1,6 @@
-﻿using FairPlayCombined.Services.Common;
+﻿using Azure.Core;
+using Azure.Identity;
+using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -34,11 +36,17 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
                 new HttpClient());
-            Assert.Inconclusive("Pending to implement retrieval of ARM resource Bearer Token");
-            string bearerToken = "";
+            string bearerToken = await this.AuthenticatedToAzureArmAsync();
             var result = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
             Assert.IsNotNull(result);
+        }
+
+        private async Task<string> AuthenticatedToAzureArmAsync()
+        {
+            var tokenRequestContext = new TokenRequestContext(new[] { "https://management.azure.com/.default" });
+            var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, CancellationToken.None);
+            return tokenRequestResult.Token;
         }
     }
 }
