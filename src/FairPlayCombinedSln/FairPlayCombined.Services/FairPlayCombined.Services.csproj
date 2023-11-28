@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="FairPlayTube\" />
     <Folder Include="FairPlayShop\" />
   </ItemGroup>
 

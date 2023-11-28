@@ -1,4 +1,6 @@
 ﻿using Azure;
+using Azure.Core;
+using Azure.Identity;
 using FairPlayCombined.Common.CustomExceptions;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Newtonsoft.Json;
@@ -18,6 +20,12 @@ namespace FairPlayCombined.Services.Common
         AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration,
         HttpClient httpClient)
     {
+        public async Task<string> AuthenticateToAzureArmAsync()
+        {
+            var tokenRequestContext = new TokenRequestContext(new[] { "https://management.azure.com/.default" });
+            var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, CancellationToken.None);
+            return tokenRequestResult.Token;
+        }
         public async Task<GetAccessTokenResponseModel?> GetAccessTokenForArmAccountAsync(string bearerToken, CancellationToken cancellationToken)
         {
             string requestUrl = $"https://management.azure.com/subscriptions/" +

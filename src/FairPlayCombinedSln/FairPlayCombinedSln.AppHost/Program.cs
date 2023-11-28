@@ -9,6 +9,17 @@ var azureOpenAIKey = builder.Configuration["AzureOpenAIKey"] ??
     throw new InvalidOperationException("'AzureOpenAIKey' not found");
 var azureOpenAIEndpoint = builder.Configuration["AzureOpenAIEndpoint"] ??
     throw new InvalidOperationException("'AzureOpenAIEndpoint' not found");
+
+var azureVideoIndexerAccountId = builder.Configuration["AzureVideoIndexerAccountId"] ??
+    throw new InvalidOperationException("'AzureVideoIndexerAccountId' not found");
+var azureVideoIndexerLocation = builder.Configuration["AzureVideoIndexerLocation"] ??
+    throw new InvalidOperationException("'AzureVideoIndexerLocation' not found");
+var azureVideoIndexerResourceGroup = builder.Configuration["AzureVideoIndexerResourceGroup"] ??
+    throw new InvalidOperationException("'AzureVideoIndexerResourceGroup' not found");
+var azureVideoIndexerResourceName = builder.Configuration["AzureVideoIndexerResourceName"] ??
+    throw new InvalidOperationException("'AzureVideoIndexerResourceName' not found");
+var azureVideoIndexerSubscriptionId = builder.Configuration["AzureVideoIndexerSubscriptionId"] ??
+    throw new InvalidOperationException("'AzureVideoIndexerSubscriptionId' not found");
 builder.AddProject<Projects.FairPlayDating>(nameof(Projects.FairPlayDating).ToLower())
     .WithEnvironment(callback =>
     {
@@ -22,6 +33,12 @@ builder.AddProject<Projects.FairPlayTube>(nameof(Projects.FairPlayTube).ToLower(
 .WithEnvironment(callback =>
 {
     callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+    callback.EnvironmentVariables.Add("AzureVideoIndexerAccountId", azureVideoIndexerAccountId);
+    callback.EnvironmentVariables.Add("AzureVideoIndexerLocation", azureVideoIndexerLocation);
+    callback.EnvironmentVariables.Add("AzureVideoIndexerResourceGroup", azureVideoIndexerResourceGroup);
+    callback.EnvironmentVariables.Add("AzureVideoIndexerResourceName", azureVideoIndexerResourceName);
+    callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
+
 });
 
 

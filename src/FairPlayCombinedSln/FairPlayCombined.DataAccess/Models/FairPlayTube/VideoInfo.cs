@@ -40,7 +40,6 @@ public partial class VideoInfo
     [StringLength(50)]
     public string FileName { get; set; }
 
-    [Required]
     [StringLength(500)]
     public string VideoBloblUrl { get; set; }
 

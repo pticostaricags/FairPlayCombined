@@ -14,6 +14,7 @@ using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using FairPlayCombined.DataAccess.Interceptors;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
+using FairPlayCombined.Services.FairPlayTube;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,26 @@ builder.Services.AddAuthorizationBuilder()
     {
         policy.RequireAuthenticatedUser().AddAuthenticationSchemes(IdentityConstants.BearerScheme);
     });
+
+var azureVideoIndexerAccountId = Environment.GetEnvironmentVariable("AzureVideoIndexerAccountId") ??
+    throw new InvalidOperationException("'AzureVideoIndexerAccountId' not found");
+var azureVideoIndexerLocation = Environment.GetEnvironmentVariable("AzureVideoIndexerLocation") ??
+    throw new InvalidOperationException("'AzureVideoIndexerLocation' not found");
+var azureVideoIndexerResourceGroup = Environment.GetEnvironmentVariable("AzureVideoIndexerResourceGroup") ??
+    throw new InvalidOperationException("'AzureVideoIndexerResourceGroup' not found");
+var azureVideoIndexerResourceName = Environment.GetEnvironmentVariable("AzureVideoIndexerResourceName") ??
+    throw new InvalidOperationException("'AzureVideoIndexerResourceName' not found");
+var azureVideoIndexerSubscriptionId = Environment.GetEnvironmentVariable("AzureVideoIndexerSubscriptionId") ??
+    throw new InvalidOperationException("'AzureVideoIndexerSubscriptionId' not found");
+AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = new()
+{
+    AccountId = azureVideoIndexerAccountId,
+    IsArmAccount = true,
+    Location = azureVideoIndexerLocation,
+    ResourceGroup = azureVideoIndexerResourceGroup,
+    ResourceName = azureVideoIndexerResourceName,
+    SubscriptionId = azureVideoIndexerSubscriptionId,
+};
 var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlayTube), ref connectionString);
@@ -85,6 +106,12 @@ builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>()
 builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
+builder.Services.AddTransient<AzureVideoIndexerService>(sp =>
+{
+    return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
+        new HttpClient());
+});
+builder.Services.AddTransient<VideoInfoService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

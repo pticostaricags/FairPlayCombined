@@ -7,7 +7,7 @@
     [Name] NVARCHAR(50) NOT NULL, 
     [Description] NVARCHAR(500) NULL, 
     [FileName] NVARCHAR(50) NOT NULL, 
-    [VideoBloblUrl] NVARCHAR(500) NOT NULL,
+    [VideoBloblUrl] NVARCHAR(500) NULL,
     [IndexedVideoUrl] NVARCHAR(500) NULL,
     [ApplicationUserId] NVARCHAR(450) NOT NULL, 
     [VideoIndexStatusId] SMALLINT NOT NULL, 
