@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlaySocial.MAUI", "Fair
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayTube.MAUI", "FairPlayTube.MAUI\FairPlayTube.MAUI.csproj", "{8CA19959-D59B-4248-9521-A42BCB64C069}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlaySocial.ClientServices", "FairPlaySocial.ClientServices\FairPlaySocial.ClientServices.csproj", "{C6B162AE-9C58-4EBF-A1F4-AB63B19AE497}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlaySocial.ClientServices", "FairPlaySocial.ClientServices\FairPlaySocial.ClientServices.csproj", "{C6B162AE-9C58-4EBF-A1F4-AB63B19AE497}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

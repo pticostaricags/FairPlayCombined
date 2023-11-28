@@ -176,11 +176,27 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoIndexingCost]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoIndexingMargin]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoIndexStatus]",
          "ObjectType": 0
       },
       {
          "Name": "[FairPlayTube].[VideoInfo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoJob]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoJobApplicationStatus]",
          "ObjectType": 0
       },
       {

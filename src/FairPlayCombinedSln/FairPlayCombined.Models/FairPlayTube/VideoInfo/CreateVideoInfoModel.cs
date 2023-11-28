@@ -11,8 +11,6 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
 {
     public class CreateVideoInfoModel: ICreateModel
     {
-        [DeniedValues(default(long))]
-        public long VideoInfoId { get; set; }
         [Required]
         public Guid AccountId { get; set; }
         [Required]
@@ -45,7 +43,6 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
         [Required]
         [StringLength(450)]
         public string? ApplicationUserId { get; set; }
-        [DeniedValues(default(short))]
         public short VideoIndexStatusId { get; set; }
 
         public double VideoDurationInSeconds { get; set; }
@@ -53,7 +50,8 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
         [StringLength(500)]
         public string? VideoIndexSourceClass { get; set; }
         public decimal Price { get; set; }
-
+        [Required]
+        [Url]
         [StringLength(500)]
         public string? ExternalVideoSourceUrl { get; set; }
 

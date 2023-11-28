@@ -97,6 +97,9 @@ public partial class VideoInfo
     [InverseProperty("VideoInfo")]
     public virtual VideoIndexStatus VideoIndexStatus { get; set; }
 
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoJob> VideoJob { get; set; } = new List<VideoJob>();
+
     [ForeignKey("VideoVisibilityId")]
     [InverseProperty("VideoInfo")]
     public virtual VideoVisibility VideoVisibility { get; set; }

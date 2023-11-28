@@ -1,0 +1,115 @@
+﻿@page "/User/UploadMyVideo"
+@using Blazored.Toast.Services
+@using FairPlayCombined.Common.FairPlayTube.Enums
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Services.Common
+@using FairPlayCombined.Services.FairPlayTube
+@using FairPlayTube.Components.Spinners
+@attribute [Authorize]
+@rendermode RenderMode.InteractiveServer
+<h3>UploadMyVideo</h3>
+@inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
+@inject AzureVideoIndexerService azureVideoIndexerService
+@inject VideoInfoService videoInfoService
+@inject IToastService toastService
+@inject IUserProviderService userProviderService
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<EditForm FormName="frmCreateVideoInfo" Model="this.createVideoInfoModel"
+          OnValidSubmit="OnValidSubmitAsync" @ref="frmCreateVideoInfo">
+    <div class="mb-3">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <InputTextArea class="form-control" @bind-Value="this.createVideoInfoModel.Description"></InputTextArea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <InputText class="form-control" @bind-Value="this.createVideoInfoModel.Name"></InputText>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Video Url</label>
+        <InputText class="form-control" @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl"></InputText>
+        <button class="btn btn-secondary" type="button" @onclick="OnProcessFileButtonClickedAsync">Process File</button>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-primary">Save</button>
+    </div>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    private CreateVideoInfoModel createVideoInfoModel { get; set; } = new();
+    private CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; }
+    private EditForm? frmCreateVideoInfo;
+
+    protected override void OnInitialized()
+    {
+        this.createVideoInfoModel.AccountId = Guid.Parse(azureVideoIndexerServiceConfiguration.AccountId!);
+        this.createVideoInfoModel.Location = azureVideoIndexerServiceConfiguration.Location;
+        this.createVideoInfoModel.VideoVisibilityId = 1;
+        this.createVideoInfoModel.FileName = "Test";
+        this.createVideoInfoModel.VideoVisibilityId = (short)VideoVisibility.Public;
+        this.createVideoInfoModel.ApplicationUserId = this.userProviderService.GetCurrentUserId();
+    }
+
+    private async Task OnProcessFileButtonClickedAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            this.frmCreateVideoInfo!.EditContext!.Validate();
+            var nameField = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.Name));
+            var descriptionField = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.Name));
+            var externalVideoSourceUrl = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.ExternalVideoSourceUrl));
+            if (!frmCreateVideoInfo.EditContext.IsValid(nameField) || 
+            !frmCreateVideoInfo.EditContext.IsValid(descriptionField) || 
+            !frmCreateVideoInfo.EditContext.IsValid(externalVideoSourceUrl))
+            {
+                this.toastService.ShowError("Please make sure to fill all the values and try again");
+                return;
+            }
+            var authToken = await this.azureVideoIndexerService.AuthenticateToAzureArmAsync();
+            var accountAccessToken = await this.azureVideoIndexerService.GetAccessTokenForArmAccountAsync(authToken, this.cancellationTokenSource.Token);
+            var indexVideoResult = await this.azureVideoIndexerService
+            .IndexVideoFromUriAsync(new Uri(this.createVideoInfoModel.ExternalVideoSourceUrl!),
+            armAccessToken: accountAccessToken!.AccessToken!,
+            this.createVideoInfoModel.Name!,
+            this.createVideoInfoModel.Description!,
+            this.createVideoInfoModel.Name!);
+            this.createVideoInfoModel.VideoId = indexVideoResult!.id;
+            this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Pending;
+            this.frmCreateVideoInfo.EditContext.Validate();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            await this.videoInfoService.CreateVideoInfoAsync(this.createVideoInfoModel,
+            this.cancellationTokenSource.Token);
+            this.toastService.ShowSuccess("Your video has been save. You'll be notified when indexing is ready");
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+}

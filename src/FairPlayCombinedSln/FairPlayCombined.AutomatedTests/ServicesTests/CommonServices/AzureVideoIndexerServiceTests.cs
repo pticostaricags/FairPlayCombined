@@ -43,7 +43,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         }
 
         [TestMethod]
-        public async Task Test_IndexVideoFromBase64Format()
+        public async Task Test_IndexVideoFromBytesAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
@@ -71,13 +71,50 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 .GetAccessTokenForArmAccountAsync(armAccesstoken, CancellationToken.None);
             Assert.IsNotNull(getAccessTokenResult);
             var fileBytes = File.ReadAllBytes(videoToIndexFullPath!);
-            var result = await azureVideoIndexerService.IndexVideoFromBytes(
-                new IndexVideoFromBase64FormatModel()
+            var result = await azureVideoIndexerService.IndexVideoFromBytesAsync(
+                new IndexVideoFromBytesFormatModel()
                 {
                     FileBytes = fileBytes,
                     Name = $"AT File {Random.Shared.Next(1,100)}"
                 }, 
                 viAccountAccessToken: getAccessTokenResult!.AccessToken!, CancellationToken.None);
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public async Task Test_IndexVideoFromUriAsync()
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            var configuration = configurationBuilder.Build();
+            var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"];
+            var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"];
+            var azureVideoIndexerResourceGroup = configuration["AzureVideoIndexerResourceGroup"];
+            var azureVideoIndexerResourceName = configuration["AzureVideoIndexerResourceName"];
+            var azureVideoIndexerSubscriptionId = configuration["AzureVideoIndexerSubscriptionId"];
+            var videoToIndexUrl = configuration["VideoToIndexUrl"];
+            AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration =
+                new()
+                {
+                    AccountId = azureVideoIndexerAccountId,
+                    IsArmAccount = true,
+                    Location = azureVideoIndexerLocation,
+                    ResourceGroup = azureVideoIndexerResourceGroup,
+                    ResourceName = azureVideoIndexerResourceName,
+                    SubscriptionId = azureVideoIndexerSubscriptionId,
+                };
+            AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
+                new HttpClient());
+            string armAccesstoken = await this.AuthenticatedToAzureArmAsync();
+            var getAccessTokenResult = await azureVideoIndexerService
+                .GetAccessTokenForArmAccountAsync(armAccesstoken, CancellationToken.None);
+            Assert.IsNotNull(getAccessTokenResult);
+            var result = await azureVideoIndexerService.IndexVideoFromUriAsync(
+                videoUri: new Uri(videoToIndexUrl!),
+                armAccessToken: getAccessTokenResult.AccessToken!,
+                name: $"AT File {Random.Shared.Next(1, 100)}",
+                description: "Test Desc",
+                fileName: "TestFile");
             Assert.IsNotNull(result);
         }
 

@@ -12,6 +12,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 using static FairPlayCombined.Common.Constants;
 
 namespace FairPlayCombined.Services.Common
@@ -53,8 +54,8 @@ namespace FairPlayCombined.Services.Common
             }
         }
 
-        public async Task<UploadVideoResponseModel?> IndexVideoFromBytes(
-            IndexVideoFromBase64FormatModel indexVideoFromBase64FormatModel,
+        public async Task<UploadVideoResponseModel?> IndexVideoFromBytesAsync(
+            IndexVideoFromBytesFormatModel indexVideoFromBase64FormatModel,
             string viAccountAccessToken, CancellationToken cancellationToken)
         {
             string requestUrl = $"https://api.videoindexer.ai" +
@@ -83,6 +84,50 @@ namespace FairPlayCombined.Services.Common
                 throw new AzureVideoIndexerException($"Error: {reasonPhrase} - Details:{responseContent}");
             }
         }
+
+        public async Task<UploadVideoResponseModel?> IndexVideoFromUriAsync(Uri videoUri, 
+            string armAccessToken,
+            string name,
+            string description, string fileName,
+            string language = "auto",
+            string indexingPreset = "Default",
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                string requestUrl =
+                    $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +
+                    $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
+                    $"/Videos" +
+                    $"?name={name}" +
+                    $"&description={HttpUtility.UrlEncode(description)}";
+                requestUrl +=
+                $"&language={language}" +
+                $"&videoUrl={HttpUtility.UrlEncode(videoUri.ToString())}" +
+                $"&fileName={HttpUtility.UrlEncode(fileName)}" +
+                $"&indexingPreset={indexingPreset}";
+                requestUrl +=
+                $"&sendSuccessEmail={true}";
+                httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", armAccessToken);
+                var response = await httpClient.PostAsync(requestUrl, null, cancellationToken);
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<UploadVideoResponseModel>();
+                    return result;
+                }
+                else
+                {
+                    var reasonPhrase = response.ReasonPhrase;
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    throw new AzureVideoIndexerException($"Error: {reasonPhrase} - Details:{responseContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new AzureVideoIndexerException(ex.Message);
+            }
+        }
     }
 
 
@@ -109,7 +154,7 @@ namespace FairPlayCombined.Services.Common
         public string? ApiVersion { get; set; } = "2024-01-01";
     }
 
-    public class IndexVideoFromBase64FormatModel
+    public class IndexVideoFromBytesFormatModel
     {
         public byte[]? FileBytes { get; set; }
         public string? Name { get; set; }

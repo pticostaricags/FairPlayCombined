@@ -129,11 +129,17 @@
     <Build Include="FairPlaySocial\ProfileVisitor.sql" />
     <Build Include="FairPlaySocial\UserMessage.sql" />
     <Build Include="FairPlaySocial\UserProfile.sql" />
+    <Build Include="FairPlayTube\Tables\VideoIndexingCost.sql" />
+    <Build Include="FairPlayTube\Tables\VideoIndexingMargin.sql" />
+    <Build Include="FairPlayTube\Tables\VideoJob.sql" />
+    <Build Include="FairPlayTube\Tables\VideoJobApplication.sql" />
+    <Build Include="FairPlayTube\Tables\VideoJobApplicationStatus.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\3-FairPlaySocial.sql" />
+    <None Include="Scripts\4-FairPlayTube.sql" />
   </ItemGroup>
 </Project>

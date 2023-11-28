@@ -99,7 +99,15 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<VideoIndexStatus> VideoIndexStatus { get; set; }
 
+    public virtual DbSet<VideoIndexingCost> VideoIndexingCost { get; set; }
+
+    public virtual DbSet<VideoIndexingMargin> VideoIndexingMargin { get; set; }
+
     public virtual DbSet<VideoInfo> VideoInfo { get; set; }
+
+    public virtual DbSet<VideoJob> VideoJob { get; set; }
+
+    public virtual DbSet<VideoJobApplicationStatus> VideoJobApplicationStatus { get; set; }
 
     public virtual DbSet<VideoVisibility> VideoVisibility { get; set; }
 
@@ -403,6 +411,18 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.VideoVisibility).WithMany(p => p.VideoInfo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoInfo_VideoVisibility");
+        });
+
+        modelBuilder.Entity<VideoJob>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoJob)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoJob_VideoInfo");
+        });
+
+        modelBuilder.Entity<VideoJobApplicationStatus>(entity =>
+        {
+            entity.Property(e => e.VideoJobApplicationStatusId).ValueGeneratedNever();
         });
 
         modelBuilder.Entity<VideoVisibility>(entity =>

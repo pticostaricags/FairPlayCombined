@@ -101,12 +101,12 @@ builder.Services.AddSignalR(hubOptions =>
 {
     hubOptions.MaximumReceiveMessageSize = 20 * 1024 * 1024;
 });
-
+builder.Services.AddSingleton(azureVideoIndexerServiceConfiguration);
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
-builder.Services.AddTransient<AzureVideoIndexerService>(sp =>
+builder.Services.AddTransient(sp =>
 {
     return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
         new HttpClient());
