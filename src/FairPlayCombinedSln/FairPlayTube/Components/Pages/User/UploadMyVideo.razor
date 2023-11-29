@@ -84,7 +84,7 @@
             this.createVideoInfoModel.Description!,
             this.createVideoInfoModel.Name!);
             this.createVideoInfoModel.VideoId = indexVideoResult!.id;
-            this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Pending;
+            this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
             this.frmCreateVideoInfo.EditContext.Validate();
         }
         catch (Exception ex)

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
@@ -60,9 +59,6 @@ public partial class UserProfile
     public int PreferredTattooStatusId { get; set; }
 
     public DateTimeOffset BirthDate { get; set; }
-
-    [Required]
-    public Geometry CurrentGeoLocation { get; set; }
 
     [ForeignKey("ApplicationUserId")]
     [InverseProperty("UserProfile")]

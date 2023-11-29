@@ -33,7 +33,7 @@ var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") 
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlayTube), ref connectionString);
 
-builder.Services.AddTransient<IUserProviderService, UserProviderService>();
+builder.Services.AddTransient<IUserProviderService, VideoIndexingUserProviderService>();
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
     (sp, optionsAction) =>
     {
