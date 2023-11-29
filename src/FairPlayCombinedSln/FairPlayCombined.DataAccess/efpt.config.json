@@ -184,6 +184,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoIndexingTransaction]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoIndexStatus]",
          "ObjectType": 0
       },

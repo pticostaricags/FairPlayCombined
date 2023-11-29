@@ -103,6 +103,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<VideoIndexingMargin> VideoIndexingMargin { get; set; }
 
+    public virtual DbSet<VideoIndexingTransaction> VideoIndexingTransaction { get; set; }
+
     public virtual DbSet<VideoInfo> VideoInfo { get; set; }
 
     public virtual DbSet<VideoJob> VideoJob { get; set; }
@@ -390,6 +392,13 @@ public partial class FairPlayCombinedDbContext : DbContext
         modelBuilder.Entity<VideoIndexStatus>(entity =>
         {
             entity.Property(e => e.VideoIndexStatusId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<VideoIndexingTransaction>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoIndexingTransaction)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoIndexingTransaction_VideoInfo");
         });
 
         modelBuilder.Entity<VideoInfo>(entity =>

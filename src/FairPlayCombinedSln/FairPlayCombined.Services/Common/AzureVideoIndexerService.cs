@@ -2,6 +2,7 @@
 using Azure.Core;
 using Azure.Identity;
 using FairPlayCombined.Common.CustomExceptions;
+using FairPlayCombined.Models.AzureVideoIndexer;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Newtonsoft.Json;
 using System;
@@ -122,6 +123,31 @@ namespace FairPlayCombined.Services.Common
                     var responseContent = await response.Content.ReadAsStringAsync();
                     throw new AzureVideoIndexerException($"Error: {reasonPhrase} - Details:{responseContent}");
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new AzureVideoIndexerException(ex.Message);
+            }
+        }
+
+        public async Task<SearchVideosResponseModel?> SearchVideosByIdsAsync(
+            string viAccessToken,
+            string[] videoIds,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var idKeyPairs = videoIds.Select(p => $"id={p}");
+                string idQueryString = String.Join("&", idKeyPairs);
+                string requestUrl = $"https://api.videoindexer.ai/" +
+                    $"/{azureVideoIndexerServiceConfiguration.Location}" +
+                    $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
+                    $"/Videos/Search" +
+                    $"?{idQueryString}";
+                httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", viAccessToken);
+                var result = await httpClient.GetFromJsonAsync<SearchVideosResponseModel>(requestUrl, cancellationToken: cancellationToken);
+                return result;
             }
             catch (Exception ex)
             {

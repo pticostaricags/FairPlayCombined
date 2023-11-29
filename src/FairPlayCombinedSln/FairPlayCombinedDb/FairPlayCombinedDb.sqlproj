@@ -134,6 +134,7 @@
     <Build Include="FairPlayTube\Tables\VideoJob.sql" />
     <Build Include="FairPlayTube\Tables\VideoJobApplication.sql" />
     <Build Include="FairPlayTube\Tables\VideoJobApplicationStatus.sql" />
+    <Build Include="FairPlayTube\Tables\VideoIndexingTransaction.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />

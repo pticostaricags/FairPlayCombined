@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
@@ -58,6 +59,8 @@ public partial class Post
     public double? CreatedAtLatitude { get; set; }
 
     public double? CreatedAtLongitude { get; set; }
+
+    public Geometry CreatedAtGeoLocation { get; set; }
 
     public long? RootPostId { get; set; }
 
