@@ -20,75 +20,99 @@ var azureVideoIndexerResourceName = builder.Configuration["AzureVideoIndexerReso
     throw new InvalidOperationException("'AzureVideoIndexerResourceName' not found");
 var azureVideoIndexerSubscriptionId = builder.Configuration["AzureVideoIndexerSubscriptionId"] ??
     throw new InvalidOperationException("'AzureVideoIndexerSubscriptionId' not found");
-builder.AddProject<Projects.FairPlayDating>(nameof(Projects.FairPlayDating).ToLower())
-    .WithEnvironment(callback =>
-    {
-        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
-        callback.EnvironmentVariables.Add("AzureOpenAIKey", azureOpenAIKey);
-        callback.EnvironmentVariables.Add("AzureOpenAIEndpoint", azureOpenAIEndpoint);
-    });
 
-
-builder.AddProject<Projects.FairPlayTube>(nameof(Projects.FairPlayTube).ToLower())
-.WithEnvironment(callback =>
+bool addFairPlyDating = Convert.ToBoolean(builder.Configuration["AddFairPlyDating"]);
+if (addFairPlyDating)
 {
-    callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
-    callback.EnvironmentVariables.Add("AzureVideoIndexerAccountId", azureVideoIndexerAccountId);
-    callback.EnvironmentVariables.Add("AzureVideoIndexerLocation", azureVideoIndexerLocation);
-    callback.EnvironmentVariables.Add("AzureVideoIndexerResourceGroup", azureVideoIndexerResourceGroup);
-    callback.EnvironmentVariables.Add("AzureVideoIndexerResourceName", azureVideoIndexerResourceName);
-    callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
-
-});
-
-
-builder.AddProject<Projects.FairPlayShop>(nameof(Projects.FairPlayShop).ToLower())
-.WithEnvironment(callback =>
-{
-    callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
-});
-
-
-builder.AddProject<Projects.FairPlayCombined_CitiesImporter>(nameof(CitiesImporter).ToLower())
-    .WithEnvironment(callback =>
+    builder.AddProject<Projects.FairPlayDating>(nameof(Projects.FairPlayDating).ToLower())
+        .WithEnvironment(callback =>
+        {
+            callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+            callback.EnvironmentVariables.Add("AzureOpenAIKey", azureOpenAIKey);
+            callback.EnvironmentVariables.Add("AzureOpenAIEndpoint", azureOpenAIEndpoint);
+        });
+    if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
     {
-        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
-    });
-
-builder.AddProject<Projects.FairPlayAdminPortal>(nameof(Projects.FairPlayAdminPortal).ToLower())
-    .WithEnvironment(callback =>
-    {
-        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
-    });
-
-
-builder.AddProject<Projects.FairPlaySocial>(nameof(Projects.FairPlaySocial).ToLower())
-    .WithEnvironment(callback =>
-    {
-        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
-    });
-
-if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
-{
-    AddTestDataGenerator(builder, fairPlayCombinedDbCS);
+        AddTestDataGenerator(builder, fairPlayCombinedDbCS);
+    }
 }
 
-if (Convert.ToBoolean(builder.Configuration["AddFairPlaySocialTestDataGenerator"]))
+bool addFairPlayTube = Convert.ToBoolean(builder.Configuration["AddFairPlayTube"]);
+if (addFairPlayTube)
 {
-    builder.AddProject<Projects.FairPlaySocial_TestDataGenerator>("fairplaysocialtestdatagenerator")
+    builder.AddProject<Projects.FairPlayTube>(nameof(Projects.FairPlayTube).ToLower())
+    .WithEnvironment(callback =>
+    {
+        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+        callback.EnvironmentVariables.Add("AzureVideoIndexerAccountId", azureVideoIndexerAccountId);
+        callback.EnvironmentVariables.Add("AzureVideoIndexerLocation", azureVideoIndexerLocation);
+        callback.EnvironmentVariables.Add("AzureVideoIndexerResourceGroup", azureVideoIndexerResourceGroup);
+        callback.EnvironmentVariables.Add("AzureVideoIndexerResourceName", azureVideoIndexerResourceName);
+        callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
+
+    });
+}
+
+bool addFairPlayShop = Convert.ToBoolean(builder.Configuration["AddFairPlayShop"]);
+if (addFairPlayShop)
+{
+    builder.AddProject<Projects.FairPlayShop>(nameof(Projects.FairPlayShop).ToLower())
+    .WithEnvironment(callback =>
+    {
+        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+    });
+}
+
+bool addCitiesImporter = Convert.ToBoolean(builder.Configuration["AddCitiesImporter"]);
+if (addCitiesImporter)
+{
+    builder.AddProject<Projects.FairPlayCombined_CitiesImporter>(nameof(CitiesImporter).ToLower())
         .WithEnvironment(callback =>
         {
             callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
         });
 }
 
-builder.AddProject<Projects.FairPlayCombined_LocalizationGenerator>("fairplaycombinedlocalizationgenerator")
-    .WithEnvironment(callback =>
+bool addFairPlatAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPlatAdminPortal"]);
+if (addFairPlatAdminPortal)
+{
+    builder.AddProject<Projects.FairPlayAdminPortal>(nameof(Projects.FairPlayAdminPortal).ToLower())
+        .WithEnvironment(callback =>
+        {
+            callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+        });
+}
+
+bool addFairPlaySocial = Convert.ToBoolean(builder.Configuration["AddFairPlaySocial"]);
+if (addFairPlaySocial)
+{
+    builder.AddProject<Projects.FairPlaySocial>(nameof(Projects.FairPlaySocial).ToLower())
+        .WithEnvironment(callback =>
+        {
+            callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+        });
+    if (Convert.ToBoolean(builder.Configuration["AddFairPlaySocialTestDataGenerator"]))
     {
-        callback.EnvironmentVariables.Add("AzureOpenAIEndpoint", builder.Configuration["AzureOpenAIEndpoint"]!);
-        callback.EnvironmentVariables.Add("AzureOpenAIKey", builder.Configuration["AzureOpenAIKey"]!);
-        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
-    });
+        builder.AddProject<Projects.FairPlaySocial_TestDataGenerator>("fairplaysocialtestdatagenerator")
+            .WithEnvironment(callback =>
+            {
+                callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+            });
+    }
+}
+
+
+bool addLocalizationGenerator = Convert.ToBoolean(builder.Configuration["AddLocalizationGenerator"]);
+if (addLocalizationGenerator)
+{
+    builder.AddProject<Projects.FairPlayCombined_LocalizationGenerator>("fairplaycombinedlocalizationgenerator")
+        .WithEnvironment(callback =>
+        {
+            callback.EnvironmentVariables.Add("AzureOpenAIEndpoint", builder.Configuration["AzureOpenAIEndpoint"]!);
+            callback.EnvironmentVariables.Add("AzureOpenAIKey", builder.Configuration["AzureOpenAIKey"]!);
+            callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+        });
+}
 
 builder.Build().Run();
 
