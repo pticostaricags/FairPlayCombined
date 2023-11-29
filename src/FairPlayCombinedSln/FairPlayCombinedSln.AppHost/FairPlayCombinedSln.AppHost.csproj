@@ -50,6 +50,7 @@
     <ProjectReference Include="..\FairPlaySocial\FairPlaySocial.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
+    <ProjectReference Include="..\FairPlayTube.VideoIndexing\FairPlayTube.VideoIndexing.csproj" />
     <ProjectReference Include="..\FairPlayTube\FairPlayTube.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>

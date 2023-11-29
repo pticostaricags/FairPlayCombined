@@ -51,6 +51,17 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
 
     });
+    builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")
+        .WithEnvironment(callback =>
+    {
+        callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+        callback.EnvironmentVariables.Add("AzureVideoIndexerAccountId", azureVideoIndexerAccountId);
+        callback.EnvironmentVariables.Add("AzureVideoIndexerLocation", azureVideoIndexerLocation);
+        callback.EnvironmentVariables.Add("AzureVideoIndexerResourceGroup", azureVideoIndexerResourceGroup);
+        callback.EnvironmentVariables.Add("AzureVideoIndexerResourceName", azureVideoIndexerResourceName);
+        callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
+
+    });
 }
 
 bool addFairPlayShop = Convert.ToBoolean(builder.Configuration["AddFairPlayShop"]);
