@@ -26,7 +26,7 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             }
             var allVideosInProcessingStatus = await dbContext.VideoInfo.
-                Where(p => p.VideoIndexStatusId == 
+                Where(p => p.VideoIndexStatusId ==
                 (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processing)
                 .Select(p => p.VideoId)
                 .ToArrayAsync(stoppingToken);
@@ -68,7 +68,7 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
                             IndexingCost = costPerMinute * ((decimal)singleVideoEntity.VideoDurationInSeconds / 60)
                         }, stoppingToken);
                         singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
-                        singleVideoEntity.VideoDurationInSeconds = 
+                        singleVideoEntity.VideoDurationInSeconds =
                             videosIndex!.results!.Where(p => p.id == singleVideoEntity.VideoId)
                             .Single().durationInSeconds;
                     }
@@ -76,8 +76,54 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
                     await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);
                 }
             }
+            var armToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
+            var getViTokenResponse = await azureVideoIndexerService
+                .GetAccessTokenForArmAccountAsync(armToken, stoppingToken);
+            var supportedLanguages = await azureVideoIndexerService
+                .GetSupportedLanguagesAsync(getViTokenResponse!.AccessToken!, stoppingToken);
+            foreach (var singleSupportedLanguage in supportedLanguages!)
+            {
+                await AddLanguageCaptions(dbContext,
+                    azureVideoIndexerService,
+                    getViTokenResponse!.AccessToken!,
+                    singleSupportedLanguage!.languageCode!,
+                    stoppingToken);
+            }
             logger.LogInformation("Current Iteration finished at: {time}. Next Iteration at {time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
             await Task.Delay(timeToWait, stoppingToken);
+        }
+    }
+
+    private async Task AddLanguageCaptions(
+        FairPlayCombinedDbContext dbContext, 
+        AzureVideoIndexerService azureVideoIndexerService, 
+        string viAccessToken,
+        string language,
+        CancellationToken stoppingToken)
+    {
+        var allProcessedVideosWithNoLanguageCaptions =
+                        await dbContext.VideoInfo
+                        .Include(p => p.VideoCaptions)
+                        .Where(p => !p.VideoCaptions.Any(p => p.Language == language) &&
+                        p.VideoIndexStatusId == (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed)
+                        .ToArrayAsync(stoppingToken);
+        foreach (var singleVideoWithNoLanguageCaptions in allProcessedVideosWithNoLanguageCaptions)
+        {
+            logger.LogInformation("Retrieving captions for videoId: {videoId}. Language: {language}",
+                singleVideoWithNoLanguageCaptions.VideoId,
+                language);
+            var videoCaptions =
+                await azureVideoIndexerService.GetVideoVTTCaptionsAsync(
+                    singleVideoWithNoLanguageCaptions.VideoId,
+                    viAccessToken,
+                    language, stoppingToken);
+            await dbContext.VideoCaptions.AddAsync(new VideoCaptions()
+            {
+                Language = language,
+                Content = videoCaptions,
+                VideoInfoId = singleVideoWithNoLanguageCaptions.VideoInfoId
+            }, stoppingToken);
+            await dbContext.SaveChangesAsync(stoppingToken);
         }
     }
 }

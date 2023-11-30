@@ -93,6 +93,9 @@ public partial class VideoInfo
     [InverseProperty("VideoInfo")]
     public virtual AspNetUsers ApplicationUser { get; set; }
 
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoCaptions> VideoCaptions { get; set; } = new List<VideoCaptions>();
+
     [ForeignKey("VideoIndexStatusId")]
     [InverseProperty("VideoInfo")]
     public virtual VideoIndexStatus VideoIndexStatus { get; set; }

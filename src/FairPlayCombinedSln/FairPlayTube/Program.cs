@@ -15,6 +15,7 @@ using FairPlayCombined.DataAccess.Interceptors;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayCombined.Services.FairPlayTube;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -157,6 +158,23 @@ app.MapControllers();
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
+
+app.MapGet("/api/video/{videoId}/captions/{language}",
+    async (
+        [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        [FromRoute] string videoId, 
+        [FromRoute] string language,
+        CancellationToken cancellationToken) => 
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await dbContext.VideoCaptions
+        .Include(p=>p.VideoInfo)
+        .Where(p => p.VideoInfo.VideoId == videoId &&
+        p.Language == language)
+        .Select(p => p.Content)
+        .SingleOrDefaultAsync(cancellationToken);
+        return TypedResults.Content(result, System.Net.Mime.MediaTypeNames.Text.Plain);
+    });
 
 app.UseSwagger();
 app.UseSwaggerUI();

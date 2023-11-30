@@ -135,6 +135,7 @@
     <Build Include="FairPlayTube\Tables\VideoJobApplication.sql" />
     <Build Include="FairPlayTube\Tables\VideoJobApplicationStatus.sql" />
     <Build Include="FairPlayTube\Tables\VideoIndexingTransaction.sql" />
+    <Build Include="FairPlayTube\Tables\VideoCaptions.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
@@ -142,5 +143,8 @@
   <ItemGroup>
     <None Include="Scripts\3-FairPlaySocial.sql" />
     <None Include="Scripts\4-FairPlayTube.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="FairPlayCombinedDb.refactorlog" />
   </ItemGroup>
 </Project>

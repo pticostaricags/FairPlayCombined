@@ -97,6 +97,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<UserProfile> UserProfile { get; set; }
 
+    public virtual DbSet<VideoCaptions> VideoCaptions { get; set; }
+
     public virtual DbSet<VideoIndexStatus> VideoIndexStatus { get; set; }
 
     public virtual DbSet<VideoIndexingCost> VideoIndexingCost { get; set; }
@@ -387,6 +389,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.TattooStatus).WithMany(p => p.UserProfileTattooStatus)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserProfile_TattooStatus");
+        });
+
+        modelBuilder.Entity<VideoCaptions>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoCaptions)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoCaptions_VideoInfo");
         });
 
         modelBuilder.Entity<VideoIndexStatus>(entity =>

@@ -79,7 +79,8 @@
         var singleVideoIndex = videoIndex!.videos!.Single();
         await jsRuntime.InvokeVoidAsync("initSource", $"vid-{videoId}",
         singleVideoIndex.publishedUrl,
-        singleVideoIndex.viewToken);
+        singleVideoIndex.viewToken,
+        videoId);
         this.IsBusy = false;
         StateHasChanged();
     }

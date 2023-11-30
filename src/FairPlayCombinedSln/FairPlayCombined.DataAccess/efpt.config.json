@@ -179,6 +179,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoCaptions]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoIndexingCost]",
          "ObjectType": 0
       },

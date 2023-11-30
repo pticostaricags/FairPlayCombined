@@ -3,7 +3,9 @@ using Azure.Core;
 using Azure.Identity;
 using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.Models.AzureVideoIndexer;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
+using NetTopologySuite.Geometries;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -71,7 +73,7 @@ namespace FairPlayCombined.Services.Common
             multipartContent.Add(
                 new StreamContent(new MemoryStream(indexVideoFromBase64FormatModel!.FileBytes!)),
                 "file", indexVideoFromBase64FormatModel.Name!);
-            httpClient.DefaultRequestHeaders.Authorization = 
+            httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", viAccountAccessToken);
             var response = await httpClient.PostAsync(requestUrl, multipartContent, cancellationToken: cancellationToken);
             if (response.IsSuccessStatusCode)
@@ -87,7 +89,7 @@ namespace FairPlayCombined.Services.Common
             }
         }
 
-        public async Task<UploadVideoResponseModel?> IndexVideoFromUriAsync(Uri videoUri, 
+        public async Task<UploadVideoResponseModel?> IndexVideoFromUriAsync(Uri videoUri,
             string armAccessToken,
             string name,
             string description, string fileName,
@@ -156,9 +158,53 @@ namespace FairPlayCombined.Services.Common
             }
         }
 
-        public async Task<GetVideoIndexResponseModel?> GetVideoIndexAsync(string videoId, 
-            string viAccessToken,
-            CancellationToken cancellationToken = default)
+        public async Task<string> GetVideoVTTCaptionsAsync(string videoId,
+            string viAccessToken, string language,
+        CancellationToken cancellationToken = default)
+        {
+            string requestUrl = $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +
+                $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
+                $"/Videos/{videoId}" +
+                $"/Captions" +
+                $"?format=Vtt" +
+                $"&language={language}" +
+                $"&includeAudioEffects=true" +
+                $"&includeSpeakers=true";
+            try
+            {
+                httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", viAccessToken);
+                var result = await httpClient.GetStringAsync(requestUrl, cancellationToken: cancellationToken);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new AzureVideoIndexerException(ex.Message);
+            }
+        }
+
+        public async Task<SupportedLanguageModel[]?> GetSupportedLanguagesAsync(
+        string viAccessToken,
+        CancellationToken cancellationToken = default)
+        {
+            string requestUrl = $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +
+                $"/SupportedLanguages";
+            try
+            {
+                httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", viAccessToken);
+                var result = await httpClient.GetFromJsonAsync<SupportedLanguageModel[]>(requestUrl, cancellationToken: cancellationToken);
+                return result;
+            }
+            catch(Exception ex) 
+            {
+                throw new AzureVideoIndexerException(ex.Message);
+            }
+        }
+
+        public async Task<GetVideoIndexResponseModel?> GetVideoIndexAsync(string videoId,
+        string viAccessToken,
+        CancellationToken cancellationToken = default)
         {
             //Check https://api-portal.videoindexer.ai/api-details#api=Operations&operation=Get-Video-Index
             string requestUrl = $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +

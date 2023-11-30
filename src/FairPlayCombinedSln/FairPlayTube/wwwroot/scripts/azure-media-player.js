@@ -1,5 +1,5 @@
 // Init Source
-function initSource(myPlayerElementId, publishedUrl, viewToken) {
+function initSource(myPlayerElementId, publishedUrl, viewToken, videoId) {
     // Init your AMP instance
     let myPlayer = amp(myPlayerElementId, { /* Options */
         "nativeControlsForTouch": false,
@@ -10,9 +10,6 @@ function initSource(myPlayerElementId, publishedUrl, viewToken) {
         poster: ""
     }, function () {
 
-
-        // Set the source dynamically
-        initSource.call(this);
     });
 
     myPlayer.addEventListener("pause", function (event) {
@@ -30,5 +27,8 @@ function initSource(myPlayerElementId, publishedUrl, viewToken) {
                 authenticationToken: viewToken
             }]
         }
-    ], []);
+    ], [
+        { src: `/api/video/${videoId}/captions/en`, srclang: "en", kind: "subtitles", label: "English" },
+        { src: `/api/video/${videoId}/captions/es`, srclang: "es", kind: "subtitles", label: "Spanish" }
+    ]);
 }

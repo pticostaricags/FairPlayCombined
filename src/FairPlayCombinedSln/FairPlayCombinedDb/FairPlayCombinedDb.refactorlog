@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="c6f26b33-c4ce-4e91-816d-6797e05440e7" ChangeDateTime="11/30/2023 19:59:39">
+    <Property Name="ElementName" Value="[dbo].[VideoCaptions].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[VideoCaptions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoCaptionsId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="10c60bf6-2457-4cf4-968d-f4ba2e760ddf" ChangeDateTime="11/30/2023 20:03:03">
+    <Property Name="ElementName" Value="[FairPlayTube].[CK_VideoCaptions_AllowedValues]" />
+    <Property Name="ElementType" Value="SqlCheckConstraint" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoCaptions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CK_VideoCaptions_AllowedLanguages]" />
+  </Operation>
+</Operations>
