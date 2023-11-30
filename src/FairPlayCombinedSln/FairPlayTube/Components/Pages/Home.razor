@@ -1,10 +1,12 @@
 ﻿@page "/"
 @using FairPlayCombined.Services.Common
+@using FairPlayTube.Components.Spinners
 @rendermode RenderMode.InteractiveServer
 @inject IJSRuntime jsRuntime
 @inject AzureVideoIndexerService azureVideoIndexerService
 <PageTitle>Home</PageTitle>
 
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 <div class="inline">
     <video id="vid1"
            class="azuremediaplayer amp-default-skin amp-stream-skin"
@@ -21,10 +23,13 @@
 <div class="inline"></div>
 @code
 {
+    private bool IsBusy { get; set; }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            this.IsBusy = true;
+            StateHasChanged();
             var videoId = "4ce67c81dc"; //TODO: Replace with retrieval of list of videos and play on click
             var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
             var viAccessTokenResponse = await azureVideoIndexerService
@@ -35,6 +40,8 @@
             await jsRuntime.InvokeVoidAsync("initSource", "vid1",
             videoIndex!.videos!.Single().publishedUrl,
             videoIndex!.videos!.Single().viewToken);
+            this.IsBusy = false;
+            StateHasChanged();
         }
     }
 }

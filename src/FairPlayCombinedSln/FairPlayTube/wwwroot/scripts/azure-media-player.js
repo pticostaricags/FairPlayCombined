@@ -1,6 +1,5 @@
 // Init Source
 function initSource(myPlayerElementId, publishedUrl, viewToken) {
-    debugger;
     // Init your AMP instance
     let myPlayer = amp(myPlayerElementId, { /* Options */
         "nativeControlsForTouch": false,
