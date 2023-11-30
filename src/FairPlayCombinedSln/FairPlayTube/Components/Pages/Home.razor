@@ -1,47 +1,87 @@
 ﻿@page "/"
+@using FairPlayCombined.Common
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.Common
+@using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
-@rendermode RenderMode.InteractiveServer
+@using Microsoft.AspNetCore.Components.QuickGrid
+@rendermode NoPreRender
 @inject IJSRuntime jsRuntime
 @inject AzureVideoIndexerService azureVideoIndexerService
+@inject VideoInfoService videoInfoService
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-<div class="inline">
-    <video id="vid1"
-           class="azuremediaplayer amp-default-skin amp-stream-skin"
-           autoplay
-           controls
-           width="640"
-           height="480">
-        <p class="amp-no-js">
-            To view this video please enable JavaScript, and consider upgrading to
-            a web browser that supports HTML5 video
-        </p>
-    </video>
-</div>
-<div class="inline"></div>
+<QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+    <TemplateColumn>
+        <div class="inline">
+            <video id="@($"vid-{context.VideoId}")"
+                   class="azuremediaplayer amp-default-skin amp-stream-skin"
+                   autoplay
+                   controls
+                   width="640"
+                   height="480">
+                <p class="amp-no-js">
+                    To view this video please enable JavaScript, and consider upgrading to
+                    a web browser that supports HTML5 video
+                </p>
+            </video>
+        </div>
+        <div class="inline"></div>
+        <div>
+            <button type="button" class="btn btn-primary" @onclick="@( async () => await OnPlayVideoClickedAsync(context!.VideoId!))">Play</button>
+        </div>
+    </TemplateColumn>
+</QuickGrid>
+<Paginator State="this.paginationState"></Paginator>
 @code
 {
+    private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private GridItemsProvider<VideoInfoModel>? ItemsProvider;
+    PaginationState paginationState = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
+    private CancellationTokenSource cancellationTokenSource = new();
+
+    protected override void OnInitialized()
     {
-        if (firstRender)
+        ItemsProvider = async req =>
         {
             this.IsBusy = true;
             StateHasChanged();
-            var videoId = "4ce67c81dc"; //TODO: Replace with retrieval of list of videos and play on click
-            var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
-            var viAccessTokenResponse = await azureVideoIndexerService
-            .GetAccessTokenForArmAccountAsync(armAccessToken, CancellationToken.None);
-            var videoIndex = await azureVideoIndexerService
-            .GetVideoIndexAsync(videoId, viAccessTokenResponse!.AccessToken!,
-            CancellationToken.None);
-            await jsRuntime.InvokeVoidAsync("initSource", "vid1",
-            videoIndex!.videos!.Single().publishedUrl,
-            videoIndex!.videos!.Single().viewToken);
+            PaginationRequest paginationRequest = new()
+                {
+                    PageSize = paginationState.ItemsPerPage,
+                    StartIndex = req.StartIndex
+                };
+            var items = await videoInfoService.GetPaginatedVideoInfoAsync(paginationRequest,
+            this.cancellationTokenSource.Token);
             this.IsBusy = false;
             StateHasChanged();
-        }
+            var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
+            return result;
+        };
     }
+
+    private async Task OnPlayVideoClickedAsync(string videoId)
+    {
+        this.IsBusy = true;
+        StateHasChanged();
+        var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
+        var viAccessTokenResponse = await azureVideoIndexerService
+        .GetAccessTokenForArmAccountAsync(armAccessToken, CancellationToken.None);
+        var videoIndex = await azureVideoIndexerService
+        .GetVideoIndexAsync(videoId, viAccessTokenResponse!.AccessToken!,
+        CancellationToken.None);
+        var singleVideoIndex = videoIndex!.videos!.Single();
+        await jsRuntime.InvokeVoidAsync("initSource", $"vid-{videoId}",
+        singleVideoIndex.publishedUrl,
+        singleVideoIndex.viewToken);
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+
 }
