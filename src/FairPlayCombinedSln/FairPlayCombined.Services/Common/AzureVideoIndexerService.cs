@@ -7,6 +7,7 @@ using Microsoft.Identity.Client.Extensions.Msal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -147,6 +148,28 @@ namespace FairPlayCombined.Services.Common
                 httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", viAccessToken);
                 var result = await httpClient.GetFromJsonAsync<SearchVideosResponseModel>(requestUrl, cancellationToken: cancellationToken);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new AzureVideoIndexerException(ex.Message);
+            }
+        }
+
+        public async Task<GetVideoIndexResponseModel?> GetVideoIndexAsync(string videoId, 
+            string viAccessToken,
+            CancellationToken cancellationToken = default)
+        {
+            //Check https://api-portal.videoindexer.ai/api-details#api=Operations&operation=Get-Video-Index
+            string requestUrl = $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +
+                $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
+                $"/Videos/{videoId}" +
+                $"/Index";
+            try
+            {
+                httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", viAccessToken);
+                var result = await httpClient.GetFromJsonAsync<GetVideoIndexResponseModel>(requestUrl, cancellationToken: cancellationToken);
                 return result;
             }
             catch (Exception ex)

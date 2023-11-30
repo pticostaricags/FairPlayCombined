@@ -14,6 +14,42 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
     public class AzureVideoIndexerServiceTests: ServicesBase
     {
         [TestMethod]
+        public async Task Test_GetVideoIndexAsync()
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            var configuration = configurationBuilder.Build();
+            var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"];
+            var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"];
+            var azureVideoIndexerResourceGroup = configuration["AzureVideoIndexerResourceGroup"];
+            var azureVideoIndexerResourceName = configuration["AzureVideoIndexerResourceName"];
+            var azureVideoIndexerSubscriptionId = configuration["AzureVideoIndexerSubscriptionId"];
+            var testVideoId = configuration["TestVideoId"];
+            AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration =
+                new()
+                {
+                    AccountId = azureVideoIndexerAccountId,
+                    IsArmAccount = true,
+                    Location = azureVideoIndexerLocation,
+                    ResourceGroup = azureVideoIndexerResourceGroup,
+                    ResourceName = azureVideoIndexerResourceName,
+                    SubscriptionId = azureVideoIndexerSubscriptionId,
+                };
+            AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
+                new HttpClient());
+            string bearerToken = await this.AuthenticatedToAzureArmAsync();
+            var getAccessToken = await azureVideoIndexerService
+                .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
+            Assert.IsNotNull(getAccessToken);
+            var result = 
+            await azureVideoIndexerService.GetVideoIndexAsync(testVideoId!, 
+                getAccessToken!.AccessToken!,
+                CancellationToken.None);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.videos?.Length);
+        }
+
+        [TestMethod]
         public async Task Test_GetAccessTokenForArmAccountAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
