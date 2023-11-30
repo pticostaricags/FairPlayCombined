@@ -1,7 +1,40 @@
 ﻿@page "/"
-
+@using FairPlayCombined.Services.Common
+@rendermode RenderMode.InteractiveServer
+@inject IJSRuntime jsRuntime
+@inject AzureVideoIndexerService azureVideoIndexerService
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<div class="inline">
+    <video id="vid1"
+           class="azuremediaplayer amp-default-skin amp-stream-skin"
+           autoplay
+           controls
+           width="640"
+           height="480">
+        <p class="amp-no-js">
+            To view this video please enable JavaScript, and consider upgrading to
+            a web browser that supports HTML5 video
+        </p>
+    </video>
+</div>
+<div class="inline"></div>
+@code
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var videoId = "4ce67c81dc"; //TODO: Replace with retrieval of list of videos and play on click
+            var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
+            var viAccessTokenResponse = await azureVideoIndexerService
+            .GetAccessTokenForArmAccountAsync(armAccessToken, CancellationToken.None);
+            var videoIndex = await azureVideoIndexerService
+            .GetVideoIndexAsync(videoId, viAccessTokenResponse!.AccessToken!,
+            CancellationToken.None);
+            await jsRuntime.InvokeVoidAsync("initSource", "vid1",
+            videoIndex!.videos!.Single().publishedUrl,
+            videoIndex!.videos!.Single().viewToken);
+        }
+    }
+}
