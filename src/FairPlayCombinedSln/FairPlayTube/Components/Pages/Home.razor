@@ -76,11 +76,21 @@
         var videoIndex = await azureVideoIndexerService
         .GetVideoIndexAsync(videoId, viAccessTokenResponse!.AccessToken!,
         CancellationToken.None);
+        var supportedLanguages = await azureVideoIndexerService
+        .GetSupportedLanguagesAsync(viAccessTokenResponse!.AccessToken!,
+        this.cancellationTokenSource.Token);
         var singleVideoIndex = videoIndex!.videos!.Single();
         await jsRuntime.InvokeVoidAsync("initSource", $"vid-{videoId}",
         singleVideoIndex.publishedUrl,
         singleVideoIndex.viewToken,
-        videoId);
+        videoId,
+        supportedLanguages!.Select(p => new
+        {
+            src = $"/api/video/{videoId}/captions/{p.languageCode}",
+            srclang = p.languageCode,
+            kind = "subtitles",
+            label = p.name
+        }).ToArray());
         this.IsBusy = false;
         StateHasChanged();
     }

@@ -1,5 +1,6 @@
 // Init Source
-function initSource(myPlayerElementId, publishedUrl, viewToken, videoId) {
+function initSource(myPlayerElementId, publishedUrl, viewToken, videoId,
+    supportedLanguages) {
     // Init your AMP instance
     let myPlayer = amp(myPlayerElementId, { /* Options */
         "nativeControlsForTouch": false,
@@ -27,8 +28,5 @@ function initSource(myPlayerElementId, publishedUrl, viewToken, videoId) {
                 authenticationToken: viewToken
             }]
         }
-    ], [
-        { src: `/api/video/${videoId}/captions/en`, srclang: "en", kind: "subtitles", label: "English" },
-        { src: `/api/video/${videoId}/captions/es`, srclang: "es", kind: "subtitles", label: "Spanish" }
-    ]);
+    ], supportedLanguages);
 }
