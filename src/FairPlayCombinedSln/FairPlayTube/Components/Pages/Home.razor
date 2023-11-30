@@ -90,7 +90,7 @@
             srclang = p.languageCode,
             kind = "subtitles",
             label = p.name
-        }).ToArray());
+        }).OrderBy(p=>p.label).ToArray());
         this.IsBusy = false;
         StateHasChanged();
     }
