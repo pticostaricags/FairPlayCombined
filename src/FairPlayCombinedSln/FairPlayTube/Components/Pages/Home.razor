@@ -57,7 +57,7 @@
                     PageSize = paginationState.ItemsPerPage,
                     StartIndex = req.StartIndex
                 };
-            var items = await videoInfoService.GetPaginatedVideoInfoAsync(paginationRequest,
+            var items = await videoInfoService.GetPaginatedCompletedVideoInfoAsync(paginationRequest,
             this.cancellationTokenSource.Token);
             this.IsBusy = false;
             StateHasChanged();
