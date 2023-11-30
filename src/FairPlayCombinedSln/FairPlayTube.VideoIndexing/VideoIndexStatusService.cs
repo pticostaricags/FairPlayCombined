@@ -12,6 +12,7 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        TimeSpan timeToWait = TimeSpan.FromMinutes(5);
         var scope = serviceScopeFactory.CreateScope();
         var dbContextFactory = scope.ServiceProvider
             .GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
@@ -35,6 +36,17 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
                 var getviTokenResult = await azureVideoIndexerService.GetAccessTokenForArmAccountAsync(armAccessToken, stoppingToken);
                 var videosIndex = await azureVideoIndexerService.SearchVideosByIdsAsync(
                     getviTokenResult!.AccessToken!, allVideosInProcessingStatus, stoppingToken);
+                if (videosIndex?.results?.Length > 0)
+                {
+                    foreach (var singleVideoIndex in videosIndex.results)
+                    {
+                        logger.LogInformation("VideoId: {videoId}. " +
+                            "Status in VI: {statusInVI}. " +
+                            "Progress: {progress}", singleVideoIndex.id,
+                            singleVideoIndex.state,
+                            singleVideoIndex.processingProgress);
+                    }
+                }
                 var indexCompleteVideos = videosIndex?.results?.Where(p => p.state ==
                 FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed.ToString());
                 if (indexCompleteVideos?.Count() > 0)
@@ -55,12 +67,17 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
                             VideoInfoId = singleVideoEntity.VideoInfoId,
                             IndexingCost = costPerMinute * ((decimal)singleVideoEntity.VideoDurationInSeconds / 60)
                         }, stoppingToken);
+                        singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
+                        singleVideoEntity.VideoDurationInSeconds = 
+                            videosIndex!.results!.Where(p => p.id == singleVideoEntity.VideoId)
+                            .Single().durationInSeconds;
                     }
 
                     await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);
                 }
             }
-            await Task.Delay(1000, stoppingToken);
+            logger.LogInformation("Current Iteration finished at: {time}. Next Iteration at {time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
+            await Task.Delay(timeToWait, stoppingToken);
         }
     }
 }

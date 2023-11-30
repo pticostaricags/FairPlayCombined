@@ -32,7 +32,7 @@ namespace FairPlayCombined.DataAccess.Interceptors
                     var userName = userProviderService.GetCurrentUserId();
                     entity.SourceApplication = applicationName;
                     entity.RowCreationDateTime = DateTime.UtcNow;
-                    entity.RowCreationUser = nameof(userName);
+                    entity.RowCreationUser = userName!;
                     entity.OriginatorIpaddress = String.Join(",", await IpAddressProvider.GetCurrentHostIPv4AddressesAsync());
                 }
             }

@@ -31,7 +31,7 @@ AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = ne
 };
 var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
-Extensions.EnhanceConnectionString(nameof(FairPlayTube), ref connectionString);
+Extensions.EnhanceConnectionString(nameof(FairPlayTube.VideoIndexing), ref connectionString);
 
 builder.Services.AddTransient<IUserProviderService, VideoIndexingUserProviderService>();
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
