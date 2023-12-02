@@ -20,9 +20,12 @@ var azureVideoIndexerResourceName = builder.Configuration["AzureVideoIndexerReso
     throw new InvalidOperationException("'AzureVideoIndexerResourceName' not found");
 var azureVideoIndexerSubscriptionId = builder.Configuration["AzureVideoIndexerSubscriptionId"] ??
     throw new InvalidOperationException("'AzureVideoIndexerSubscriptionId' not found");
-
-bool addFairPlyDating = Convert.ToBoolean(builder.Configuration["AddFairPlyDating"]);
-if (addFairPlyDating)
+var azureContentModeratorEndpoint = builder.Configuration["AzureContentModeratorEndpoint"] ??
+    throw new InvalidOperationException("'AzureContentModeratorEndpoint' not found");
+var azureContentModeratorKey = builder.Configuration["AzureContentModeratorKey"] ??
+    throw new InvalidOperationException("'AzureContentModeratorKey' not found");
+bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
+if (addFairPlayDating)
 {
     builder.AddProject<Projects.FairPlayDating>(nameof(Projects.FairPlayDating).ToLower())
         .WithEnvironment(callback =>
@@ -30,6 +33,8 @@ if (addFairPlyDating)
             callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
             callback.EnvironmentVariables.Add("AzureOpenAIKey", azureOpenAIKey);
             callback.EnvironmentVariables.Add("AzureOpenAIEndpoint", azureOpenAIEndpoint);
+            callback.EnvironmentVariables.Add("AzureContentModeratorEndpoint", azureContentModeratorEndpoint);
+            callback.EnvironmentVariables.Add("AzureContentModeratorKey", azureContentModeratorKey);
         });
     if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
     {

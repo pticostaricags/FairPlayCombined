@@ -14,6 +14,24 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
     public class AzureContentModeratorServiceTest
     {
         [TestMethod]
+        public async Task Test_ModerateImageAsync()
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            var configuration = configurationBuilder.Build();
+            var endpoint = configuration["AzureContentModerator:Endpoint"];
+            var key = configuration["AzureContentModerator:Key"];
+            var adultImageFilePath = configuration["AdultImageFilePath"];
+            ContentModeratorClient contentModeratorClient =
+                new ContentModeratorClient(new ApiKeyServiceClientCredentials(key));
+            contentModeratorClient.Endpoint = endpoint;
+            AzureContentModeratorService azureContentModeratorService = new(contentModeratorClient);
+            var imageStream = File.OpenRead(adultImageFilePath!);
+            var result = await azureContentModeratorService.ModerateImageAsync(imageStream,
+                CancellationToken.None);
+            Assert.IsTrue(result.IsAdult);
+        }
+        [TestMethod]
         public async Task Test_ModeratePlainTextAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();

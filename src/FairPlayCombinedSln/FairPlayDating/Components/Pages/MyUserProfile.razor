@@ -32,7 +32,7 @@
 @inject PhotoService photoService
 @inject IGeoLocationService geolocationService
 @inject AzureOpenAIService azureOpenAIService
-
+@inject AzureContentModeratorService azureContentModeratorService
 <h3>MyUserProfile</h3>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -359,27 +359,37 @@
             StateHasChanged();
             if (inputFileChangeEventArgs.FileCount == 1)
             {
-                using var stream = inputFileChangeEventArgs.File.OpenReadStream();
-                MemoryStream memoryStream = new MemoryStream();
-                await stream.CopyToAsync(memoryStream);
-                var fileName = "test";
-                if (this.createUserProfileModel.ProfilePhotoId == default)
+                var stream = inputFileChangeEventArgs.File.OpenReadStream();
+                var photoModerationResult = await this.azureContentModeratorService
+                .ModerateImageAsync(stream, this.cancellationTokenSource.Token);
+                if (photoModerationResult.IsRacy || photoModerationResult.IsAdult)
                 {
-                    CreatePhotoModel createPhotoModel = new();
-                    createPhotoModel.Name = fileName;
-                    createPhotoModel.Filename = fileName;
-                    createPhotoModel.PhotoBytes = memoryStream.ToArray();
-                    this.createUserProfileModel.ProfilePhotoId =
-                    await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
+                    this.toastService.ShowWarning("You are not allowed to use that image, please use another one");
                 }
                 else
                 {
-                    UpdatePhotoModel updatePhotoModel = new();
-                    updatePhotoModel.PhotoId = this.createUserProfileModel.ProfilePhotoId;
-                    updatePhotoModel.Name = fileName;
-                    updatePhotoModel.Filename = fileName;
-                    updatePhotoModel.PhotoBytes = memoryStream.ToArray();
-                    //await photoService.UpdatePhotoAsync(updatePhotoModel, cancellationTokenSource.Token);
+                    stream = inputFileChangeEventArgs.File.OpenReadStream();
+                    MemoryStream memoryStream = new MemoryStream();
+                    await stream.CopyToAsync(memoryStream);
+                    var fileName = "test";
+                    if (this.createUserProfileModel.ProfilePhotoId == default)
+                    {
+                        CreatePhotoModel createPhotoModel = new();
+                        createPhotoModel.Name = fileName;
+                        createPhotoModel.Filename = fileName;
+                        createPhotoModel.PhotoBytes = memoryStream.ToArray();
+                        this.createUserProfileModel.ProfilePhotoId =
+                        await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
+                    }
+                    else
+                    {
+                        UpdatePhotoModel updatePhotoModel = new();
+                        updatePhotoModel.PhotoId = this.createUserProfileModel.ProfilePhotoId;
+                        updatePhotoModel.Name = fileName;
+                        updatePhotoModel.Filename = fileName;
+                        updatePhotoModel.PhotoBytes = memoryStream.ToArray();
+                        //await photoService.UpdatePhotoAsync(updatePhotoModel, cancellationTokenSource.Token);
+                    }
                 }
             }
         }

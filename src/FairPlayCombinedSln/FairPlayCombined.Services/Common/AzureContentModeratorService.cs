@@ -11,6 +11,18 @@ namespace FairPlayCombined.Services.Common
 {
     public class AzureContentModeratorService(ContentModeratorClient contentModeratorClient)
     {
+        public async Task<ImageModerationResultModel> ModerateImageAsync(Stream imageStream, CancellationToken cancellationToken)
+        {
+            var evaluateResponse = await 
+            contentModeratorClient.ImageModeration.EvaluateFileInputAsync(imageStream,
+                cancellationToken: cancellationToken);
+            ImageModerationResultModel result = new()
+            {
+                IsAdult = evaluateResponse.IsImageAdultClassified!.Value,
+                IsRacy = evaluateResponse.IsImageRacyClassified!.Value
+            };
+            return result;
+        }
         public async Task<TextModerationResultModel> ModeratePlainTextAsync(string text, CancellationToken cancellationToken)
         {
             var textBytes = Encoding.UTF8.GetBytes(text);
@@ -33,6 +45,12 @@ namespace FairPlayCombined.Services.Common
             };
             return result;
         }
+    }
+
+    public class ImageModerationResultModel
+    {
+        public bool IsAdult { get; set; }
+        public bool IsRacy { get; set; }
     }
 
     public class TextModerationResultModel

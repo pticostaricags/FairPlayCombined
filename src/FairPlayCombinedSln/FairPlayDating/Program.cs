@@ -23,6 +23,7 @@ using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using Azure.AI.OpenAI;
 using FairPlayCombined.Common.Identity;
+using Microsoft.Azure.CognitiveServices.ContentModerator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,6 +96,19 @@ builder.Services.AddTransient<OpenAIClient>((sp) =>
     return openAIClient;
 });
 builder.Services.AddTransient<AzureOpenAIService>();
+
+var azureContentModeratorEndpoint = builder.Configuration["AzureContentModeratorEndpoint"] ??
+    throw new InvalidOperationException("'AzureContentModeratorEndpoint' not found");
+var azureContentModeratorKey = builder.Configuration["AzureContentModeratorKey"] ??
+    throw new InvalidOperationException("'AzureContentModeratorKey' not found");
+builder.Services.AddTransient<ContentModeratorClient>(sp => 
+{
+    ContentModeratorClient contentModeratorClient =
+                new ContentModeratorClient(new ApiKeyServiceClientCredentials(azureContentModeratorKey));
+    contentModeratorClient.Endpoint = azureContentModeratorEndpoint;
+    return contentModeratorClient;
+});
+builder.Services.AddTransient<AzureContentModeratorService>();
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
