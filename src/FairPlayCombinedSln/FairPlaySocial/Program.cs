@@ -19,6 +19,8 @@ using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlaySocial.MinimalApiEndpoints;
 using FairPlayCombined.Common.Identity;
+using FairPlaySocial.Properties;
+using FairPlayCombined.Common.GeneratorsAttributes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +53,7 @@ builder.Services.AddAuthorizationBuilder()
     {
         policy.RequireAuthenticatedUser().AddAuthenticationSchemes(IdentityConstants.BearerScheme);
     });
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
+var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlaySocial), ref connectionString);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -77,7 +79,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
             {
                 sqlServerOptionsAction.UseNetTopologySuite();
                 sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
-                    maxRetryDelay: TimeSpan.FromSeconds(3),
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
                     errorNumbersToAdd: null);
             });
     });
@@ -123,6 +125,13 @@ app.UseAntiforgery();
 
 using var scope = app.Services.CreateScope();
 using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
+if (!await ctx.Database.CanConnectAsync())
+    await ctx.Database.EnsureCreatedAsync();
+var transaction = await ctx.Database.BeginTransactionAsync(
+    isolationLevel: System.Data.IsolationLevel.RepeatableRead);
+await ctx.Database.ExecuteSqlRawAsync(Resources._1_Script_PostDeployment1);
+await ctx.Database.ExecuteSqlRawAsync(Resources._3_FairPlaySocial);
+await transaction.CommitAsync();
 var supportedCultures = ctx.Culture.Select(p => p.Name).ToArray();
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])

@@ -4,6 +4,7 @@ using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayTube;
 using FairPlayTube.VideoIndexing;
+using FairPlayTube.VideoIndexing.Properties;
 using Microsoft.EntityFrameworkCore;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -29,7 +30,7 @@ AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = ne
     ResourceName = azureVideoIndexerResourceName,
     SubscriptionId = azureVideoIndexerSubscriptionId,
 };
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
+var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlayTube.VideoIndexing), ref connectionString);
 
@@ -44,7 +45,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
             {
                 sqlServerOptionsAction.UseNetTopologySuite();
                 sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
-                    maxRetryDelay: TimeSpan.FromSeconds(3),
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
                     errorNumbersToAdd: null);
             });
     });
@@ -60,4 +61,13 @@ builder.Services.AddTransient<VideoInfoService>();
 builder.Services.AddHostedService<VideoIndexStatusService>();
 
 var host = builder.Build();
+var dbContextFactory = host.Services.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
+var ctx = await dbContextFactory.CreateDbContextAsync();
+if (!await ctx.Database.CanConnectAsync())
+    await ctx.Database.EnsureCreatedAsync();
+var transaction =  await ctx.Database.BeginTransactionAsync(
+    isolationLevel: System.Data.IsolationLevel.RepeatableRead);
+await ctx.Database.ExecuteSqlRawAsync(Resources._1_Script_PostDeployment1);
+await ctx.Database.ExecuteSqlRawAsync(Resources._4_FairPlayTube);
+await transaction.CommitAsync();
 host.Run();

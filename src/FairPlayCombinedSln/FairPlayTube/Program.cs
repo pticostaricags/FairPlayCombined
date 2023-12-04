@@ -16,6 +16,8 @@ using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayCombined.Services.FairPlayTube;
 using Microsoft.AspNetCore.Mvc;
+using FairPlayTube.Properties;
+using FairPlayCombined.Common.GeneratorsAttributes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,7 +69,7 @@ AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = ne
     ResourceName = azureVideoIndexerResourceName,
     SubscriptionId = azureVideoIndexerSubscriptionId,
 };
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
+var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlayTube), ref connectionString);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -93,7 +95,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
             {
                 sqlServerOptionsAction.UseNetTopologySuite();
                 sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
-                    maxRetryDelay: TimeSpan.FromSeconds(3),
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
                     errorNumbersToAdd: null);
             });
     });
@@ -143,6 +145,13 @@ app.UseAntiforgery();
 
 using var scope = app.Services.CreateScope();
 using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
+if (!await ctx.Database.CanConnectAsync())
+    await ctx.Database.EnsureCreatedAsync();
+var transaction = await ctx.Database.BeginTransactionAsync(
+    isolationLevel: System.Data.IsolationLevel.RepeatableRead);
+await ctx.Database.ExecuteSqlRawAsync(Resources._1_Script_PostDeployment1);
+await ctx.Database.ExecuteSqlRawAsync(Resources._4_FairPlayTube);
+await transaction.CommitAsync();
 var supportedCultures = ctx.Culture.Select(p => p.Name).ToArray();
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])

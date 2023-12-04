@@ -24,6 +24,7 @@ using FairPlayCombined.Shared.CustomLocalization.EF;
 using Azure.AI.OpenAI;
 using FairPlayCombined.Common.Identity;
 using Microsoft.Azure.CognitiveServices.ContentModerator;
+using FairPlayDating.Properties;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,7 +50,7 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
+var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlayDating), ref connectionString);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -72,7 +73,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
             {
                 sqlServerOptionsAction.UseNetTopologySuite();
                 sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
-                    maxRetryDelay: TimeSpan.FromSeconds(3),
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
                     errorNumbersToAdd: null);
             });
     });
@@ -159,6 +160,14 @@ app.UseAntiforgery();
 
 using var scope = app.Services.CreateScope();
 using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
+if (!await ctx.Database.CanConnectAsync())
+    await ctx.Database.EnsureCreatedAsync();
+var transaction = 
+    await ctx.Database
+    .BeginTransactionAsync(isolationLevel: System.Data.IsolationLevel.RepeatableRead);
+await ctx.Database.ExecuteSqlRawAsync(Resources._1_Script_PostDeployment1);
+await ctx.Database.ExecuteSqlRawAsync(Resources._2_FairPlayDating);
+await transaction.CommitAsync();
 var supportedCultures = ctx.Culture.Select(p => p.Name).ToArray();
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])
