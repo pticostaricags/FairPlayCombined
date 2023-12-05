@@ -72,6 +72,22 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayBudget].[Currency]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayBudget].[Expense]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayBudget].[Income]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayBudget].[MonthlyBudgetInfo]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayDating].[Activity]",
          "ObjectType": 0
       },
@@ -213,6 +229,10 @@
       {
          "Name": "[FairPlayTube].[VideoVisibility]",
          "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayBudget].[vwBalance]",
+         "ObjectType": 3
       }
    ],
    "UiHint": "..\\FairPlayCombinedDb\\FairPlayCombinedDb.sqlproj",

@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayBudgetSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
@@ -67,14 +68,23 @@ public partial class AspNetUsers
     [InverseProperty("User")]
     public virtual ICollection<AspNetUserTokens> AspNetUserTokens { get; set; } = new List<AspNetUserTokens>();
 
+    [InverseProperty("Owner")]
+    public virtual ICollection<Expense> Expense { get; set; } = new List<Expense>();
+
     [InverseProperty("OwnerApplicationUser")]
     public virtual ICollection<Group> Group { get; set; } = new List<Group>();
+
+    [InverseProperty("Owner")]
+    public virtual ICollection<Income> Income { get; set; } = new List<Income>();
 
     [InverseProperty("LikedApplicationUser")]
     public virtual ICollection<LikedUserProfile> LikedUserProfileLikedApplicationUser { get; set; } = new List<LikedUserProfile>();
 
     [InverseProperty("LikingApplicationUser")]
     public virtual ICollection<LikedUserProfile> LikedUserProfileLikingApplicationUser { get; set; } = new List<LikedUserProfile>();
+
+    [InverseProperty("Owner")]
+    public virtual ICollection<MonthlyBudgetInfo> MonthlyBudgetInfo { get; set; } = new List<MonthlyBudgetInfo>();
 
     [InverseProperty("NotLikedApplicationUser")]
     public virtual ICollection<NotLikedUserProfile> NotLikedUserProfileNotLikedApplicationUser { get; set; } = new List<NotLikedUserProfile>();

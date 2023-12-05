@@ -130,6 +130,8 @@ if (addLocalizationGenerator)
         });
 }
 
+builder.AddProject<Projects.FairPlayBudget>("fairplaybudget");
+
 builder.Build().Run();
 
 static void AddTestDataGenerator(IDistributedApplicationBuilder builder, string fairPlayCombinedDbCS)

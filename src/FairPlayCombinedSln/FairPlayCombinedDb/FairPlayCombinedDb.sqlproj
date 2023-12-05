@@ -67,6 +67,9 @@
     <Folder Include="FairPlaySocial" />
     <Folder Include="FairPlayDating" />
     <Folder Include="FairPlayTube\Tables" />
+    <Folder Include="FairPlayBudget" />
+    <Folder Include="FairPlayBudget\Tables" />
+    <Folder Include="FairPlayBudget\Views" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
@@ -136,6 +139,13 @@
     <Build Include="FairPlayTube\Tables\VideoJobApplicationStatus.sql" />
     <Build Include="FairPlayTube\Tables\VideoIndexingTransaction.sql" />
     <Build Include="FairPlayTube\Tables\VideoCaptions.sql" />
+    <None Include="Scripts\5-FairPlayBudget.sql" />
+    <Build Include="Security\FairPlayBudget.sql" />
+    <Build Include="FairPlayBudget\Tables\Expense.sql" />
+    <Build Include="FairPlayBudget\Tables\MonthlyBudgetInfo.sql" />
+    <Build Include="FairPlayBudget\Tables\Income.sql" />
+    <Build Include="FairPlayBudget\Tables\Currency.sql" />
+    <Build Include="FairPlayBudget\Views\vwBalance.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
