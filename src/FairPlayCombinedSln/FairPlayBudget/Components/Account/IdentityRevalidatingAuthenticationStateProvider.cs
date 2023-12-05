@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using FairPlayBudget.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace FairPlayBudget.Components.Account;
 

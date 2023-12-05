@@ -129,8 +129,15 @@ if (addLocalizationGenerator)
             callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
         });
 }
-
-builder.AddProject<Projects.FairPlayBudget>("fairplaybudget");
+bool addFairPlayBudget = Convert.ToBoolean(builder.Configuration["AddFairPlayBudget"]);
+if (addFairPlayBudget)
+{
+    builder.AddProject<Projects.FairPlayBudget>("fairplaybudget")
+        .WithEnvironment(callback =>
+        {
+            callback.EnvironmentVariables.Add("FairPlayCombinedDb", fairPlayCombinedDbCS);
+        });
+}
 
 builder.Build().Run();
 

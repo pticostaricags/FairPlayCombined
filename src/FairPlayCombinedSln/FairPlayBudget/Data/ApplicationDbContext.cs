@@ -1,3 +1,4 @@
+using FairPlayCombined.Common.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

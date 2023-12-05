@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using FairPlayBudget.Data;
+using FairPlayCombined.Common.Identity;
 
 namespace FairPlayBudget.Components.Account;
 
