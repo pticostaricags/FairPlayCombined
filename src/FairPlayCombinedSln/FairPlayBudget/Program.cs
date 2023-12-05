@@ -12,6 +12,7 @@ using FairPlayCombined.Services.Common;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Common.Identity;
 using Blazored.Toast;
+using FairPlayCombined.Services.FairPlayBudget;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +73,7 @@ builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>()
 builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
+builder.Services.AddTransient<MonthlyBudgetInfoService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
