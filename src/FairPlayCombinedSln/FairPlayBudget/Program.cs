@@ -74,6 +74,7 @@ builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<MonthlyBudgetInfoService>();
+builder.Services.AddTransient<CurrencyService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

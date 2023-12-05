@@ -2,6 +2,7 @@
 @using Blazored.Toast.Services
 @using FairPlayBudget.Components.Spinners
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlayBudget.Currency
 @using FairPlayCombined.Models.FairPlayBudget.MonthlyBudgetInfo
 @using FairPlayCombined.Services.FairPlayBudget
 @using Microsoft.AspNetCore.Authorization
@@ -12,6 +13,8 @@
 @inject MonthlyBudgetInfoService monthlyBudgetInfoService
 @inject IUserProviderService userProviderService
 @inject IToastService toastService
+@inject CurrencyService currencyService
+@inject NavigationManager navigationManager
 
 <h3>CreateMonthlyBudgetInfo</h3>
 
@@ -27,6 +30,79 @@
         <label class="form-label">Description</label>
         <InputText class="form-control" @bind-Value="this.createMonthlyBudgetInfoModel.Description"></InputText>
     </div>
+    @if (this.createMonthlyBudgetInfoModel!.Transactions?.Count > 0 && allCurrencies?.Length > 0)
+    {
+        <div class="row">
+            <div class="col">
+                @nameof(CreateTransactionModel.TransactionType)
+            </div>
+            <div class="col">
+                @nameof(CreateTransactionModel.TransactionDateTime)
+            </div>
+            <div class="col">
+                @nameof(CreateTransactionModel.Amount)
+            </div>
+            <div class="col">
+                @nameof(CreateTransactionModel.Description)
+            </div>
+            <div class="col">
+                @nameof(CreateTransactionModel.CurrencyId)
+            </div>
+            <div class="col">
+                Actions
+            </div>
+        </div>
+        foreach (var singleTransaction in this.createMonthlyBudgetInfoModel.Transactions)
+        {
+            <div class="row">
+                <div class="col">
+                    <InputSelect class="form-select"
+                                 ValueExpression="@( () => singleTransaction.TransactionType)"
+                                 Value="@singleTransaction.TransactionType"
+                                 ValueChanged="@( (TransactionType? selectedValue) => singleTransaction.TransactionType=selectedValue)">
+                        <option value="">Select Transaction Type</option>
+                        <option value="@TransactionType.Debit">@TransactionType.Debit</option>
+                        <option value="@TransactionType.Credit">@TransactionType.Credit</option>
+                    </InputSelect>
+                    <ValidationMessage For="@( () => singleTransaction.TransactionType)"></ValidationMessage>
+                </div>
+                <div class="col">
+                    <InputDate class="form-control" @bind-Value="@singleTransaction.TransactionDateTime"></InputDate>
+                    <ValidationMessage For="@( () => singleTransaction.TransactionDateTime)"></ValidationMessage>
+                </div>
+                <div class="col">
+                    <InputNumber class="form-control" @bind-Value="@singleTransaction.Amount"></InputNumber>
+                    <ValidationMessage For="@( () => singleTransaction.Amount)"></ValidationMessage>
+                </div>
+                <div class="col">
+                    <InputText class="form-control" @bind-Value="@singleTransaction.Description"></InputText>
+                    <ValidationMessage For="@( () => singleTransaction.Description)"></ValidationMessage>
+                </div>
+                <div class="col">
+                    <InputSelect class="form-select"
+                                 ValueExpression="@( () => singleTransaction.CurrencyId)"
+                                 Value="@singleTransaction.CurrencyId"
+                                 ValueChanged="@( (int? selectedValue) => singleTransaction.CurrencyId = selectedValue)">
+                        <option value="">Select a Currency</option>
+                        @foreach (var singleCurrency in allCurrencies)
+                        {
+                            <option value="@singleCurrency.CurrencyId">@singleCurrency.Description</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@( () => singleTransaction.CurrencyId)"></ValidationMessage>
+                </div>
+                <div class="col">
+                    <button class="btn btn-danger" type="button" @onclick="@(()=> OnRemoveTransactionClicked(singleTransaction))">Remove</button>
+                </div>
+            </div>
+        }
+    }
+    <div class="mb-3">
+        <button class="btn btn-outline-secondary" type="button"
+                @onclick="OnAddTransactionClicked">
+            Add Transaction
+        </button>
+    </div>
     <div class="mb-3">
         <button type="submit" class="btn btn-primary">Save</button>
     </div>
@@ -35,12 +111,18 @@
 
 @code {
     [SupplyParameterFromForm]
-    private CreateMonthlyBudgetInfoModel createMonthlyBudgetInfoModel { get; set; } = new();
+    private CreateMonthlyBudgetInfoModel createMonthlyBudgetInfoModel { get; set; } = new()
+        {
+            Transactions = new List<CreateTransactionModel>()
+        };
+    private CurrencyModel[]? allCurrencies;
     private CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
         this.createMonthlyBudgetInfoModel.OwnerId = userProviderService.GetCurrentUserId();
+        this.allCurrencies = await currencyService.GetAllCurrencyAsync(this.cancellationTokenSource.Token);
     }
 
     private async Task OnValidSubmitAsync()
@@ -48,9 +130,11 @@
         try
         {
             this.IsBusy = true;
+            StateHasChanged();
             await this.monthlyBudgetInfoService.CreateMonthlyBudgetInfoAsync(
                 this.createMonthlyBudgetInfoModel, this.cancellationTokenSource.Token);
             this.toastService.ShowSuccess("Monthly Budget Info has been created");
+            this.navigationManager.NavigateTo("/MonthlyBudgetInfo/ListMonthlyBudgetInfo");
         }
         catch (Exception ex)
         {
@@ -59,6 +143,17 @@
         finally
         {
             this.IsBusy = false;
+            StateHasChanged();
         }
+    }
+
+    private void OnAddTransactionClicked()
+    {
+        this.createMonthlyBudgetInfoModel!.Transactions!.Add(new());
+    }
+
+    private void OnRemoveTransactionClicked(CreateTransactionModel transactionToRemove)
+    {
+        this.createMonthlyBudgetInfoModel.Transactions!.Remove(transactionToRemove);
     }
 }
