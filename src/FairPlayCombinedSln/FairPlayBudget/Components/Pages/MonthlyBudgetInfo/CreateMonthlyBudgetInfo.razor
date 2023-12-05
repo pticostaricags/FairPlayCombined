@@ -1,4 +1,6 @@
 ﻿@page "/MonthlyBudgetInfo/CreateMonthlyBudgetInfo"
+@page "/MonthlyBudgetInfo/CreateMonthlyBudgetInfo/{MonthlyBudgetInfoId:long}"
+
 @using Blazored.Toast.Services
 @using FairPlayBudget.Components.Spinners
 @using FairPlayCombined.Interfaces
@@ -23,7 +25,7 @@
 <EditForm FormName="frmCreateMonthlyBudgetInfo" Model="this.createMonthlyBudgetInfoModel"
           OnValidSubmit="OnValidSubmitAsync">
     <div class="mb-3">
-        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ObjectGraphDataAnnotationsValidator></ObjectGraphDataAnnotationsValidator>
         <ValidationSummary></ValidationSummary>
     </div>
     <div class="mb-3">
@@ -110,6 +112,8 @@
 </EditForm>
 
 @code {
+    [Parameter]
+    public long? MonthlyBudgetInfoId { get; set; }
     [SupplyParameterFromForm]
     private CreateMonthlyBudgetInfoModel createMonthlyBudgetInfoModel { get; set; } = new()
         {
@@ -131,8 +135,18 @@
         {
             this.IsBusy = true;
             StateHasChanged();
-            await this.monthlyBudgetInfoService.CreateMonthlyBudgetInfoAsync(
-                this.createMonthlyBudgetInfoModel, this.cancellationTokenSource.Token);
+            if (this.MonthlyBudgetInfoId == null)
+            {
+                await this.monthlyBudgetInfoService!
+                .CreateMonthlyBudgetInfoWithTransactionsAsync(this.createMonthlyBudgetInfoModel,
+                CancellationToken.None);
+            }
+            else
+            {
+                await this.monthlyBudgetInfoService!
+                .UpdateMonthlyBudgetInfoWithTransactionsAsync(this.MonthlyBudgetInfoId.Value,
+                this.createMonthlyBudgetInfoModel, CancellationToken.None);
+            }
             this.toastService.ShowSuccess("Monthly Budget Info has been created");
             this.navigationManager.NavigateTo("/MonthlyBudgetInfo/ListMonthlyBudgetInfo");
         }

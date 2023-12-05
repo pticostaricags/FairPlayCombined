@@ -16,6 +16,7 @@ namespace FairPlayCombined.Models.FairPlayBudget.MonthlyBudgetInfo
         [Required]
         public string? OwnerId { get; set; }
         [Required]
+        [ValidateComplexType]
         public List<CreateTransactionModel>? Transactions { get; set; }
     }
 
