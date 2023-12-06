@@ -34,7 +34,7 @@ namespace FairPlayCombined.Models.FairPlayBudget.MonthlyBudgetInfo
         [Required]
         public TransactionType? TransactionType { get; set; }
         [Required]
-        [DeniedValues(default(int))]
+        [DeniedValues(default(long))]
         public int? CurrencyId { get; set; }
     }
 

@@ -111,6 +111,28 @@
 
 </EditForm>
 
+Import From File:
+<InputFile OnChange="OnFileSelected" accept=".csv"></InputFile>
+
+@if (allCurrencies != null)
+{
+    <p>
+        Override Currency:
+    </p>
+<InputSelect class="form-select"
+             ValueExpression="@( () => this.SelectedCurrencyIdForOverride)"
+             Value="@this.SelectedCurrencyIdForOverride"
+             ValueChanged="( (int? selectedValue) => OnOverrideCurrencyChanged(selectedValue) )">
+             <option value="">Select Currency</option>
+    @foreach (var singleCurrency in allCurrencies)
+    {
+        <option value="@singleCurrency.CurrencyId">@singleCurrency.Description</option>
+    }
+</InputSelect>
+
+    <button class="btn btn-secondary" type="button" @onclick="OnOverrideCurrencyButtonClicked">Set Currency</button>
+}
+
 @code {
     [Parameter]
     public long? MonthlyBudgetInfoId { get; set; }
@@ -121,6 +143,7 @@
         };
     private CurrencyModel[]? allCurrencies;
     private CancellationTokenSource cancellationTokenSource = new();
+    private int? SelectedCurrencyIdForOverride { get; set; }
     private bool IsBusy { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -179,5 +202,41 @@
     private void OnRemoveTransactionClicked(CreateTransactionModel transactionToRemove)
     {
         this.createMonthlyBudgetInfoModel.Transactions!.Remove(transactionToRemove);
+    }
+
+    private void OnOverrideCurrencyChanged(int? selectedNewCurrency)
+    {
+        this.SelectedCurrencyIdForOverride = selectedNewCurrency;
+    }
+
+    private void OnOverrideCurrencyButtonClicked()
+    {
+        IsBusy = true;
+        if (this.createMonthlyBudgetInfoModel.Transactions?.Count > 0)
+        {
+            foreach (var singleTransaction in this.createMonthlyBudgetInfoModel.Transactions)
+            {
+                singleTransaction.CurrencyId = SelectedCurrencyIdForOverride;
+            }
+        }
+        IsBusy = false;
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        IsBusy = true;
+        if (inputFileChangeEventArgs.FileCount == 1)
+        {
+            int maxAllowedSizeInMB = 10;
+            int maxAllowedSizeInKb = maxAllowedSizeInMB * 1024 * 1024;
+            var stream = inputFileChangeEventArgs.File.OpenReadStream(maxAllowedSizeInKb,
+            cancellationToken: CancellationToken.None);
+            var tmpCreateMonthlyBudgetInfoModel = await this.monthlyBudgetInfoService!
+            .ImportFromTransactionsFileStreamAsync(stream, cancellationToken: CancellationToken.None);
+            tmpCreateMonthlyBudgetInfoModel.OwnerId = this.createMonthlyBudgetInfoModel.OwnerId;
+            tmpCreateMonthlyBudgetInfoModel.Description = this.createMonthlyBudgetInfoModel.Description;
+            this.createMonthlyBudgetInfoModel = tmpCreateMonthlyBudgetInfoModel;
+        }
+        IsBusy = false;
     }
 }

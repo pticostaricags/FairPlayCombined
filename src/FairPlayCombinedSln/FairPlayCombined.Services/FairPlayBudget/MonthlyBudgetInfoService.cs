@@ -1,10 +1,15 @@
-﻿using FairPlayCombined.Common.GeneratorsAttributes;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayBudgetSchema;
 using FairPlayCombined.Models.FairPlayBudget.MonthlyBudgetInfo;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
+using System.Formats.Asn1;
+using System.Globalization;
 using System.Linq.Dynamic.Core;
+using System.Runtime.Serialization;
 
 namespace FairPlayCombined.Services.FairPlayBudget
 {
@@ -186,5 +191,67 @@ namespace FairPlayCombined.Services.FairPlayBudget
             };
             return result;
         }
+
+        public async Task<CreateMonthlyBudgetInfoModel> ImportFromTransactionsFileStreamAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            try
+            {
+                CreateMonthlyBudgetInfoModel result = new()
+                {
+                    Transactions = []
+                };
+                using (StreamReader streamReader = new(stream))
+                {
+                    using CsvParser csvParser = new(streamReader, configuration:
+                        new CsvConfiguration(CultureInfo.CurrentCulture)
+                        {
+                            Delimiter = ";",
+                            ShouldQuote = ((ShouldQuoteArgs args) => { return false; })
+                        });
+                    using CsvReader csvReader = new(csvParser);
+                    var records = csvReader.GetRecordsAsync<ImportTransactionsMonthlyBudgetInfoModel>(
+                                                cancellationToken: cancellationToken)
+                                                .ConfigureAwait(continueOnCapturedContext: false);
+                    await foreach (var singleRecord in records)
+                    {
+                        if (String.IsNullOrWhiteSpace(singleRecord.fechaMovimiento))
+                            continue;
+                        DateTime dt = DateTime
+                            .ParseExact(singleRecord.fechaMovimiento!, "dd/MM/yyyy",
+                            CultureInfo.InvariantCulture);
+
+                        CreateTransactionModel transaction = new()
+                        {
+                            Description = singleRecord.descripcion,
+                            TransactionDateTime = dt,
+                        };
+                        if (singleRecord.debito != null)
+                        {
+                            transaction.Amount = singleRecord.debito;
+                            transaction.TransactionType = TransactionType.Debit;
+                        }
+                        else if (singleRecord.credito != null)
+                        {
+                            transaction.Amount = singleRecord.credito;
+                            transaction.TransactionType = TransactionType.Credit;
+                        }
+                        else
+                        {
+                            throw new ImportMonthlyBudgetInfoException("There are rows with no value for either debit nor credit");
+                        }
+                        result.Transactions!.Add(transaction);
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new ImportMonthlyBudgetInfoException(ex.Message);
+            }
+        }
+    }
+
+    public class ImportMonthlyBudgetInfoException(string? message) : Exception(message)
+    {
     }
 }
