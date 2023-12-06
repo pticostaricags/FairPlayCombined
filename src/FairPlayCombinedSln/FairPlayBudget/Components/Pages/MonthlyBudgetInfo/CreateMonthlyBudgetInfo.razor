@@ -56,7 +56,7 @@
                 <ValidationMessage For="@( () => context.Amount)"></ValidationMessage>
             </TemplateColumn>
             <TemplateColumn Title="Description">
-                <InputText class="form-control" @bind-Value="@context.Description"></InputText>
+                <InputTextArea class="form-control" @bind-Value="@context.Description"></InputTextArea>
                 <ValidationMessage For="@( () => context.Description)"></ValidationMessage>
             </TemplateColumn>
             <TemplateColumn Title="Currency">
