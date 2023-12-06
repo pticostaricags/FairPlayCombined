@@ -13,6 +13,7 @@
 @inject MonthlyBudgetInfoService monthlyBudgetInfoService
 @inject IToastService toastService
 @inject IUserProviderService userProviderService
+@inject NavigationManager navigationManager
 
 
 <h3>ListMonthlyBudgetInfo</h3>
@@ -20,6 +21,10 @@
 <QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
     <PropertyColumn Property="@( p=> p.Description)"></PropertyColumn>
     <TemplateColumn>
+        <button type="button" class="btn btn-secondary"
+                @onclick="@(() => OnEditButtonClicked(context.MonthlyBudgetInfoId))">
+            Edit
+        </button>
         <button type="button" class="btn btn-danger"
                 @onclick="@(async () => await OnDeleteButtonClickedAsync(context.MonthlyBudgetInfoId))">
             Delete
@@ -59,6 +64,11 @@
             return result;
         };
 
+    }
+
+    private void OnEditButtonClicked(long monthlyBudgetInfoId)
+    {
+        this.navigationManager.NavigateTo($"/MonthlyBudgetInfo/CreateMonthlyBudgetInfo/{monthlyBudgetInfoId}");
     }
 
     private async Task OnDeleteButtonClickedAsync(long monthlyBudgetInfoId)

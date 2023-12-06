@@ -3,7 +3,7 @@ AS
 SELECT 
 E.OwnerId AS OwnerId, 
 E.Amount AS Amount,
-CAST('Debit' AS NVARCHAR(10)) AS TransactionType,
+TransactionType = CAST('Debit' AS NVARCHAR(10)),
 E.ExpenseDateTime AS [DateTime],
 E.[Description] AS [Description],
 C.CurrencyId AS CurrencyId,
@@ -16,7 +16,7 @@ UNION ALL
 SELECT 
 I.OwnerId AS OwnerId, 
 I.Amount AS Amount,
-CAST('Credit' AS NVARCHAR(10)) AS TransactionType,
+TransactionType = CAST('Credit' AS NVARCHAR(10)),
 I.IncomeDateTime AS [DateTime],
 I.[Description] AS [Description],
 I.CurrencyId AS CurrencyId,

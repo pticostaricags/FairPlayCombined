@@ -129,6 +129,16 @@
         this.allCurrencies = await currencyService.GetAllCurrencyAsync(this.cancellationTokenSource.Token);
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        if (this.MonthlyBudgetInfoId != null)
+        {
+            this.createMonthlyBudgetInfoModel = await this.monthlyBudgetInfoService!
+            .LoadMonthlyBudgetInfoAsync(this.MonthlyBudgetInfoId!.Value,
+            CancellationToken.None);
+        }
+    }
+
     private async Task OnValidSubmitAsync()
     {
         try

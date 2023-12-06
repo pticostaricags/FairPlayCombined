@@ -150,5 +150,41 @@ namespace FairPlayCombined.Services.FairPlayBudget
             await dbContext.SaveChangesAsync(
                     cancellationToken: cancellationToken);
         }
+
+        public async Task<CreateMonthlyBudgetInfoModel> LoadMonthlyBudgetInfoAsync(long monthlyBudgetInfoId, CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var entity = await dbContext.MonthlyBudgetInfo
+                .Include(p => p.Expense)
+                .Include(p => p.Income)
+                .Where(p => p.MonthlyBudgetInfoId == monthlyBudgetInfoId)
+                .SingleAsync(cancellationToken: cancellationToken);
+            CreateMonthlyBudgetInfoModel result = new()
+            {
+                OwnerId = entity.OwnerId,
+                Description = entity.Description,
+                Transactions =
+                    [
+                        .. entity.Income.Select(p => new CreateTransactionModel()
+                        {
+                            Amount = p.Amount,
+                            CurrencyId = p.CurrencyId,
+                            Description = p.Description,
+                            TransactionDateTime = p.IncomeDateTime,
+                            TransactionType = TransactionType.Credit
+                        })
+                        .Union(entity.Expense.Select(p => new CreateTransactionModel()
+                        {
+                            Amount = p.Amount,
+                            CurrencyId = p.CurrencyId,
+                            Description = p.Description,
+                            TransactionDateTime = p.ExpenseDateTime,
+                            TransactionType = TransactionType.Debit
+                        }))
+                        .OrderByDescending(p => p.TransactionDateTime),
+                    ]
+            };
+            return result;
+        }
     }
 }

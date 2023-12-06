@@ -75,6 +75,8 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<MonthlyBudgetInfoService>();
 builder.Services.AddTransient<CurrencyService>();
+builder.Services.AddTransient<BalanceService>();
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
