@@ -27,6 +27,9 @@ var sqlServerDbResource = builder.AddSqlServerContainer("FairPlayCombinedDbServe
     password: "FairPlayCombinedDb$123$")
     .AddDatabase("FairPlayCombinedDb");
 
+builder.AddProject<Projects.FairPlayCombined_DatabaseManager>("databasemanager")
+    .WithReference(sqlServerDbResource);
+
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
 if (addFairPlayDating)
 {
