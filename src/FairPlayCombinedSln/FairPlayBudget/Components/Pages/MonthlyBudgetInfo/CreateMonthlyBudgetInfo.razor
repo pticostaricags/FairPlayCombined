@@ -8,6 +8,7 @@
 @using FairPlayCombined.Models.FairPlayBudget.MonthlyBudgetInfo
 @using FairPlayCombined.Services.FairPlayBudget
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
 
 @attribute [Authorize]
 @rendermode RenderMode.InteractiveServer
@@ -23,7 +24,7 @@
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <EditForm FormName="frmCreateMonthlyBudgetInfo" Model="this.createMonthlyBudgetInfoModel"
-          OnValidSubmit="OnValidSubmitAsync">
+          OnValidSubmit="OnValidSubmitAsync" Context="editFormContext">
     <div class="mb-3">
         <ObjectGraphDataAnnotationsValidator></ObjectGraphDataAnnotationsValidator>
         <ValidationSummary></ValidationSummary>
@@ -34,70 +35,47 @@
     </div>
     @if (this.createMonthlyBudgetInfoModel!.Transactions?.Count > 0 && allCurrencies?.Length > 0)
     {
-        <div class="row">
-            <div class="col">
-                @nameof(CreateTransactionModel.TransactionType)
-            </div>
-            <div class="col">
-                @nameof(CreateTransactionModel.TransactionDateTime)
-            </div>
-            <div class="col">
-                @nameof(CreateTransactionModel.Amount)
-            </div>
-            <div class="col">
-                @nameof(CreateTransactionModel.Description)
-            </div>
-            <div class="col">
-                @nameof(CreateTransactionModel.CurrencyId)
-            </div>
-            <div class="col">
-                Actions
-            </div>
-        </div>
-        foreach (var singleTransaction in this.createMonthlyBudgetInfoModel.Transactions)
-        {
-            <div class="row">
-                <div class="col">
-                    <InputSelect class="form-select"
-                                 ValueExpression="@( () => singleTransaction.TransactionType)"
-                                 Value="@singleTransaction.TransactionType"
-                                 ValueChanged="@( (TransactionType? selectedValue) => singleTransaction.TransactionType=selectedValue)">
-                        <option value="">Select Transaction Type</option>
-                        <option value="@TransactionType.Debit">@TransactionType.Debit</option>
-                        <option value="@TransactionType.Credit">@TransactionType.Credit</option>
-                    </InputSelect>
-                    <ValidationMessage For="@( () => singleTransaction.TransactionType)"></ValidationMessage>
-                </div>
-                <div class="col">
-                    <InputDate class="form-control" @bind-Value="@singleTransaction.TransactionDateTime"></InputDate>
-                    <ValidationMessage For="@( () => singleTransaction.TransactionDateTime)"></ValidationMessage>
-                </div>
-                <div class="col">
-                    <InputNumber class="form-control" @bind-Value="@singleTransaction.Amount"></InputNumber>
-                    <ValidationMessage For="@( () => singleTransaction.Amount)"></ValidationMessage>
-                </div>
-                <div class="col">
-                    <InputText class="form-control" @bind-Value="@singleTransaction.Description"></InputText>
-                    <ValidationMessage For="@( () => singleTransaction.Description)"></ValidationMessage>
-                </div>
-                <div class="col">
-                    <InputSelect class="form-select"
-                                 ValueExpression="@( () => singleTransaction.CurrencyId)"
-                                 Value="@singleTransaction.CurrencyId"
-                                 ValueChanged="@( (int? selectedValue) => singleTransaction.CurrencyId = selectedValue)">
-                        <option value="">Select a Currency</option>
-                        @foreach (var singleCurrency in allCurrencies)
-                        {
-                            <option value="@singleCurrency.CurrencyId">@singleCurrency.Description</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="@( () => singleTransaction.CurrencyId)"></ValidationMessage>
-                </div>
-                <div class="col">
-                    <button class="btn btn-danger" type="button" @onclick="@(()=> OnRemoveTransactionClicked(singleTransaction))">Remove</button>
-                </div>
-            </div>
-        }
+        <QuickGrid Items="Transactions">
+            <TemplateColumn Title="TransactionType">
+                <InputSelect class="form-select"
+                             ValueExpression="@( () => context.TransactionType)"
+                             Value="@context.TransactionType"
+                             ValueChanged="@( (TransactionType? selectedValue) => context.TransactionType=selectedValue)">
+                    <option value="">Select Transaction Type</option>
+                    <option value="@TransactionType.Debit">@TransactionType.Debit</option>
+                    <option value="@TransactionType.Credit">@TransactionType.Credit</option>
+                </InputSelect>
+                <ValidationMessage For="@( () => context.TransactionType)"></ValidationMessage>
+            </TemplateColumn>
+            <TemplateColumn Title="TransactionDateTime">
+                <InputDate class="form-control" @bind-Value="@context.TransactionDateTime"></InputDate>
+                <ValidationMessage For="@( () => context.TransactionDateTime)"></ValidationMessage>
+            </TemplateColumn>
+            <TemplateColumn Title="Amount">
+                <InputNumber class="form-control" @bind-Value="@context.Amount"></InputNumber>
+                <ValidationMessage For="@( () => context.Amount)"></ValidationMessage>
+            </TemplateColumn>
+            <TemplateColumn Title="Description">
+                <InputText class="form-control" @bind-Value="@context.Description"></InputText>
+                <ValidationMessage For="@( () => context.Description)"></ValidationMessage>
+            </TemplateColumn>
+            <TemplateColumn Title="Currency">
+                <InputSelect class="form-select"
+                             ValueExpression="@( () => context.CurrencyId)"
+                             Value="@context.CurrencyId"
+                             ValueChanged="@( (int? selectedValue) => context.CurrencyId = selectedValue)">
+                    <option value="">Select a Currency</option>
+                    @foreach (var singleCurrency in allCurrencies)
+                    {
+                        <option value="@singleCurrency.CurrencyId">@singleCurrency.Description</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@( () => context.CurrencyId)"></ValidationMessage>
+            </TemplateColumn>
+            <TemplateColumn Title="Actions">
+                <button class="btn btn-danger" type="button" @onclick="@(()=> OnRemoveTransactionClicked(context))">Remove</button>
+            </TemplateColumn>
+        </QuickGrid>
     }
     <div class="mb-3">
         <button class="btn btn-outline-secondary" type="button"
@@ -145,6 +123,7 @@ Import From File:
     private CancellationTokenSource cancellationTokenSource = new();
     private int? SelectedCurrencyIdForOverride { get; set; }
     private bool IsBusy { get; set; }
+    private IQueryable<CreateTransactionModel> Transactions => this.createMonthlyBudgetInfoModel.Transactions.AsQueryable();
 
     protected override async Task OnInitializedAsync()
     {
@@ -197,6 +176,7 @@ Import From File:
     private void OnAddTransactionClicked()
     {
         this.createMonthlyBudgetInfoModel!.Transactions!.Add(new());
+        StateHasChanged();
     }
 
     private void OnRemoveTransactionClicked(CreateTransactionModel transactionToRemove)
