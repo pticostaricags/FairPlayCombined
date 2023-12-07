@@ -14,6 +14,7 @@ using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayCombined.Services.FairPlayTube;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,11 +33,21 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
+var googleAuthClientId = Environment.GetEnvironmentVariable("GoogleAuthClientId") ??
+    throw new InvalidOperationException("'GoogleAuthClientId' not found");
+var googleAuthClientSecret = Environment.GetEnvironmentVariable("GoogleAuthClientSecret") ??
+    throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
+
 builder.Services.AddAuthentication(configureOptions =>
 {
     configureOptions.DefaultScheme = IdentityConstants.ApplicationScheme;
     configureOptions.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
+    .AddGoogle(options => 
+    {
+        options.ClientId = googleAuthClientId;
+        options.ClientSecret = googleAuthClientSecret;
+    })
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
 var clientAppsAuthPolicy = "ClientAppsAuthPolicy";

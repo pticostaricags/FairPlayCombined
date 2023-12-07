@@ -23,6 +23,11 @@ var azureContentModeratorEndpoint = builder.Configuration["AzureContentModerator
 var azureContentModeratorKey = builder.Configuration["AzureContentModeratorKey"] ??
     throw new InvalidOperationException("'AzureContentModeratorKey' not found");
 
+var googleAuthClientId = builder.Configuration["GoogleAuthClientId"] ??
+    throw new InvalidOperationException("'GoogleAuthClientId' not found");
+var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??
+    throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
+
 IResourceBuilder<ISqlServerResource> sqlServerResource;
 if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
 {
@@ -67,7 +72,8 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("AzureVideoIndexerResourceGroup", azureVideoIndexerResourceGroup);
         callback.EnvironmentVariables.Add("AzureVideoIndexerResourceName", azureVideoIndexerResourceName);
         callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
-
+        callback.EnvironmentVariables.Add("GoogleAuthClientId", googleAuthClientId);
+        callback.EnvironmentVariables.Add("GoogleAuthClientSecret", googleAuthClientSecret);
     })
     .WithReference(sqlServerResource);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")
