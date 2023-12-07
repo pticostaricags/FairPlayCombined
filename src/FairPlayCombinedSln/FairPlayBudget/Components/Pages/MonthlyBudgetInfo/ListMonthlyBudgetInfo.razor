@@ -1,0 +1,80 @@
+﻿@page "/MonthlyBudgetInfo/ListMonthlyBudgetInfo"
+@using Blazored.Toast.Services
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlayBudget.MonthlyBudgetInfo
+@using FairPlayCombined.Services.FairPlayBudget
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+@attribute [Authorize]
+@attribute [StreamRendering(enabled:true)]
+@rendermode RenderMode.InteractiveServer
+
+@inject MonthlyBudgetInfoService monthlyBudgetInfoService
+@inject IToastService toastService
+@inject IUserProviderService userProviderService
+@inject NavigationManager navigationManager
+
+
+<h3>ListMonthlyBudgetInfo</h3>
+
+<QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+    <PropertyColumn Property="@( p=> p.Description)"></PropertyColumn>
+    <TemplateColumn>
+        <button type="button" class="btn btn-secondary"
+                @onclick="@(() => OnEditButtonClicked(context.MonthlyBudgetInfoId))">
+            Edit
+        </button>
+        <button type="button" class="btn btn-danger"
+                @onclick="@(async () => await OnDeleteButtonClickedAsync(context.MonthlyBudgetInfoId))">
+            Delete
+        </button>
+    </TemplateColumn>
+</QuickGrid>
+
+<Paginator State=" this.paginationState">
+</Paginator>
+
+@code {
+    private GridItemsProvider<MonthlyBudgetInfoModel>? ItemsProvider;
+    private PaginationState paginationState = new PaginationState()
+        {
+            ItemsPerPage = FairPlayCombined.Common.Constants.Pagination.PageSize
+        };
+    private CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ItemsProvider ??= async req =>
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+
+            var items = await this.monthlyBudgetInfoService.GetPaginatedMonthlyBudgetInfoForUserIdAsync(
+                this.userProviderService.GetCurrentUserId()!,
+                new FairPlayCombined.Models.Pagination.PaginationRequest()
+                    {
+                        PageSize = this.paginationState.ItemsPerPage,
+                        StartIndex = req.StartIndex
+                    }, this.cancellationTokenSource.Token);
+            this.IsBusy = false;
+            StateHasChanged();
+            var result = GridItemsProviderResult.From(items!.Items!, items.TotalItems);
+            return result;
+        };
+
+    }
+
+    private void OnEditButtonClicked(long monthlyBudgetInfoId)
+    {
+        this.navigationManager.NavigateTo($"/MonthlyBudgetInfo/CreateMonthlyBudgetInfo/{monthlyBudgetInfoId}");
+    }
+
+    private async Task OnDeleteButtonClickedAsync(long monthlyBudgetInfoId)
+    {
+        await this.monthlyBudgetInfoService.DeleteMonthlyBudgetInfoByIdAsync(monthlyBudgetInfoId,
+        this.cancellationTokenSource.Token);
+        await this.paginationState.SetCurrentPageIndexAsync(0);
+    }
+}

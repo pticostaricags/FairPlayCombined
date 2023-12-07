@@ -1,0 +1,222 @@
+﻿@page "/MonthlyBudgetInfo/CreateMonthlyBudgetInfo"
+@page "/MonthlyBudgetInfo/CreateMonthlyBudgetInfo/{MonthlyBudgetInfoId:long}"
+
+@using Blazored.Toast.Services
+@using FairPlayBudget.Components.Spinners
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlayBudget.Currency
+@using FairPlayCombined.Models.FairPlayBudget.MonthlyBudgetInfo
+@using FairPlayCombined.Services.FairPlayBudget
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+@attribute [Authorize]
+@rendermode RenderMode.InteractiveServer
+
+@inject MonthlyBudgetInfoService monthlyBudgetInfoService
+@inject IUserProviderService userProviderService
+@inject IToastService toastService
+@inject CurrencyService currencyService
+@inject NavigationManager navigationManager
+
+<h3>CreateMonthlyBudgetInfo</h3>
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<EditForm FormName="frmCreateMonthlyBudgetInfo" Model="this.createMonthlyBudgetInfoModel"
+          OnValidSubmit="OnValidSubmitAsync" Context="editFormContext">
+    <div class="mb-3">
+        <ObjectGraphDataAnnotationsValidator></ObjectGraphDataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <InputText class="form-control" @bind-Value="this.createMonthlyBudgetInfoModel.Description"></InputText>
+    </div>
+    @if (this.createMonthlyBudgetInfoModel!.Transactions?.Count > 0 && allCurrencies?.Length > 0)
+    {
+        <QuickGrid Items="Transactions">
+            <TemplateColumn Title="TransactionType">
+                <InputSelect class="form-select"
+                             ValueExpression="@( () => context.TransactionType)"
+                             Value="@context.TransactionType"
+                             ValueChanged="@( (TransactionType? selectedValue) => context.TransactionType=selectedValue)">
+                    <option value="">Select Transaction Type</option>
+                    <option value="@TransactionType.Debit">@TransactionType.Debit</option>
+                    <option value="@TransactionType.Credit">@TransactionType.Credit</option>
+                </InputSelect>
+                <ValidationMessage For="@( () => context.TransactionType)"></ValidationMessage>
+            </TemplateColumn>
+            <TemplateColumn Title="TransactionDateTime">
+                <InputDate class="form-control" @bind-Value="@context.TransactionDateTime"></InputDate>
+                <ValidationMessage For="@( () => context.TransactionDateTime)"></ValidationMessage>
+            </TemplateColumn>
+            <TemplateColumn Title="Amount">
+                <InputNumber class="form-control" @bind-Value="@context.Amount"></InputNumber>
+                <ValidationMessage For="@( () => context.Amount)"></ValidationMessage>
+            </TemplateColumn>
+            <TemplateColumn Title="Description">
+                <InputTextArea class="form-control" @bind-Value="@context.Description"></InputTextArea>
+                <ValidationMessage For="@( () => context.Description)"></ValidationMessage>
+            </TemplateColumn>
+            <TemplateColumn Title="Currency">
+                <InputSelect class="form-select"
+                             ValueExpression="@( () => context.CurrencyId)"
+                             Value="@context.CurrencyId"
+                             ValueChanged="@( (int? selectedValue) => context.CurrencyId = selectedValue)">
+                    <option value="">Select a Currency</option>
+                    @foreach (var singleCurrency in allCurrencies)
+                    {
+                        <option value="@singleCurrency.CurrencyId">@singleCurrency.Description</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@( () => context.CurrencyId)"></ValidationMessage>
+            </TemplateColumn>
+            <TemplateColumn Title="Actions">
+                <button class="btn btn-danger" type="button" @onclick="@(()=> OnRemoveTransactionClicked(context))">Remove</button>
+            </TemplateColumn>
+        </QuickGrid>
+    }
+    <div class="mb-3">
+        <button class="btn btn-outline-secondary" type="button"
+                @onclick="OnAddTransactionClicked">
+            Add Transaction
+        </button>
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+
+</EditForm>
+
+Import From File:
+<InputFile OnChange="OnFileSelected" accept=".csv"></InputFile>
+
+@if (allCurrencies != null)
+{
+    <p>
+        Override Currency:
+    </p>
+<InputSelect class="form-select"
+             ValueExpression="@( () => this.SelectedCurrencyIdForOverride)"
+             Value="@this.SelectedCurrencyIdForOverride"
+             ValueChanged="( (int? selectedValue) => OnOverrideCurrencyChanged(selectedValue) )">
+             <option value="">Select Currency</option>
+    @foreach (var singleCurrency in allCurrencies)
+    {
+        <option value="@singleCurrency.CurrencyId">@singleCurrency.Description</option>
+    }
+</InputSelect>
+
+    <button class="btn btn-secondary" type="button" @onclick="OnOverrideCurrencyButtonClicked">Set Currency</button>
+}
+
+@code {
+    [Parameter]
+    public long? MonthlyBudgetInfoId { get; set; }
+    [SupplyParameterFromForm]
+    private CreateMonthlyBudgetInfoModel createMonthlyBudgetInfoModel { get; set; } = new()
+        {
+            Transactions = new List<CreateTransactionModel>()
+        };
+    private CurrencyModel[]? allCurrencies;
+    private CancellationTokenSource cancellationTokenSource = new();
+    private int? SelectedCurrencyIdForOverride { get; set; }
+    private bool IsBusy { get; set; }
+    private IQueryable<CreateTransactionModel> Transactions => this.createMonthlyBudgetInfoModel.Transactions.AsQueryable();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.createMonthlyBudgetInfoModel.OwnerId = userProviderService.GetCurrentUserId();
+        this.allCurrencies = await currencyService.GetAllCurrencyAsync(this.cancellationTokenSource.Token);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (this.MonthlyBudgetInfoId != null)
+        {
+            this.createMonthlyBudgetInfoModel = await this.monthlyBudgetInfoService!
+            .LoadMonthlyBudgetInfoAsync(this.MonthlyBudgetInfoId!.Value,
+            CancellationToken.None);
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            if (this.MonthlyBudgetInfoId == null)
+            {
+                await this.monthlyBudgetInfoService!
+                .CreateMonthlyBudgetInfoWithTransactionsAsync(this.createMonthlyBudgetInfoModel,
+                CancellationToken.None);
+            }
+            else
+            {
+                await this.monthlyBudgetInfoService!
+                .UpdateMonthlyBudgetInfoWithTransactionsAsync(this.MonthlyBudgetInfoId.Value,
+                this.createMonthlyBudgetInfoModel, CancellationToken.None);
+            }
+            this.toastService.ShowSuccess("Monthly Budget Info has been created");
+            this.navigationManager.NavigateTo("/MonthlyBudgetInfo/ListMonthlyBudgetInfo");
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    private void OnAddTransactionClicked()
+    {
+        this.createMonthlyBudgetInfoModel!.Transactions!.Add(new());
+        StateHasChanged();
+    }
+
+    private void OnRemoveTransactionClicked(CreateTransactionModel transactionToRemove)
+    {
+        this.createMonthlyBudgetInfoModel.Transactions!.Remove(transactionToRemove);
+    }
+
+    private void OnOverrideCurrencyChanged(int? selectedNewCurrency)
+    {
+        this.SelectedCurrencyIdForOverride = selectedNewCurrency;
+    }
+
+    private void OnOverrideCurrencyButtonClicked()
+    {
+        IsBusy = true;
+        if (this.createMonthlyBudgetInfoModel.Transactions?.Count > 0)
+        {
+            foreach (var singleTransaction in this.createMonthlyBudgetInfoModel.Transactions)
+            {
+                singleTransaction.CurrencyId = SelectedCurrencyIdForOverride;
+            }
+        }
+        IsBusy = false;
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        IsBusy = true;
+        if (inputFileChangeEventArgs.FileCount == 1)
+        {
+            int maxAllowedSizeInMB = 10;
+            int maxAllowedSizeInKb = maxAllowedSizeInMB * 1024 * 1024;
+            var stream = inputFileChangeEventArgs.File.OpenReadStream(maxAllowedSizeInKb,
+            cancellationToken: CancellationToken.None);
+            var tmpCreateMonthlyBudgetInfoModel = await this.monthlyBudgetInfoService!
+            .ImportFromTransactionsFileStreamAsync(stream, cancellationToken: CancellationToken.None);
+            tmpCreateMonthlyBudgetInfoModel.OwnerId = this.createMonthlyBudgetInfoModel.OwnerId;
+            tmpCreateMonthlyBudgetInfoModel.Description = this.createMonthlyBudgetInfoModel.Description;
+            this.createMonthlyBudgetInfoModel = tmpCreateMonthlyBudgetInfoModel;
+        }
+        IsBusy = false;
+    }
+}

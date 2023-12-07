@@ -6,6 +6,7 @@ using FairPlayCombined.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayBudgetSchema;
 using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
@@ -41,9 +42,13 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<Culture> Culture { get; set; }
 
+    public virtual DbSet<Currency> Currency { get; set; }
+
     public virtual DbSet<DateObjective> DateObjective { get; set; }
 
     public virtual DbSet<ErrorLog> ErrorLog { get; set; }
+
+    public virtual DbSet<Expense> Expense { get; set; }
 
     public virtual DbSet<EyesColor> EyesColor { get; set; }
 
@@ -55,9 +60,13 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<HairColor> HairColor { get; set; }
 
+    public virtual DbSet<Income> Income { get; set; }
+
     public virtual DbSet<KidStatus> KidStatus { get; set; }
 
     public virtual DbSet<LikedUserProfile> LikedUserProfile { get; set; }
+
+    public virtual DbSet<MonthlyBudgetInfo> MonthlyBudgetInfo { get; set; }
 
     public virtual DbSet<NotLikedUserProfile> NotLikedUserProfile { get; set; }
 
@@ -115,6 +124,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<VideoVisibility> VideoVisibility { get; set; }
 
+    public virtual DbSet<VwBalance> VwBalance { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ApplicationUserVouch>(entity =>
@@ -160,11 +171,41 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_City_StateOrProvince");
         });
 
+        modelBuilder.Entity<Expense>(entity =>
+        {
+            entity.HasOne(d => d.Currency).WithMany(p => p.Expense)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Expense_Currency");
+
+            entity.HasOne(d => d.MonthlyBudgetInfo).WithMany(p => p.Expense)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Expense_MonthlyBudgetInfo");
+
+            entity.HasOne(d => d.Owner).WithMany(p => p.Expense)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Expense_AspNetUsers");
+        });
+
         modelBuilder.Entity<Group>(entity =>
         {
             entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.Group)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Group_ApplicationUser");
+        });
+
+        modelBuilder.Entity<Income>(entity =>
+        {
+            entity.HasOne(d => d.Currency).WithMany(p => p.Income)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Income_Currency");
+
+            entity.HasOne(d => d.MonthlyBudgetInfo).WithMany(p => p.Income)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Income_MonthlyBudgetInfo");
+
+            entity.HasOne(d => d.Owner).WithMany(p => p.Income)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Income_AspNetUsers");
         });
 
         modelBuilder.Entity<LikedUserProfile>(entity =>
@@ -176,6 +217,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.LikingApplicationUser).WithMany(p => p.LikedUserProfileLikingApplicationUser)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_LikedUserProfile_LikingApplicactionUser");
+        });
+
+        modelBuilder.Entity<MonthlyBudgetInfo>(entity =>
+        {
+            entity.HasOne(d => d.Owner).WithMany(p => p.MonthlyBudgetInfo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_MonthlyBudgetInfo_AspNetUsers");
         });
 
         modelBuilder.Entity<NotLikedUserProfile>(entity =>
@@ -446,6 +494,11 @@ public partial class FairPlayCombinedDbContext : DbContext
         modelBuilder.Entity<VideoVisibility>(entity =>
         {
             entity.Property(e => e.VideoVisibilityId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<VwBalance>(entity =>
+        {
+            entity.ToView("vwBalance", "FairPlayBudget");
         });
 
         OnModelCreatingPartial(modelBuilder);

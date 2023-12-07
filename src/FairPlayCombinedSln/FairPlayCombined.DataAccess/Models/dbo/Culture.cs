@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayBudgetSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;

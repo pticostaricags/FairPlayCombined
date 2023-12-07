@@ -1,0 +1,129 @@
+﻿@page "/Balance/MyBalance"
+
+@using FairPlayCombined.Models.FairPlayBudget.Balance
+@using FairPlayCombined.Models.FairPlayBudget.Currency
+@using FairPlayCombined.Services.FairPlayBudget
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+@attribute [Authorize]
+@rendermode RenderMode.InteractiveServer
+
+@inject BalanceService balanceService
+@inject CurrencyService currencyService
+
+<h3>MyBalance</h3>
+
+@if (this.SelectableBudgetNames != null)
+{
+    <InputSelect class="form-select"
+                 ValueExpression="@(() => this.SelectedBudgetName)"
+                 Value="@this.SelectedBudgetName"
+                 ValueChanged="@((string selectedValue) => OnSelectedBudgetNameChanged(selectedValue))">
+        @foreach (var singleBudgetName in this.SelectableBudgetNames)
+        {
+            <option value="@singleBudgetName">@singleBudgetName</option>
+        }
+    </InputSelect>
+}
+@if (this.SelectableCurrencies != null)
+{
+    <InputSelect class="form-select" ValueExpression="@( () => this.SelectedCurrencyId)"
+                 Value="@this.SelectedCurrencyId"
+                 ValueChanged="@( (long? selectedValue) => OnSelectedCurrencyChanged(selectedValue))">
+        <option value="">Select a Currency</option>
+        @foreach (var singleCurrency in SelectableCurrencies)
+        {
+            <option value="@singleCurrency.CurrencyId">@singleCurrency.Description</option>
+        }
+    </InputSelect>
+}
+@if (this.MyBalanceModel != null && this.SelectedCurrencyId != null)
+{
+    <div class="grid-container" style="max-width:800px; overflow:auto;">
+        <QuickGrid Items="@this.MyBalanceModel">
+            <PropertyColumn Property="@(p=>p.DateTime)" Sortable="true"
+                            IsDefaultSortColumn="true"
+                            InitialSortDirection="@SortDirection.Descending">
+            </PropertyColumn>
+            <PropertyColumn Property="@(p=>p.TransactionType)" Sortable="true"></PropertyColumn>
+            <TemplateColumn Sortable="true">
+                @context.Amount.ToString("c")
+            </TemplateColumn>
+            <PropertyColumn Property="@(p=>p.Description)" Sortable="true"></PropertyColumn>
+            <PropertyColumn Property="@(p=>p.Currency)" Sortable="true"></PropertyColumn>
+        </QuickGrid>
+    </div>
+
+    <p>
+        Total Expenses: @TotalExpenses.ToString("c")
+    </p>
+    <p>
+        Total Income: @TotalIncome.ToString("c")
+    </p>
+    <p>
+        @if (this.NetIncome < 0)
+        {
+            <label class="text-danger">
+                Net Income: @NetIncome.ToString("c")
+            </label>
+        }
+        else
+        {
+            <label class="form-label">
+                Net Income: @NetIncome.ToString("c")
+            </label>
+        }
+    </p>
+}
+
+@code {
+    private string[]? SelectableBudgetNames { get; set; }
+    private string? SelectedBudgetName { get; set; }
+
+    private CurrencyModel[]? SelectableCurrencies { get; set; }
+    private long? SelectedCurrencyId { get; set; }
+
+    private IQueryable<MyBalanceModel>? MyBalanceModel { get; set; }
+
+    private decimal TotalExpenses { get; set; } = 0;
+    private decimal TotalIncome { get; set; } = 0;
+    private decimal NetIncome { get; set; } = 0;
+
+    private CancellationTokenSource cancellationTokenSource = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.SelectableBudgetNames = await balanceService
+        .GetBudgetNamesAsync(this.cancellationTokenSource.Token);
+        this.SelectableCurrencies = await this.currencyService
+        .GetAllCurrencyAsync(this.cancellationTokenSource.Token);
+    }
+
+    private async Task LoadDataAsync()
+    {
+        var result = await this.balanceService!.GetMyBalanceAsync(this.SelectedBudgetName!,
+            this.SelectedCurrencyId!.Value,
+            CancellationToken.None);
+        this.MyBalanceModel = result.AsQueryable();
+        this.TotalExpenses = this.MyBalanceModel
+        .Where(p => p.TransactionType == "Debit").Sum(p => p.Amount);
+        this.TotalIncome = this.MyBalanceModel
+        .Where(p => p.TransactionType == "Credit").Sum(p => p.Amount);
+        this.NetIncome = this.TotalIncome - this.TotalExpenses;
+    }
+
+    private async Task OnSelectedBudgetNameChanged(string selectedValue)
+    {
+        this.SelectedBudgetName = selectedValue;
+        if (this.SelectedCurrencyId != null)
+            await this.LoadDataAsync();
+    }
+
+    private async Task OnSelectedCurrencyChanged(long? selectedValue)
+    {
+        this.SelectedCurrencyId = selectedValue;
+        if (this.SelectableBudgetNames != null)
+            await LoadDataAsync();
+    }
+}

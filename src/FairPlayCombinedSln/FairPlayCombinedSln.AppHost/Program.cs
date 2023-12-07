@@ -128,6 +128,12 @@ if (addLocalizationGenerator)
         })
         .WithReference(sqlServerResource);
 }
+bool addFairPlayBudget = Convert.ToBoolean(builder.Configuration["AddFairPlayBudget"]);
+if (addFairPlayBudget)
+{
+    builder.AddProject<Projects.FairPlayBudget>("fairplaybudget")
+        .WithReference(sqlServerResource);
+}
 
 builder.Build().Run();
 

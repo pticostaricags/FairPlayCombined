@@ -58,6 +58,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayTube.VideoIndexing"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.DatabaseManager", "FairPlayCombined.DatabaseManager\FairPlayCombined.DatabaseManager.csproj", "{EC4EF30F-747D-43F8-9D9E-757038943EC7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayBudget", "FairPlayBudget\FairPlayBudget.csproj", "{7A94972A-A31B-4AA8-98F4-55D0A215173E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -188,6 +190,10 @@ Global
 		{EC4EF30F-747D-43F8-9D9E-757038943EC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC4EF30F-747D-43F8-9D9E-757038943EC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC4EF30F-747D-43F8-9D9E-757038943EC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A94972A-A31B-4AA8-98F4-55D0A215173E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A94972A-A31B-4AA8-98F4-55D0A215173E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A94972A-A31B-4AA8-98F4-55D0A215173E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A94972A-A31B-4AA8-98F4-55D0A215173E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
