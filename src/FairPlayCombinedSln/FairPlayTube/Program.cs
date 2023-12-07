@@ -9,15 +9,11 @@ using Blazored.Toast;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.DataAccess.Data;
-using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
-using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using FairPlayCombined.DataAccess.Interceptors;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayCombined.Services.FairPlayTube;
 using Microsoft.AspNetCore.Mvc;
-using FairPlayTube.Properties;
-using FairPlayCombined.Common.GeneratorsAttributes;
 
 var builder = WebApplication.CreateBuilder(args);
 

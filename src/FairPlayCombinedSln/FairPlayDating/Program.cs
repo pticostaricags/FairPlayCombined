@@ -4,9 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using FairPlayDating.Components;
 using FairPlayDating.Components.Account;
 using FairPlayDating.Data;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Diagnostics;
-using FairPlayCombined.DataAccess.Models.dboSchema;
 using Microsoft.AspNetCore.Mvc;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces;
@@ -15,16 +12,12 @@ using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Services.FairPlayDating;
 using Blazored.Toast;
 using FairPlayDating.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.Net.Http.Headers;
 using System.Net.Mime;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using Azure.AI.OpenAI;
 using FairPlayCombined.Common.Identity;
 using Microsoft.Azure.CognitiveServices.ContentModerator;
-using FairPlayDating.Properties;
 
 var builder = WebApplication.CreateBuilder(args);
 

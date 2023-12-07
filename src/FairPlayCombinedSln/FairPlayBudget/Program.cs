@@ -39,7 +39,7 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
+var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlayBudget), ref connectionString);
 builder.AddSqlServerDbContext<ApplicationDbContext>(connectionName: "FairPlayCombinedDb");

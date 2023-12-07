@@ -4,7 +4,6 @@ using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayTube;
 using FairPlayTube.VideoIndexing;
-using FairPlayTube.VideoIndexing.Properties;
 using Microsoft.EntityFrameworkCore;
 
 var builder = Host.CreateApplicationBuilder(args);
