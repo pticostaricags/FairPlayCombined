@@ -12,6 +12,7 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        await Task.Delay(TimeSpan.FromSeconds(60)); //Workaround waiting for db container to be ready
         TimeSpan timeToWait = TimeSpan.FromMinutes(5);
         var scope = serviceScopeFactory.CreateScope();
         var dbContextFactory = scope.ServiceProvider
