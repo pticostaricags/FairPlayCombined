@@ -23,12 +23,20 @@ var azureContentModeratorEndpoint = builder.Configuration["AzureContentModerator
 var azureContentModeratorKey = builder.Configuration["AzureContentModeratorKey"] ??
     throw new InvalidOperationException("'AzureContentModeratorKey' not found");
 
-var sqlServerDbResource = builder.AddSqlServerContainer("FairPlayCombinedDbServer",
+IResourceBuilder<ISqlServerResource> sqlServerResource;
+if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
+{
+    sqlServerResource = builder.AddSqlServerContainer("FairPlayCombinedDbServer",
     password: "FairPlayCombinedDb$123$")
     .AddDatabase("FairPlayCombinedDb");
+}
+else
+{
+    sqlServerResource = builder.AddSqlServerConnection("FairPlayCombinedDb");
+}
 
 builder.AddProject<Projects.FairPlayCombined_DatabaseManager>("databasemanager")
-    .WithReference(sqlServerDbResource);
+    .WithReference(sqlServerResource);
 
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
 if (addFairPlayDating)
@@ -41,10 +49,10 @@ if (addFairPlayDating)
             callback.EnvironmentVariables.Add("AzureContentModeratorEndpoint", azureContentModeratorEndpoint);
             callback.EnvironmentVariables.Add("AzureContentModeratorKey", azureContentModeratorKey);
         })
-        .WithReference(sqlServerDbResource);
+        .WithReference(sqlServerResource);
     if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
     {
-        AddTestDataGenerator(builder, sqlServerDbResource);
+        AddTestDataGenerator(builder, sqlServerResource);
     }
 }
 
@@ -61,7 +69,7 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
 
     })
-    .WithReference(sqlServerDbResource);
+    .WithReference(sqlServerResource);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")
         .WithEnvironment(callback =>
     {
@@ -72,39 +80,39 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
 
     })
-        .WithReference(sqlServerDbResource);
+        .WithReference(sqlServerResource);
 }
 
 bool addFairPlayShop = Convert.ToBoolean(builder.Configuration["AddFairPlayShop"]);
 if (addFairPlayShop)
 {
     builder.AddProject<Projects.FairPlayShop>(nameof(Projects.FairPlayShop).ToLower())
-    .WithReference(sqlServerDbResource);
+    .WithReference(sqlServerResource);
 }
 
 bool addCitiesImporter = Convert.ToBoolean(builder.Configuration["AddCitiesImporter"]);
 if (addCitiesImporter)
 {
     builder.AddProject<Projects.FairPlayCombined_CitiesImporter>(nameof(CitiesImporter).ToLower())
-        .WithReference(sqlServerDbResource);
+        .WithReference(sqlServerResource);
 }
 
 bool addFairPlatAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPlatAdminPortal"]);
 if (addFairPlatAdminPortal)
 {
     builder.AddProject<Projects.FairPlayAdminPortal>(nameof(Projects.FairPlayAdminPortal).ToLower())
-        .WithReference(sqlServerDbResource);
+        .WithReference(sqlServerResource);
 }
 
 bool addFairPlaySocial = Convert.ToBoolean(builder.Configuration["AddFairPlaySocial"]);
 if (addFairPlaySocial)
 {
     builder.AddProject<Projects.FairPlaySocial>(nameof(Projects.FairPlaySocial).ToLower())
-        .WithReference(sqlServerDbResource);
+        .WithReference(sqlServerResource);
     if (Convert.ToBoolean(builder.Configuration["AddFairPlaySocialTestDataGenerator"]))
     {
         builder.AddProject<Projects.FairPlaySocial_TestDataGenerator>("fairplaysocialtestdatagenerator")
-            .WithReference(sqlServerDbResource);
+            .WithReference(sqlServerResource);
     }
 }
 
@@ -118,13 +126,13 @@ if (addLocalizationGenerator)
             callback.EnvironmentVariables.Add("AzureOpenAIEndpoint", builder.Configuration["AzureOpenAIEndpoint"]!);
             callback.EnvironmentVariables.Add("AzureOpenAIKey", builder.Configuration["AzureOpenAIKey"]!);
         })
-        .WithReference(sqlServerDbResource);
+        .WithReference(sqlServerResource);
 }
 
 builder.Build().Run();
 
 static void AddTestDataGenerator(IDistributedApplicationBuilder builder,
-    IResourceBuilder<SqlServerDatabaseResource> sqlServerDbResource)
+    IResourceBuilder<ISqlServerResource> sqlServerResource)
 {
     var humansPhotosDirectory = builder.Configuration["HumansPhotosDirectory"];
     builder.AddProject<Projects.FairPlayDating_TestDataGenerator>("fairplaydatingtestdatagenerator")
@@ -134,5 +142,5 @@ static void AddTestDataGenerator(IDistributedApplicationBuilder builder,
             {
                 callback.EnvironmentVariables.Add("HumansPhotosDirectory", humansPhotosDirectory);
             }
-        }).WithReference(sqlServerDbResource);
+        }).WithReference(sqlServerResource);
 }
