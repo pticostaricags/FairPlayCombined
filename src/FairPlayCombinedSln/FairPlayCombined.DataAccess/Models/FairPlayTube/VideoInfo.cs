@@ -16,6 +16,8 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 [Table("VideoInfo", Schema = "FairPlayTube")]
+[Index("VideoId", Name = "UI_VideoInfo_VideoId", IsUnique = true)]
+[Index("YouTubeVideoId", Name = "UI_VideoInfo_YouTubeVideoId", IsUnique = true)]
 public partial class VideoInfo
 {
     [Key]
@@ -89,6 +91,9 @@ public partial class VideoInfo
     [Column("OriginatorIPAddress")]
     [StringLength(100)]
     public string OriginatorIpaddress { get; set; }
+
+    [StringLength(11)]
+    public string YouTubeVideoId { get; set; }
 
     [ForeignKey("ApplicationUserId")]
     [InverseProperty("VideoInfo")]

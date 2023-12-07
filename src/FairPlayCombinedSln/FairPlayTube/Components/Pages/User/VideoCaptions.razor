@@ -1,0 +1,71 @@
+﻿@page "/User/VideoCaptions/VideoInfo{VideoInfoId:long}/YouTube/{YouTubeVideoId}"
+@using Blazored.Toast.Services
+@using FairPlayCombined.Models.FairPlaySocial.VideoCaptions
+@using FairPlayCombined.Services.Common
+@using FairPlayCombined.Services.FairPlayTube
+@using Google.Apis.YouTube.v3
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using System.Text
+
+@rendermode RenderMode.InteractiveServer
+@attribute [Authorize]
+@attribute [StreamRendering(enabled:true)]
+
+@inject VideoCaptionsService videoCaptionsService
+@inject YouTubeClientService youTubeClientService
+@inject IToastService toastService
+
+<h3>VideoCaptions</h3>
+
+@if (this.Items != null)
+{
+    <QuickGrid Items="this.Items!.AsQueryable()">
+        <PropertyColumn Property="@(p=>p.Language)"></PropertyColumn>
+        <TemplateColumn>
+            <button type="button" class="btn btn-primary"
+            @onclick="@( async () => await OnUploadToYouTubeButtonClickedAsync(context))"
+            >Upload To YouTube</button>
+        </TemplateColumn>
+    </QuickGrid>
+}
+
+@code {
+    [Parameter]
+    public long? VideoInfoId { get; set; }
+    [Parameter]
+    public string? YouTubeVideoId { get; set; }
+    private VideoCaptionsModel[]? Items { get; set; }
+    private CancellationTokenSource cancellationTokenSource = new();
+    protected override async Task OnInitializedAsync()
+    {
+        this.Items = await this.videoCaptionsService
+        .GetVideoCaptionsByVideoInfoIdAsync(this.VideoInfoId!.Value,
+            this.cancellationTokenSource.Token
+        );
+    }
+
+    private async Task OnUploadToYouTubeButtonClickedAsync(VideoCaptionsModel videoCaptionsModel)
+    {
+        var youTubeService = await this.youTubeClientService.AuthorizeAsync();
+        var contentBytes = Encoding.UTF8.GetBytes(videoCaptionsModel.Content!);
+        MemoryStream memoryStream = new MemoryStream(contentBytes);
+        await this.youTubeClientService.UploadCaptionsAsync(this.YouTubeVideoId!,
+        language: videoCaptionsModel.Language!,
+        youTubeService,
+        memoryStream,
+        progressChanged: (progress) =>
+        {
+            string message = $"Status: {progress.Status}";
+            if (progress.Status == Google.Apis.Upload.UploadStatus.Failed)
+            {
+                message += $" - Exception: {progress.Exception.Message}";
+            }
+            this.toastService.ShowInfo(message);
+        },
+        responseReceived: (response) =>
+        {
+        },
+        this.cancellationTokenSource.Token
+        );
+    }
+}

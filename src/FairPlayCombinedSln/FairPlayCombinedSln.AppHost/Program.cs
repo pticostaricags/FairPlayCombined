@@ -28,6 +28,9 @@ var googleAuthClientId = builder.Configuration["GoogleAuthClientId"] ??
 var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??
     throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
 
+var googleAuthClientSecretsFilePath = builder.Configuration["GoogleAuthClientSecretsFilePath"] ??
+    throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
+
 IResourceBuilder<ISqlServerResource> sqlServerResource;
 if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
 {
@@ -74,6 +77,7 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
         callback.EnvironmentVariables.Add("GoogleAuthClientId", googleAuthClientId);
         callback.EnvironmentVariables.Add("GoogleAuthClientSecret", googleAuthClientSecret);
+        callback.EnvironmentVariables.Add("GoogleAuthClientSecretsFilePath", googleAuthClientSecretsFilePath);
     })
     .WithReference(sqlServerResource);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")
@@ -84,7 +88,6 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("AzureVideoIndexerResourceGroup", azureVideoIndexerResourceGroup);
         callback.EnvironmentVariables.Add("AzureVideoIndexerResourceName", azureVideoIndexerResourceName);
         callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
-
     })
         .WithReference(sqlServerResource);
 }

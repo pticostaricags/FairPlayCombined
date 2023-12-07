@@ -1,5 +1,6 @@
-﻿@page "/"
+﻿@page "/User/MyVideos"
 @using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.Common
@@ -10,6 +11,8 @@
 @inject IJSRuntime jsRuntime
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject VideoInfoService videoInfoService
+@inject IUserProviderService userProviderService 
+@inject NavigationManager navigationManager
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -29,6 +32,14 @@
             </video>
         </div>
         <div class="inline"></div>
+    </TemplateColumn>
+    <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
+    <TemplateColumn>
+        @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
+        {
+            <button type="button" class="btn btn-primary"
+                    @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">Manage YouTube Captions</button>
+        }
     </TemplateColumn>
 </QuickGrid>
 <Paginator State="this.paginationState"></Paginator>
@@ -53,7 +64,8 @@
                     PageSize = paginationState.ItemsPerPage,
                     StartIndex = req.StartIndex
                 };
-            var items = await videoInfoService.GetPaginatedCompletedVideoInfoAsync(paginationRequest,
+            var items = await videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(paginationRequest,
+                userId:this.userProviderService!.GetCurrentUserId()!,
             this.cancellationTokenSource.Token);
             this.IsBusy = false;
             StateHasChanged();
@@ -86,9 +98,14 @@
             srclang = p.languageCode,
             kind = "subtitles",
             label = p.name
-        }).OrderBy(p=>p.label).ToArray());
+        }).OrderBy(p => p.label).ToArray());
         this.IsBusy = false;
         StateHasChanged();
+    }
+
+    private void OnManageYouTubeCaptionsButtonClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/User/VideoCaptions/VideoInfo{videoInfoModel.VideoInfoId}/YouTube/{videoInfoModel.YouTubeVideoId}");
     }
 
 }

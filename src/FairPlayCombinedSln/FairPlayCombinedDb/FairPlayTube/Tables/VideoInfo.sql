@@ -23,6 +23,7 @@
     [SourceApplication] NVARCHAR(250) NOT NULL DEFAULT 'Unknown', 
     [OriginatorIPAddress] NVARCHAR(100) NOT NULL
     CONSTRAINT [FK_VideoInfo_ApplicationUser] FOREIGN KEY ([ApplicationUserId]) REFERENCES [dbo].[AspNetUsers]([Id]), 
+    [YouTubeVideoId] NVARCHAR(11) NULL, 
     CONSTRAINT [FK_VideoInfo_VideoIndexStatus] FOREIGN KEY ([VideoIndexStatusId]) REFERENCES [FairPlayTube].[VideoIndexStatus]([VideoIndexStatusId]), 
     CONSTRAINT [FK_VideoInfo_VideoVisibility] FOREIGN KEY ([VideoVisibilityId]) REFERENCES [FairPlayTube].[VideoVisibility]([VideoVisibilityId])
 )
@@ -36,3 +37,10 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'VideoInfo',
     @level2type = N'COLUMN',
     @level2name = N'ApplicationUserId'
+GO
+
+CREATE UNIQUE INDEX [UI_VideoInfo_VideoId] ON [FairPlayTube].[VideoInfo] ([VideoId])
+
+GO
+
+CREATE UNIQUE INDEX [UI_VideoInfo_YouTubeVideoId] ON [FairPlayTube].[VideoInfo] ([YouTubeVideoId])

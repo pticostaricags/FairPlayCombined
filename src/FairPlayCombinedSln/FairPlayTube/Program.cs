@@ -14,7 +14,8 @@ using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayCombined.Services.FairPlayTube;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication.Google;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.YouTube.v3;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,12 @@ var googleAuthClientId = Environment.GetEnvironmentVariable("GoogleAuthClientId"
     throw new InvalidOperationException("'GoogleAuthClientId' not found");
 var googleAuthClientSecret = Environment.GetEnvironmentVariable("GoogleAuthClientSecret") ??
     throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
+var googleAuthClientSecretsFilePath = Environment.GetEnvironmentVariable("GoogleAuthClientSecretsFilePath") ??
+    throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
+builder.Services.AddSingleton<YouTubeClientServiceConfiguration>(new YouTubeClientServiceConfiguration() 
+{
+    ClientSecretsFilePath = googleAuthClientSecretsFilePath
+});
 
 builder.Services.AddAuthentication(configureOptions =>
 {
@@ -47,9 +54,13 @@ builder.Services.AddAuthentication(configureOptions =>
     {
         options.ClientId = googleAuthClientId;
         options.ClientSecret = googleAuthClientSecret;
+        options.Scope.Add(YouTubeService.Scope.YoutubeUpload);
+        options.Scope.Add(YouTubeService.Scope.YoutubeForceSsl);
+        options.Scope.Add(YouTubeService.Scope.Youtubepartner);
     })
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
+
 var clientAppsAuthPolicy = "ClientAppsAuthPolicy";
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(clientAppsAuthPolicy, policy =>
@@ -124,7 +135,13 @@ builder.Services.AddTransient(sp =>
         new HttpClient());
 });
 builder.Services.AddTransient<VideoInfoService>();
-
+builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
+{
+    ClientId = googleAuthClientId,
+    ClientSecret = googleAuthClientSecret
+});
+builder.Services.AddTransient<YouTubeClientService>();
+builder.Services.AddTransient<VideoCaptionsService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -151,7 +168,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-await Task.Delay(TimeSpan.FromSeconds(60));
+await Task.Delay(TimeSpan.FromSeconds(10));
 using var scope = app.Services.CreateScope();
 using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
 
