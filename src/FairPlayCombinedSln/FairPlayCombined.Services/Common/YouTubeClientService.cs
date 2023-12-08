@@ -66,7 +66,7 @@ namespace FairPlayCombined.Services.Common
         {
             Caption caption = new Caption();
             caption.Snippet = new CaptionSnippet();
-            caption.Snippet.Name = $"{youtubeVideoId}_{language}_captions";
+            caption.Snippet.Name = $"VI";
             caption.Snippet.Language = language;
             caption.Snippet.VideoId = youtubeVideoId;
             var uploadCaptionsOperation = 
