@@ -9,7 +9,6 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
-GO
 BEGIN TRANSACTION
 --START OF DEFAULT FREQUENCY
 SET IDENTITY_INSERT [FairPlayDating].[Frequency] ON
@@ -365,4 +364,3 @@ END
 SET IDENTITY_INSERT [FairPlayDating].[TattooStatus] OFF
 --END OF DEFAULT TATOO STATUS
 COMMIT
-GO

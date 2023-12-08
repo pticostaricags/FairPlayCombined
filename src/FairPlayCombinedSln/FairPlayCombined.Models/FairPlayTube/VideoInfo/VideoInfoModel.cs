@@ -29,5 +29,6 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
         public string? VideoLanguageCode { get; set; }
         public short VideoVisibilityId { get; set; }
         public string? ThumbnailUrl { get; set; }
+        public string? YouTubeVideoId { get; set; }
     }
 }

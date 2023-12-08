@@ -6,6 +6,7 @@
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
+@using Google.Apis.YouTube.v3.Data
 @attribute [Authorize]
 @rendermode RenderMode.InteractiveServer
 <h3>UploadMyVideo</h3>
@@ -14,6 +15,7 @@
 @inject VideoInfoService videoInfoService
 @inject IToastService toastService
 @inject IUserProviderService userProviderService
+@inject YouTubeClientService youTubeClientService
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
@@ -35,6 +37,8 @@
         <label class="form-label">Video Url</label>
         <InputText class="form-control" @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl"></InputText>
         <button class="btn btn-secondary" type="button" @onclick="OnProcessFileButtonClickedAsync">Process File</button>
+        <button class="btn btn-secondary" type="button" @onclick="UploadToYouTubeAsync">Upload To YouTube</button>
+        <label class="form-label">Bytes Sent: @bytesSent</label>
     </div>
     <div class="mb-3">
         <button class="btn btn-primary">Save</button>
@@ -47,6 +51,7 @@
     private CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
     private EditForm? frmCreateVideoInfo;
+    private long bytesSent { get; set; }
 
     protected override void OnInitialized()
     {
@@ -68,8 +73,8 @@
             var nameField = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.Name));
             var descriptionField = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.Name));
             var externalVideoSourceUrl = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.ExternalVideoSourceUrl));
-            if (!frmCreateVideoInfo.EditContext.IsValid(nameField) || 
-            !frmCreateVideoInfo.EditContext.IsValid(descriptionField) || 
+            if (!frmCreateVideoInfo.EditContext.IsValid(nameField) ||
+            !frmCreateVideoInfo.EditContext.IsValid(descriptionField) ||
             !frmCreateVideoInfo.EditContext.IsValid(externalVideoSourceUrl))
             {
                 this.toastService.ShowError("Please make sure to fill all the values and try again");
@@ -86,6 +91,51 @@
             this.createVideoInfoModel.VideoId = indexVideoResult!.id;
             this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
             this.frmCreateVideoInfo.EditContext.Validate();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+
+    public async Task UploadToYouTubeAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            this.frmCreateVideoInfo!.EditContext!.Validate();
+            var nameField = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.Name));
+            var descriptionField = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.Name));
+            var externalVideoSourceUrl = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.ExternalVideoSourceUrl));
+            if (!frmCreateVideoInfo.EditContext.IsValid(nameField) ||
+            !frmCreateVideoInfo.EditContext.IsValid(descriptionField) ||
+            !frmCreateVideoInfo.EditContext.IsValid(externalVideoSourceUrl))
+            {
+                this.toastService.ShowError("Please make sure to fill all the values and try again");
+                return;
+            }
+            var fileBytes = await new HttpClient().GetByteArrayAsync(this.createVideoInfoModel.ExternalVideoSourceUrl);
+            MemoryStream stream = new MemoryStream(fileBytes);
+            Video video=new();
+            video.Snippet = new VideoSnippet();
+            video.Snippet.Title = this.createVideoInfoModel.Name;
+            video.Snippet.Description = this.createVideoInfoModel.Description;
+            video.Status = new VideoStatus();
+            video.Status.PrivacyStatus = "unlisted";
+            await this.youTubeClientService.UploadVideoAsync(video, stream, 
+            progressChanged: async (uploadProgress) =>
+            {
+                this.bytesSent = uploadProgress.BytesSent;
+                await InvokeAsync(() => StateHasChanged());
+            },
+            responseReceived: (video)=>
+            {
+                this.createVideoInfoModel.YouTubeVideoId = video.Id;
+                this.toastService.ShowSuccess($"Video uploaded to YouTube. Id: {video.Id}");
+            });
         }
         catch (Exception ex)
         {

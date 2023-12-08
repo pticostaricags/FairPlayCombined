@@ -33,6 +33,7 @@
     <ProjectReference Include="..\FairPlayCombined.CitiesImporter\FairPlayCombined.CitiesImporter.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
+    <ProjectReference Include="..\FairPlayCombined.DatabaseManager\FairPlayCombined.DatabaseManager.csproj" />
     <ProjectReference Include="..\FairPlayCombined.LocalizationGenerator\FairPlayCombined.LocalizationGenerator.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>

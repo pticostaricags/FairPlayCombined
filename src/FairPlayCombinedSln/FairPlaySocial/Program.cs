@@ -13,8 +13,6 @@ using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using Blazored.Toast;
 using FairPlaySocial.ClientServices;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Mime;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlaySocial.MinimalApiEndpoints;
@@ -51,11 +49,10 @@ builder.Services.AddAuthorizationBuilder()
     {
         policy.RequireAuthenticatedUser().AddAuthenticationSchemes(IdentityConstants.BearerScheme);
     });
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
+var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlaySocial), ref connectionString);
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.AddSqlServerDbContext<ApplicationDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -67,20 +64,23 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 
 builder.Services.AddTransient<IUserProviderService, UserProviderService>();
-builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
-    (sp, optionsAction) =>
-    {
-        IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
-        optionsAction.AddInterceptors(new SaveChangesInterceptor(userProviderService));
-        optionsAction.UseSqlServer(connectionString,
-            sqlServerOptionsAction =>
-            {
-                sqlServerOptionsAction.UseNetTopologySuite();
-                sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
-                    maxRetryDelay: TimeSpan.FromSeconds(3),
-                    errorNumbersToAdd: null);
-            });
-    });
+builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
+{
+    IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
+    DbContextOptionsBuilder<FairPlayCombinedDbContext> optionsBuilder = new();
+    optionsBuilder.AddInterceptors(new SaveChangesInterceptor(userProviderService));
+    optionsBuilder.UseSqlServer(connectionString,
+        sqlServerOptionsAction =>
+        {
+            sqlServerOptionsAction.UseNetTopologySuite();
+            sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null);
+        });
+    return optionsBuilder.Options;
+});
+builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
+builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 
 builder.Services.AddSignalR(hubOptions =>
 {
@@ -121,8 +121,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+await Task.Delay(TimeSpan.FromSeconds(60));
 using var scope = app.Services.CreateScope();
 using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
+
 var supportedCultures = ctx.Culture.Select(p => p.Name).ToArray();
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])

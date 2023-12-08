@@ -9,6 +9,7 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
+BEGIN TRANSACTION
 --START OF DEFAULT VIDEO INDEX STATUSES
 DECLARE @VIDEO_INDEX_STATUS NVARCHAR(50) = 'Pending'
 IF NOT EXISTS (SELECT * FROM [FairPlayTube].[VideoIndexStatus] VIS WHERE [VIS].[Name] = @VIDEO_INDEX_STATUS)
@@ -95,3 +96,4 @@ BEGIN
     INSERT INTO FairPlayTube.VideoJobApplicationStatus([VideoJobApplicationStatusId],[Name],[Description]) VALUES(5, @VIDEOJOBAPPLICATIONSTATUSNAME, 'Work has been performed and it is already paid')
 END
 --END OF VIDEO JOB APPLICATION STATUS
+COMMIT

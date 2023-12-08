@@ -9,13 +9,13 @@ using Blazored.Toast;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.DataAccess.Data;
-using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
-using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using FairPlayCombined.DataAccess.Interceptors;
 using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayCombined.Services.FairPlayTube;
 using Microsoft.AspNetCore.Mvc;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.YouTube.v3;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,13 +34,33 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
+var googleAuthClientId = Environment.GetEnvironmentVariable("GoogleAuthClientId") ??
+    throw new InvalidOperationException("'GoogleAuthClientId' not found");
+var googleAuthClientSecret = Environment.GetEnvironmentVariable("GoogleAuthClientSecret") ??
+    throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
+var googleAuthClientSecretsFilePath = Environment.GetEnvironmentVariable("GoogleAuthClientSecretsFilePath") ??
+    throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
+builder.Services.AddSingleton<YouTubeClientServiceConfiguration>(new YouTubeClientServiceConfiguration() 
+{
+    ClientSecretsFilePath = googleAuthClientSecretsFilePath
+});
+
 builder.Services.AddAuthentication(configureOptions =>
 {
     configureOptions.DefaultScheme = IdentityConstants.ApplicationScheme;
     configureOptions.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
+    .AddGoogle(options => 
+    {
+        options.ClientId = googleAuthClientId;
+        options.ClientSecret = googleAuthClientSecret;
+        options.Scope.Add(YouTubeService.Scope.YoutubeUpload);
+        options.Scope.Add(YouTubeService.Scope.YoutubeForceSsl);
+        options.Scope.Add(YouTubeService.Scope.Youtubepartner);
+    })
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
+
 var clientAppsAuthPolicy = "ClientAppsAuthPolicy";
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(clientAppsAuthPolicy, policy =>
@@ -67,11 +87,10 @@ AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = ne
     ResourceName = azureVideoIndexerResourceName,
     SubscriptionId = azureVideoIndexerSubscriptionId,
 };
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
+var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlayTube), ref connectionString);
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.AddSqlServerDbContext<ApplicationDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -83,20 +102,23 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 
 builder.Services.AddTransient<IUserProviderService, UserProviderService>();
-builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
-    (sp, optionsAction) =>
-    {
-        IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
-        optionsAction.AddInterceptors(new SaveChangesInterceptor(userProviderService));
-        optionsAction.UseSqlServer(connectionString,
-            sqlServerOptionsAction =>
-            {
-                sqlServerOptionsAction.UseNetTopologySuite();
-                sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
-                    maxRetryDelay: TimeSpan.FromSeconds(3),
-                    errorNumbersToAdd: null);
-            });
-    });
+builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
+{
+    IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
+    DbContextOptionsBuilder<FairPlayCombinedDbContext> optionsBuilder = new();
+    optionsBuilder.AddInterceptors(new SaveChangesInterceptor(userProviderService));
+    optionsBuilder.UseSqlServer(connectionString,
+        sqlServerOptionsAction =>
+        {
+            sqlServerOptionsAction.UseNetTopologySuite();
+            sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null);
+        });
+    return optionsBuilder.Options;
+});
+builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
+builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 
 builder.Services.AddSignalR(hubOptions =>
 {
@@ -113,7 +135,13 @@ builder.Services.AddTransient(sp =>
         new HttpClient());
 });
 builder.Services.AddTransient<VideoInfoService>();
-
+builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
+{
+    ClientId = googleAuthClientId,
+    ClientSecret = googleAuthClientSecret
+});
+builder.Services.AddTransient<YouTubeClientService>();
+builder.Services.AddTransient<VideoCaptionsService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -140,8 +168,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+await Task.Delay(TimeSpan.FromSeconds(10));
 using var scope = app.Services.CreateScope();
 using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
+
 var supportedCultures = ctx.Culture.Select(p => p.Name).ToArray();
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])

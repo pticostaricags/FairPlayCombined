@@ -29,34 +29,36 @@ AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = ne
     ResourceName = azureVideoIndexerResourceName,
     SubscriptionId = azureVideoIndexerSubscriptionId,
 };
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
+var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlayTube.VideoIndexing), ref connectionString);
 
 builder.Services.AddTransient<IUserProviderService, VideoIndexingUserProviderService>();
-builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
-    (sp, optionsAction) =>
-    {
-        IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
-        optionsAction.AddInterceptors(new SaveChangesInterceptor(userProviderService));
-        optionsAction.UseSqlServer(connectionString,
-            sqlServerOptionsAction =>
-            {
-                sqlServerOptionsAction.UseNetTopologySuite();
-                sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
-                    maxRetryDelay: TimeSpan.FromSeconds(3),
-                    errorNumbersToAdd: null);
-            });
-    });
+builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
+{
+    IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
+    DbContextOptionsBuilder<FairPlayCombinedDbContext> optionsBuilder = new();
+    optionsBuilder.AddInterceptors(new SaveChangesInterceptor(userProviderService));
+    optionsBuilder.UseSqlServer(connectionString,
+        sqlServerOptionsAction =>
+        {
+            sqlServerOptionsAction.UseNetTopologySuite();
+            sqlServerOptionsAction.EnableRetryOnFailure(maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null);
+        });
+    return optionsBuilder.Options;
+});
+builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
+builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 builder.Services.AddSingleton(azureVideoIndexerServiceConfiguration);
 builder.Services.AddTransient(sp =>
 {
     return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
         new HttpClient());
 });
+
 builder.Services.AddTransient<VideoInfoService>();
-
-
 builder.Services.AddHostedService<VideoIndexStatusService>();
 
 var host = builder.Build();
