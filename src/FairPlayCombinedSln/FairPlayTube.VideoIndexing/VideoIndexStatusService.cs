@@ -124,10 +124,10 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
             }
             catch (Exception ex)
             {
-                logger.LogError("Exception when retrieving captions: {exception}", ex.ToString());
+                logger.LogWarning("Exception when retrieving captions: {exception}", ex.ToString());
                 if (ex.Message.Contains("Too Many Requests"))
                 {
-                    logger.LogInformation("Retrying getting captions in 1 minute");
+                    logger.LogWarning("Retrying getting captions in 1 minute");
                     await Task.Delay(TimeSpan.FromMinutes(1));
                     try
                     {
