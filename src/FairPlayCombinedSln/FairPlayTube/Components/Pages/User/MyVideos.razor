@@ -17,23 +17,15 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 <QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-    <TemplateColumn>
-        <div class="inline">
-            <video id="@($"vid-{context.VideoId}")"
-                   class="azuremediaplayer amp-default-skin amp-stream-skin"
-                   autoplay
-                   controls
-                   width="640"
-                   height="480">
-                <p class="amp-no-js">
-                    To view this video please enable JavaScript, and consider upgrading to
-                    a web browser that supports HTML5 video
-                </p>
-            </video>
-        </div>
-        <div class="inline"></div>
-    </TemplateColumn>
+    <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+    <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
     <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
+    <TemplateColumn>
+        @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
+        {
+            <a href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
+        }
+    </TemplateColumn>
     <TemplateColumn>
         @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
         {

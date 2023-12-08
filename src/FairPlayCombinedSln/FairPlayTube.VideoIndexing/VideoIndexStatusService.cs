@@ -12,7 +12,7 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(TimeSpan.FromSeconds(60)); //Workaround waiting for db container to be ready
+        await Task.Delay(TimeSpan.FromSeconds(5)); //Workaround waiting for db container to be ready
         TimeSpan timeToWait = TimeSpan.FromMinutes(5);
         var scope = serviceScopeFactory.CreateScope();
         var dbContextFactory = scope.ServiceProvider
@@ -96,8 +96,8 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
     }
 
     private async Task AddLanguageCaptions(
-        FairPlayCombinedDbContext dbContext, 
-        AzureVideoIndexerService azureVideoIndexerService, 
+        FairPlayCombinedDbContext dbContext,
+        AzureVideoIndexerService azureVideoIndexerService,
         string viAccessToken,
         string language,
         CancellationToken stoppingToken)
@@ -113,11 +113,37 @@ public class VideoIndexStatusService(ILogger<VideoIndexStatusService> logger,
             logger.LogInformation("Retrieving captions for videoId: {videoId}. Language: {language}",
                 singleVideoWithNoLanguageCaptions.VideoId,
                 language);
-            var videoCaptions =
-                await azureVideoIndexerService.GetVideoVTTCaptionsAsync(
-                    singleVideoWithNoLanguageCaptions.VideoId,
-                    viAccessToken,
-                    language, stoppingToken);
+            string? videoCaptions=default;
+            try
+            {
+                videoCaptions =
+                    await azureVideoIndexerService.GetVideoVTTCaptionsAsync(
+                        singleVideoWithNoLanguageCaptions.VideoId,
+                        viAccessToken,
+                        language, stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Exception when retrieving captions: {exception}", ex.ToString());
+                if (ex.Message.Contains("Too Many Requests"))
+                {
+                    logger.LogInformation("Retrying getting captions in 1 minute");
+                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    try
+                    {
+                        videoCaptions =
+                        await azureVideoIndexerService.GetVideoVTTCaptionsAsync(
+                            singleVideoWithNoLanguageCaptions.VideoId,
+                            viAccessToken,
+                            language, stoppingToken);
+                    }
+                    catch (Exception retryException)
+                    {
+                        logger.LogError("Retry exception getting captions: {exceptions}", retryException.ToString());
+                        throw;
+                    }
+                }
+            }
             await dbContext.VideoCaptions.AddAsync(new VideoCaptions()
             {
                 Language = language,

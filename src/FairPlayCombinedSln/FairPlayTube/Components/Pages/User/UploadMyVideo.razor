@@ -41,6 +41,14 @@
         <label class="form-label">Bytes Sent: @bytesSent</label>
     </div>
     <div class="mb-3">
+        <label class="mb-3">Video Id (Azure Video Indexer)</label>
+        <InputText class="form-control" @bind-Value="this.createVideoInfoModel.VideoId"></InputText>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Video Id (YouTube)</label>
+        <InputText class="form-control" @bind-Value="this.createVideoInfoModel.YouTubeVideoId"></InputText>
+    </div>
+    <div class="mb-3">
         <button class="btn btn-primary">Save</button>
     </div>
 </EditForm>
@@ -151,6 +159,7 @@
         {
             this.IsBusy = true;
             StateHasChanged();
+            this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
             await this.videoInfoService.CreateVideoInfoAsync(this.createVideoInfoModel,
             this.cancellationTokenSource.Token);
             this.toastService.ShowSuccess("Your video has been save. You'll be notified when indexing is ready");

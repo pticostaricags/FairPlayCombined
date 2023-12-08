@@ -20,8 +20,8 @@
                    class="azuremediaplayer amp-default-skin amp-stream-skin"
                    autoplay
                    controls
-                   width="640"
-                   height="480">
+                   width="200"
+                   height="200">
                 <p class="amp-no-js">
                     To view this video please enable JavaScript, and consider upgrading to
                     a web browser that supports HTML5 video
@@ -29,6 +29,20 @@
             </video>
         </div>
         <div class="inline"></div>
+    </TemplateColumn>
+    <TemplateColumn>
+        <div>
+            <button type="button" class="btn btn-primary" @onclick="@( async () => await OnPlayVideoClickedAsync(context!.VideoId!))">Play</button>
+        </div>
+    </TemplateColumn>
+    <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+    <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
+    <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
+    <TemplateColumn>
+        @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
+        {
+            <a href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
+        }
     </TemplateColumn>
 </QuickGrid>
 <Paginator State="this.paginationState"></Paginator>
