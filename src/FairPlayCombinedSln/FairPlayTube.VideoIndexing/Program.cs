@@ -59,7 +59,8 @@ builder.Services.AddTransient(sp =>
 });
 
 builder.Services.AddTransient<VideoInfoService>();
-builder.Services.AddHostedService<VideoIndexStatusService>();
+builder.Services.AddHostedService<VideoIndexStatusBackgroundService>();
+builder.Services.AddHostedService<VideoCaptionsBackgroundService>();
 
 var host = builder.Build();
 host.Run();
