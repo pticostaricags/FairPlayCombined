@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace FairPlayTube.VideoIndexing;
 
-public class VideoCaptionsBackgroundService(ILogger<VideoIndexStatusBackgroundService> logger,
+public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundService> logger,
     IServiceScopeFactory serviceScopeFactory) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
