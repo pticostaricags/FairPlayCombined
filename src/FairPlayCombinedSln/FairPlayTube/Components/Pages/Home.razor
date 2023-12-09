@@ -41,7 +41,7 @@
     <TemplateColumn>
         @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
         {
-            <a href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
+            <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
         }
     </TemplateColumn>
 </QuickGrid>

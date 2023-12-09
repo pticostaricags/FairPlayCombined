@@ -19,6 +19,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             var result = await dbContext.VideoCaptions
             .Include(p => p.VideoInfo)
                 .Where(p => p.VideoInfoId == videoInfoId)
+                .OrderBy(p => p.Language)
                 .Select(p=>new VideoCaptionsModel() 
                 {
                     Content = p.Content,

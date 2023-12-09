@@ -17,6 +17,11 @@
 
 <h3>VideoCaptions</h3>
 
+@if (!String.IsNullOrWhiteSpace(this.YouTubeVideoId))
+{
+    <a data-enhance-nav="false" href="@($"https://youtu.be/{this.YouTubeVideoId}")" target="_blank">View On YouTube</a>
+}
+
 @if (this.Items != null)
 {
     <QuickGrid Items="this.Items!.AsQueryable()">
