@@ -7,32 +7,16 @@
 @using FairPlayTube.Components.Spinners
 @using Microsoft.AspNetCore.Components.QuickGrid
 @rendermode RenderMode.InteractiveServer
-@inject IJSRuntime jsRuntime
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject VideoInfoService videoInfoService
+@inject NavigationManager navigationManager
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 <QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
     <TemplateColumn>
-        <div class="inline">
-            <video id="@($"vid-{context.VideoId}")"
-                   class="azuremediaplayer amp-default-skin amp-stream-skin"
-                   autoplay
-                   controls
-                   width="200"
-                   height="200">
-                <p class="amp-no-js">
-                    To view this video please enable JavaScript, and consider upgrading to
-                    a web browser that supports HTML5 video
-                </p>
-            </video>
-        </div>
-        <div class="inline"></div>
-    </TemplateColumn>
-    <TemplateColumn>
         <div>
-            <button type="button" class="btn btn-primary" @onclick="@( async () => await OnPlayVideoClickedAsync(context!.VideoId!))">Play</button>
+            <button type="button" class="btn btn-primary" @onclick="@( () => OnPlayVideoClicked(context!.VideoId!))">Play</button>
         </div>
     </TemplateColumn>
     <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
@@ -76,33 +60,9 @@
         };
     }
 
-    private async Task OnPlayVideoClickedAsync(string videoId)
+    private void OnPlayVideoClicked(string videoId)
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
-        var viAccessTokenResponse = await azureVideoIndexerService
-        .GetAccessTokenForArmAccountAsync(armAccessToken, CancellationToken.None);
-        var videoIndex = await azureVideoIndexerService
-        .GetVideoIndexAsync(videoId, viAccessTokenResponse!.AccessToken!,
-        CancellationToken.None);
-        var supportedLanguages = await azureVideoIndexerService
-        .GetSupportedLanguagesAsync(viAccessTokenResponse!.AccessToken!,
-        this.cancellationTokenSource.Token);
-        var singleVideoIndex = videoIndex!.videos!.Single();
-        await jsRuntime.InvokeVoidAsync("initSource", $"vid-{videoId}",
-        singleVideoIndex.publishedUrl,
-        singleVideoIndex.viewToken,
-        videoId,
-        supportedLanguages!.Select(p => new
-        {
-            src = $"/api/video/{videoId}/captions/{p.languageCode}",
-            srclang = p.languageCode,
-            kind = "subtitles",
-            label = p.name
-        }).OrderBy(p=>p.label).ToArray());
-        this.IsBusy = false;
-        StateHasChanged();
+        this.navigationManager.NavigateTo($"/Public/WatchVideo/{videoId}");
     }
 
 }
