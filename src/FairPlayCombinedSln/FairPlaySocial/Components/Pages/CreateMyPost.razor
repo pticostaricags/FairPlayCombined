@@ -33,13 +33,13 @@
         <label class="form-label">
             Post Visibility
         </label>
-        <InputSelect ValueChanged="@( (short value) => this.createPostModel.PostVisibilityId = value )"
+        <InputSelect ValueChanged="@( (int value) => this.createPostModel.PostVisibilityId = value )"
                      ValueExpression="@( ()=> this.createPostModel.PostVisibilityId)"
                      Value="@this.createPostModel.PostVisibilityId"
                      class="form-select">
             <option value=""></option>
-            <option value="@((short)PostVisibility.Public)">@PostVisibility.Public.ToString()</option>
-            <option value="@((short)PostVisibility.Subscribers)">@PostVisibility.Subscribers.ToString()</option>
+            <option value="@((int)PostVisibility.Public)">@PostVisibility.Public.ToString()</option>
+            <option value="@((int)PostVisibility.Subscribers)">@PostVisibility.Subscribers.ToString()</option>
         </InputSelect>
         <ValidationMessage For="@( () => this.createPostModel.PostVisibilityId)"></ValidationMessage>
     </div>

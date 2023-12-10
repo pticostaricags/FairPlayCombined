@@ -20,7 +20,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 public partial class PostType
 {
     [Key]
-    public byte PostTypeId { get; set; }
+    public int PostTypeId { get; set; }
 
     [Required]
     [StringLength(10)]

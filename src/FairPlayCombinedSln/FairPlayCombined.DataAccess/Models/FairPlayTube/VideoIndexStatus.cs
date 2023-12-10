@@ -19,7 +19,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 public partial class VideoIndexStatus
 {
     [Key]
-    public short VideoIndexStatusId { get; set; }
+    public int VideoIndexStatusId { get; set; }
 
     [Required]
     [StringLength(50)]

@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [FairPlaySocial].[PostVisibility]
 (
-	[PostVisibilityId] SMALLINT NOT NULL CONSTRAINT PK_PostVisibility PRIMARY KEY IDENTITY, 
+	[PostVisibilityId] INT NOT NULL CONSTRAINT PK_PostVisibility PRIMARY KEY IDENTITY, 
     [Name] NVARCHAR(11) NOT NULL, 
     [Description] NVARCHAR(50) NOT NULL
 )

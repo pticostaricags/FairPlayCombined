@@ -20,7 +20,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 public partial class PostVisibility
 {
     [Key]
-    public short PostVisibilityId { get; set; }
+    public int PostVisibilityId { get; set; }
 
     [Required]
     [StringLength(11)]

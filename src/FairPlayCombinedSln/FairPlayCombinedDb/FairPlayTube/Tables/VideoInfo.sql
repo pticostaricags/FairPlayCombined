@@ -10,7 +10,7 @@
     [VideoBloblUrl] NVARCHAR(500) NULL,
     [IndexedVideoUrl] NVARCHAR(500) NULL,
     [ApplicationUserId] NVARCHAR(450) NOT NULL, 
-    [VideoIndexStatusId] SMALLINT NOT NULL, 
+    [VideoIndexStatusId] INT NOT NULL, 
     [VideoDurationInSeconds] FLOAT NOT NULL DEFAULT 0, 
     [VideoIndexSourceClass] NVARCHAR(500) NULL, 
     [Price] MONEY NOT NULL DEFAULT 0,

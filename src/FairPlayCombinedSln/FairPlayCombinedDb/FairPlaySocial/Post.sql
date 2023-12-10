@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [FairPlaySocial].[Post]
 (
 	[PostId] BIGINT NOT NULL CONSTRAINT PK_Post PRIMARY KEY IDENTITY, 
-    [PostVisibilityId] SMALLINT NOT NULL DEFAULT 1, 
+    [PostVisibilityId] INT NOT NULL DEFAULT 1, 
     [PhotoId] BIGINT NULL,
-    [PostTypeId] TINYINT NOT NULL DEFAULT 1, 
+    [PostTypeId] INT NOT NULL DEFAULT 1, 
     [ReplyToPostId] BIGINT NULL,
     [GroupId] BIGINT NULL,
     [Text] NVARCHAR(500) NOT NULL,
@@ -29,4 +29,4 @@
     CONSTRAINT [FK_Post_Post_RootPost] FOREIGN KEY ([RootPostId]) REFERENCES [FairPlaySocial].[Post]([PostId]), 
     CONSTRAINT [FK_Post_Group] FOREIGN KEY ([GroupId]) REFERENCES [FairPlaySocial].[Group]([GroupId])
 )
-WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.PostHistory))
+WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = FairPlaySocial.PostHistory))

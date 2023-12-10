@@ -32,7 +32,7 @@ public partial class Product
 
     public int QuantityInStock { get; set; }
 
-    public byte ProductStatusId { get; set; }
+    public int ProductStatusId { get; set; }
 
     [Required]
     public string OwnerId { get; set; }

@@ -11,9 +11,9 @@ namespace FairPlayCombined.Models.FairPlaySocial.Post
     public class PostModel : IListModel
     {
         public long PostId { get; set; }
-        public short PostVisibilityId { get; set; }
+        public int PostVisibilityId { get; set; }
         public long? PhotoId { get; set; }
-        public byte PostTypeId { get; set; }
+        public int PostTypeId { get; set; }
         public long? ReplyToPostId { get; set; }
         public long? GroupId { get; set; }
         public string? Text { get; set; }
