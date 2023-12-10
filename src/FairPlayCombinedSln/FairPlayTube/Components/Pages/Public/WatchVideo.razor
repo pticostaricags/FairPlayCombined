@@ -13,18 +13,20 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<video id="video" data-permanent
-       class="azuremediaplayer amp-default-skin amp-stream-skin"
-       autoplay
-       controls
-       width="200"
-       height="200">
-    <p class="amp-no-js">
-        To view this video please enable JavaScript, and consider upgrading to
-        a web browser that supports HTML5 video
-    </p>
-</video>
-<div class="inline"></div>
+<div id="container" data-permanent>
+    <video id="video"
+           class="azuremediaplayer amp-default-skin amp-stream-skin"
+           autoplay
+           controls
+           width="200"
+           height="200">
+        <p class="amp-no-js">
+            To view this video please enable JavaScript, and consider upgrading to
+            a web browser that supports HTML5 video
+        </p>
+    </video>
+    <div class="inline"></div>
+</div>
 
 @code {
     [Parameter]
