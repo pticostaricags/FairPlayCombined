@@ -16,24 +16,29 @@
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-<QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-    <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
-    <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
-    <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
-    <TemplateColumn>
-        @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
-        {
-            <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
-        }
-    </TemplateColumn>
-    <TemplateColumn>
-        @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
-        {
-            <button type="button" class="btn btn-primary"
-                    @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">Manage YouTube Captions</button>
-        }
-    </TemplateColumn>
-</QuickGrid>
+
+<div class="@ThemeConfiguration.Grids.GridContainerCss">
+    <QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+        <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+        <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
+        <TemplateColumn>
+            @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
+            {
+                <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
+            }
+        </TemplateColumn>
+        <TemplateColumn>
+            @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
+            {
+                <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
+                        @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
+                    Manage YouTube Captions
+                </button>
+            }
+        </TemplateColumn>
+    </QuickGrid>
+</div>
 <Paginator State="this.paginationState"></Paginator>
 @code
 {

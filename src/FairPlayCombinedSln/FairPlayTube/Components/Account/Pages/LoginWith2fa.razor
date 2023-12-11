@@ -22,13 +22,13 @@
             <input type="hidden" name="RememberMe" value="@RememberMe" />
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.TwoFactorCode" class="form-control" autocomplete="off" />
-                <label for="two-factor-code" class="form-label">Authenticator code</label>
+            <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
+                <InputText @bind-Value="Input.TwoFactorCode" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="off" />
+                <label for="two-factor-code" class="@ThemeConfiguration.Labels.DefaultCss">Authenticator code</label>
                 <ValidationMessage For="() => Input.TwoFactorCode" class="text-danger" />
             </div>
-            <div class="checkbox mb-3">
-                <label for="remember-machine" class="form-label">
+            <div class="checkbox @ThemeConfiguration.Divisions.DefaultCss">
+                <label for="remember-machine" class="@ThemeConfiguration.Labels.DefaultCss">
                     <InputCheckbox @bind-Value="Input.RememberMachine" />
                     Remember this machine
                 </label>

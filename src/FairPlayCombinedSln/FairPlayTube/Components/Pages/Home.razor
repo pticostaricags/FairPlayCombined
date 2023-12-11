@@ -13,22 +13,24 @@
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-<QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-    <TemplateColumn>
-        <div>
-            <button type="button" class="btn btn-primary" @onclick="@( () => OnPlayVideoClicked(context!.VideoId!))">Play</button>
-        </div>
-    </TemplateColumn>
-    <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
-    <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
-    <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
-    <TemplateColumn>
-        @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
-        {
-            <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
-        }
-    </TemplateColumn>
-</QuickGrid>
+<div class="@ThemeConfiguration.Grids.GridContainerCss">
+    <QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+        <TemplateColumn>
+            <div>
+                <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss" @onclick="@( () => OnPlayVideoClicked(context!.VideoId!))">Play</button>
+            </div>
+        </TemplateColumn>
+        <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+        <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
+        <TemplateColumn>
+            @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
+            {
+                <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
+            }
+        </TemplateColumn>
+    </QuickGrid>
+</div>
 <Paginator State="this.paginationState"></Paginator>
 @code
 {

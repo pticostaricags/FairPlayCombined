@@ -27,7 +27,7 @@
     <QuickGrid Items="this.Items!.AsQueryable()">
         <PropertyColumn Property="@(p=>p.Language)"></PropertyColumn>
         <TemplateColumn>
-            <button type="button" class="btn btn-primary"
+            <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
             @onclick="@( async () => await OnUploadToYouTubeButtonClickedAsync(context))"
             >Upload To YouTube</button>
         </TemplateColumn>
