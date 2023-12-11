@@ -3,3 +3,7 @@
     overflow-x: auto;
     height: 200px;
 }
+.brand-logo
+{
+    max-height:50px;
+}

@@ -46,6 +46,8 @@ namespace FairPlayCombined.Common
         public static class Images
         {
             public static string ThumbnailDefaultCss { get; set; } = "img-thumbnail";
+            public static string BrandLogoDefaultCss { get; set; } = "brand-logo";
         }
+
     }
 }
