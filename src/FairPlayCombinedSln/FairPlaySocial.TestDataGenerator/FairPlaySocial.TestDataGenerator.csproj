@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-FairPlaySocial.TestDataGenerator-9a098a76-7338-42ed-a5ad-074606fa9e04</UserSecretsId>
+    <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

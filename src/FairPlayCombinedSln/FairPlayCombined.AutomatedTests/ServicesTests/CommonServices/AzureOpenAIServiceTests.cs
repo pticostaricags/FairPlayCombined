@@ -1,4 +1,5 @@
-﻿using Azure.AI.OpenAI;
+﻿#if Debug_Enable_Paid_Tests
+using Azure.AI.OpenAI;
 using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -9,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
 {
-    //Disabled to avoid incurring in costs
     [TestClass]
     public class AzureOpenAIServiceTests : ServicesBase
     {
@@ -17,7 +17,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         public async Task Test_GenerateLinkedInArticleFromVideoCaptionsAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
             var endpoint = configuration["AzureOpenAI:Endpoint"] ??
                 throw new Exception("'AzureOpenAI:Endpoint' is not in configuration");
@@ -38,7 +38,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         public async Task Test_ModerateTextContentAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
             string testSexuallyOffensivePhrase = 
                 configuration["testSexuallyOffensivePhrase"] ??
@@ -69,3 +69,4 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         }
     }
 }
+#endif
