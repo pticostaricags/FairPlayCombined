@@ -8,7 +8,33 @@ using System.Threading.Tasks;
 namespace FairPlayCombined.Services.Common;
 public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration openAIServiceConfiguration)
 {
-
+    public async Task<ChatCompletionResponseModel?> GenerateChatCompletionAsync(
+        string systemMessage, string prompt, CancellationToken cancellationToken)
+    {
+        var requestUrl = openAIServiceConfiguration.ChatCompletionsUrl;
+        ChatCompletionRequestModel request = new ChatCompletionRequestModel()
+        {
+            model= "gpt-4-1106-preview",
+            messages =new ChatCompletionRequestMessageModel[]
+            {
+                new ChatCompletionRequestMessageModel()
+                {
+                    content=systemMessage,
+                    role="system"
+                },
+                new ChatCompletionRequestMessageModel()
+                {
+                    content=prompt,
+                    role="user"
+                }
+            }
+        };
+        var response = await httpClient.PostAsJsonAsync<ChatCompletionRequestModel>(requestUrl,
+            request, cancellationToken:cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<ChatCompletionResponseModel>();
+        return result;
+    }
     public async Task<GenerateDallE3ResponseModel?> GenerateDallE3ImageAsync(string prompt, CancellationToken cancellationToken)
     {
         var requestUrl = openAIServiceConfiguration.GenerateDall3ImageUrl;
@@ -26,32 +52,4 @@ public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration ope
         return result;
 
     }
-}
-
-public class OpenAIServiceConfiguration
-{
-    public string? GenerateDall3ImageUrl { get; set; }
-}
-
-
-public class GenerateDallE3RequestModel
-{
-    public string? model { get; set; }
-    public string? prompt { get; set; }
-    public int n { get; set; }
-    public string? size { get; set; }
-}
-
-
-
-public class GenerateDallE3ResponseModel
-{
-    public int created { get; set; }
-    public GenerateDallE3ResponseDatumModel[]? data { get; set; }
-}
-
-public class GenerateDallE3ResponseDatumModel
-{
-    public string? revised_prompt { get; set; }
-    public string? url { get; set; }
 }

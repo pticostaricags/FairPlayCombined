@@ -126,6 +126,9 @@ var openAIKey = builder.Configuration["OpenAIKey"] ??
 var generateDall3ImageUrl = builder.Configuration["GenerateDall3ImageUrl"] ??
     throw new InvalidOperationException("'GenerateDall3ImageUrl' not found");
 
+var openAIChatCompletionsUrl = builder.Configuration["OpenAIChatCompletionsUrl"] ??
+    throw new InvalidOperationException("'OpenAIChatCompletionsUrl' not found");
+
 builder.Services.AddTransient<OpenAIService>(sp => 
 {
     HttpClient httpClient = new HttpClient();
@@ -134,7 +137,8 @@ builder.Services.AddTransient<OpenAIService>(sp =>
         "Bearer", openAIKey);
     return new OpenAIService(httpClient, new OpenAIServiceConfiguration()
     {
-        GenerateDall3ImageUrl = generateDall3ImageUrl
+        GenerateDall3ImageUrl = generateDall3ImageUrl,
+        ChatCompletionsUrl = openAIChatCompletionsUrl
     });
 });
 

@@ -12,7 +12,7 @@ namespace FairPlayCombined.Services.FairPlayTube
 {
     public class VideoCaptionsService(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
     {
-        public async Task<VideoCaptionsModel[]> GetVideoCaptionsByVideoInfoIdAndLanguageAsync(
+        public async Task<string?> GetVideoCaptionsByVideoInfoIdAndLanguageAsync(
             long videoInfoId, string language,CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
@@ -21,12 +21,8 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .Where(p => p.VideoInfoId == videoInfoId &&
                 p.Language == language)
                 .OrderBy(p => p.Language)
-                .Select(p => new VideoCaptionsModel()
-                {
-                    Content = p.Content,
-                    Language = p.Language
-                })
-                .ToArrayAsync(cancellationToken);
+                .Select(p => p.Content)
+                .SingleOrDefaultAsync(cancellationToken: cancellationToken);
             return result;
         }
         public async Task<VideoCaptionsModel[]> GetVideoCaptionsByVideoInfoIdAsync(

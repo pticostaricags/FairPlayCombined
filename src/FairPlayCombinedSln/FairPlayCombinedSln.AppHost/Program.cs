@@ -37,6 +37,9 @@ var openAIKey = builder.Configuration["OpenAIKey"] ??
 var generateDall3ImageUrl = builder.Configuration["GenerateDall3ImageUrl"] ??
     throw new InvalidOperationException("'GenerateDall3ImageUrl' not found");
 
+var openAIChatCompletionsUrl = builder.Configuration["OpenAIChatCompletionsUrl"] ??
+    throw new InvalidOperationException("'OpenAIChatCompletionsUrl' not found");
+
 IResourceBuilder<ISqlServerResource> sqlServerResource;
 if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
 {
@@ -86,6 +89,7 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("GoogleAuthClientSecretsFilePath", googleAuthClientSecretsFilePath);
         callback.EnvironmentVariables.Add("OpenAIKey", openAIKey);
         callback.EnvironmentVariables.Add("GenerateDall3ImageUrl", generateDall3ImageUrl);
+        callback.EnvironmentVariables.Add("OpenAIChatCompletionsUrl", openAIChatCompletionsUrl);
     })
     .WithReference(sqlServerResource);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")

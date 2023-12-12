@@ -11,7 +11,7 @@
 @inject IJSRuntime jsRuntime
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject VideoInfoService videoInfoService
-@inject IUserProviderService userProviderService 
+@inject IUserProviderService userProviderService
 @inject NavigationManager navigationManager
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
@@ -41,7 +41,15 @@
         </TemplateColumn>
         <TemplateColumn>
             <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
-                    @onclick="@( async ()=> await OnCreateYouTubeThumbnailClickedAsync(context))">Create YouTube Thumbnail</button>
+                    @onclick="@( async ()=> await OnCreateYouTubeThumbnailClickedAsync(context))">
+                Create YouTube Thumbnail
+            </button>
+        </TemplateColumn>
+        <TemplateColumn>
+            <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
+                    @onclick="@( async ()=> await OnGetLinkedInDigitalMarketingIdeasClickedAsync(context))">
+                Get LinkedIn Digital Marketing Ideas
+            </button>
         </TemplateColumn>
     </QuickGrid>
 </div>
@@ -57,6 +65,14 @@
         </p>
     }
 </div>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
+    {
+        <p>
+            @this.DigitalMarketingIdeas
+        </p>
+    }
+</div>
 @code
 {
     private bool IsBusy { get; set; }
@@ -66,8 +82,9 @@
             ItemsPerPage = Constants.Pagination.PageSize
         };
     private CancellationTokenSource cancellationTokenSource = new();
-    public string? GeneratedYouTubeThumbnailUri { get; set; }
-    public string? RevisedPrompt { get; set; }
+    private string? GeneratedYouTubeThumbnailUri { get; set; }
+    private string? RevisedPrompt { get; set; }
+    private string? DigitalMarketingIdeas { get; set; }
 
     protected override void OnInitialized()
     {
@@ -81,7 +98,7 @@
                     StartIndex = req.StartIndex
                 };
             var items = await videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(paginationRequest,
-                userId:this.userProviderService!.GetCurrentUserId()!,
+                userId: this.userProviderService!.GetCurrentUserId()!,
             this.cancellationTokenSource.Token);
             StateHasChanged();
             var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
@@ -132,11 +149,29 @@
         .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
         language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
         string prompt = $"YouTube Thumbnail for video based on the following data. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        var result = await this.openAIService.GenerateDallE3ImageAsync(prompt,this.cancellationTokenSource.Token);
+        var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
         if (result != null)
         {
             this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
             this.RevisedPrompt = result!.data[0]!.revised_prompt;
+        }
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+
+    private async Task OnGetLinkedInDigitalMarketingIdeasClickedAsync(VideoInfoModel videoInfoModel)
+    {
+        this.IsBusy = true;
+        StateHasChanged();
+        var englishCaptions = await this.videoCaptionsService
+        .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
+        language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
+        var systemMessage = "You will take the role of an expert in Digital Marketing. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to use the content to grow my audience. You will give me a 1 month Digital Marketing plan to repurpose the video content into LinkedIn. I post at least once a day.";
+        var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+        var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
+        if (result != null)
+        {
+            this.DigitalMarketingIdeas = result!.choices![0]!.message!.content!;
         }
         this.IsBusy = false;
         StateHasChanged();
