@@ -67,9 +67,9 @@
 
     protected override void OnInitialized()
     {
+        this.IsBusy = true;
         ItemsProvider = async req =>
         {
-            this.IsBusy = true;
             StateHasChanged();
             PaginationRequest paginationRequest = new()
                 {
@@ -79,11 +79,11 @@
             var items = await videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(paginationRequest,
                 userId:this.userProviderService!.GetCurrentUserId()!,
             this.cancellationTokenSource.Token);
-            this.IsBusy = false;
             StateHasChanged();
             var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
             return result;
         };
+        this.IsBusy = false;
     }
 
     private async Task OnPlayVideoClickedAsync(string videoId)
@@ -122,6 +122,8 @@
 
     private async Task OnCreateYouTubeThumbnailClickedAsync(VideoInfoModel videoInfoModel)
     {
+        this.IsBusy = true;
+        StateHasChanged();
         var englishCaptions = await this.videoCaptionsService
         .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
         language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
@@ -130,8 +132,9 @@
         if (result != null)
         {
             this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
-            StateHasChanged();
         }
+        this.IsBusy = false;
+        StateHasChanged();
     }
 
 }
