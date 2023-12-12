@@ -52,6 +52,9 @@
         <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
             <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
         </a>
+        <p>
+            @this.RevisedPrompt
+        </p>
     }
 </div>
 @code
@@ -64,6 +67,7 @@
         };
     private CancellationTokenSource cancellationTokenSource = new();
     public string? GeneratedYouTubeThumbnailUri { get; set; }
+    public string? RevisedPrompt { get; set; }
 
     protected override void OnInitialized()
     {
@@ -132,6 +136,7 @@
         if (result != null)
         {
             this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
+            this.RevisedPrompt = result!.data[0]!.revised_prompt;
         }
         this.IsBusy = false;
         StateHasChanged();
