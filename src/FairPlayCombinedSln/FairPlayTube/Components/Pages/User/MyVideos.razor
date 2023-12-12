@@ -27,28 +27,32 @@
         <TemplateColumn>
             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
             {
-                <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
+                <a data-enhance-nav="false"
+                   data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
+                href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">
+                    <i class="bi bi-youtube"></i>
+                </a>
             }
         </TemplateColumn>
         <TemplateColumn>
             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
             {
-                <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
+                <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
                         @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
-                    Manage YouTube Captions
+                    <i class="bi bi-badge-cc-fill"></i>
                 </button>
             }
         </TemplateColumn>
         <TemplateColumn>
-            <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
                     @onclick="@( async ()=> await OnCreateYouTubeThumbnailClickedAsync(context))">
-                Create YouTube Thumbnail
+                <i class="bi bi-image-fill"></i>
             </button>
         </TemplateColumn>
         <TemplateColumn>
-            <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
                     @onclick="@( async ()=> await OnGetLinkedInDigitalMarketingIdeasClickedAsync(context))">
-                Get LinkedIn Digital Marketing Ideas
+                <i class="bi bi-list-task"></i>
             </button>
         </TemplateColumn>
     </QuickGrid>
