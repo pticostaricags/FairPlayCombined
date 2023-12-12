@@ -1,4 +1,7 @@
 ﻿using FairPlayCombined.Common.CustomExceptions;
+using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Models.dboSchema;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Common;
-public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration openAIServiceConfiguration)
+public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration openAIServiceConfiguration,
+    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
 {
     public async Task<ChatCompletionResponseModel?> GenerateChatCompletionAsync(
         string systemMessage, string prompt, CancellationToken cancellationToken)
@@ -41,9 +45,10 @@ public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration ope
         if (prompt.Length > 4000)
             throw new RuleException($"{nameof(prompt)} is too long, please make it shorter");
         var requestUrl = openAIServiceConfiguration.GenerateDall3ImageUrl;
+        string model = "dall-e-3";
         GenerateDallE3RequestModel requestModel = new()
         {
-            model = "dall-e-3",
+            model = model,
             prompt = prompt,
             n = 1,
             size = "1024x1024"
@@ -52,6 +57,22 @@ public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration ope
             requestModel, cancellationToken: cancellationToken);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<GenerateDallE3ResponseModel>();
+        try
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken:cancellationToken);
+            await dbContext.OpenAiprompt.AddAsync(new OpenAiprompt() 
+            {
+                OriginalPrompt = prompt,
+                Model = model,
+                RevisedPrompt = result!.data![0].revised_prompt
+            },
+                cancellationToken:cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
+        }
+        catch (Exception)
+        {
+            //we ignore so we do not interrupt user flow
+        }
         return result;
 
     }

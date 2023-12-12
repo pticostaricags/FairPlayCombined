@@ -135,11 +135,14 @@ builder.Services.AddTransient<OpenAIService>(sp =>
     httpClient.Timeout = TimeSpan.FromMinutes(2);
     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
         "Bearer", openAIKey);
+    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
+    sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
     return new OpenAIService(httpClient, new OpenAIServiceConfiguration()
     {
         GenerateDall3ImageUrl = generateDall3ImageUrl,
         ChatCompletionsUrl = openAIChatCompletionsUrl
-    });
+    },
+    dbContextFactory:dbContextFactory);
 });
 
 builder.Services.AddSignalR(hubOptions =>

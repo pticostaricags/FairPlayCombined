@@ -14,4 +14,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[CK_VideoCaptions_AllowedLanguages]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="4bd88304-de79-406c-bce0-22306771cfe6" ChangeDateTime="12/12/2023 12:25:30">
+    <Property Name="ElementName" Value="[dbo].[OpenAIPrompt].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[OpenAIPrompt]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="OpenAIPromptId" />
+  </Operation>
 </Operations>

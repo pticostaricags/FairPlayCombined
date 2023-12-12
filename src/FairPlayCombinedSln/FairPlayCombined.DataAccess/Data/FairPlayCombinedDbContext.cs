@@ -70,6 +70,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<NotLikedUserProfile> NotLikedUserProfile { get; set; }
 
+    public virtual DbSet<OpenAiprompt> OpenAiprompt { get; set; }
+
     public virtual DbSet<Photo> Photo { get; set; }
 
     public virtual DbSet<Post> Post { get; set; }
