@@ -31,6 +31,12 @@ var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??
 var googleAuthClientSecretsFilePath = builder.Configuration["GoogleAuthClientSecretsFilePath"] ??
     throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
 
+var openAIKey = builder.Configuration["OpenAIKey"] ??
+    throw new InvalidOperationException("'OpenAIKey' not found");
+
+var generateDall3ImageUrl = builder.Configuration["GenerateDall3ImageUrl"] ??
+    throw new InvalidOperationException("'GenerateDall3ImageUrl' not found");
+
 IResourceBuilder<ISqlServerResource> sqlServerResource;
 if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
 {
@@ -78,6 +84,8 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("GoogleAuthClientId", googleAuthClientId);
         callback.EnvironmentVariables.Add("GoogleAuthClientSecret", googleAuthClientSecret);
         callback.EnvironmentVariables.Add("GoogleAuthClientSecretsFilePath", googleAuthClientSecretsFilePath);
+        callback.EnvironmentVariables.Add("OpenAIKey", openAIKey);
+        callback.EnvironmentVariables.Add("GenerateDall3ImageUrl", generateDall3ImageUrl);
     })
     .WithReference(sqlServerResource);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")

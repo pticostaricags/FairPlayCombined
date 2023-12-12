@@ -13,6 +13,8 @@
 @inject VideoInfoService videoInfoService
 @inject IUserProviderService userProviderService 
 @inject NavigationManager navigationManager
+@inject OpenAIService openAIService
+@inject VideoCaptionsService videoCaptionsService
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -37,9 +39,21 @@
                 </button>
             }
         </TemplateColumn>
+        <TemplateColumn>
+            <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
+                    @onclick="@( async ()=> await OnCreateYouTubeThumbnailClickedAsync(context))">Create YouTube Thumbnail</button>
+        </TemplateColumn>
     </QuickGrid>
 </div>
 <Paginator State="this.paginationState"></Paginator>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
+    {
+        <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
+            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
+        </a>
+    }
+</div>
 @code
 {
     private bool IsBusy { get; set; }
@@ -49,6 +63,7 @@
             ItemsPerPage = Constants.Pagination.PageSize
         };
     private CancellationTokenSource cancellationTokenSource = new();
+    public string? GeneratedYouTubeThumbnailUri { get; set; }
 
     protected override void OnInitialized()
     {
@@ -103,6 +118,20 @@
     private void OnManageYouTubeCaptionsButtonClicked(VideoInfoModel videoInfoModel)
     {
         this.navigationManager.NavigateTo($"/User/VideoCaptions/VideoInfo{videoInfoModel.VideoInfoId}/YouTube/{videoInfoModel.YouTubeVideoId}");
+    }
+
+    private async Task OnCreateYouTubeThumbnailClickedAsync(VideoInfoModel videoInfoModel)
+    {
+        var englishCaptions = await this.videoCaptionsService
+        .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
+        language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
+        string prompt = $"YouTube Thumbnail for video based on the following data. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+        var result = await this.openAIService.GenerateDallE3ImageAsync(prompt,this.cancellationTokenSource.Token);
+        if (result != null)
+        {
+            this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
+            StateHasChanged();
+        }
     }
 
 }

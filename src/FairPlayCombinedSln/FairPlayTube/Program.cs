@@ -120,6 +120,24 @@ builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
 builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 
+var openAIKey = builder.Configuration["OpenAIKey"] ??
+    throw new InvalidOperationException("'OpenAIKey' not found");
+
+var generateDall3ImageUrl = builder.Configuration["GenerateDall3ImageUrl"] ??
+    throw new InvalidOperationException("'GenerateDall3ImageUrl' not found");
+
+builder.Services.AddTransient<OpenAIService>(sp => 
+{
+    HttpClient httpClient = new HttpClient();
+    httpClient.Timeout = TimeSpan.FromMinutes(2);
+    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+        "Bearer", openAIKey);
+    return new OpenAIService(httpClient, new OpenAIServiceConfiguration()
+    {
+        GenerateDall3ImageUrl = generateDall3ImageUrl
+    });
+});
+
 builder.Services.AddSignalR(hubOptions =>
 {
     hubOptions.MaximumReceiveMessageSize = 20 * 1024 * 1024;
