@@ -32,6 +32,9 @@ public partial class OpenAiprompt
     [StringLength(50)]
     public string Model { get; set; }
 
+    [Required]
+    public byte[] GeneratedImageBytes { get; set; }
+
     public DateTimeOffset RowCreationDateTime { get; set; }
 
     [Required]

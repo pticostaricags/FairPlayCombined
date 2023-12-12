@@ -10,7 +10,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Common;
-public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration openAIServiceConfiguration,
+public class OpenAIService(
+    HttpClient openAIAuthorizedHttpClient, 
+    HttpClient genericHttpClient,
+    OpenAIServiceConfiguration openAIServiceConfiguration,
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
 {
     public async Task<ChatCompletionResponseModel?> GenerateChatCompletionAsync(
@@ -34,7 +37,7 @@ public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration ope
                 }
             }
         };
-        var response = await httpClient.PostAsJsonAsync<ChatCompletionRequestModel>(requestUrl,
+        var response = await openAIAuthorizedHttpClient.PostAsJsonAsync<ChatCompletionRequestModel>(requestUrl,
             request, cancellationToken:cancellationToken);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<ChatCompletionResponseModel>();
@@ -53,7 +56,7 @@ public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration ope
             n = 1,
             size = "1024x1024"
         };
-        var response = await httpClient.PostAsJsonAsync<GenerateDallE3RequestModel>(requestUrl,
+        var response = await openAIAuthorizedHttpClient.PostAsJsonAsync<GenerateDallE3RequestModel>(requestUrl,
             requestModel, cancellationToken: cancellationToken);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<GenerateDallE3ResponseModel>();
@@ -64,7 +67,9 @@ public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration ope
             {
                 OriginalPrompt = prompt,
                 Model = model,
-                RevisedPrompt = result!.data![0].revised_prompt
+                RevisedPrompt = result!.data![0].revised_prompt,
+                GeneratedImageBytes=await genericHttpClient
+                .GetByteArrayAsync(requestUri: result.data[0].url,cancellationToken:cancellationToken)
             },
                 cancellationToken:cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);

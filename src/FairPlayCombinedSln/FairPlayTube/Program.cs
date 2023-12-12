@@ -131,13 +131,16 @@ var openAIChatCompletionsUrl = builder.Configuration["OpenAIChatCompletionsUrl"]
 
 builder.Services.AddTransient<OpenAIService>(sp => 
 {
-    HttpClient httpClient = new HttpClient();
-    httpClient.Timeout = TimeSpan.FromMinutes(2);
-    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+    HttpClient openAIAuthorizedHttpClient = new HttpClient();
+    openAIAuthorizedHttpClient.Timeout = TimeSpan.FromMinutes(2);
+    openAIAuthorizedHttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
         "Bearer", openAIKey);
+    HttpClient genericHttpClient = new HttpClient();
+    genericHttpClient.Timeout = TimeSpan.FromMinutes(2);
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
     sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
-    return new OpenAIService(httpClient, new OpenAIServiceConfiguration()
+    return new OpenAIService(openAIAuthorizedHttpClient,
+        genericHttpClient: genericHttpClient, new OpenAIServiceConfiguration()
     {
         GenerateDall3ImageUrl = generateDall3ImageUrl,
         ChatCompletionsUrl = openAIChatCompletionsUrl
