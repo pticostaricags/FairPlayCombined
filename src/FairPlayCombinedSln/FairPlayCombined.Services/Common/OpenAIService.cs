@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FairPlayCombined.Common.CustomExceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
@@ -37,6 +38,8 @@ public class OpenAIService(HttpClient httpClient, OpenAIServiceConfiguration ope
     }
     public async Task<GenerateDallE3ResponseModel?> GenerateDallE3ImageAsync(string prompt, CancellationToken cancellationToken)
     {
+        if (prompt.Length > 4000)
+            throw new RuleException($"{nameof(prompt)} is too long, please make it shorter");
         var requestUrl = openAIServiceConfiguration.GenerateDall3ImageUrl;
         GenerateDallE3RequestModel requestModel = new()
         {
