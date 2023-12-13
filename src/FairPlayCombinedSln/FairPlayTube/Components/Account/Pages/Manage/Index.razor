@@ -19,13 +19,13 @@
         <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <input type="text" value="@username" class="form-control" placeholder="Please choose your username." disabled />
-                <label for="username" class="form-label">Username</label>
+            <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
+                <input type="text" value="@username" class="@ThemeConfiguration.GenericControls.DefaultCss" placeholder="Please choose your username." disabled />
+                <label for="username" class="@ThemeConfiguration.Labels.DefaultCss">Username</label>
             </div>
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
-                <label for="phone-number" class="form-label">Phone number</label>
+            <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
+                <InputText @bind-Value="Input.PhoneNumber" class="@ThemeConfiguration.GenericControls.DefaultCss" placeholder="Please enter your phone number." />
+                <label for="phone-number" class="@ThemeConfiguration.Labels.DefaultCss">Phone number</label>
                 <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
             </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>

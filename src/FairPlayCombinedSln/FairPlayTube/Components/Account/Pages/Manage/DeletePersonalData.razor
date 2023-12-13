@@ -28,9 +28,9 @@
         <ValidationSummary class="text-danger" role="alert" />
         @if (requirePassword)
         {
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Please enter your password." />
-                <label for="password" class="form-label">Password</label>
+            <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
+                <InputText type="password" @bind-Value="Input.Password" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="current-password" aria-required="true" placeholder="Please enter your password." />
+                <label for="password" class="@ThemeConfiguration.Labels.DefaultCss">Password</label>
                 <ValidationMessage For="() => Input.Password" class="text-danger" />
             </div>
         }

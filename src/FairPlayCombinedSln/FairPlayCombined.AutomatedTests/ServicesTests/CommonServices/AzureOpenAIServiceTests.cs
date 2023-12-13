@@ -1,4 +1,5 @@
-﻿using Azure.AI.OpenAI;
+﻿#if Debug_Enable_Paid_Tests
+using Azure.AI.OpenAI;
 using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -9,15 +10,35 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
 {
-    //Disabled to avoid incurring in costs
-    //[TestClass]
+    [TestClass]
     public class AzureOpenAIServiceTests : ServicesBase
     {
+        [TestMethod]
+        public async Task Test_GenerateLinkedInArticleFromVideoCaptionsAsync()
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
+            var configuration = configurationBuilder.Build();
+            var endpoint = configuration["AzureOpenAI:Endpoint"] ??
+                throw new Exception("'AzureOpenAI:Endpoint' is not in configuration");
+            var key = configuration["AzureOpenAI:Key"] ??
+                throw new Exception("'AzureOpenAI:Key' is not in configuration");
+            OpenAIClient openAIClient = new(endpoint: new(endpoint),
+                keyCredential: new Azure.AzureKeyCredential(key));
+            AzureOpenAIService azureOpenAIService = new AzureOpenAIService(openAIClient);
+            var result = await azureOpenAIService.GenerateLinkedInArticleFromVideoCaptionsAsync(
+                videoTitle: "Is Blazor Good For Applications That Handle Millions Of Records Of Data",
+                videoCaptions: "Speaker #1: Is Blazer good for applications that handle millions of records\r\n\r\nSpeaker #1: of data?\r\n\r\nSpeaker #1: Yes it is, especially if you use best practices such\r\n\r\nSpeaker #1: as pagination and in the case of Entity Framework code,\r\n\r\nSpeaker #1: the disabling of the changed tracker when you are going\r\n\r\nSpeaker #1: to retrieve data that is not going to be modified.\r\n\r\nSpeaker #1: As you can see in this example I am showing\r\n\r\nSpeaker #1: a list of records from a table that has 1,000,000\r\n\r\nSpeaker #1: records.\r\n\r\nSpeaker #1: The average duration for the retrieval is around 25 milliseconds.\r\n\r\nSpeaker #1: O Yes, Racer is excellent for alications that handle millions\r\n\r\nSpeaker #1: of records of data, esecially if you use best ractices.",
+                articleMood: AzureOpenAIService.ArticleMood.Hilarious,
+                CancellationToken.None);
+            Assert.IsNotNull(result);
+        }
+
         [TestMethod]
         public async Task Test_ModerateTextContentAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
             string testSexuallyOffensivePhrase = 
                 configuration["testSexuallyOffensivePhrase"] ??
@@ -48,3 +69,4 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         }
     }
 }
+#endif

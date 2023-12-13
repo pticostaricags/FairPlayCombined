@@ -11,12 +11,12 @@ namespace FairPlayCombined.Models.FairPlaySocial.Post
 {
     public class CreatePostModel : ICreateModel
     {
-        [DeniedValues(default(short))]
-        public short PostVisibilityId { get; set; }
+        [DeniedValues(default(int))]
+        public int PostVisibilityId { get; set; }
         [DeniedValues(default(long))]
         public long? PhotoId { get; set; }
-        [DeniedValues(default(byte))]
-        public byte PostTypeId { get; set; }
+        [DeniedValues(default(int))]
+        public int PostTypeId { get; set; }
         [DeniedValues(default(long))]
         public long? ReplyToPostId { get; set; }
         [DeniedValues(default(long))]

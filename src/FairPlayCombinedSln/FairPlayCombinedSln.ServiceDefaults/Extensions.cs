@@ -14,6 +14,7 @@ using FairPlayCombined.DataAccess.Models.dboSchema;
 using Microsoft.Data.SqlClient;
 using FairPlayCombined.Common.CustomExceptions;
 using System.ComponentModel.DataAnnotations;
+using FairPlayCombinedSln.ServiceDefaults;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -37,6 +38,8 @@ public static class Extensions
             http.UseServiceDiscovery();
         });
         builder.Services.AddMemoryCache();
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+        builder.Services.AddProblemDetails();
         return builder;
     }
 
@@ -132,58 +135,4 @@ public static class Extensions
             "Microsoft.AspNetCore.Server.Kestrel",
             "System.Net.Http");
 
-    #region FairPlay Apps Customization
-
-    public static WebApplication UseGlobalExceptionHandler(this WebApplication app)
-    {
-        app.UseExceptionHandler(configure =>
-        {
-            configure.Run(async context =>
-            {
-                var exceptionHandlerPathFeature =
-                        context.Features.Get<IExceptionHandlerPathFeature>();
-                var error = exceptionHandlerPathFeature?.Error;
-                if (error != null)
-                {
-                    long? errorId = default;
-                    try
-                    {
-                        FairPlayCombinedDbContext fairPlayCombinedDbContext =
-                        context.RequestServices.GetRequiredService<FairPlayCombinedDbContext>();
-                        ErrorLog errorLog = new()
-                        {
-                            FullException = error.ToString(),
-                            StackTrace = error.StackTrace,
-                            Message = error.Message
-                        };
-                        await fairPlayCombinedDbContext.ErrorLog.AddAsync(errorLog);
-                        await fairPlayCombinedDbContext.SaveChangesAsync();
-                        errorId = errorLog.ErrorLogId;
-                    }
-                    catch (Exception)
-                    {
-                        //Global exception, not rethrowing so server app does not crash
-                    }
-                    ProblemDetails problemDetails = new ProblemDetails();
-                    if (error is RuleException || error is ValidationException)
-                    {
-                        problemDetails.Detail = error.Message;
-                    }
-                    else
-                    {
-                        string userVisibleError = "An error ocurred.";
-                        if (errorId.GetValueOrDefault(0) > 0)
-                        {
-                            userVisibleError += $" Error code: {errorId}";
-                        }
-                        problemDetails.Detail = userVisibleError;
-                    }
-                    problemDetails.Status = (int)System.Net.HttpStatusCode.BadRequest;
-                    await context.Response.WriteAsJsonAsync<ProblemDetails>(problemDetails);
-                }
-            });
-        });
-        return app;
-    }
-    #endregion
 }

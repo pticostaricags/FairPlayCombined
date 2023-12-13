@@ -120,6 +120,35 @@ builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
 builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 
+var openAIKey = builder.Configuration["OpenAIKey"] ??
+    throw new InvalidOperationException("'OpenAIKey' not found");
+
+var generateDall3ImageUrl = builder.Configuration["GenerateDall3ImageUrl"] ??
+    throw new InvalidOperationException("'GenerateDall3ImageUrl' not found");
+
+var openAIChatCompletionsUrl = builder.Configuration["OpenAIChatCompletionsUrl"] ??
+    throw new InvalidOperationException("'OpenAIChatCompletionsUrl' not found");
+
+builder.Services.AddTransient<OpenAIService>(sp => 
+{
+    int timeoutMinutes = 3;
+    HttpClient openAIAuthorizedHttpClient = new HttpClient();
+    openAIAuthorizedHttpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
+    openAIAuthorizedHttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+        "Bearer", openAIKey);
+    HttpClient genericHttpClient = new HttpClient();
+    genericHttpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
+    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
+    sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
+    return new OpenAIService(openAIAuthorizedHttpClient,
+        genericHttpClient: genericHttpClient, new OpenAIServiceConfiguration()
+    {
+        GenerateDall3ImageUrl = generateDall3ImageUrl,
+        ChatCompletionsUrl = openAIChatCompletionsUrl
+    },
+    dbContextFactory:dbContextFactory);
+});
+
 builder.Services.AddSignalR(hubOptions =>
 {
     hubOptions.MaximumReceiveMessageSize = 20 * 1024 * 1024;
@@ -142,6 +171,8 @@ builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
 });
 builder.Services.AddTransient<YouTubeClientService>();
 builder.Services.AddTransient<VideoCaptionsService>();
+builder.Services.AddTransient<VideoDigitalMarketingPlanService>();
+builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -153,11 +184,11 @@ app.MapDefaultEndpoints();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
-    app.UseGlobalExceptionHandler();
+    app.UseExceptionHandler();
 }
 else
 {
-    app.UseGlobalExceptionHandler();
+    app.UseExceptionHandler();
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();

@@ -56,7 +56,7 @@ public partial class VideoInfo
     [StringLength(450)]
     public string ApplicationUserId { get; set; }
 
-    public short VideoIndexStatusId { get; set; }
+    public int VideoIndexStatusId { get; set; }
 
     public double VideoDurationInSeconds { get; set; }
 
@@ -101,6 +101,12 @@ public partial class VideoInfo
 
     [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoCaptions> VideoCaptions { get; set; } = new List<VideoCaptions>();
+
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoDigitalMarketingDailyPosts> VideoDigitalMarketingDailyPosts { get; set; } = new List<VideoDigitalMarketingDailyPosts>();
+
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoDigitalMarketingPlan> VideoDigitalMarketingPlan { get; set; } = new List<VideoDigitalMarketingPlan>();
 
     [ForeignKey("VideoIndexStatusId")]
     [InverseProperty("VideoInfo")]

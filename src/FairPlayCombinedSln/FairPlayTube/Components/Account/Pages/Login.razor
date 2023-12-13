@@ -22,18 +22,18 @@
                 <h2>Use a local account to log in.</h2>
                 <hr />
                 <ValidationSummary class="text-danger" role="alert" />
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label for="email" class="form-label">Email</label>
+                <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
+                    <InputText @bind-Value="Input.Email" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label for="email" class="@ThemeConfiguration.Labels.DefaultCss">Email</label>
                     <ValidationMessage For="() => Input.Email" class="text-danger" />
                 </div>
-                <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label for="password" class="form-label">Password</label>
+                <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
+                    <InputText type="password" @bind-Value="Input.Password" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label for="password" class="@ThemeConfiguration.Labels.DefaultCss">Password</label>
                     <ValidationMessage For="() => Input.Password" class="text-danger" />
                 </div>
-                <div class="checkbox mb-3">
-                    <label class="form-label">
+                <div class="checkbox @ThemeConfiguration.Divisions.DefaultCss">
+                    <label class="@ThemeConfiguration.Labels.DefaultCss">
                         <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
                         Remember me
                     </label>

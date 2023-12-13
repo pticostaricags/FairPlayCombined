@@ -70,6 +70,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<NotLikedUserProfile> NotLikedUserProfile { get; set; }
 
+    public virtual DbSet<OpenAiprompt> OpenAiprompt { get; set; }
+
     public virtual DbSet<Photo> Photo { get; set; }
 
     public virtual DbSet<Post> Post { get; set; }
@@ -107,6 +109,10 @@ public partial class FairPlayCombinedDbContext : DbContext
     public virtual DbSet<UserProfile> UserProfile { get; set; }
 
     public virtual DbSet<VideoCaptions> VideoCaptions { get; set; }
+
+    public virtual DbSet<VideoDigitalMarketingDailyPosts> VideoDigitalMarketingDailyPosts { get; set; }
+
+    public virtual DbSet<VideoDigitalMarketingPlan> VideoDigitalMarketingPlan { get; set; }
 
     public virtual DbSet<VideoIndexStatus> VideoIndexStatus { get; set; }
 
@@ -241,7 +247,7 @@ public partial class FairPlayCombinedDbContext : DbContext
         {
             entity.ToTable(tb => tb.IsTemporal(ttb =>
                     {
-                        ttb.UseHistoryTable("PostHistory", "dbo");
+                        ttb.UseHistoryTable("PostHistory", "FairPlaySocial");
                         ttb
                             .HasPeriodStart("ValidFrom")
                             .HasColumnName("ValidFrom");
@@ -274,11 +280,6 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.RootPost).WithMany(p => p.InverseRootPost).HasConstraintName("FK_Post_Post_RootPost");
         });
 
-        modelBuilder.Entity<PostType>(entity =>
-        {
-            entity.Property(e => e.PostTypeId).ValueGeneratedOnAdd();
-        });
-
         modelBuilder.Entity<Product>(entity =>
         {
             entity.HasOne(d => d.Owner).WithMany(p => p.Product)
@@ -296,11 +297,6 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.ThumbnailPhoto).WithMany(p => p.Product)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Product_Photo");
-        });
-
-        modelBuilder.Entity<ProductStatus>(entity =>
-        {
-            entity.Property(e => e.ProductStatusId).ValueGeneratedOnAdd();
         });
 
         modelBuilder.Entity<Resource>(entity =>
@@ -444,6 +440,20 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoCaptions)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoCaptions_VideoInfo");
+        });
+
+        modelBuilder.Entity<VideoDigitalMarketingDailyPosts>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoDigitalMarketingDailyPosts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoDigitalMarketingDailyPosts_VideoInfo");
+        });
+
+        modelBuilder.Entity<VideoDigitalMarketingPlan>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoDigitalMarketingPlan)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoDigitalMarketingPlan_VideoInfo");
         });
 
         modelBuilder.Entity<VideoIndexStatus>(entity =>

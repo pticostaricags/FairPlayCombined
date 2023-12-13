@@ -19,7 +19,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 public partial class ProductStatus
 {
     [Key]
-    public byte ProductStatusId { get; set; }
+    public int ProductStatusId { get; set; }
 
     [Required]
     [StringLength(50)]

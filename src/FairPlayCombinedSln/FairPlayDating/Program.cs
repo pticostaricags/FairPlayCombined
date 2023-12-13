@@ -138,11 +138,11 @@ app.MapGet("api/photoimage/{photoId}", async (
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
-    app.UseGlobalExceptionHandler();
+    app.UseExceptionHandler();
 }
 else
 {
-    app.UseGlobalExceptionHandler();
+    app.UseExceptionHandler();
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();

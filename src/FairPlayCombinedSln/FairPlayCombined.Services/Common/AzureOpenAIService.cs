@@ -11,6 +11,38 @@ namespace FairPlayCombined.Services.Common
     {
         private const string DeploymentName = "translationschat";
 
+        public enum ArticleMood
+        {
+            Hilarious,
+            Funny,
+            Professional
+        }
+        public async Task<string?> GenerateLinkedInArticleFromVideoCaptionsAsync(string videoTitle,
+            string videoCaptions,ArticleMood articleMood, CancellationToken cancellationToken)
+        {
+            string systemMessage = "You will take the role of an expert in LinkedIn SEO. " +
+                    "I will give you the information of one of my videos, your job is to use that information to create a draft LinkedIn article." +
+                    $"Article must have a {articleMood} mood";
+            if (articleMood == ArticleMood.Hilarious)
+            {
+                systemMessage = $"{systemMessage}. Add 5 {articleMood} jokes around the article.";
+            }
+            ChatCompletionsOptions chatCompletionsOptions = new()
+            {
+                DeploymentName = DeploymentName,
+                Messages =
+                {
+                    new ChatMessage(ChatRole.System, systemMessage),
+                    new ChatMessage(ChatRole.User, $"Video Title: {videoTitle}." +
+                    $"Video Captions: {videoCaptions}")
+                }
+            };
+            var response = await openAIClient.GetChatCompletionsAsync(
+                chatCompletionsOptions, cancellationToken: cancellationToken);
+            var contentResponse =
+            response.Value.Choices[0].Message.Content;
+            return contentResponse;
+        }
         public async Task<TextModerationResponse?> ModerateTextContentAsync(string text, CancellationToken cancellationToken)
         {
             TextModerationRequest textModerationRequest = new TextModerationRequest()

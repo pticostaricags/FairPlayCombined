@@ -17,7 +17,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         public async Task Test_ModerateImageAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<AzureContentModeratorServiceTest>();
             var configuration = configurationBuilder.Build();
             var endpoint = configuration["AzureContentModerator:Endpoint"];
             var key = configuration["AzureContentModerator:Key"];
@@ -35,7 +35,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         public async Task Test_ModeratePlainTextAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
             var endpoint = configuration["AzureContentModerator:Endpoint"];
             var key = configuration["AzureContentModerator:Key"];

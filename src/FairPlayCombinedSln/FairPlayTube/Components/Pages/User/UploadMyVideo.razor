@@ -1,5 +1,6 @@
 ﻿@page "/User/UploadMyVideo"
 @using Blazored.Toast.Services
+@using FairPlayCombined.Common
 @using FairPlayCombined.Common.FairPlayTube.Enums
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
@@ -21,27 +22,35 @@
 
 <EditForm FormName="frmCreateVideoInfo" Model="this.createVideoInfoModel"
           OnValidSubmit="OnValidSubmitAsync" @ref="frmCreateVideoInfo">
-    <div class="mb-3">
+    <div class="@ThemeConfiguration.Divisions.DefaultCss">
         <DataAnnotationsValidator></DataAnnotationsValidator>
         <ValidationSummary></ValidationSummary>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Description</label>
-        <InputTextArea class="form-control" @bind-Value="this.createVideoInfoModel.Description"></InputTextArea>
+    <div class="@ThemeConfiguration.Divisions.DefaultCss">
+        <label class="@ThemeConfiguration.Labels.DefaultCss">Description</label>
+        <InputTextArea class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.Description"></InputTextArea>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Name</label>
-        <InputText class="form-control" @bind-Value="this.createVideoInfoModel.Name"></InputText>
+    <div class="@ThemeConfiguration.Divisions.DefaultCss">
+        <label class="@ThemeConfiguration.Labels.DefaultCss">Name</label>
+        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.Name"></InputText>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Video Url</label>
-        <InputText class="form-control" @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl"></InputText>
-        <button class="btn btn-secondary" type="button" @onclick="OnProcessFileButtonClickedAsync">Process File</button>
-        <button class="btn btn-secondary" type="button" @onclick="UploadToYouTubeAsync">Upload To YouTube</button>
-        <label class="form-label">Bytes Sent: @bytesSent</label>
+    <div class="@ThemeConfiguration.Divisions.DefaultCss">
+        <label class="@ThemeConfiguration.Labels.DefaultCss">Video Url</label>
+        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl"></InputText>
+        <button class="@ThemeConfiguration.Buttons.SecondaryButtonCss" type="button" @onclick="OnProcessFileButtonClickedAsync">Process File</button>
+        <button class="@ThemeConfiguration.Buttons.SecondaryButtonCss" type="button" @onclick="UploadToYouTubeAsync">Upload To YouTube</button>
+        <label class="@ThemeConfiguration.Labels.DefaultCss">Bytes Sent: @bytesSent</label>
     </div>
-    <div class="mb-3">
-        <button class="btn btn-primary">Save</button>
+    <div class="@ThemeConfiguration.Divisions.DefaultCss">
+        <label class="@ThemeConfiguration.Divisions.DefaultCss">Video Id (Azure Video Indexer)</label>
+        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.VideoId"></InputText>
+    </div>
+    <div class="@ThemeConfiguration.Divisions.DefaultCss">
+        <label class="@ThemeConfiguration.Labels.DefaultCss">Video Id (YouTube)</label>
+        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.YouTubeVideoId"></InputText>
+    </div>
+    <div class="@ThemeConfiguration.Divisions.DefaultCss">
+        <button class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Save</button>
     </div>
 </EditForm>
 
@@ -151,6 +160,7 @@
         {
             this.IsBusy = true;
             StateHasChanged();
+            this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
             await this.videoInfoService.CreateVideoInfoAsync(this.createVideoInfoModel,
             this.cancellationTokenSource.Token);
             this.toastService.ShowSuccess("Your video has been save. You'll be notified when indexing is ready");

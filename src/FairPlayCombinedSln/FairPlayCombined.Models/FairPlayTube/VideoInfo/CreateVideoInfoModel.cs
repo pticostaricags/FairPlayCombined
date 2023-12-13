@@ -43,7 +43,7 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
         [Required]
         [StringLength(450)]
         public string? ApplicationUserId { get; set; }
-        public short VideoIndexStatusId { get; set; }
+        public int VideoIndexStatusId { get; set; }
 
         public double VideoDurationInSeconds { get; set; }
 

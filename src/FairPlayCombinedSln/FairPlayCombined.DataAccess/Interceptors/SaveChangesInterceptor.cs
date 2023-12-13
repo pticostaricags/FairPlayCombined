@@ -29,7 +29,7 @@ namespace FairPlayCombined.DataAccess.Interceptors
                     var connectionString = eventData.Context.Database.GetConnectionString();
                     SqlConnectionStringBuilder sqlConnectionStringBuilder = new(connectionString);
                     var applicationName = sqlConnectionStringBuilder.ApplicationName ?? "Unknown App";
-                    var userName = userProviderService.GetCurrentUserId();
+                    var userName = userProviderService.GetCurrentUserId() ?? "Unauthenticated User";
                     entity.SourceApplication = applicationName;
                     entity.RowCreationDateTime = DateTime.UtcNow;
                     entity.RowCreationUser = userName!;

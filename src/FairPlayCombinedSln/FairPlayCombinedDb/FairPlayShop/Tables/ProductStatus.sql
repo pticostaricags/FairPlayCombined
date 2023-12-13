@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [FairPlayShop].[ProductStatus]
 (
-	[ProductStatusId] TINYINT NOT NULL CONSTRAINT PK_ProductStatus PRIMARY KEY IDENTITY, 
+	[ProductStatusId] INT NOT NULL CONSTRAINT PK_ProductStatus PRIMARY KEY IDENTITY, 
     [Name] NVARCHAR(50) NOT NULL
 )

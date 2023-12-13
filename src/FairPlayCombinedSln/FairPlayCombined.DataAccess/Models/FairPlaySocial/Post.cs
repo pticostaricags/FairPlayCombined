@@ -22,11 +22,11 @@ public partial class Post
     [Key]
     public long PostId { get; set; }
 
-    public short PostVisibilityId { get; set; }
+    public int PostVisibilityId { get; set; }
 
     public long? PhotoId { get; set; }
 
-    public byte PostTypeId { get; set; }
+    public int PostTypeId { get; set; }
 
     public long? ReplyToPostId { get; set; }
 

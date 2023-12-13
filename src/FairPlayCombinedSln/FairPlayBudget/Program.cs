@@ -87,12 +87,12 @@ app.MapDefaultEndpoints();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
-    app.UseGlobalExceptionHandler();
+    app.UseExceptionHandler();
 }
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseGlobalExceptionHandler();
+    app.UseExceptionHandler();
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }

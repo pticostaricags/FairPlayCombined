@@ -60,6 +60,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[OpenAIPrompt]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Photo]",
          "ObjectType": 0
       },
@@ -196,6 +200,14 @@
       },
       {
          "Name": "[FairPlayTube].[VideoCaptions]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoDigitalMarketingDailyPosts]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoDigitalMarketingPlan]",
          "ObjectType": 0
       },
       {

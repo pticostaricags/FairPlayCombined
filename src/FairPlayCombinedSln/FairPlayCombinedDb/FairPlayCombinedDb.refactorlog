@@ -14,4 +14,39 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[CK_VideoCaptions_AllowedLanguages]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="4bd88304-de79-406c-bce0-22306771cfe6" ChangeDateTime="12/12/2023 12:25:30">
+    <Property Name="ElementName" Value="[dbo].[OpenAIPrompt].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[OpenAIPrompt]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="OpenAIPromptId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3bc67027-35b8-4eee-bfbf-238568b1287e" ChangeDateTime="12/12/2023 15:23:28">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoDigitalMarketingPlan].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoDigitalMarketingPlan]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoDigitalMarketingPlan" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c1212b16-5270-4e27-b6df-1baddc672304" ChangeDateTime="12/12/2023 19:32:15">
+    <Property Name="ElementName" Value="[dbo].[VideoDailyPostsIdeas].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[VideoDailyPostsIdeas]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoDailyPostsIdeas" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8f4a5e74-3f75-45ed-bf26-d12cd4750590" ChangeDateTime="12/12/2023 19:33:01">
+    <Property Name="ElementName" Value="[dbo].[VideoDigitalMarketingDailyPosts].[VideoDailyPostsIdeas]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[VideoDigitalMarketingDailyPosts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoDigitalMarketingDailyPostsId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9867c85b-d33e-4172-a79c-927080bc96c5" ChangeDateTime="12/12/2023 19:34:29">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoDigitalMarketingDailyPosts].[HtmlDigitalMarketingPlan]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoDigitalMarketingDailyPosts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="HtmlVideoDigitalMarketingDailyPostsIdeas" />
+  </Operation>
 </Operations>

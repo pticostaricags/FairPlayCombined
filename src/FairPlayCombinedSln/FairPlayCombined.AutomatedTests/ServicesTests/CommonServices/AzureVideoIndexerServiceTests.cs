@@ -19,7 +19,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         public async Task Test_GetSupportedLanguagesAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
             var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"];
             var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"];
@@ -54,7 +54,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         public async Task Test_GetVideoVTTCaptionsAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
             var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"];
             var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"];
@@ -90,7 +90,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         public async Task Test_GetVideoIndexAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
             var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"];
             var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"];
@@ -126,7 +126,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         public async Task Test_GetAccessTokenForArmAccountAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
             var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"];
             var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"];
@@ -155,7 +155,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         public async Task Test_IndexVideoFromBytesAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
             var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"];
             var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"];
@@ -194,7 +194,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         public async Task Test_IndexVideoFromUriAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<AzureOpenAIServiceTests>();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
             var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"];
             var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"];

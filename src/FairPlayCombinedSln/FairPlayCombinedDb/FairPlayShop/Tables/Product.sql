@@ -4,7 +4,7 @@
     [Name] NVARCHAR(50) NOT NULL, 
     [Description] NVARCHAR(500) NOT NULL,
     [QuantityInStock] INT NOT NULL, 
-    [ProductStatusId] TINYINT NOT NULL, 
+    [ProductStatusId] INT NOT NULL, 
     [OwnerId] NVARCHAR(450) NOT NULL, 
     [SellingPrice] MONEY NOT NULL, 
     [AcquisitionCost] MONEY NOT NULL, 

@@ -1,0 +1,78 @@
+﻿@page "/Public/WatchVideo/{VideoId}"
+@implements IAsyncDisposable
+@using FairPlayCombined.Services.Common
+@using FairPlayTube.Components.Spinners
+
+@rendermode NoPreRender
+
+@inject AzureVideoIndexerService azureVideoIndexerService
+@inject IJSRuntime jsRuntime
+
+
+<h3>WatchVideo</h3>
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<div id="container" data-permanent>
+    <video id="video"
+           class="azuremediaplayer amp-default-skin amp-stream-skin"
+           autoplay
+           controls
+           width="200"
+           height="200">
+        <p class="amp-no-js">
+            To view this video please enable JavaScript, and consider upgrading to
+            a web browser that supports HTML5 video
+        </p>
+    </video>
+    <div class="inline"></div>
+</div>
+
+@code {
+    [Parameter]
+    public string? VideoId { get; set; }
+    private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
+    private bool IsBusy { get; set; }
+    private CancellationTokenSource cancellationTokenSource = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
+            var viAccessTokenResponse = await azureVideoIndexerService
+            .GetAccessTokenForArmAccountAsync(armAccessToken, this.cancellationTokenSource.Token);
+            var videoIndex = await azureVideoIndexerService
+            .GetVideoIndexAsync(this.VideoId!, viAccessTokenResponse!.AccessToken!,
+            this.cancellationTokenSource.Token);
+            var supportedLanguages = await azureVideoIndexerService
+            .GetSupportedLanguagesAsync(viAccessTokenResponse!.AccessToken!,
+            this.cancellationTokenSource.Token);
+            var singleVideoIndex = videoIndex!.videos!.Single();
+            await jsRuntime.InvokeVoidAsync(
+                identifier: "initSource", 
+                cancellationToken:this.cancellationTokenSource.Token,
+            "video",
+            singleVideoIndex.publishedUrl,
+            singleVideoIndex.viewToken,
+            this.VideoId,
+            supportedLanguages!.Select(p => new
+            {
+                src = $"/api/video/{this.VideoId}/captions/{p.languageCode}",
+                srclang = p.languageCode,
+                kind = "subtitles",
+                label = p.name
+            }).OrderBy(p => p.label).ToArray());
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}

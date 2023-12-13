@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-FairPlayBudget-881a8a64-231c-4f85-8e13-94f4881148a9</UserSecretsId>
+    <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
