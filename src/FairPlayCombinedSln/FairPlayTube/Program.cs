@@ -131,12 +131,13 @@ var openAIChatCompletionsUrl = builder.Configuration["OpenAIChatCompletionsUrl"]
 
 builder.Services.AddTransient<OpenAIService>(sp => 
 {
+    int timeoutMinutes = 3;
     HttpClient openAIAuthorizedHttpClient = new HttpClient();
-    openAIAuthorizedHttpClient.Timeout = TimeSpan.FromMinutes(2);
+    openAIAuthorizedHttpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
     openAIAuthorizedHttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
         "Bearer", openAIKey);
     HttpClient genericHttpClient = new HttpClient();
-    genericHttpClient.Timeout = TimeSpan.FromMinutes(2);
+    genericHttpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
     sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
     return new OpenAIService(openAIAuthorizedHttpClient,
@@ -170,6 +171,8 @@ builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
 });
 builder.Services.AddTransient<YouTubeClientService>();
 builder.Services.AddTransient<VideoCaptionsService>();
+builder.Services.AddTransient<VideoDigitalMarketingPlanService>();
+builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -203,6 +203,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoDigitalMarketingDailyPosts]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoDigitalMarketingPlan]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoIndexingCost]",
          "ObjectType": 0
       },

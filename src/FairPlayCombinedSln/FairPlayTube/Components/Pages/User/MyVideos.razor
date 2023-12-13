@@ -15,6 +15,8 @@
 @inject NavigationManager navigationManager
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
+@inject VideoDigitalMarketingPlanService videoDigitalMarketingPlanService
+@inject VideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -29,7 +31,7 @@
             {
                 <a data-enhance-nav="false"
                    data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
-                href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">
+                   href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">
                     <i class="bi bi-youtube"></i>
                 </a>
             }
@@ -50,9 +52,21 @@
             </button>
         </TemplateColumn>
         <TemplateColumn>
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
+                    @onclick="@( async ()=> await OnCreateInfographicClickedAsync(context))">
+                <i class="bi bi-file-earmark-bar-graph-fill"></i>
+            </button>
+        </TemplateColumn>
+        <TemplateColumn>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
                     @onclick="@( async ()=> await OnGetLinkedInDigitalMarketingIdeasClickedAsync(context))">
                 <i class="bi bi-list-task"></i>
+            </button>
+        </TemplateColumn>
+        <TemplateColumn>
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
+                    @onclick="@( async ()=> await OnGetLinkedInDailyPostsClickedAsync(context))">
+                <i class="bi bi-linkedin"></i>
             </button>
         </TemplateColumn>
     </QuickGrid>
@@ -70,10 +84,37 @@
     }
 </div>
 <div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.GeneratedinfographicUri))
+    {
+        <a data-enhance-nav="false" href="@this.GeneratedinfographicUri" target="_blank">
+            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedinfographicUri" />
+        </a>
+        <p>
+            @this.RevisedPrompt
+        </p>
+    }
+</div>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
     @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
     {
         <p>
-            @this.DigitalMarketingIdeas
+            @((MarkupString)this.DigitalMarketingIdeas)
+        </p>
+    }
+</div>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.LinkedInDailyPostsIdeas))
+    {
+        <p>
+            @((MarkupString)this.LinkedInDailyPostsIdeas)
+        </p>
+    }
+</div>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingDailyPostsIdeas))
+    {
+        <p>
+            @((MarkupString)this.DigitalMarketingDailyPostsIdeas)
         </p>
     }
 </div>
@@ -87,8 +128,11 @@
         };
     private CancellationTokenSource cancellationTokenSource = new();
     private string? GeneratedYouTubeThumbnailUri { get; set; }
+    private string? GeneratedinfographicUri { get; set; }
     private string? RevisedPrompt { get; set; }
     private string? DigitalMarketingIdeas { get; set; }
+    private string? LinkedInDailyPostsIdeas { get; set; }
+    private string? DigitalMarketingDailyPostsIdeas { get; set; }
 
     protected override void OnInitialized()
     {
@@ -165,22 +209,85 @@
         StateHasChanged();
     }
 
-    private async Task OnGetLinkedInDigitalMarketingIdeasClickedAsync(VideoInfoModel videoInfoModel)
+    private async Task OnCreateInfographicClickedAsync(VideoInfoModel videoInfoModel)
     {
         this.IsBusy = true;
         StateHasChanged();
         var englishCaptions = await this.videoCaptionsService
         .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
         language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        var systemMessage = "You will take the role of an expert in Digital Marketing. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to use the content to grow my audience. You will give me a 1 month Digital Marketing plan to repurpose the video content into LinkedIn. I post 3 times per day.";
-        var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
+        string prompt = $"Infographic for video based on the following data. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+        if (prompt.Length > 4000)
+            prompt = prompt.Substring(0, 4000);
+        var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
         if (result != null)
         {
-            this.DigitalMarketingIdeas = result!.choices![0]!.message!.content!;
+            this.GeneratedinfographicUri = result!.data![0]!.url!;
+            this.RevisedPrompt = result!.data[0]!.revised_prompt;
         }
         this.IsBusy = false;
         StateHasChanged();
     }
 
+    private async Task OnGetLinkedInDigitalMarketingIdeasClickedAsync(VideoInfoModel videoInfoModel)
+    {
+        this.IsBusy = true;
+        StateHasChanged();
+        this.DigitalMarketingIdeas = await this.videoDigitalMarketingPlanService
+        .GetVideoDigitalMarketingPlanAsync(
+            videoInfoId: videoInfoModel.VideoInfoId,
+            socialNetworkName: "LinkedIn",
+            cancellationToken: this.cancellationTokenSource.Token);
+        if (String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
+        {
+            var englishCaptions = await this.videoCaptionsService
+            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
+            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
+            var systemMessage = "You will take the role of an expert in Digital Marketing. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to use the content to grow my audience. You will give me a 1 month Digital Marketing plan to repurpose the video content into LinkedIn. I post 3 times per day. Your response must be in HTML 5";
+            var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+            var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
+            if (result != null)
+            {
+                this.DigitalMarketingIdeas = result!.choices![0]!.message!.content!;
+                await this.videoDigitalMarketingPlanService.SaveVideoDigitalMarketingPlanAsync(
+                    videoInfoId: videoInfoModel.VideoInfoId,
+                    htmlDigitalMarketingPlan: this.DigitalMarketingIdeas,
+                    socialNetworkName: "LinkedIn",
+                    cancellationToken: this.cancellationTokenSource.Token);
+            }
+        }
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+
+    private async Task OnGetLinkedInDailyPostsClickedAsync(VideoInfoModel videoInfoModel)
+    {
+        this.IsBusy = true;
+        StateHasChanged();
+        this.DigitalMarketingDailyPostsIdeas = await this.videoDigitalMarketingDailyPostsService
+        .GetVideoDigitalMarketingDailyPostsAsync(
+            videoInfoId: videoInfoModel.VideoInfoId,
+            socialNetworkName: "LinkedIn",
+            cancellationToken: this.cancellationTokenSource.Token);
+        if (String.IsNullOrWhiteSpace(this.DigitalMarketingDailyPostsIdeas))
+        {
+            var englishCaptions = await this.videoCaptionsService
+            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
+            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
+            var systemMessage = "You will take the role of an expert in Digital Marketing. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to use the content to grow my audience. You will give me a 1 month Digital Marketing plan to repurpose the video content into LinkedIn. I post 3 times per day. Your response must be in HTML 5";
+            var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+            var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
+            if (result != null)
+            {
+                this.DigitalMarketingDailyPostsIdeas = result!.choices![0]!.message!.content!;
+                await this.videoDigitalMarketingDailyPostsService.SaveGetVideoDigitalMarketingDailyPostsAsync(
+                    videoInfoId: videoInfoModel.VideoInfoId,
+                    htmlVideoDigitalMarketingDailyPostsIdeas: this.DigitalMarketingDailyPostsIdeas,
+                    socialNetworkName: "LinkedIn",
+                    cancellationToken: this.cancellationTokenSource.Token);
+            }
+        }
+        this.IsBusy = false;
+        StateHasChanged();
+    }
 }
