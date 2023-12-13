@@ -141,6 +141,7 @@ namespace FairPlayCombined.Services.Generators
                                             {
                                                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
                                                 var result = await dbContext.{{entityName}}
+                                                .Where(p=>p.{{primaryKeyProperty.Name}}==id)
                                                 .AsNoTracking()
                                                 .Select(p=>new {{listActivityModel.Name}}
                                                 {

@@ -43,7 +43,7 @@
                 </button>
             }
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
-                    @onclick="@( async ()=> await OnCreateYouTubeThumbnailClickedAsync(context))">
+                    @onclick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
                 <i class="bi bi-image-fill"></i>
             </button>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
@@ -192,24 +192,9 @@
         this.navigationManager.NavigateTo($"/User/VideoCaptions/VideoInfo{videoInfoModel.VideoInfoId}/YouTube/{videoInfoModel.YouTubeVideoId}");
     }
 
-    private async Task OnCreateYouTubeThumbnailClickedAsync(VideoInfoModel videoInfoModel)
+    private void OnCreateYouTubeThumbnailClicked(VideoInfoModel videoInfoModel)
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        var englishCaptions = await this.videoCaptionsService
-        .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-        language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        string prompt = $"YouTube Thumbnail for video based on the following data. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        if (prompt.Length > 4000)
-            prompt = prompt.Substring(0, 4000);
-        var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
-        if (result != null)
-        {
-            this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
-            this.RevisedPrompt = result!.data[0]!.revised_prompt;
-        }
-        this.IsBusy = false;
-        StateHasChanged();
+        this.navigationManager.NavigateTo($"/User/YouTubeThumbnail/{videoInfoModel.VideoInfoId}");
     }
 
     private async Task OnCreateInfographicClickedAsync(VideoInfoModel videoInfoModel)
