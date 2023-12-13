@@ -35,8 +35,6 @@
                     <i class="bi bi-youtube"></i>
                 </a>
             }
-        </TemplateColumn>
-        <TemplateColumn>
             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
             {
                 <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
@@ -44,32 +42,22 @@
                     <i class="bi bi-badge-cc-fill"></i>
                 </button>
             }
-        </TemplateColumn>
-        <TemplateColumn>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
                     @onclick="@( async ()=> await OnCreateYouTubeThumbnailClickedAsync(context))">
                 <i class="bi bi-image-fill"></i>
             </button>
-        </TemplateColumn>
-        <TemplateColumn>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
                     @onclick="@( async ()=> await OnCreateInfographicClickedAsync(context))">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
             </button>
-        </TemplateColumn>
-        <TemplateColumn>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
                     @onclick="@( async ()=> await OnGetLinkedInDigitalMarketingIdeasClickedAsync(context))">
                 <i class="bi bi-list-task"></i>
             </button>
-        </TemplateColumn>
-        <TemplateColumn>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
                     @onclick="@( async ()=> await OnGetLinkedInDailyPostsClickedAsync(context))">
                 <i class="bi bi-linkedin"></i>
             </button>
-        </TemplateColumn>
-        <TemplateColumn>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
                     @onclick="@( async ()=> await OnGetPassiveIncomeIdeasAsync(context))">
                 <i class="bi bi-currency-dollar"></i>
@@ -282,7 +270,7 @@
         var englishCaptions = await this.videoCaptionsService
         .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
         language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        var systemMessage = "You will take the role of an expert in Digital Marketing. Monetization and Passive Income. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to monetize and generate passive income from my content. You will give me at least one action for each day of the month. Your response must be in HTML 5";
+        var systemMessage = "You will take the role of an expert in Digital Marketing, monetization and passive income. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to generate passive income from my content. You will give me at least one action for each day of the month. Your response must be in HTML 5";
         var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
         var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
         this.PassiveIncomeIdeas = result!.choices![0]!.message!.content!;
