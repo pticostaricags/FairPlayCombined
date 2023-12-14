@@ -54,7 +54,7 @@
                 <i class="bi bi-list-task"></i>
             </button>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
-                    @onclick="@( async ()=> await OnGetLinkedInDailyPostsClickedAsync(context))">
+                    @onclick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
                 <i class="bi bi-linkedin"></i>
             </button>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
@@ -203,34 +203,8 @@
         this.navigationManager.NavigateTo($"/User/VideoPassiveIncome/{videoInfoModel.VideoInfoId}");
     }
 
-    private async Task OnGetLinkedInDailyPostsClickedAsync(VideoInfoModel videoInfoModel)
+    private void OnGetLinkedInDailyPostsClicked(VideoInfoModel videoInfoModel)
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        this.DigitalMarketingDailyPostsIdeas = await this.videoDigitalMarketingDailyPostsService
-        .GetVideoDigitalMarketingDailyPostsAsync(
-            videoInfoId: videoInfoModel.VideoInfoId,
-            socialNetworkName: "LinkedIn",
-            cancellationToken: this.cancellationTokenSource.Token);
-        if (String.IsNullOrWhiteSpace(this.DigitalMarketingDailyPostsIdeas))
-        {
-            var englishCaptions = await this.videoCaptionsService
-            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-            var systemMessage = "You will take the role of an expert in Digital Marketing. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to use the content to grow my audience. You will give me a 1 month Digital Marketing plan to repurpose the video content into LinkedIn. I post 3 times per day. Your response must be in HTML 5";
-            var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-            var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
-            if (result != null)
-            {
-                this.DigitalMarketingDailyPostsIdeas = result!.choices![0]!.message!.content!;
-                await this.videoDigitalMarketingDailyPostsService.SaveGetVideoDigitalMarketingDailyPostsAsync(
-                    videoInfoId: videoInfoModel.VideoInfoId,
-                    htmlVideoDigitalMarketingDailyPostsIdeas: this.DigitalMarketingDailyPostsIdeas,
-                    socialNetworkName: "LinkedIn",
-                    cancellationToken: this.cancellationTokenSource.Token);
-            }
-        }
-        this.IsBusy = false;
-        StateHasChanged();
+        this.navigationManager.NavigateTo($"/User/VideoDailyPosts/{videoInfoModel.VideoInfoId}");
     }
 }
