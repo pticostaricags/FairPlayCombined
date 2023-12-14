@@ -1,0 +1,57 @@
+﻿@page "/User/VideoPassiveIncome/{VideoInfoId:long}"
+@using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.Common
+@using FairPlayCombined.Services.FairPlayTube
+@using FairPlayTube.Components.Spinners
+@using Microsoft.AspNetCore.Components.QuickGrid
+@rendermode NoPreRenderServerMode
+@inject IJSRuntime jsRuntime
+@inject VideoInfoService videoInfoService
+@inject IUserProviderService userProviderService
+@inject OpenAIService openAIService
+@inject VideoCaptionsService videoCaptionsService
+@inject VideoDigitalMarketingPlanService videoDigitalMarketingPlanService
+<PageTitle>Home</PageTitle>
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.PassiveIncomeIdeas))
+    {
+        <p>
+            @((MarkupString)this.PassiveIncomeIdeas)
+        </p>
+    }
+</div>
+
+@code
+{
+    [Parameter]
+    public long? VideoInfoId {get;set;}
+    private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
+    private bool IsBusy { get; set; }
+    private CancellationTokenSource cancellationTokenSource = new();
+    private string? PassiveIncomeIdeas { get; set; }
+    private string? RevisedPrompt { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.IsBusy = true;
+        StateHasChanged();
+        var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
+        cancellationToken: this.cancellationTokenSource.Token);
+        var englishCaptions = await this.videoCaptionsService
+        .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
+        language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
+        var systemMessage = "You will take the role of an expert in Digital Marketing, monetization and passive income. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to generate passive income from my content. You will give me at least one action for each day of the month. Your response must be in HTML 5";
+        var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+        var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
+        this.PassiveIncomeIdeas = result!.choices![0]!.message!.content!;
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+}
