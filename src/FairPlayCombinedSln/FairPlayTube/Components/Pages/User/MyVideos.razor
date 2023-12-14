@@ -15,7 +15,6 @@
 @inject NavigationManager navigationManager
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
-@inject VideoDigitalMarketingPlanService videoDigitalMarketingPlanService
 @inject VideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
 <PageTitle>Home</PageTitle>
 
@@ -51,7 +50,7 @@
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
             </button>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
-                    @onclick="@( async ()=> await OnGetLinkedInDigitalMarketingIdeasClickedAsync(context))">
+                    @onclick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
                 <i class="bi bi-list-task"></i>
             </button>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
@@ -85,14 +84,6 @@
         </a>
         <p>
             @this.RevisedPrompt
-        </p>
-    }
-</div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
-    {
-        <p>
-            @((MarkupString)this.DigitalMarketingIdeas)
         </p>
     }
 </div>
@@ -202,35 +193,9 @@
         this.navigationManager.NavigateTo($"/User/VideoInfographic/{videoInfoModel.VideoInfoId}");
     }
 
-    private async Task OnGetLinkedInDigitalMarketingIdeasClickedAsync(VideoInfoModel videoInfoModel)
+    private void OnGetLinkedInDigitalMarketingIdeasClicked(VideoInfoModel videoInfoModel)
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        this.DigitalMarketingIdeas = await this.videoDigitalMarketingPlanService
-        .GetVideoDigitalMarketingPlanAsync(
-            videoInfoId: videoInfoModel.VideoInfoId,
-            socialNetworkName: "LinkedIn",
-            cancellationToken: this.cancellationTokenSource.Token);
-        if (String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
-        {
-            var englishCaptions = await this.videoCaptionsService
-            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-            var systemMessage = "You will take the role of an expert in Digital Marketing. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to use the content to grow my audience. You will give me a 1 month Digital Marketing plan to repurpose the video content into LinkedIn. I post 3 times per day. Your response must be in HTML 5";
-            var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-            var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
-            if (result != null)
-            {
-                this.DigitalMarketingIdeas = result!.choices![0]!.message!.content!;
-                await this.videoDigitalMarketingPlanService.SaveVideoDigitalMarketingPlanAsync(
-                    videoInfoId: videoInfoModel.VideoInfoId,
-                    htmlDigitalMarketingPlan: this.DigitalMarketingIdeas,
-                    socialNetworkName: "LinkedIn",
-                    cancellationToken: this.cancellationTokenSource.Token);
-            }
-        }
-        this.IsBusy = false;
-        StateHasChanged();
+        this.navigationManager.NavigateTo($"/User/VideoDigitalMarketing/{videoInfoModel.VideoInfoId}");
     }
 
     private async Task OnGetPassiveIncomeIdeasAsync(VideoInfoModel videoInfoModel)
