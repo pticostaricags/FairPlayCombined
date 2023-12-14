@@ -26,21 +26,6 @@
         <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
         <TemplateColumn>
-            @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
-            {
-                <a data-enhance-nav="false"
-                   data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
-                   href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">
-                    <i class="bi bi-youtube"></i>
-                </a>
-            }
-            @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
-            {
-                <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
-                        @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
-                    <i class="bi bi-badge-cc-fill"></i>
-                </button>
-            }
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
                     @onclick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
                 <i class="bi bi-image-fill"></i>
@@ -61,6 +46,22 @@
                     @onclick="@( ()=> OnGetPassiveIncomeIdeas(context))">
                 <i class="bi bi-currency-dollar"></i>
             </button>
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
+                    @onclick="@( ()=> OnCreateLinkedInArticleClicked(context))">
+                <i class="bi bi-file-richtext-fill"></i>
+            </button>
+            @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
+            {
+                <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
+                        @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
+                    <i class="bi bi-badge-cc-fill"></i>
+                </button>
+                <a data-enhance-nav="false"
+                   data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
+                   href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">
+                    <i class="bi bi-youtube"></i>
+                </a>
+            }
         </TemplateColumn>
     </QuickGrid>
 </div>
@@ -206,5 +207,10 @@
     private void OnGetLinkedInDailyPostsClicked(VideoInfoModel videoInfoModel)
     {
         this.navigationManager.NavigateTo($"/User/VideoDailyPosts/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnCreateLinkedInArticleClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/User/VideoLinkedInArticle/{videoInfoModel.VideoInfoId}");
     }
 }
