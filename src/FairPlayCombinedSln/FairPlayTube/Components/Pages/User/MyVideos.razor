@@ -47,7 +47,7 @@
                 <i class="bi bi-image-fill"></i>
             </button>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
-                    @onclick="@( async ()=> await OnCreateInfographicClickedAsync(context))">
+                    @onclick="@( ()=> OnCreateInfographicClicked(context))">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
             </button>
             <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
@@ -197,24 +197,9 @@
         this.navigationManager.NavigateTo($"/User/YouTubeThumbnail/{videoInfoModel.VideoInfoId}");
     }
 
-    private async Task OnCreateInfographicClickedAsync(VideoInfoModel videoInfoModel)
+    private void OnCreateInfographicClicked(VideoInfoModel videoInfoModel)
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        var englishCaptions = await this.videoCaptionsService
-        .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-        language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        string prompt = $"Infographic for video based on the following data. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        if (prompt.Length > 4000)
-            prompt = prompt.Substring(0, 4000);
-        var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
-        if (result != null)
-        {
-            this.GeneratedinfographicUri = result!.data![0]!.url!;
-            this.RevisedPrompt = result!.data[0]!.revised_prompt;
-        }
-        this.IsBusy = false;
-        StateHasChanged();
+        this.navigationManager.NavigateTo($"/User/VideoInfographic/{videoInfoModel.VideoInfoId}");
     }
 
     private async Task OnGetLinkedInDigitalMarketingIdeasClickedAsync(VideoInfoModel videoInfoModel)
