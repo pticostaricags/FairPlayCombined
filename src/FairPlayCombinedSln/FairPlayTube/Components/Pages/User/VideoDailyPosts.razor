@@ -75,7 +75,7 @@
             if (result != null)
             {
                 this.DigitalMarketingDailyPostsIdeas = result!.choices![0]!.message!.content!;
-                await this.videoDigitalMarketingDailyPostsService.SaveGetVideoDigitalMarketingDailyPostsAsync(
+                await this.videoDigitalMarketingDailyPostsService.SaveVideoDigitalMarketingDailyPostsAsync(
                     videoInfoId: videoInfoModel.VideoInfoId,
                     htmlVideoDigitalMarketingDailyPostsIdeas: this.DigitalMarketingDailyPostsIdeas,
                     socialNetworkName: "LinkedIn",
