@@ -25,6 +25,9 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
+<button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss" @onclick="CreateLinkedInArticleAsync">
+    Re-Create Article
+</button>
 
 <div class="@ThemeConfiguration.Divisions.DefaultCss">
     @if (!String.IsNullOrWhiteSpace(this.LinkedInArticleDraftText))
@@ -46,6 +49,11 @@
     private string? RevisedPrompt { get; set; }
 
     protected override async Task OnInitializedAsync()
+    {
+        await this.CreateLinkedInArticleAsync();
+    }
+
+    private async Task CreateLinkedInArticleAsync()
     {
         this.IsBusy = true;
         StateHasChanged();
