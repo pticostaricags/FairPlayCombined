@@ -15,7 +15,13 @@
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
 @inject VideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
-<PageTitle>Home</PageTitle>
+<PageTitle>
+    Video Daily Posts
+</PageTitle>
+
+<h3>
+    Video Daily Posts
+</h3>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
@@ -32,7 +38,7 @@
 @code
 {
     [Parameter]
-    public long? VideoInfoId {get;set;}
+    public long? VideoInfoId { get; set; }
     private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
     private CancellationTokenSource cancellationTokenSource = new();
