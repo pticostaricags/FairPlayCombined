@@ -231,6 +231,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoInfographic]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoJob]",
          "ObjectType": 0
       },

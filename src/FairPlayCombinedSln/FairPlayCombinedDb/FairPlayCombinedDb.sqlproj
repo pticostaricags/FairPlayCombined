@@ -149,6 +149,7 @@
     <Build Include="dbo\Tables\OpenAIPrompt.sql" />
     <Build Include="FairPlayTube\Tables\VideoDigitalMarketingPlan.sql" />
     <Build Include="FairPlayTube\Tables\VideoDigitalMarketingDailyPosts.sql" />
+    <Build Include="FairPlayTube\Tables\VideoInfographic.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />

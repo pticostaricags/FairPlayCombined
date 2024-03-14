@@ -116,6 +116,9 @@ public partial class VideoInfo
     public virtual ICollection<VideoIndexingTransaction> VideoIndexingTransaction { get; set; } = new List<VideoIndexingTransaction>();
 
     [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoInfographic> VideoInfographic { get; set; } = new List<VideoInfographic>();
+
+    [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoJob> VideoJob { get; set; } = new List<VideoJob>();
 
     [ForeignKey("VideoVisibilityId")]
