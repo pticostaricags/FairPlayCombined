@@ -23,15 +23,16 @@ namespace FairPlayCombined.Services.Common
         >]
     public partial class ResourceService : BaseService
     {
-        public async Task<ResourceModel[]> GetAllResourceByCulturIdAsync(int cultureId,
-            CancellationToken cancellationToken)
+        public async Task<ResourceModel[]> GetAllResourceSortedAsync(CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var result = await dbContext.Resource
-                .Where(p=>p.CultureId == cultureId)
+                .OrderBy(p=>p.Key).ThenBy(p=>p.Type)
+                .ThenBy(p=>p.CultureId)
             .AsNoTracking()
             .Select(p => new ResourceModel()
             {
+                CultureName = p.Culture.Name,
                 ResourceId = p.ResourceId,
                 Type = p.Type,
                 Key = p.Key,

@@ -18,5 +18,6 @@ namespace FairPlayCombined.Models.Common.Resource
         public string? Value { get; set; }
 
         public int CultureId { get; set; }
+        public string? CultureName { get; set; }
     }
 }

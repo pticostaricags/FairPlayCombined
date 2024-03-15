@@ -12,8 +12,7 @@
 @if (this.resources?.Count() > 0)
 {
     <QuickGrid Items="this.resources">
-        <PropertyColumn Property="@( p=> p.ResourceId)" Title="@nameof(ResourceModel.ResourceId)"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.CultureId)" Title="@nameof(ResourceModel.CultureId)"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.CultureName)" Title="@nameof(ResourceModel.CultureName)"></PropertyColumn>
         <PropertyColumn Property="@( p=> p.Type)" Title="@nameof(ResourceModel.Type)"></PropertyColumn>
         <PropertyColumn Property="@( p=> p.Key)" Title="@nameof(ResourceModel.Key)"></PropertyColumn>
         <TemplateColumn Title="@nameof(ResourceModel.Value)">
@@ -30,8 +29,8 @@
     {
         try
         {
-            this.resources = (await this.resourceService.GetAllResourceByCulturIdAsync(cultureId: 1,
-            cancellationToken: this.cancellationTokenSource.Token)).AsQueryable();
+            this.resources = (await this.resourceService
+                .GetAllResourceSortedAsync(cancellationToken: this.cancellationTokenSource.Token)).AsQueryable();
         }
         catch (Exception ex)
         {
