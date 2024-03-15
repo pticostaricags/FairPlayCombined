@@ -12,7 +12,6 @@ public class FairPlayCombinedDbInitializer(ILogger<FairPlayCombinedDbInitializer
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(TimeSpan.FromSeconds(10));
         var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
         var strategy = dbContext.Database.CreateExecutionStrategy();
