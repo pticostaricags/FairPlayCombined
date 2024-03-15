@@ -1,4 +1,3 @@
-using FairPlayCombined.CitiesImporter;
 using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -40,20 +39,11 @@ var generateDall3ImageUrl = builder.Configuration["GenerateDall3ImageUrl"] ??
 var openAIChatCompletionsUrl = builder.Configuration["OpenAIChatCompletionsUrl"] ??
     throw new InvalidOperationException("'OpenAIChatCompletionsUrl' not found");
 
-IResourceBuilder<ISqlServerResource> sqlServerResource;
-if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
-{
-    sqlServerResource = builder.AddSqlServerContainer("FairPlayCombinedDbServer",
-    password: "FairPlayCombinedDb$123$")
-    .AddDatabase("FairPlayCombinedDb");
-}
-else
-{
-    sqlServerResource = builder.AddSqlServerConnection("FairPlayCombinedDb");
-}
+IResourceBuilder<IResourceWithConnectionString> sqlResourceWithConnectionString = 
+    builder.AddConnectionString("FairPlayCombinedDb");
 
 builder.AddProject<Projects.FairPlayCombined_DatabaseManager>("databasemanager")
-    .WithReference(sqlServerResource);
+    .WithReference(sqlResourceWithConnectionString);
 
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
 if (addFairPlayDating)
@@ -66,10 +56,10 @@ if (addFairPlayDating)
             callback.EnvironmentVariables.Add("AzureContentModeratorEndpoint", azureContentModeratorEndpoint);
             callback.EnvironmentVariables.Add("AzureContentModeratorKey", azureContentModeratorKey);
         })
-        .WithReference(sqlServerResource);
+        .WithReference(sqlResourceWithConnectionString);
     if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
     {
-        AddTestDataGenerator(builder, sqlServerResource);
+        AddTestDataGenerator(builder, sqlResourceWithConnectionString);
     }
 }
 
@@ -91,7 +81,7 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("GenerateDall3ImageUrl", generateDall3ImageUrl);
         callback.EnvironmentVariables.Add("OpenAIChatCompletionsUrl", openAIChatCompletionsUrl);
     })
-    .WithReference(sqlServerResource);
+    .WithReference(sqlResourceWithConnectionString);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")
         .WithEnvironment(callback =>
     {
@@ -101,39 +91,39 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("AzureVideoIndexerResourceName", azureVideoIndexerResourceName);
         callback.EnvironmentVariables.Add("AzureVideoIndexerSubscriptionId", azureVideoIndexerSubscriptionId);
     })
-        .WithReference(sqlServerResource);
+        .WithReference(sqlResourceWithConnectionString);
 }
 
 bool addFairPlayShop = Convert.ToBoolean(builder.Configuration["AddFairPlayShop"]);
 if (addFairPlayShop)
 {
     builder.AddProject<Projects.FairPlayShop>(nameof(Projects.FairPlayShop).ToLower())
-    .WithReference(sqlServerResource);
+    .WithReference(sqlResourceWithConnectionString);
 }
 
 bool addCitiesImporter = Convert.ToBoolean(builder.Configuration["AddCitiesImporter"]);
 if (addCitiesImporter)
 {
-    builder.AddProject<Projects.FairPlayCombined_CitiesImporter>(nameof(CitiesImporter).ToLower())
-        .WithReference(sqlServerResource);
+    builder.AddProject<Projects.FairPlayCombined_CitiesImporter>("citiesimporter")
+        .WithReference(sqlResourceWithConnectionString);
 }
 
 bool addFairPlatAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPlatAdminPortal"]);
 if (addFairPlatAdminPortal)
 {
     builder.AddProject<Projects.FairPlayAdminPortal>(nameof(Projects.FairPlayAdminPortal).ToLower())
-        .WithReference(sqlServerResource);
+        .WithReference(sqlResourceWithConnectionString);
 }
 
 bool addFairPlaySocial = Convert.ToBoolean(builder.Configuration["AddFairPlaySocial"]);
 if (addFairPlaySocial)
 {
     builder.AddProject<Projects.FairPlaySocial>(nameof(Projects.FairPlaySocial).ToLower())
-        .WithReference(sqlServerResource);
+        .WithReference(sqlResourceWithConnectionString);
     if (Convert.ToBoolean(builder.Configuration["AddFairPlaySocialTestDataGenerator"]))
     {
         builder.AddProject<Projects.FairPlaySocial_TestDataGenerator>("fairplaysocialtestdatagenerator")
-            .WithReference(sqlServerResource);
+            .WithReference(sqlResourceWithConnectionString);
     }
 }
 
@@ -147,19 +137,19 @@ if (addLocalizationGenerator)
             callback.EnvironmentVariables.Add("AzureOpenAIEndpoint", builder.Configuration["AzureOpenAIEndpoint"]!);
             callback.EnvironmentVariables.Add("AzureOpenAIKey", builder.Configuration["AzureOpenAIKey"]!);
         })
-        .WithReference(sqlServerResource);
+        .WithReference(sqlResourceWithConnectionString);
 }
 bool addFairPlayBudget = Convert.ToBoolean(builder.Configuration["AddFairPlayBudget"]);
 if (addFairPlayBudget)
 {
     builder.AddProject<Projects.FairPlayBudget>("fairplaybudget")
-        .WithReference(sqlServerResource);
+        .WithReference(sqlResourceWithConnectionString);
 }
 
 builder.Build().Run();
 
 static void AddTestDataGenerator(IDistributedApplicationBuilder builder,
-    IResourceBuilder<ISqlServerResource> sqlServerResource)
+    IResourceBuilder<IResourceWithConnectionString> sqlServerResource)
 {
     var humansPhotosDirectory = builder.Configuration["HumansPhotosDirectory"];
     builder.AddProject<Projects.FairPlayDating_TestDataGenerator>("fairplaydatingtestdatagenerator")
