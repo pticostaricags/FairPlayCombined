@@ -4,6 +4,7 @@ using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Models.Common.Resource;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,8 +28,8 @@ namespace FairPlayCombined.Services.Common
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var result = await dbContext.Resource
-                .OrderBy(p=>p.Key).ThenBy(p=>p.Type)
-                .ThenBy(p=>p.CultureId)
+                .OrderBy(p => p.Key).ThenBy(p => p.Type)
+                .ThenBy(p => p.CultureId)
             .AsNoTracking()
             .Select(p => new ResourceModel()
             {
@@ -41,6 +42,33 @@ namespace FairPlayCombined.Services.Common
 
             }).ToArrayAsync(cancellationToken);
             return result;
+        }
+
+        public async Task UpdateResourcesAsync(ResourceModel[] resources, CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var existentResourceIds = resources.Where(p => p.ResourceId != 0)
+                .Select(p => p.ResourceId);
+            foreach (var singleExistentResource in dbContext.Resource.Where(p => existentResourceIds.Contains(p.ResourceId)))
+            {
+                var updatedModel = resources.Single(p => p.ResourceId == singleExistentResource.ResourceId);
+                singleExistentResource.Value = updatedModel.Value;
+            }
+            foreach (var singleNewResource in resources.Where(p => p.ResourceId == 0))
+            {
+                Resource resource = new Resource()
+                {
+                    CultureId = singleNewResource.CultureId,
+                    Key = singleNewResource.Key,
+                    Type = singleNewResource.Type,
+                    Value = singleNewResource.Value
+                };
+                await dbContext.Resource.AddAsync(resource, cancellationToken: cancellationToken);
+            }
+            if (dbContext.ChangeTracker.HasChanges())
+            {
+                await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
+            }
         }
     }
 }

@@ -42,9 +42,6 @@ var openAIChatCompletionsUrl = builder.Configuration["OpenAIChatCompletionsUrl"]
 IResourceBuilder<IResourceWithConnectionString> sqlResourceWithConnectionString = 
     builder.AddConnectionString("FairPlayCombinedDb");
 
-builder.AddProject<Projects.FairPlayCombined_DatabaseManager>("databasemanager")
-    .WithReference(sqlResourceWithConnectionString);
-
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
 if (addFairPlayDating)
 {
