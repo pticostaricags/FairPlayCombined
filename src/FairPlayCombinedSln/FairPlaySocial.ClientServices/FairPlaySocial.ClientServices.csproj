@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.10.3" />
     <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.7.2" />
@@ -17,7 +15,6 @@
     <PackageReference Include="Microsoft.Kiota.Serialization.Multipart" Version="1.1.0" />
     <PackageReference Include="Microsoft.Kiota.Serialization.Text" Version="1.1.0" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="FairPlaySocialClient.cs">
       <DesignTime>True</DesignTime>
@@ -25,12 +22,10 @@
       <DependentUpon>FairPlaySocialClient.json</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="FairPlaySocialClient.json">
       <Generator>KiotaCodeGenerator</Generator>
       <LastGenOutput>FairPlaySocialClient.cs</LastGenOutput>
     </None>
   </ItemGroup>
-
 </Project>

@@ -1,24 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Enable_Paid_Tests|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />
     <ProjectReference Include="..\FairPlayCombined.DataAccess\FairPlayCombined.DataAccess.csproj" />
@@ -26,11 +21,9 @@
     <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Services.Generators\FairPlayCombined.Services.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="FairPlayShop\" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.9" />
     <PackageReference Include="CsvHelper" Version="30.0.1" />
@@ -44,5 +37,4 @@
     </PackageReference>
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.5" />
   </ItemGroup>
-
 </Project>
