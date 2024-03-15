@@ -1,0 +1,41 @@
+﻿@page "/ResourceManage"
+@using FairPlayCombined.Models.Common.Resource
+@using FairPlayCombined.Services.Common
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+@inject ResourceService resourceService
+@inject IToastService toastService
+@rendermode RenderMode.InteractiveServer
+
+<h3>ResourceManage</h3>
+
+@if (this.resources?.Count() > 0)
+{
+    <QuickGrid Items="this.resources">
+        <PropertyColumn Property="@( p=> p.ResourceId)" Title="@nameof(ResourceModel.ResourceId)"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.CultureId)" Title="@nameof(ResourceModel.CultureId)"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.Type)" Title="@nameof(ResourceModel.Type)"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.Key)" Title="@nameof(ResourceModel.Key)"></PropertyColumn>
+        <TemplateColumn Title="@nameof(ResourceModel.Value)">
+            <InputText class="form-control" @bind-Value="@context.Value"></InputText>
+        </TemplateColumn>
+    </QuickGrid>
+}
+
+@code
+{
+    private IQueryable<ResourceModel>? resources;
+    private CancellationTokenSource cancellationTokenSource = new();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            this.resources = (await this.resourceService.GetAllResourceByCulturIdAsync(cultureId: 1,
+            cancellationToken: this.cancellationTokenSource.Token)).AsQueryable();
+        }
+        catch (Exception ex)
+        {
+            this.toastService!.ShowError(ex.Message);
+        }
+    }
+}
