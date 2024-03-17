@@ -2,6 +2,7 @@
 @using Blazored.Toast.Services
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.FairPlaySocial
+@using FairPlayCombined.Common.FairPlaySocial.Enums
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.Common.Photo
@@ -100,6 +101,7 @@
                     OwnerApplicationUserId = this.userProviderSerice.GetCurrentUserId()
                 };
         }
+        this.createPostModel.PostVisibilityId = (int)PostVisibility.Public;
         ItemsProvider = async req =>
         {
             this.IsBusy = true;
