@@ -132,6 +132,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<VideoJobApplicationStatus> VideoJobApplicationStatus { get; set; }
 
+    public virtual DbSet<VideoTopic> VideoTopic { get; set; }
+
     public virtual DbSet<VideoVisibility> VideoVisibility { get; set; }
 
     public virtual DbSet<VwBalance> VwBalance { get; set; }
@@ -513,6 +515,13 @@ public partial class FairPlayCombinedDbContext : DbContext
         modelBuilder.Entity<VideoJobApplicationStatus>(entity =>
         {
             entity.Property(e => e.VideoJobApplicationStatusId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<VideoTopic>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoTopic)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoTopic_VideoInfo");
         });
 
         modelBuilder.Entity<VideoVisibility>(entity =>

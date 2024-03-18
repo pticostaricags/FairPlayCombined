@@ -77,4 +77,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="VideoIndexJSON" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="20b9e388-2f61-4901-bc83-9daa7945985f" ChangeDateTime="03/18/2024 22:47:56">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoTopic].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoTopic]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoTopicId" />
+  </Operation>
 </Operations>

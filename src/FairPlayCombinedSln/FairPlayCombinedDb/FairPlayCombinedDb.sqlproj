@@ -151,6 +151,7 @@
     <Build Include="FairPlayTube\Tables\VideoDigitalMarketingDailyPosts.sql" />
     <Build Include="FairPlayTube\Tables\VideoInfographic.sql" />
     <Build Include="dbo\Tables\ThemeConfiguration.sql" />
+    <Build Include="FairPlayTube\Tables\VideoTopic.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />

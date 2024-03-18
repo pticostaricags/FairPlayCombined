@@ -246,6 +246,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoTopic]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoVisibility]",
          "ObjectType": 0
       },

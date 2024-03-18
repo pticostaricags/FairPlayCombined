@@ -77,6 +77,16 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                             singleVideoEntity.VideoId, getviTokenResult.AccessToken!,
                             stoppingToken);
                         singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
+                        if (completedVideoIndex?.summarizedInsights?.topics?.Length > 0)
+                            foreach (var singleTopic in completedVideoIndex.summarizedInsights.topics)
+                            {
+                                VideoTopic videoTopicEntity = new VideoTopic()
+                                {
+                                    Confidence = singleTopic.confidence,
+                                    Topic = singleTopic.name
+                                };
+                                singleVideoEntity.VideoTopic.Add(videoTopicEntity);
+                            }
                     }
 
                     await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);
