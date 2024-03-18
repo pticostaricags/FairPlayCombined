@@ -2,7 +2,6 @@
    "CodeGenerationMode": 4,
    "ContextClassName": "FairPlayCombinedDbContext",
    "ContextNamespace": null,
-   "DefaultDacpacSchema": null,
    "FilterSchemas": false,
    "IncludeConnectionString": false,
    "ModelNamespace": null,
@@ -73,6 +72,10 @@
       },
       {
          "Name": "[dbo].[StateOrProvince]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ThemeConfiguration]",
          "ObjectType": 0
       },
       {
@@ -269,6 +272,7 @@
    "UseNoObjectFilter": false,
    "UseNodaTime": false,
    "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
    "UseSchemaFolders": true,
    "UseSchemaNamespaces": true,
    "UseSpatial": true,

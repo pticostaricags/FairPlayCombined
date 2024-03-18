@@ -3,6 +3,8 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 
 namespace FairPlayTube.VideoIndexing;
@@ -71,6 +73,10 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                         singleVideoEntity.VideoDurationInSeconds =
                             videosIndex!.results!.Where(p => p.id == singleVideoEntity.VideoId)
                             .Single().durationInSeconds;
+                        var completedVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
+                            singleVideoEntity.VideoId, getviTokenResult.AccessToken!,
+                            stoppingToken);
+                        singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
                     }
 
                     await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);

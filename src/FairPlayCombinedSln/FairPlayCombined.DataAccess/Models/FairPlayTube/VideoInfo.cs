@@ -95,6 +95,9 @@ public partial class VideoInfo
     [StringLength(11)]
     public string YouTubeVideoId { get; set; }
 
+    [Column("VideoIndexJSON")]
+    public string VideoIndexJson { get; set; }
+
     [ForeignKey("ApplicationUserId")]
     [InverseProperty("VideoInfo")]
     public virtual AspNetUsers ApplicationUser { get; set; }
