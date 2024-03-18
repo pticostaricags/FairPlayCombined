@@ -56,4 +56,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="VideoInfographicId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="da98df43-7d8e-42b9-b0af-d7e8770fbb51" ChangeDateTime="03/17/2024 14:31:20">
+    <Property Name="ElementName" Value="[dbo].[ThemeConfiguration].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ThemeConfiguration]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ThemeConfigurationId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1c45e543-a137-45f9-80cb-b2a1f78c96bb" ChangeDateTime="03/17/2024 14:31:53">
+    <Property Name="ElementName" Value="[dbo].[ThemeConfiguration].[Ke]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ThemeConfiguration]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Key" />
+  </Operation>
 </Operations>
