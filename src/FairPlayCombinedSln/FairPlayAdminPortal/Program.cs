@@ -76,6 +76,7 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<ApplicationUserVouchService>();
 builder.Services.AddTransient<ResourceService>();
+builder.Services.AddTransient<ConfigurationSecretService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

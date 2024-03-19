@@ -38,6 +38,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<City> City { get; set; }
 
+    public virtual DbSet<ConfigurationSecret> ConfigurationSecret { get; set; }
+
     public virtual DbSet<Country> Country { get; set; }
 
     public virtual DbSet<Culture> Culture { get; set; }

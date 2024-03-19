@@ -2,6 +2,22 @@
 {
     public static class Constants
     {
+        public static class ConfigurationSecretsKeys
+        {
+            public const string OPENAI_KEY = "OpenAIKey";
+            public const string GENERATE_DALL3_IMAGE_URL_KEY = "GenerateDall3ImageUrl";
+            public const string OPENAI_CHAT_COMPLETION_URL_KEY = "OpenAIChatCompletionsUrl";
+            public const string GOOGLE_AUTH_CLIENT_ID_KEY = "GoogleAuthClientId";
+            public const string AZURE_OPENAI_ENDPOINT_KEY = "AzureOpenAIEndpoint";
+            public const string AZURE_OPENAI_KEY_KEY = "AzureOpenAIKey";
+            public const string AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY = "AzureVideoIndexerAccountId";
+            public const string AZURE_VIDEOINDEXER_LOCATION_KEY = "AzureVideoIndexerLocation";
+            public const string AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY = "AzureVideoIndexerResourceGroup";
+            public const string AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY = "AzureVideoIndexerResourceName";
+            public const string AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY = "AzureVideoIndexerSubscriptionId";
+            public const string AZURE_CONTENT_MODERATOR_ENDPOINT_KEY = "AzureContentModeratorEndpoint";
+            public const string AZURE_CONTENT_MODERATOR_KEY_KEY = "AzureContentModeratorKey";
+        }
         public static class GeoCoordinates
         {
             /// <summary>

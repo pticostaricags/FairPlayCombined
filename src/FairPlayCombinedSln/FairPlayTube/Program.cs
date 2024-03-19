@@ -16,6 +16,8 @@ using FairPlayCombined.Services.FairPlayTube;
 using Microsoft.AspNetCore.Mvc;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.YouTube.v3;
+using FairPlayCombined.Common;
+using FairPlayCombined.DataAccess.Models.dboSchema;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,25 +70,6 @@ builder.Services.AddAuthorizationBuilder()
         policy.RequireAuthenticatedUser().AddAuthenticationSchemes(IdentityConstants.BearerScheme);
     });
 
-var azureVideoIndexerAccountId = Environment.GetEnvironmentVariable("AzureVideoIndexerAccountId") ??
-    throw new InvalidOperationException("'AzureVideoIndexerAccountId' not found");
-var azureVideoIndexerLocation = Environment.GetEnvironmentVariable("AzureVideoIndexerLocation") ??
-    throw new InvalidOperationException("'AzureVideoIndexerLocation' not found");
-var azureVideoIndexerResourceGroup = Environment.GetEnvironmentVariable("AzureVideoIndexerResourceGroup") ??
-    throw new InvalidOperationException("'AzureVideoIndexerResourceGroup' not found");
-var azureVideoIndexerResourceName = Environment.GetEnvironmentVariable("AzureVideoIndexerResourceName") ??
-    throw new InvalidOperationException("'AzureVideoIndexerResourceName' not found");
-var azureVideoIndexerSubscriptionId = Environment.GetEnvironmentVariable("AzureVideoIndexerSubscriptionId") ??
-    throw new InvalidOperationException("'AzureVideoIndexerSubscriptionId' not found");
-AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = new()
-{
-    AccountId = azureVideoIndexerAccountId,
-    IsArmAccount = true,
-    Location = azureVideoIndexerLocation,
-    ResourceGroup = azureVideoIndexerResourceGroup,
-    ResourceName = azureVideoIndexerResourceName,
-    SubscriptionId = azureVideoIndexerSubscriptionId,
-};
 var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 Extensions.EnhanceConnectionString(nameof(FairPlayTube), ref connectionString);
@@ -120,31 +103,34 @@ builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
 builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 
-var openAIKey = builder.Configuration["OpenAIKey"] ??
-    throw new InvalidOperationException("'OpenAIKey' not found");
-
-var generateDall3ImageUrl = builder.Configuration["GenerateDall3ImageUrl"] ??
-    throw new InvalidOperationException("'GenerateDall3ImageUrl' not found");
-
-var openAIChatCompletionsUrl = builder.Configuration["OpenAIChatCompletionsUrl"] ??
-    throw new InvalidOperationException("'OpenAIChatCompletionsUrl' not found");
-
 builder.Services.AddTransient<OpenAIService>(sp => 
 {
+    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
+    sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
+    var dbContext = dbContextFactory.CreateDbContext();
+    var openAIKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.OPENAI_KEY);
+    if (openAIKeyEntity is null)
+        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_KEY} in database");
+    var generateDall3ImageUrlEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY);
+    if (generateDall3ImageUrlEntity is null)
+        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY} in database");
+
+    var openAIChatCompletionEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY);
+    if (openAIChatCompletionEntity is null)
+        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY} in database");
+    
     int timeoutMinutes = 3;
     HttpClient openAIAuthorizedHttpClient = new HttpClient();
     openAIAuthorizedHttpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
     openAIAuthorizedHttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
-        "Bearer", openAIKey);
+        "Bearer", openAIKeyEntity.Value);
     HttpClient genericHttpClient = new HttpClient();
     genericHttpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
-    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
-    sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
     return new OpenAIService(openAIAuthorizedHttpClient,
         genericHttpClient: genericHttpClient, new OpenAIServiceConfiguration()
     {
-        GenerateDall3ImageUrl = generateDall3ImageUrl,
-        ChatCompletionsUrl = openAIChatCompletionsUrl
+        GenerateDall3ImageUrl = generateDall3ImageUrlEntity.Value,
+        ChatCompletionsUrl = openAIChatCompletionEntity.Value
     },
     dbContextFactory:dbContextFactory);
 });
@@ -153,13 +139,44 @@ builder.Services.AddSignalR(hubOptions =>
 {
     hubOptions.MaximumReceiveMessageSize = 20 * 1024 * 1024;
 });
-builder.Services.AddSingleton(azureVideoIndexerServiceConfiguration);
+
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient(sp =>
 {
+    var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+    var azureVideoIndexerAccountIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY);
+    if (azureVideoIndexerAccountIdEntity is null)
+        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY} in database");
+    var azureVideoIndexerLocationEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY);
+    if (azureVideoIndexerLocationEntity is null)
+        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY} in database");
+    var azureVideoIndexerResourceGroupEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY);
+    if (azureVideoIndexerResourceGroupEntity is null)
+        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY} in database");
+    var azureVideoIndexerResourceNameEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY);
+    if (azureVideoIndexerResourceNameEntity is null)
+        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY} in database");
+    var azureVideoIndexerSubscriptionIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY);
+    if (azureVideoIndexerSubscriptionIdEntity is null)
+        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY} in database");
+
+    AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = new()
+    {
+        AccountId = azureVideoIndexerAccountIdEntity.Value,
+        IsArmAccount = true,
+        Location = azureVideoIndexerLocationEntity.Value,
+        ResourceGroup = azureVideoIndexerResourceGroupEntity.Value,
+        ResourceName = azureVideoIndexerResourceNameEntity.Value,
+        SubscriptionId = azureVideoIndexerSubscriptionIdEntity.Value
+    };
     return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
         new HttpClient());
 });

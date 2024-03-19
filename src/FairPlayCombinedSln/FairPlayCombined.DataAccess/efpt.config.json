@@ -47,6 +47,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[ConfigurationSecret]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Country]",
          "ObjectType": 0
       },
