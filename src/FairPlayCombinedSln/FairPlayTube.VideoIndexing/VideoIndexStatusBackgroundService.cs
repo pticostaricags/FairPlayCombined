@@ -80,13 +80,25 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                         if (completedVideoIndex?.summarizedInsights?.topics?.Length > 0)
                             foreach (var singleTopic in completedVideoIndex.summarizedInsights.topics)
                             {
-                                VideoTopic videoTopicEntity = new VideoTopic()
+                                VideoTopic videoTopicEntity = new()
                                 {
                                     Confidence = singleTopic.confidence,
                                     Topic = singleTopic.name
                                 };
                                 singleVideoEntity.VideoTopic.Add(videoTopicEntity);
                             }
+                        if (completedVideoIndex?.summarizedInsights?.keywords?.Length > 0)
+                        {
+                            foreach (var singleKeyword in completedVideoIndex.summarizedInsights.keywords
+                                .DistinctBy(p=>p.name))
+                            {
+                                VideoKeyword videoKeywordEntity = new()
+                                {
+                                    Keyword = singleKeyword.name
+                                };
+                                singleVideoEntity.VideoKeyword.Add(videoKeywordEntity);
+                            }
+                        }
                     }
 
                     await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);

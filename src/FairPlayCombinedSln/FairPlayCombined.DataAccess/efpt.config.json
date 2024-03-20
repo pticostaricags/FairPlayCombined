@@ -250,6 +250,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoKeyword]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoTopic]",
          "ObjectType": 0
       },
