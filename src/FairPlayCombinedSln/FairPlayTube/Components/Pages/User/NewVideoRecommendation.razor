@@ -1,0 +1,99 @@
+﻿@page "/User/NewVideoRecommendation/{VideoInfoId:long}"
+@using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.Common
+@using FairPlayCombined.Services.FairPlayTube
+@using FairPlayTube.Components.Spinners
+@using Microsoft.AspNetCore.Components.QuickGrid
+@rendermode NoPreRenderServerMode
+@inject IJSRuntime jsRuntime
+@inject VideoInfoService videoInfoService
+@inject IUserProviderService userProviderService
+@inject OpenAIService openAIService
+@inject VideoCaptionsService videoCaptionsService
+@inject VideoDigitalMarketingPlanService videoDigitalMarketingPlanService
+@inject VideoInfoService videoInfoService
+
+<PageTitle>
+    New Video Recommendation
+</PageTitle>
+
+<h3>
+    New Video Recommendation
+</h3>
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
+            @onclick="OnRecreatePlanButtonclickedAsync">
+        Re-Create Plan
+    </button>
+</div>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.NewVideoRecommendationIdea))
+    {
+        <p>
+            @((MarkupString)this.NewVideoRecommendationIdea)
+        </p>
+    }
+</div>
+
+@code
+{
+    [Parameter]
+    public long? VideoInfoId { get; set; }
+    private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
+    private bool IsBusy { get; set; }
+    private CancellationTokenSource cancellationTokenSource = new();
+    private string? NewVideoRecommendationIdea { get; set; }
+    private string? RevisedPrompt { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.IsBusy = true;
+        StateHasChanged();
+        await this.GenerateNewVideoRecommendationIdeaAsync();
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+
+    private async Task OnRecreatePlanButtonclickedAsync()
+    {
+        this.IsBusy = true;
+        StateHasChanged();
+        await this.GenerateNewVideoRecommendationIdeaAsync();
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+
+    private async Task GenerateNewVideoRecommendationIdeaAsync()
+    {
+        var systemMessage = "You will take the role of an expert in Digital Marketing and YouTube SEO. I will give you the titles for some of my videos. Your job is to give me the title, description, and script for a new video. Your response must be in HTML 5";
+        var videos = await this.videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(new PaginationRequest()
+            {
+                PageSize = 5,
+                SortingItems = new[]
+                        {
+                    new SortingItem()
+                    {
+                        PropertyName=nameof(VideoInfoModel.VideoInfoId),
+                        SortType = FairPlayCombined.Common.GeneratorsAttributes.SortType.Descending
+                    }
+                },
+                StartIndex = 0
+            }, 
+            this.userProviderService.GetCurrentUserId()!,
+            this.cancellationTokenSource.Token);
+
+        var titles = videos!.Items!.Select(p => $"* {p.Name}\r\n");
+        var userMessage = $"Video Titles: {String.Join(".",titles)}.";
+        var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
+        if (result != null)
+        {
+            this.NewVideoRecommendationIdea = result!.choices![0]!.message!.content!;
+        }
+    }
+}
