@@ -1,4 +1,4 @@
-﻿@page "/User/NewVideoRecommendation/{VideoInfoId:long}"
+﻿@page "/User/NewVideoRecommendation"
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
@@ -43,8 +43,6 @@
 
 @code
 {
-    [Parameter]
-    public long? VideoInfoId { get; set; }
     private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
     private CancellationTokenSource cancellationTokenSource = new();
@@ -71,7 +69,7 @@
 
     private async Task GenerateNewVideoRecommendationIdeaAsync()
     {
-        var systemMessage = "You will take the role of an expert in Digital Marketing and YouTube SEO. I will give you the titles for some of my videos. Your job is to give me the title, description, and script for a new video. Your response must be in HTML 5";
+        var systemMessage = "You will take the role of an expert in Digital Marketing and YouTube SEO. I will give you the titles for 5 of my videos. Your job is to give me the title, description, and script for a new video mixing the content and ideas of my previous videos. The new video must have content from all of my previous videos. Your response must be in HTML 5";
         var videos = await this.videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(new PaginationRequest()
             {
                 PageSize = 5,
@@ -88,7 +86,7 @@
             this.userProviderService.GetCurrentUserId()!,
             this.cancellationTokenSource.Token);
 
-        var titles = videos!.Items!.Select(p => $"* {p.Name}\r\n");
+        var titles = videos!.Items!.Select(p => $"* Title: {p.Name}\r\n");
         var userMessage = $"Video Titles: {String.Join(".",titles)}.";
         var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
         if (result != null)

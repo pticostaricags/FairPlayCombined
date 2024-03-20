@@ -144,7 +144,7 @@ builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>()
 builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
-builder.Services.AddTransient(sp =>
+builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp => 
 {
     var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
     var azureVideoIndexerAccountIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
@@ -177,6 +177,11 @@ builder.Services.AddTransient(sp =>
         ResourceName = azureVideoIndexerResourceNameEntity.Value,
         SubscriptionId = azureVideoIndexerSubscriptionIdEntity.Value
     };
+    return azureVideoIndexerServiceConfiguration;
+});
+builder.Services.AddTransient(sp =>
+{
+    var azureVideoIndexerServiceConfiguration = sp.GetRequiredService<AzureVideoIndexerServiceConfiguration>();
     return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
         new HttpClient());
 });

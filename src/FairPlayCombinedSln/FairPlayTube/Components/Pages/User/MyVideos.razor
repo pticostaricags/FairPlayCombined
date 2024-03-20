@@ -50,10 +50,6 @@
                     @onclick="@( ()=> OnCreateLinkedInArticleClicked(context))">
                 <i class="bi bi-file-richtext-fill"></i>
             </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
-                    @onclick="@( ()=> OnCreateNewVideoRecommendationClicked(context))">
-                <i class="bi bi-newspaper"></i>
-            </button>
             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
             {
                 <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
@@ -216,10 +212,5 @@
     private void OnCreateLinkedInArticleClicked(VideoInfoModel videoInfoModel)
     {
         this.navigationManager.NavigateTo($"/User/VideoLinkedInArticle/{videoInfoModel.VideoInfoId}");
-    }
-
-    private void OnCreateNewVideoRecommendationClicked(VideoInfoModel videoInfoModel)
-    {
-        this.navigationManager.NavigateTo($"/User/NewVideoRecommendation/{videoInfoModel.VideoInfoId}");
     }
 }
