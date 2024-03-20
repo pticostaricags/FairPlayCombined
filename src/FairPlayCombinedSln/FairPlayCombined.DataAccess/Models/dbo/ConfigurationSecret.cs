@@ -15,6 +15,7 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
+[Index("Name", Name = "UI_ConfigurationSecret_Name", IsUnique = true)]
 public partial class ConfigurationSecret
 {
     [Key]

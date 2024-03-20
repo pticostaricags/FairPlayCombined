@@ -4,3 +4,7 @@
     [Name] NVARCHAR(100) NOT NULL, 
     [Value] NVARCHAR(100) NOT NULL
 )
+
+GO
+
+CREATE UNIQUE INDEX [UI_ConfigurationSecret_Name] ON [dbo].[ConfigurationSecret] ([Name])
