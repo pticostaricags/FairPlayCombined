@@ -77,11 +77,6 @@ bool addLocalizationGenerator = Convert.ToBoolean(builder.Configuration["AddLoca
 if (addLocalizationGenerator)
 {
     builder.AddProject<Projects.FairPlayCombined_LocalizationGenerator>("fairplaycombinedlocalizationgenerator")
-        .WithEnvironment(callback =>
-        {
-            callback.EnvironmentVariables.Add("AzureOpenAIEndpoint", builder.Configuration["AzureOpenAIEndpoint"]!);
-            callback.EnvironmentVariables.Add("AzureOpenAIKey", builder.Configuration["AzureOpenAIKey"]!);
-        })
         .WithReference(sqlResourceWithConnectionString);
 }
 bool addFairPlayBudget = Convert.ToBoolean(builder.Configuration["AddFairPlayBudget"]);
