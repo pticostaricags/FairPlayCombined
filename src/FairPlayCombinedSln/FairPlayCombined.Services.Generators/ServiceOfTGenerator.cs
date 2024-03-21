@@ -102,9 +102,11 @@ namespace FairPlayCombined.Services.Generators
                                         using {{dbEntityArgument.ContainingNamespace}};
                                         using {{paginationResultArgument.ContainingNamespace}};
                                         using System.Linq.Dynamic.Core;
+                                        using Microsoft.Extensions.Logging;
                                         namespace {{symbolNamespace}};
                                         public partial class {{symbol.Name}}(
-                                        IDbContextFactory<{{dbContextArgument.Name}}> dbContextFactory
+                                        IDbContextFactory<{{dbContextArgument.Name}}> dbContextFactory,
+                                        ILogger<{{symbol.Name}}> logger
                                         )
                                         {
                                             public async Task<{{primaryKeyProperty!.Type.ToDisplayString()}}> Create{{entityName}}Async(
@@ -112,6 +114,7 @@ namespace FairPlayCombined.Services.Generators
                                             CancellationToken cancellationToken
                                             )
                                             {
+                                                logger.LogInformation(message: "Start of method: {methodName}", nameof(Create{{entityName}}Async));
                                                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
                                                 {{entityName}} entity = new()
                                                 {
@@ -125,6 +128,7 @@ namespace FairPlayCombined.Services.Generators
                                             public async Task<{{listActivityModel.Name}}[]> GetAll{{entityName}}Async(
                                             CancellationToken cancellationToken)
                                             {
+                                                logger.LogInformation(message: "Start of method: {methodName}", nameof(GetAll{{entityName}}Async));
                                                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
                                                 var result = await dbContext.{{entityName}}
                                                 .AsNoTracking()
@@ -166,6 +170,7 @@ namespace FairPlayCombined.Services.Generators
                                             CancellationToken cancellationToken
                                             )
                                             {
+                                                logger.LogInformation(message: "Start of method: {methodName}", nameof(GetPaginated{{entityName}}Async));
                                                 {{paginationResultArgument.Name}}<{{listActivityModel.Name}}> result=new();
                                                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
                                                 string orderByString = string.Empty;

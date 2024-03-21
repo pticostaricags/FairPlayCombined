@@ -7,6 +7,7 @@ using FairPlayCombined.Models.Pagination;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
@@ -27,8 +28,9 @@ namespace FairPlayCombined.Services.FairPlaySocial
 
         public PostService(
             IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-            IHubContext<PostNotificationHub, IPostNotificationHub> hubContext):
-            this(dbContextFactory)
+            IHubContext<PostNotificationHub, IPostNotificationHub> hubContext,
+            ILogger<PostService> logger):
+            this(dbContextFactory, logger)
         {
             this.hubContext = hubContext;
         }

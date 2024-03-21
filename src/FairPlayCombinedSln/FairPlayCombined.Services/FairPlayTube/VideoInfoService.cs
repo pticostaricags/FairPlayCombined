@@ -7,6 +7,7 @@ using FairPlayCombined.Services.Common;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.YouTube.v3;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
 using System.Text;
 
@@ -28,6 +29,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             string userId,
             CancellationToken cancellationToken)
         {
+            logger.LogInformation(message: "Start of method: {methodName}", nameof(GetPaginatedCompletedVideoInfobyUserIdAsync));
             PaginationOfT<VideoInfoModel> result = new();
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             string orderByString = string.Empty;
