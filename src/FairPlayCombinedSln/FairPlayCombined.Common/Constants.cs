@@ -2,6 +2,16 @@
 {
     public static class Constants
     {
+        public static class Routes
+        {
+            public static class FairPlayTubeRoutes
+            {
+                public static class CreatorRoutes
+                {
+                    public const string MyVideos = $"/Creator/{nameof(MyVideos)}";
+                }
+            }
+        }
         public static class ConfigurationSecretsKeys
         {
             public const string OPENAI_KEY = "OpenAIKey";
