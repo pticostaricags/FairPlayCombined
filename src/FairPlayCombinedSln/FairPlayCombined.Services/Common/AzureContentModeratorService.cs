@@ -51,6 +51,9 @@ namespace FairPlayCombined.Services.Common
     {
         public bool IsAdult { get; set; }
         public bool IsRacy { get; set; }
+        public bool IsHate { get; set; }
+        public bool IsViolence { get; set; }
+        public bool IsSelfHarm { get; set; }
     }
 
     public class TextModerationResultModel
