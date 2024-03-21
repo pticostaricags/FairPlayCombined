@@ -13,7 +13,6 @@
 @inject IUserProviderService userProviderService
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
-@inject VideoDigitalMarketingPlanService videoDigitalMarketingPlanService
 @inject VideoInfoService videoInfoService
 
 <PageTitle>
@@ -28,8 +27,8 @@
 
 <div class="@ThemeConfiguration.Divisions.DefaultCss">
     <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
-            @onclick="OnRecreatePlanButtonclickedAsync">
-        Re-Create Plan
+            @onclick="OnRecreateNewVideoRecommendationButtonclickedAsync">
+        Re-Create Recommendation
     </button>
 </div>
 <div class="@ThemeConfiguration.Divisions.DefaultCss">
@@ -58,7 +57,7 @@
         StateHasChanged();
     }
 
-    private async Task OnRecreatePlanButtonclickedAsync()
+    private async Task OnRecreateNewVideoRecommendationButtonclickedAsync()
     {
         this.IsBusy = true;
         StateHasChanged();
