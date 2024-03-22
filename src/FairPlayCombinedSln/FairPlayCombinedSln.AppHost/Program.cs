@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
-
+builder.Configuration.AddUserSecrets<Program>();
 var googleAuthClientId = builder.Configuration["GoogleAuthClientId"] ??
     throw new InvalidOperationException("'GoogleAuthClientId' not found");
 var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??

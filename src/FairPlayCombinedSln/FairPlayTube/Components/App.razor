@@ -1,4 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@inject IHostEnvironment env
+@{
+    string payPalClientId = String.Empty;
+    if (env.IsDevelopment())
+    {
+        payPalClientId = "AV80aowDMjplEbbaRPX6zc9NePEml_Oe6v0_-4K99Pzso1ydRjMXh3UPC-AdFHT0yASJDsKdIh4VE4aV";
+    }
+    else
+    {
+        payPalClientId = "AagbHWZsjKZSJg2bmK09FhnzbnwqAPnIOfAmzsupz9Izc4XOGsJMQJBtDhJ32s3ocCiJLCYlY6uDlklB";
+    }
+    string payPalScriptSrc = $"https://www.paypal.com/sdk/js?client-id={payPalClientId}&enable-funding=venmo&currency=USD";
+}
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -17,6 +30,10 @@
 
     <script src="scripts/azure-media-player.js"></script>
 
+    <!--Paypal-->
+    <script src="@payPalScriptSrc" data-sdk-integration-source="button-factory"></script>
+    <script src="scripts/paypal/paypal.js"></script>
+    <!--Paypal-->
     <HeadOutlet />
 </head>
 
