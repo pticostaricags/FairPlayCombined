@@ -22,7 +22,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestCleanup]
         public async Task TestCleanupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -46,7 +46,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_CreateApplicationUserVouchAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<ApplicationUserVouchService>();
             var sp = services.BuildServiceProvider();
@@ -54,7 +54,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             (AspNetUsers fromUser, AspNetUsers toUser) = await CreateTestRecordsAsync(dbContext);
             var ApplicationUserVouchService = sp.GetRequiredService<ApplicationUserVouchService>();
-            CreateApplicationUserVouchModel createApplicationUserVouchModel = new CreateApplicationUserVouchModel()
+            CreateApplicationUserVouchModel createApplicationUserVouchModel = new()
             {
                 Description = "AT DESC",
                 FromApplicationUserId = fromUser.Id,
@@ -85,7 +85,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             string fromUserName = "fromuser@test.test";
             string toUserName = "toUser@test.test";
-            AspNetUsers fromUser = new AspNetUsers()
+            AspNetUsers fromUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = fromUserName,
@@ -93,7 +93,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 Email = fromUserName,
                 NormalizedEmail = fromUserName.Normalize()
             };
-            AspNetUsers toUser = new AspNetUsers()
+            AspNetUsers toUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = toUserName,
@@ -110,7 +110,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_DeleteApplicationUserVouchAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<ApplicationUserVouchService>();
             var sp = services.BuildServiceProvider();
@@ -118,7 +118,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             (AspNetUsers fromUser, AspNetUsers toUser) = await CreateTestRecordsAsync(dbContext);
             var ApplicationUserVouchService = sp.GetRequiredService<ApplicationUserVouchService>();
-            ApplicationUserVouch entity = new ApplicationUserVouch()
+            ApplicationUserVouch entity = new()
             {
                 Description = "AT DESC",
                 FromApplicationUserId = fromUser.Id,
@@ -135,7 +135,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetPaginatedApplicationUserVouchAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<ApplicationUserVouchService>();
             var sp = services.BuildServiceProvider();
@@ -143,7 +143,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             (AspNetUsers fromUser, AspNetUsers toUser) = await CreateTestRecordsAsync(dbContext);
             var ApplicationUserVouchService = sp.GetRequiredService<ApplicationUserVouchService>();
-            ApplicationUserVouch entity = new ApplicationUserVouch()
+            ApplicationUserVouch entity = new()
             {
                 Description = "AT DESC",
                 FromApplicationUserId = fromUser.Id,
@@ -157,14 +157,14 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     PageSize = 10,
                     StartIndex = 0,
-                    SortingItems = new SortingItem[]
-                    {
+                    SortingItems =
+                    [
                         new SortingItem()
                         {
                             PropertyName = nameof(ApplicationUserVouchModel.Description),
                             SortType = Common.GeneratorsAttributes.SortType.Descending
                         }
-                    }
+                    ]
                 }, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Items![0].ApplicationUserVouchId, entity.ApplicationUserVouchId);
@@ -173,7 +173,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetApplicationUserVouchByIdAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<ApplicationUserVouchService>();
             var sp = services.BuildServiceProvider();
@@ -181,7 +181,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             (AspNetUsers fromUser, AspNetUsers toUser) = await CreateTestRecordsAsync(dbContext);
             var ApplicationUserVouchService = sp.GetRequiredService<ApplicationUserVouchService>();
-            ApplicationUserVouch entity = new ApplicationUserVouch()
+            ApplicationUserVouch entity = new()
             {
                 Description = "AT DESC",
                 FromApplicationUserId = fromUser.Id,

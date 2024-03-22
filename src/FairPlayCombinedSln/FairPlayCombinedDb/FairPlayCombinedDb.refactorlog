@@ -49,4 +49,53 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="HtmlVideoDigitalMarketingDailyPostsIdeas" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="0e65b996-1050-480e-8d68-763a6374cc92" ChangeDateTime="12/16/2023 14:16:49">
+    <Property Name="ElementName" Value="[dbo].[Video].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Video]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoInfographicId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="da98df43-7d8e-42b9-b0af-d7e8770fbb51" ChangeDateTime="03/17/2024 14:31:20">
+    <Property Name="ElementName" Value="[dbo].[ThemeConfiguration].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ThemeConfiguration]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ThemeConfigurationId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1c45e543-a137-45f9-80cb-b2a1f78c96bb" ChangeDateTime="03/17/2024 14:31:53">
+    <Property Name="ElementName" Value="[dbo].[ThemeConfiguration].[Ke]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ThemeConfiguration]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Key" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="116fbed0-54ce-43fe-8df8-53b301872f30" ChangeDateTime="03/18/2024 14:00:52">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoInfo].[VideoIndexJson]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoInfo]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoIndexJSON" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="20b9e388-2f61-4901-bc83-9daa7945985f" ChangeDateTime="03/18/2024 22:47:56">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoTopic].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoTopic]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoTopicId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="71b63f1d-6afc-4070-8cc3-e0c22c09172e" ChangeDateTime="03/19/2024 13:42:48">
+    <Property Name="ElementName" Value="[dbo].[ConfigurationSecret].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ConfigurationSecret]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ConfigurationSecretId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8e546a97-9ee6-4609-a09c-ae243e8a8f4c" ChangeDateTime="03/20/2024 11:25:35">
+    <Property Name="ElementName" Value="[dbo].[VideoKeyword].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[VideoKeyword]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoKeywordId" />
+  </Operation>
 </Operations>

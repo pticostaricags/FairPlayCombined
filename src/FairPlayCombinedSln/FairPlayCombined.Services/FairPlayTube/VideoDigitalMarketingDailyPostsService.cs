@@ -23,7 +23,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .SingleOrDefaultAsync(cancellationToken: cancellationToken);
             return result;
         }
-        public async Task SaveGetVideoDigitalMarketingDailyPostsAsync(long videoInfoId,
+        public async Task SaveVideoDigitalMarketingDailyPostsAsync(long videoInfoId,
             string htmlVideoDigitalMarketingDailyPostsIdeas,
             string socialNetworkName,
             CancellationToken cancellationToken)

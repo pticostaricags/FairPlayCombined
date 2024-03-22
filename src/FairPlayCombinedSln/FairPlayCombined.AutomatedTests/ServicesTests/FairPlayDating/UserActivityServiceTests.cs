@@ -21,7 +21,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestCleanup]
         public async Task TestCleanupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -53,21 +53,21 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_CreateUserActivityAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserActivityService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            (AspNetUsers fromUser, AspNetUsers toUser, Activity activity) = await CreateTestRecordsAsync(dbContext);
+            (AspNetUsers fromUser, _, Activity activity) = await CreateTestRecordsAsync(dbContext);
             var UserActivityService = sp.GetRequiredService<UserActivityService>();
-            Frequency frequency = new Frequency()
+            Frequency frequency = new()
             {
                 Name = "TEST FREQUENCY",
             };
             await dbContext.Frequency.AddAsync(frequency);
             await dbContext.SaveChangesAsync();
-            CreateUserActivityModel createUserActivityModel = new CreateUserActivityModel()
+            CreateUserActivityModel createUserActivityModel = new()
             {
                 FrequencyId = frequency.FrequencyId,
                 ApplicationUserId = fromUser.Id,
@@ -99,7 +99,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             string fromUserName = "fromuser@test.test";
             string toUserName = "toUser@test.test";
-            AspNetUsers fromUser = new AspNetUsers()
+            AspNetUsers fromUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = fromUserName,
@@ -107,7 +107,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 Email = fromUserName,
                 NormalizedEmail = fromUserName.Normalize()
             };
-            AspNetUsers toUser = new AspNetUsers()
+            AspNetUsers toUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = toUserName,
@@ -117,7 +117,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             };
             await dbContext.AspNetUsers.AddRangeAsync(fromUser);
             await dbContext.AspNetUsers.AddRangeAsync(toUser);
-            Activity activity = new Activity()
+            Activity activity = new()
             {
                 Name = "TEST ACTIVITY"
             };
@@ -129,21 +129,21 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_DeleteUserActivityAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserActivityService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            (AspNetUsers fromUser, AspNetUsers toUser, Activity activity) = await CreateTestRecordsAsync(dbContext);
+            (AspNetUsers fromUser, _, Activity activity) = await CreateTestRecordsAsync(dbContext);
             var UserActivityService = sp.GetRequiredService<UserActivityService>();
-            Frequency frequency = new Frequency()
+            Frequency frequency = new()
             {
                 Name = "TEST FREQUENCY",
             };
             await dbContext.Frequency.AddAsync(frequency);
             await dbContext.SaveChangesAsync();
-            UserActivity entity = new UserActivity()
+            UserActivity entity = new()
             {
                 ApplicationUserId = fromUser.Id,
                 FrequencyId = frequency.FrequencyId,
@@ -160,21 +160,21 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetPaginatedUserActivityAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserActivityService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            (AspNetUsers fromUser, AspNetUsers toUser, Activity activity) = await CreateTestRecordsAsync(dbContext);
+            (AspNetUsers fromUser, _, Activity activity) = await CreateTestRecordsAsync(dbContext);
             var UserActivityService = sp.GetRequiredService<UserActivityService>();
-            Frequency frequency = new Frequency()
+            Frequency frequency = new()
             {
                 Name = "TEST FREQUENCY",
             };
             await dbContext.Frequency.AddAsync(frequency);
             await dbContext.SaveChangesAsync();
-            UserActivity entity = new UserActivity()
+            UserActivity entity = new()
             {
                 ApplicationUserId = fromUser.Id,
                 FrequencyId = frequency.FrequencyId,
@@ -190,7 +190,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                     StartIndex = 0,
                     SortingItems = new SortingItem[]
                     {
-                        new SortingItem()
+                        new()
                         {
                             PropertyName = nameof(UserActivityModel.UserActivityId),
                             SortType = Common.GeneratorsAttributes.SortType.Descending
@@ -204,21 +204,21 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetUserActivityByIdAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserActivityService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            (AspNetUsers fromUser, AspNetUsers toUser, Activity activity) = await CreateTestRecordsAsync(dbContext);
+            (AspNetUsers fromUser, _, Activity activity) = await CreateTestRecordsAsync(dbContext);
             var UserActivityService = sp.GetRequiredService<UserActivityService>();
-            Frequency frequency = new Frequency()
+            Frequency frequency = new()
             {
                 Name = "TEST FREQUENCY",
             };
             await dbContext.Frequency.AddAsync(frequency);
             await dbContext.SaveChangesAsync();
-            UserActivity entity = new UserActivity()
+            UserActivity entity = new()
             {
                 ApplicationUserId = fromUser.Id,
                 FrequencyId = frequency.FrequencyId,

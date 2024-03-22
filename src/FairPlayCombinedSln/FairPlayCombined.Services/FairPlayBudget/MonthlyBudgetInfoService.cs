@@ -192,7 +192,7 @@ namespace FairPlayCombined.Services.FairPlayBudget
             return result;
         }
 
-        public async Task<CreateMonthlyBudgetInfoModel> ImportFromTransactionsFileStreamAsync(Stream stream, CancellationToken cancellationToken)
+        public static async Task<CreateMonthlyBudgetInfoModel> ImportFromTransactionsFileStreamAsync(Stream stream, CancellationToken cancellationToken)
         {
             try
             {

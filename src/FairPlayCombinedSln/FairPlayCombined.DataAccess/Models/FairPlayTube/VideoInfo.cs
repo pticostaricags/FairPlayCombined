@@ -95,6 +95,9 @@ public partial class VideoInfo
     [StringLength(11)]
     public string YouTubeVideoId { get; set; }
 
+    [Column("VideoIndexJSON")]
+    public string VideoIndexJson { get; set; }
+
     [ForeignKey("ApplicationUserId")]
     [InverseProperty("VideoInfo")]
     public virtual AspNetUsers ApplicationUser { get; set; }
@@ -116,7 +119,16 @@ public partial class VideoInfo
     public virtual ICollection<VideoIndexingTransaction> VideoIndexingTransaction { get; set; } = new List<VideoIndexingTransaction>();
 
     [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoInfographic> VideoInfographic { get; set; } = new List<VideoInfographic>();
+
+    [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoJob> VideoJob { get; set; } = new List<VideoJob>();
+
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoKeyword> VideoKeyword { get; set; } = new List<VideoKeyword>();
+
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoTopic> VideoTopic { get; set; } = new List<VideoTopic>();
 
     [ForeignKey("VideoVisibilityId")]
     [InverseProperty("VideoInfo")]

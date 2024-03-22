@@ -1,0 +1,88 @@
+﻿@page "/ResourceManage"
+@using FairPlayAdminPortal.Components.Spinners
+@using FairPlayCombined.Models.Common.Resource
+@using FairPlayCombined.Services.Common
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+@inject ResourceService resourceService
+@inject IToastService toastService
+@rendermode RenderMode.InteractiveServer
+@attribute [StreamRendering(enabled:true)]
+
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+<h3>ResourceManage</h3>
+
+@if (this.resources?.Count() > 0)
+{
+    <EditForm FormName="frmResources" Model="this.resources" OnValidSubmit="OnValidSubmitAsync" Context="formContext">
+        <div class="mb-3">
+            <ObjectGraphDataAnnotationsValidator></ObjectGraphDataAnnotationsValidator>
+            <ValidationSummary></ValidationSummary>
+        </div>
+        <div class="mb-3">
+            <QuickGrid Items="this.resourcesQueryable">
+                <PropertyColumn Property="@( p=> p.CultureName)" Title="@nameof(ResourceModel.CultureName)"></PropertyColumn>
+                <PropertyColumn Property="@( p=> p.Type)" Title="@nameof(ResourceModel.Type)"></PropertyColumn>
+                <PropertyColumn Property="@( p=> p.Key)" Title="@nameof(ResourceModel.Key)"></PropertyColumn>
+                <TemplateColumn Title="@nameof(ResourceModel.Value)">
+                    <InputText class="form-control" @bind-Value="@context.Value"></InputText>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </EditForm>
+}
+
+@code
+{
+    [SupplyParameterFromForm]
+    private ResourceModel[]? resources { get; set; }
+    private IQueryable<ResourceModel> resourcesQueryable => resources!.AsQueryable();
+    private CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        this.IsBusy = true;
+        await InvokeAsync(() => StateHasChanged());
+        await LoadDataAsync();
+        this.IsBusy = false;
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            this.resources = (await this.resourceService
+                .GetAllResourceSortedAsync(cancellationToken: this.cancellationTokenSource.Token));
+        }
+        catch (Exception ex)
+        {
+            this.toastService!.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            await InvokeAsync(() => StateHasChanged());
+            await this.resourceService.UpdateResourcesAsync(this.resources!, this.cancellationTokenSource.Token);
+            await LoadDataAsync();
+            await InvokeAsync(() => StateHasChanged());
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            await InvokeAsync(() => StateHasChanged());
+        }
+    }
+}

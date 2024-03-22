@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+#pragma warning disable IDE1006 // Naming Styles
 namespace FairPlayCombined.Models.AzureVideoIndexer
 {
     public class SearchVideosResponseModel
@@ -54,3 +54,4 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public int views { get; set; }
     }
 }
+#pragma warning restore IDE1006 // Naming Styles

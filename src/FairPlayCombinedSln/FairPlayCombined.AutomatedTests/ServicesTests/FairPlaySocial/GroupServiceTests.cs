@@ -17,7 +17,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestCleanup]
         public async Task TestCleanupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -41,7 +41,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_CreateGroupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -56,7 +56,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new AspNetUsers()
+            AspNetUsers testUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = testUserName,
@@ -67,7 +67,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.AspNetUsers.AddAsync(testUser);
             await dbContext.SaveChangesAsync();
             var GroupService = sp.GetRequiredService<GroupService>();
-            CreateGroupModel createGroupModel = new CreateGroupModel()
+            CreateGroupModel createGroupModel = new()
             {
                 Name = "TestModel",
                 Description = "Description",
@@ -83,7 +83,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_DeleteGroupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -99,7 +99,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             var GroupService = sp.GetRequiredService<GroupService>();
             string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new AspNetUsers()
+            AspNetUsers testUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = testUserName,
@@ -127,7 +127,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetPaginatedGroupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -143,7 +143,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             var GroupService = sp.GetRequiredService<GroupService>();
             string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new AspNetUsers()
+            AspNetUsers testUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = testUserName,
@@ -170,7 +170,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                     StartIndex = 0,
                     SortingItems = new SortingItem[]
                     {
-                        new SortingItem()
+                        new()
                         {
                             PropertyName = nameof(GroupModel.Name),
                             SortType = Common.GeneratorsAttributes.SortType.Descending
@@ -184,7 +184,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetGroupByIdAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -200,7 +200,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             var GroupService = sp.GetRequiredService<GroupService>();
             string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new AspNetUsers()
+            AspNetUsers testUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = testUserName,

@@ -6,16 +6,11 @@ using BrowserInterop.Extensions;
 
 namespace FairPlayDating.Services
 {
-    public class BlazorGeoLocationService : IGeoLocationService
+    public class BlazorGeoLocationService(IJSRuntime jsRuntime) : IGeoLocationService
     {
-        private readonly IJSRuntime JSRuntime;
-        public BlazorGeoLocationService(IJSRuntime jsRuntime)
-        {
-            this.JSRuntime = jsRuntime;
-        }
         public async Task<GeoCoordinates> GetCurrentPositionAsync()
         {
-            var window = await JSRuntime.Window();
+            var window = await jsRuntime.Window();
             var navigator = await window.Navigator();
             var currentPosition = await navigator.Geolocation.GetCurrentPosition();
             if (currentPosition.Error != null)

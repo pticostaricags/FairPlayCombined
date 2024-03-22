@@ -30,7 +30,7 @@ namespace FairPlayCombined.Services.FairPlayDating
                 .Include(p => p.UserProfile)
                 .Where(p => p.Id == myUserId)
                 .Select(p => p.UserProfile)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(cancellationToken);
             if (myUserProfile != null)
             {
 #pragma warning disable S1125 // Boolean literals should not be redundant
@@ -46,9 +46,11 @@ namespace FairPlayCombined.Services.FairPlayDating
                 p.ApplicationUser.LikedUserProfileLikedApplicationUser
                 .Any(x => x.LikingApplicationUserId == myUserProfile.ApplicationUserId) == false);
 #pragma warning restore S1125 // Boolean literals should not be redundant
-                result = new();
-                result.PageSize = paginationRequest.PageSize;
-                result.TotalItems = await query.CountAsync(cancellationToken);
+                result = new()
+                {
+                    PageSize = paginationRequest.PageSize,
+                    TotalItems = await query.CountAsync(cancellationToken)
+                };
                 result.TotalPages = (int)Math.Ceiling((decimal)result.TotalItems / result.PageSize);
                 result.Items = await query
                     .OrderByDescending(GetSortByBetterMatchExpression(myUserProfile))

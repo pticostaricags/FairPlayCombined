@@ -20,27 +20,27 @@ public class OpenAIService(
         string systemMessage, string prompt, CancellationToken cancellationToken)
     {
         var requestUrl = openAIServiceConfiguration.ChatCompletionsUrl;
-        ChatCompletionRequestModel request = new ChatCompletionRequestModel()
+        ChatCompletionRequestModel request = new()
         {
             model= "gpt-4-1106-preview",
-            messages =new ChatCompletionRequestMessageModel[]
-            {
-                new ChatCompletionRequestMessageModel()
+            messages =
+            [
+                new()
                 {
                     content=systemMessage,
                     role="system"
                 },
-                new ChatCompletionRequestMessageModel()
+                new()
                 {
                     content=prompt,
                     role="user"
                 }
-            }
+            ]
         };
         var response = await openAIAuthorizedHttpClient.PostAsJsonAsync<ChatCompletionRequestModel>(requestUrl,
             request, cancellationToken:cancellationToken);
         response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<ChatCompletionResponseModel>();
+        var result = await response.Content.ReadFromJsonAsync<ChatCompletionResponseModel>(cancellationToken:cancellationToken);
         return result;
     }
     public async Task<GenerateDallE3ResponseModel?> GenerateDallE3ImageAsync(string prompt, CancellationToken cancellationToken)
@@ -59,7 +59,7 @@ public class OpenAIService(
         var response = await openAIAuthorizedHttpClient.PostAsJsonAsync<GenerateDallE3RequestModel>(requestUrl,
             requestModel, cancellationToken: cancellationToken);
         response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<GenerateDallE3ResponseModel>();
+        var result = await response.Content.ReadFromJsonAsync<GenerateDallE3ResponseModel>(cancellationToken:cancellationToken);
         try
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken:cancellationToken);

@@ -16,7 +16,7 @@ namespace FairPlayCombined.Common
             if (getPublicIpAddress)
             {
                 var publicIpAddress = await GetPublicIpAsync();
-                return new List<string>() { publicIpAddress.ToString() };
+                return [publicIpAddress.ToString()];
             }
             //Check https://stackoverflow.com/questions/50386546/net-core-2-x-how-to-get-the-current-active-local-network-ipv4-address
             // order interfaces by speed and filter out down and loopback
@@ -26,7 +26,7 @@ namespace FairPlayCombined.Common
                 c.OperationalStatus == OperationalStatus.Up)
                 .OrderByDescending(c => c.Speed)
                 .ToList();
-            List<string> lstIps = new();
+            List<string> lstIps = [];
             if (allUpInterfaces.Count > 0)
             {
                 foreach (var singleUpInterface in allUpInterfaces)

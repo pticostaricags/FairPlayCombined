@@ -3,6 +3,8 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 
 namespace FairPlayTube.VideoIndexing;
@@ -12,7 +14,6 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(TimeSpan.FromSeconds(5)); //Workaround waiting for db container to be ready
         TimeSpan timeToWait = TimeSpan.FromMinutes(5);
         var scope = serviceScopeFactory.CreateScope();
         var dbContextFactory = scope.ServiceProvider
@@ -31,7 +32,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                 (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processing)
                 .Select(p => p.VideoId)
                 .ToArrayAsync(stoppingToken);
-            if (allVideosInProcessingStatus.Any())
+            if (allVideosInProcessingStatus.Length != 0)
             {
                 var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
                 var getviTokenResult = await azureVideoIndexerService.GetAccessTokenForArmAccountAsync(armAccessToken, stoppingToken);
@@ -70,8 +71,34 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                         }, stoppingToken);
                         singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
                         singleVideoEntity.VideoDurationInSeconds =
-                            videosIndex!.results!.Where(p => p.id == singleVideoEntity.VideoId)
-                            .Single().durationInSeconds;
+                            videosIndex!.results!
+                            .Single(p => p.id == singleVideoEntity.VideoId).durationInSeconds;
+                        var completedVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
+                            singleVideoEntity.VideoId, getviTokenResult.AccessToken!,
+                            stoppingToken);
+                        singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
+                        if (completedVideoIndex?.summarizedInsights?.topics?.Length > 0)
+                            foreach (var singleTopic in completedVideoIndex.summarizedInsights.topics)
+                            {
+                                VideoTopic videoTopicEntity = new()
+                                {
+                                    Confidence = singleTopic.confidence,
+                                    Topic = singleTopic.name
+                                };
+                                singleVideoEntity.VideoTopic.Add(videoTopicEntity);
+                            }
+                        if (completedVideoIndex?.summarizedInsights?.keywords?.Length > 0)
+                        {
+                            foreach (var singleKeyword in completedVideoIndex.summarizedInsights.keywords
+                                .DistinctBy(p=>p.name))
+                            {
+                                VideoKeyword videoKeywordEntity = new()
+                                {
+                                    Keyword = singleKeyword.name
+                                };
+                                singleVideoEntity.VideoKeyword.Add(videoKeywordEntity);
+                            }
+                        }
                     }
 
                     await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);

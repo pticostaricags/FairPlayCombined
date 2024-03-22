@@ -23,7 +23,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var key = configuration["AzureContentModerator:Key"];
             var adultImageFilePath = configuration["AdultImageFilePath"];
             ContentModeratorClient contentModeratorClient =
-                new ContentModeratorClient(new ApiKeyServiceClientCredentials(key));
+                new(new ApiKeyServiceClientCredentials(key));
             contentModeratorClient.Endpoint = endpoint;
             AzureContentModeratorService azureContentModeratorService = new(contentModeratorClient);
             var imageStream = File.OpenRead(adultImageFilePath!);
@@ -40,7 +40,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var endpoint = configuration["AzureContentModerator:Endpoint"];
             var key = configuration["AzureContentModerator:Key"];
             ContentModeratorClient contentModeratorClient = 
-                new ContentModeratorClient(new ApiKeyServiceClientCredentials(key));
+                new(new ApiKeyServiceClientCredentials(key));
             contentModeratorClient.Endpoint = endpoint;
             AzureContentModeratorService azureContentModeratorService = new(contentModeratorClient);
             var testSexuallyOffensivePhrase = configuration["testSexuallyOffensivePhrase"]!;

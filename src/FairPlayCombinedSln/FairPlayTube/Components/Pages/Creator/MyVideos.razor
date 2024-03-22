@@ -1,0 +1,217 @@
+﻿@attribute [Route(Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos)]
+
+@using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.Common
+@using FairPlayCombined.Services.FairPlayTube
+@using FairPlayTube.Components.Spinners
+@using Microsoft.AspNetCore.Components.QuickGrid
+@rendermode RenderMode.InteractiveServer
+@inject IJSRuntime jsRuntime
+@inject AzureVideoIndexerService azureVideoIndexerService
+@inject VideoInfoService videoInfoService
+@inject IUserProviderService userProviderService
+@inject NavigationManager navigationManager
+@inject OpenAIService openAIService
+@inject VideoCaptionsService videoCaptionsService
+@inject VideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
+<PageTitle>Home</PageTitle>
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<div class="@ThemeConfiguration.Grids.GridContainerCss">
+    <QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+        <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+        <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
+        <TemplateColumn>
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
+                    @onclick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
+                <i class="bi bi-image-fill"></i>
+            </button>
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
+                    @onclick="@( ()=> OnCreateInfographicClicked(context))">
+                <i class="bi bi-file-earmark-bar-graph-fill"></i>
+            </button>
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
+                    @onclick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
+                <i class="bi bi-list-task"></i>
+            </button>
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
+                    @onclick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
+                <i class="bi bi-linkedin"></i>
+            </button>
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
+                    @onclick="@( ()=> OnGetPassiveIncomeIdeas(context))">
+                <i class="bi bi-currency-dollar"></i>
+            </button>
+            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
+                    @onclick="@( ()=> OnCreateLinkedInArticleClicked(context))">
+                <i class="bi bi-file-richtext-fill"></i>
+            </button>
+            @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
+            {
+                <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
+                        @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
+                    <i class="bi bi-badge-cc-fill"></i>
+                </button>
+                <a data-enhance-nav="false"
+                   data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
+                   href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">
+                    <i class="bi bi-youtube"></i>
+                </a>
+            }
+        </TemplateColumn>
+    </QuickGrid>
+</div>
+<Paginator State="this.paginationState"></Paginator>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
+    {
+        <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
+            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
+        </a>
+        <p>
+            @this.RevisedPrompt
+        </p>
+    }
+</div>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.GeneratedinfographicUri))
+    {
+        <a data-enhance-nav="false" href="@this.GeneratedinfographicUri" target="_blank">
+            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedinfographicUri" />
+        </a>
+        <p>
+            @this.RevisedPrompt
+        </p>
+    }
+</div>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.LinkedInDailyPostsIdeas))
+    {
+        <p>
+            @((MarkupString)this.LinkedInDailyPostsIdeas)
+        </p>
+    }
+</div>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingDailyPostsIdeas))
+    {
+        <p>
+            @((MarkupString)this.DigitalMarketingDailyPostsIdeas)
+        </p>
+    }
+</div>
+<div class="@ThemeConfiguration.Divisions.DefaultCss">
+    @if (!String.IsNullOrWhiteSpace(this.PassiveIncomeIdeas))
+    {
+        <p>
+            @((MarkupString)this.PassiveIncomeIdeas)
+        </p>
+    }
+</div>
+@code
+{
+    private bool IsBusy { get; set; }
+    private GridItemsProvider<VideoInfoModel>? ItemsProvider;
+    PaginationState paginationState = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
+    private CancellationTokenSource cancellationTokenSource = new();
+    private string? GeneratedYouTubeThumbnailUri { get; set; }
+    private string? GeneratedinfographicUri { get; set; }
+    private string? RevisedPrompt { get; set; }
+    private string? DigitalMarketingIdeas { get; set; }
+    private string? LinkedInDailyPostsIdeas { get; set; }
+    private string? DigitalMarketingDailyPostsIdeas { get; set; }
+    private string? PassiveIncomeIdeas { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.IsBusy = true;
+        ItemsProvider = async req =>
+        {
+            StateHasChanged();
+            PaginationRequest paginationRequest = new()
+                {
+                    PageSize = paginationState.ItemsPerPage,
+                    StartIndex = req.StartIndex
+                };
+            var items = await videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(paginationRequest,
+                userId: this.userProviderService!.GetCurrentUserId()!,
+            this.cancellationTokenSource.Token);
+            StateHasChanged();
+            var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
+            return result;
+        };
+        this.IsBusy = false;
+    }
+
+    private async Task OnPlayVideoClickedAsync(string videoId)
+    {
+        this.IsBusy = true;
+        StateHasChanged();
+        var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
+        var viAccessTokenResponse = await azureVideoIndexerService
+        .GetAccessTokenForArmAccountAsync(armAccessToken, CancellationToken.None);
+        var videoIndex = await azureVideoIndexerService
+        .GetVideoIndexAsync(videoId, viAccessTokenResponse!.AccessToken!,
+        CancellationToken.None);
+        var supportedLanguages = await azureVideoIndexerService
+        .GetSupportedLanguagesAsync(viAccessTokenResponse!.AccessToken!,
+        this.cancellationTokenSource.Token);
+        var singleVideoIndex = videoIndex!.videos!.Single();
+        await jsRuntime.InvokeVoidAsync("initSource", $"vid-{videoId}",
+        singleVideoIndex.publishedUrl,
+        singleVideoIndex.viewToken,
+        videoId,
+        supportedLanguages!.Select(p => new
+        {
+            src = $"/api/video/{videoId}/captions/{p.languageCode}",
+            srclang = p.languageCode,
+            kind = "subtitles",
+            label = p.name
+        }).OrderBy(p => p.label).ToArray());
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+
+    private void OnManageYouTubeCaptionsButtonClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoCaptions/VideoInfo{videoInfoModel.VideoInfoId}/YouTube/{videoInfoModel.YouTubeVideoId}");
+    }
+
+    private void OnCreateYouTubeThumbnailClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/YouTubeThumbnail/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnCreateInfographicClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoInfographic/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnGetLinkedInDigitalMarketingIdeasClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoDigitalMarketing/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnGetPassiveIncomeIdeas(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoPassiveIncome/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnGetLinkedInDailyPostsClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoDailyPosts/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnCreateLinkedInArticleClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoLinkedInArticle/{videoInfoModel.VideoInfoId}");
+    }
+}

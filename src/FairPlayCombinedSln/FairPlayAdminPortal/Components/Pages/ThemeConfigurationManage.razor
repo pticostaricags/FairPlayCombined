@@ -1,0 +1,56 @@
+﻿@page "/ThemeConfigurationManage"
+@using FairPlayCombined.Common
+@using FairPlayCombined.Models.ThemeConfiguration
+
+<h3>ThemeConfigurationManage</h3>
+
+@if (this.themeConfigurationModel?.Length > 0)
+{
+    <EditForm FormName="frmThemeConfiguration" Model="this.themeConfigurationModel"
+              OnValidSubmit="OnValidSubmitAsync">
+        @foreach (var singleThemeConfiguration in this.themeConfigurationModel)
+        {
+            <div class="row">
+                <div class="col">
+                    @singleThemeConfiguration.Key
+                </div>
+                <div class="col">
+                    <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="@singleThemeConfiguration.Value"></InputText>
+                </div>
+            </div>
+        }
+        <button type="submit" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Save</button>
+    </EditForm>
+}
+
+@code {
+    private ThemeConfigurationModel[]? themeConfigurationModel;
+
+    protected override void OnInitialized()
+    {
+        List<ThemeConfigurationModel> lstThemeConfiguration = new List<ThemeConfigurationModel>();
+        var T = typeof(FairPlayCombined.Common.ThemeConfiguration);
+        var nestedTypes = T.GetNestedTypes(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+        foreach (var singleNestedType in nestedTypes)
+        {
+            var nestedTypeName = singleNestedType.Name;
+            var nestedTypeStaticProperties = singleNestedType.GetProperties(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+            foreach (var singleStaticProperty in nestedTypeStaticProperties)
+            {
+                string propertyFullName = $"{singleNestedType.Name}.{singleStaticProperty.Name}";
+                string? propertyValue = singleStaticProperty.GetValue(null)?.ToString();
+                lstThemeConfiguration.Add(new ThemeConfigurationModel()
+                    {
+                        Key = propertyFullName,
+                        Value = propertyValue!
+                    });
+            }
+        }
+        this.themeConfigurationModel = lstThemeConfiguration.ToArray();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        await Task.Yield();
+    }
+}

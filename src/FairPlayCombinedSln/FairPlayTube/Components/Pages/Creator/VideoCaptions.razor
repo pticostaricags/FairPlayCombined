@@ -1,4 +1,4 @@
-﻿@page "/User/VideoCaptions/VideoInfo{VideoInfoId:long}/YouTube/{YouTubeVideoId}"
+﻿@page "/Creator/VideoCaptions/VideoInfo{VideoInfoId:long}/YouTube/{YouTubeVideoId}"
 @using Blazored.Toast.Services
 @using FairPlayCombined.Models.FairPlaySocial.VideoCaptions
 @using FairPlayCombined.Services.Common
@@ -54,7 +54,7 @@
         var youTubeService = await this.youTubeClientService.AuthorizeAsync();
         var contentBytes = Encoding.UTF8.GetBytes(videoCaptionsModel.Content!);
         MemoryStream memoryStream = new MemoryStream(contentBytes);
-        await this.youTubeClientService.UploadCaptionsAsync(this.YouTubeVideoId!,
+        await YouTubeClientService.UploadCaptionsAsync(this.YouTubeVideoId!,
         language: videoCaptionsModel.Language!,
         youTubeService,
         memoryStream,

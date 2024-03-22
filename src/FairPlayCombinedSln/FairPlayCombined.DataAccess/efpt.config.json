@@ -2,7 +2,6 @@
    "CodeGenerationMode": 4,
    "ContextClassName": "FairPlayCombinedDbContext",
    "ContextNamespace": null,
-   "DefaultDacpacSchema": null,
    "FilterSchemas": false,
    "IncludeConnectionString": false,
    "ModelNamespace": null,
@@ -48,6 +47,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[ConfigurationSecret]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Country]",
          "ObjectType": 0
       },
@@ -73,6 +76,10 @@
       },
       {
          "Name": "[dbo].[StateOrProvince]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ThemeConfiguration]",
          "ObjectType": 0
       },
       {
@@ -231,11 +238,23 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoInfographic]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoJob]",
          "ObjectType": 0
       },
       {
          "Name": "[FairPlayTube].[VideoJobApplicationStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoKeyword]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoTopic]",
          "ObjectType": 0
       },
       {
@@ -265,6 +284,7 @@
    "UseNoObjectFilter": false,
    "UseNodaTime": false,
    "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
    "UseSchemaFolders": true,
    "UseSchemaNamespaces": true,
    "UseSpatial": true,
