@@ -22,7 +22,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestCleanup]
         public async Task TestCleanupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -46,7 +46,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_CreateNotLikedUserProfileAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<NotLikedUserProfileService>();
             var sp = services.BuildServiceProvider();
@@ -54,7 +54,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             (AspNetUsers fromUser, AspNetUsers toUser) = await CreateTestRecordsAsync(dbContext);
             var NotLikedUserProfileService = sp.GetRequiredService<NotLikedUserProfileService>();
-            CreateNotLikedUserProfileModel createNotLikedUserProfileModel = new CreateNotLikedUserProfileModel()
+            CreateNotLikedUserProfileModel createNotLikedUserProfileModel = new()
             {
                 NotLikedApplicationUserId = toUser.Id,
                 NotLikingApplicationUserId = fromUser.Id
@@ -84,7 +84,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             string fromUserName = "fromuser@test.test";
             string toUserName = "toUser@test.test";
-            AspNetUsers fromUser = new AspNetUsers()
+            AspNetUsers fromUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = fromUserName,
@@ -92,7 +92,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 Email = fromUserName,
                 NormalizedEmail = fromUserName.Normalize()
             };
-            AspNetUsers toUser = new AspNetUsers()
+            AspNetUsers toUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = toUserName,
@@ -109,7 +109,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_DeleteNotLikedUserProfileAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<NotLikedUserProfileService>();
             var sp = services.BuildServiceProvider();
@@ -117,7 +117,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             (AspNetUsers fromUser, AspNetUsers toUser) = await CreateTestRecordsAsync(dbContext);
             var NotLikedUserProfileService = sp.GetRequiredService<NotLikedUserProfileService>();
-            NotLikedUserProfile entity = new NotLikedUserProfile()
+            NotLikedUserProfile entity = new()
             {
                 NotLikedApplicationUserId = toUser.Id,
                 NotLikingApplicationUserId = fromUser.Id,
@@ -133,7 +133,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetPaginatedNotLikedUserProfileAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<NotLikedUserProfileService>();
             var sp = services.BuildServiceProvider();
@@ -141,7 +141,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             (AspNetUsers fromUser, AspNetUsers toUser) = await CreateTestRecordsAsync(dbContext);
             var NotLikedUserProfileService = sp.GetRequiredService<NotLikedUserProfileService>();
-            NotLikedUserProfile entity = new NotLikedUserProfile()
+            NotLikedUserProfile entity = new()
             {
                 NotLikedApplicationUserId = toUser.Id,
                 NotLikingApplicationUserId = fromUser.Id,
@@ -154,14 +154,14 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     PageSize = 10,
                     StartIndex = 0,
-                    SortingItems = new SortingItem[]
-                    {
+                    SortingItems =
+                    [
                         new SortingItem()
                         {
                             PropertyName = nameof(NotLikedUserProfileModel.NotLikedApplicationUserId),
                             SortType = Common.GeneratorsAttributes.SortType.Descending
                         }
-                    }
+                    ]
                 }, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Items![0].NotLikedUserProfileId, entity.NotLikedUserProfileId);
@@ -170,7 +170,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetNotLikedUserProfileByIdAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<NotLikedUserProfileService>();
             var sp = services.BuildServiceProvider();
@@ -178,7 +178,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             (AspNetUsers fromUser, AspNetUsers toUser) = await CreateTestRecordsAsync(dbContext);
             var NotLikedUserProfileService = sp.GetRequiredService<NotLikedUserProfileService>();
-            NotLikedUserProfile entity = new NotLikedUserProfile()
+            NotLikedUserProfile entity = new()
             {
                 NotLikedApplicationUserId = toUser.Id,
                 NotLikingApplicationUserId = fromUser.Id,

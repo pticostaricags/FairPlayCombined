@@ -15,8 +15,7 @@ namespace FairPlayCombined.Services.Common
             string emailMessage,
             string emailSubject,
             string receiverEmailAddress,
-            decimal amount,
-            CancellationToken cancellationToken)
+            decimal amount)
         {
             try
             {
@@ -27,8 +26,8 @@ namespace FairPlayCombined.Services.Common
                         EmailMessage = emailMessage,
                         EmailSubject = emailSubject
                     },
-                    Items = new List<PayoutItem>(){
-                    new PayoutItem()
+                    Items = [
+                    new()
                     {
                         RecipientType="EMAIL",
                         Amount=new PayoutsSdk.Payouts.Currency(){
@@ -37,9 +36,9 @@ namespace FairPlayCombined.Services.Common
                         },
                         Receiver=receiverEmailAddress,
                     }
-                }
+                ]
                 };
-                PayoutsPostRequest request = new PayoutsPostRequest();
+                PayoutsPostRequest request = new();
                 request.RequestBody(body);
                 var response = await httpClient!.Execute(request);
                 var result = response.Result<CreatePayoutResponse>();
@@ -47,7 +46,7 @@ namespace FairPlayCombined.Services.Common
             }
             catch (Exception ex)
             {
-                logger.LogError(ex,ex.Message);
+                logger.LogError(exception: ex, message: $"Exception occurred in {nameof(CreatePayoutAsync)}");
                 throw;
             }
         }

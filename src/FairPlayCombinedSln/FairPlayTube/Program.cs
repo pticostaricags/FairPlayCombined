@@ -108,24 +108,20 @@ builder.Services.AddTransient<OpenAIService>(sp =>
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
     sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
     var dbContext = dbContextFactory.CreateDbContext();
-    var openAIKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.OPENAI_KEY);
-    if (openAIKeyEntity is null)
-        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_KEY} in database");
-    var generateDall3ImageUrlEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY);
-    if (generateDall3ImageUrlEntity is null)
-        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY} in database");
-
-    var openAIChatCompletionEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY);
-    if (openAIChatCompletionEntity is null)
-        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY} in database");
-    
-    int timeoutMinutes = 3;
-    HttpClient openAIAuthorizedHttpClient = new();
-    openAIAuthorizedHttpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
+    var openAIKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.OPENAI_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_KEY} in database");
+    var generateDall3ImageUrlEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY} in database");
+    var openAIChatCompletionEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY} in database");
+    var timeoutMinutes = 3;
+    HttpClient openAIAuthorizedHttpClient = new()
+    {
+        Timeout = TimeSpan.FromMinutes(timeoutMinutes)
+    };
     openAIAuthorizedHttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
         "Bearer", openAIKeyEntity.Value);
-    HttpClient genericHttpClient = new();
-    genericHttpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
+    HttpClient genericHttpClient = new()
+    {
+        Timeout = TimeSpan.FromMinutes(timeoutMinutes)
+    };
     return new OpenAIService(openAIAuthorizedHttpClient,
         genericHttpClient: genericHttpClient, new OpenAIServiceConfiguration()
     {
@@ -148,26 +144,15 @@ builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp =>
 {
     var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
     var azureVideoIndexerAccountIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY);
-    if (azureVideoIndexerAccountIdEntity is null)
-        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY} in database");
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY} in database");
     var azureVideoIndexerLocationEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY);
-    if (azureVideoIndexerLocationEntity is null)
-        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY} in database");
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY} in database");
     var azureVideoIndexerResourceGroupEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY);
-    if (azureVideoIndexerResourceGroupEntity is null)
-        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY} in database");
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY} in database");
     var azureVideoIndexerResourceNameEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY);
-    if (azureVideoIndexerResourceNameEntity is null)
-        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY} in database");
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY} in database");
     var azureVideoIndexerSubscriptionIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY);
-    if (azureVideoIndexerSubscriptionIdEntity is null)
-        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY} in database");
-
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY} in database");
     AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = new()
     {
         AccountId = azureVideoIndexerAccountIdEntity.Value,

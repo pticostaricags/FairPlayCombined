@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-FairPlayDating.TestDataGenerator-8c7a4301-8818-4603-b6c3-97ef0bc708dc</UserSecretsId>
     <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
+	<NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>

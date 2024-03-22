@@ -54,7 +54,7 @@
         var youTubeService = await this.youTubeClientService.AuthorizeAsync();
         var contentBytes = Encoding.UTF8.GetBytes(videoCaptionsModel.Content!);
         MemoryStream memoryStream = new MemoryStream(contentBytes);
-        await this.youTubeClientService.UploadCaptionsAsync(this.YouTubeVideoId!,
+        await YouTubeClientService.UploadCaptionsAsync(this.YouTubeVideoId!,
         language: videoCaptionsModel.Language!,
         youTubeService,
         memoryStream,

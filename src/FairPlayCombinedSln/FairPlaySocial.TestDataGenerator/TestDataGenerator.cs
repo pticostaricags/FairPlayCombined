@@ -27,12 +27,12 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 {
                     string postText = Faker.Lorem.Paragraph();
                     if (postText.Length > 500)
-                        postText = postText.Substring(0, 500);
+                        postText = postText[..500];
                     string email = $"GTEST-{Random.Shared.Next(1000000)}-{Faker.Internet.Email()}";
                     string emailNormalized = email.Normalize();
                     var maxDateOfBirthAllowed = DateTimeOffset.UtcNow.AddYears(-20);
                     var minDateOfBirthDallowed = DateTimeOffset.UtcNow.AddYears(-40);
-                    var dateOfBirthTicks =
+                    _ =
                     Random.Shared.NextInt64(minDateOfBirthDallowed.Ticks, maxDateOfBirthAllowed.Ticks);
                     logger.LogInformation("Adding item {x} of {y}", i, itemsCount);
                     string testImageFileName = "TestImage.png";

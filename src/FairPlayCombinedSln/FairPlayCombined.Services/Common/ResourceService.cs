@@ -56,7 +56,7 @@ namespace FairPlayCombined.Services.Common
             }
             foreach (var singleNewResource in resources.Where(p => p.ResourceId == 0))
             {
-                Resource resource = new Resource()
+                Resource resource = new()
                 {
                     CultureId = singleNewResource.CultureId,
                     Key = singleNewResource.Key,

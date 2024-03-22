@@ -12,7 +12,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
     [TestClass]
     public class PayPalPlanServiceTests
     {
-        private PayPal.Core.PayPalEnvironment GetPayPalCoreEnvironment(
+        private static PayPal.Core.PayPalEnvironment GetPayPalCoreEnvironment(
             IConfigurationRoot configuration, bool useSandbox)
         {
             var clientId = configuration["PayPal:ClientId"]!;
@@ -35,9 +35,9 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<PayPalPlanService>();
             PayPalPlanService payPalPlanService = new(
-                new PayPal.Core.PayPalHttpClient(this.GetPayPalCoreEnvironment(configuration,true)),
+                new PayPal.Core.PayPalHttpClient(GetPayPalCoreEnvironment(configuration,true)),
                 logger);
-            await payPalPlanService.CreatePlan(CancellationToken.None);
+            await payPalPlanService.CreatePlan();
         }
 
         [TestMethod]
@@ -52,11 +52,11 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<PayPalPlanService>();
             PayPal.Core.PayPalEnvironment payPalEnvironment =
-                this.GetPayPalCoreEnvironment(configuration, true);
+                GetPayPalCoreEnvironment(configuration, true);
             PayPalPlanService payPalPlanService = new(
                 new PayPal.Core.PayPalHttpClient(payPalEnvironment),
                 logger);
-            await payPalPlanService.ListPlansAsync(CancellationToken.None);
+            await payPalPlanService.ListPlansAsync();
         }
     }
 }

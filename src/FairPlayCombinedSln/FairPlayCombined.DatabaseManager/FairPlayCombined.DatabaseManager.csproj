@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-FairPlayCombined.DatabaseManager-ebbcc8ff-79ee-4c85-8f04-ca5dc9b5cf27</UserSecretsId>
     <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\FairPlayCombinedDb\Scripts\1-Script.PostDeployment1.sql" Link="1-Script.PostDeployment1.sql" />

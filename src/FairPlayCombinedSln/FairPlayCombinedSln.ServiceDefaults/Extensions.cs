@@ -45,8 +45,10 @@ public static class Extensions
 
     public static void EnhanceConnectionString(string appName, ref string connectionString)
     {
-        SqlConnectionStringBuilder connectionStringBuilder = new(connectionString);
-        connectionStringBuilder.ApplicationName = appName;
+        SqlConnectionStringBuilder connectionStringBuilder = new(connectionString)
+        {
+            ApplicationName = appName
+        };
         connectionString = connectionStringBuilder.ConnectionString;
     }
 

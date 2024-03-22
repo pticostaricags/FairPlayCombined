@@ -16,13 +16,13 @@ namespace FairPlayCombined.Services.Common
         public async Task<PaginationOfT<UserModel>> GetPaginatedUserListAsync(
             PaginationRequest paginationRequest, CancellationToken cancellationToken)
         {
-            PaginationOfT<UserModel> result = new PaginationOfT<UserModel>();
+            PaginationOfT<UserModel> result = new();
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             string orderByString = string.Empty;
             if (paginationRequest.SortingItems?.Length > 0)
                 orderByString =
                     String.Join(",",
-                    paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {base.GetSortTypeString(p.SortType)}"));
+                    paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.AspNetUsers
                 .AsNoTracking()
                 .Select(p => new UserModel()

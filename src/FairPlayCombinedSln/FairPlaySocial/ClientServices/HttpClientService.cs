@@ -2,23 +2,17 @@
 
 namespace FairPlaySocial.ClientServices
 {
-    public class HttpClientService
+    public class HttpClientService(IHttpClientFactory httpClientFactory)
     {
-        private IHttpClientFactory HttpClientFactory { get; }
-        public HttpClientService(IHttpClientFactory httpClientFactory)
-        {
-            this.HttpClientFactory = httpClientFactory;
-        }
-
         public HttpClient CreateAnonymousClient()
         {
-            return this.HttpClientFactory.CreateClient(
+            return httpClientFactory.CreateClient(
                 $"{nameof(FairPlaySocial)}.ServerAPI.Anonymous");
         }
 
         public HttpClient CreateAuthorizedClient()
         {
-            return this.HttpClientFactory.CreateClient(
+            return httpClientFactory.CreateClient(
                 $"{nameof(FairPlaySocial)}.ServerAPI");
         }
     }

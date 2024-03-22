@@ -16,7 +16,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestCleanup]
         public async Task TestCleanupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -36,7 +36,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_CreateFrequencyAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -48,7 +48,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             var FrequencyService = sp.GetRequiredService<FrequencyService>();
-            CreateFrequencyModel createFrequencyModel = new CreateFrequencyModel()
+            CreateFrequencyModel createFrequencyModel = new()
             {
                 Name = "TestModel"
             };
@@ -61,7 +61,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_DeleteFrequencyAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -73,7 +73,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             var FrequencyService = sp.GetRequiredService<FrequencyService>();
-            Frequency entity = new Frequency()
+            Frequency entity = new()
             {
                 Name = "TestModel"
             };
@@ -88,7 +88,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetPaginatedFrequencyAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -100,7 +100,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             var FrequencyService = sp.GetRequiredService<FrequencyService>();
-            Frequency entity = new Frequency()
+            Frequency entity = new()
             {
                 Name = "TestModel"
             };
@@ -112,14 +112,14 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     PageSize = 10,
                     StartIndex = 0,
-                    SortingItems = new SortingItem[]
-                    {
+                    SortingItems =
+                    [
                         new SortingItem()
                         {
                             PropertyName = nameof(FrequencyModel.Name),
                             SortType = Common.GeneratorsAttributes.SortType.Descending
                         }
-                    }
+                    ]
                 }, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Items![0].FrequencyId, entity.FrequencyId);
@@ -128,7 +128,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetFrequencyByIdAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -140,7 +140,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             var FrequencyService = sp.GetRequiredService<FrequencyService>();
-            Frequency entity = new Frequency()
+            Frequency entity = new()
             {
                 Name = "TestModel"
             };

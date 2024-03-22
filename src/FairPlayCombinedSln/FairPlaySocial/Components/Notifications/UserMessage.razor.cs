@@ -14,8 +14,6 @@ namespace FairPlaySocial.Components.Notifications
         [Inject]
         private IToastService? ToastService { get; set; }
         [Inject]
-        private IUserProviderService? UserProviderService { get; set; }
-        [Inject]
         private NavigationManager? NavigationManager { get; set; }
         private HubConnection? HubConnection { get; set; }
         private bool IsBusy { get; set; }

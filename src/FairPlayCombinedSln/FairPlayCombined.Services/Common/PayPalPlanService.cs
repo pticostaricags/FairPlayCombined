@@ -11,18 +11,18 @@ namespace FairPlayCombined.Services.Common
 {
     public class PayPalPlanService(PayPalHttpClient httpClient, ILogger<PayPalPlanService> logger)
     {
-        public async Task<PlanList> ListPlansAsync(CancellationToken cancellationToken)
+        public async Task<PlanList> ListPlansAsync()
         {
 
-            PlanListRequest request = new PlanListRequest();
+            PlanListRequest request = new();
             var response = await httpClient!.Execute(request);
             var result = response.Result<PlanList>();
             return result;
         }
-        public async Task CreatePlan(CancellationToken cancellationToken)
+        public async Task CreatePlan()
         {
             //Check https://github.com/paypal/PayPal-NET-SDK/blob/releasinator/Samples/Source/BillingPlanCreate.aspx.cs
-            PayPal.v1.BillingPlans.Plan plan = new PayPal.v1.BillingPlans.Plan()
+            PayPal.v1.BillingPlans.Plan plan = new()
             {
                 MerchantPreferences = new MerchantPreferences()
                 {
@@ -35,9 +35,9 @@ namespace FairPlayCombined.Services.Common
                 Description = "FairPlayTube basic plan",
                 Name = "FairPlayTube Basic 900",
                 Type = "fixed",
-                PaymentDefinitions = new List<PayPal.v1.BillingPlans.PaymentDefinition>()
-                {
-                    new PayPal.v1.BillingPlans.PaymentDefinition()
+                PaymentDefinitions =
+                [
+                    new PaymentDefinition()
                     {
                         Name = "Basic Plan Test 111",
                         Type = "REGULAR",
@@ -50,13 +50,13 @@ namespace FairPlayCombined.Services.Common
                             Value = "5"
                         }
                     }
-                }
+                ]
             };
-            PlanCreateRequest planCreateRequest = new PlanCreateRequest();
+            PlanCreateRequest planCreateRequest = new();
             planCreateRequest.RequestBody(plan);
             var response = await httpClient!.Execute(planCreateRequest);
             var planResult= response.Result<Plan>();
-            logger.LogInformation(planResult!.ToString());
+            logger.LogInformation(message:"Plan created: {planInfo}", planResult!.ToString());
         }
     }
 }

@@ -100,8 +100,8 @@ namespace FairPlayCombined.Services.Common
             {
                 if (ex.ErrorCode == "content_filter")
                 {
-                    int startOfError = ex.Message.IndexOf("{");
-                    int endOfError = ex.Message.LastIndexOf("}");
+                    int startOfError = ex.Message.IndexOf('{');
+                    int endOfError = ex.Message.LastIndexOf('}');
                     string errorContent = ex.Message.Substring(startOfError, endOfError - startOfError + 1);
                     ContentFilterJsonException contentFilterJsonException =
                         JsonSerializer.Deserialize<ContentFilterJsonException>(errorContent)!;

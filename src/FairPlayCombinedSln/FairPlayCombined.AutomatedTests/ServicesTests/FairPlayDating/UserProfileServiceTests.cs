@@ -21,7 +21,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestCleanup]
         public async Task TestCleanupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -82,7 +82,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_CreateUserProfileAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserProfileService>();
             var sp = services.BuildServiceProvider();
@@ -222,7 +222,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_DeleteUserProfileAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserProfileService>();
             var sp = services.BuildServiceProvider();
@@ -270,7 +270,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetPaginatedUserProfileAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserProfileService>();
             var sp = services.BuildServiceProvider();
@@ -331,7 +331,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetUserProfileByIdAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserProfileService>();
             var sp = services.BuildServiceProvider();

@@ -18,7 +18,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestCleanup]
         public async Task TestCleanupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -50,7 +50,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_CreatePostAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -65,7 +65,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new AspNetUsers()
+            AspNetUsers testUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = testUserName,
@@ -74,12 +74,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 NormalizedEmail = testUserName.Normalize(),
             };
             await dbContext.AspNetUsers.AddAsync(testUser);
-            PostType postType = new PostType()
+            PostType postType = new()
             {
                 Name = "AT Type"
             };
             await dbContext.PostType.AddAsync(postType);
-            PostVisibility postVisibility = new PostVisibility()
+            PostVisibility postVisibility = new()
             {
                 Name = "AT Name",
                 Description = "AT Desc",
@@ -88,7 +88,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.SaveChangesAsync();
             var PostService = sp.GetRequiredService<PostService>();
 
-            CreatePostModel createPostModel = new CreatePostModel()
+            CreatePostModel createPostModel = new()
             {
                 OwnerApplicationUserId = testUser.Id,
                 PostTypeId = postType.PostTypeId,
@@ -104,7 +104,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_DeletePostAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -120,7 +120,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             var PostService = sp.GetRequiredService<PostService>();
             string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new AspNetUsers()
+            AspNetUsers testUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = testUserName,
@@ -130,12 +130,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             };
             await dbContext.AspNetUsers.AddAsync(testUser);
             await dbContext.SaveChangesAsync();
-            PostType postType = new PostType()
+            PostType postType = new()
             {
                 Name = "AT Type"
             };
             await dbContext.PostType.AddAsync(postType);
-            PostVisibility postVisibility = new PostVisibility()
+            PostVisibility postVisibility = new()
             {
                 Name = "AT Name",
                 Description = "AT Desc",
@@ -160,7 +160,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetPaginatedPostAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -176,7 +176,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             var PostService = sp.GetRequiredService<PostService>();
             string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new AspNetUsers()
+            AspNetUsers testUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = testUserName,
@@ -186,12 +186,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             };
             await dbContext.AspNetUsers.AddAsync(testUser);
             await dbContext.SaveChangesAsync();
-            PostType postType = new PostType()
+            PostType postType = new()
             {
                 Name = "AT Type"
             };
             await dbContext.PostType.AddAsync(postType);
-            PostVisibility postVisibility = new PostVisibility()
+            PostVisibility postVisibility = new()
             {
                 Name = "AT Name",
                 Description = "AT Desc",
@@ -215,7 +215,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                     StartIndex = 0,
                     SortingItems = new SortingItem[]
                     {
-                        new SortingItem()
+                        new()
                         {
                             PropertyName = nameof(Post.PostId),
                             SortType = Common.GeneratorsAttributes.SortType.Descending
@@ -229,7 +229,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetPostByIdAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -245,7 +245,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             var PostService = sp.GetRequiredService<PostService>();
             string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new AspNetUsers()
+            AspNetUsers testUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = testUserName,
@@ -255,12 +255,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             };
             await dbContext.AspNetUsers.AddAsync(testUser);
             await dbContext.SaveChangesAsync();
-            PostType postType = new PostType()
+            PostType postType = new()
             {
                 Name = "AT Type"
             };
             await dbContext.PostType.AddAsync(postType);
-            PostVisibility postVisibility = new PostVisibility()
+            PostVisibility postVisibility = new()
             {
                 Name = "AT Name",
                 Description = "AT Desc",

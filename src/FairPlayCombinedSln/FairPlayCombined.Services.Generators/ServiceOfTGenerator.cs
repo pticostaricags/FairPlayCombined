@@ -33,10 +33,9 @@ namespace FairPlayCombined.Services.Generators
             var (compilation, list) = tuple;
             foreach (var syntax in list)
             {
-                var symbol = compilation
+                if (compilation
                     .GetSemanticModel(syntax.SyntaxTree)
-                    .GetDeclaredSymbol(syntax) as INamedTypeSymbol;
-                if (symbol != null)
+                    .GetDeclaredSymbol(syntax) is INamedTypeSymbol symbol)
                 {
                     var attributes = symbol.GetAttributes();
                     if (attributes.Length > 0)
@@ -91,7 +90,7 @@ namespace FairPlayCombined.Services.Generators
                                         dbEntityArgument.GetMembers()
                                         .Where(p => p.Kind == SymbolKind.Property
                                         &&
-                                        (p.GetAttributes().Any(x=>x.AttributeClass != null
+                                        (p.GetAttributes().Any(x => x.AttributeClass != null
                                         && x.AttributeClass.Name == "KeyAttribute"))
                                         ).SingleOrDefault() as IPropertySymbol;
                                     string classContent = $$"""

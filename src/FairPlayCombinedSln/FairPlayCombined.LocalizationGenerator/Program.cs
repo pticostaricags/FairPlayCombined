@@ -32,14 +32,9 @@ builder.Services.AddTransient<OpenAIClient>(sp =>
     var dbContextFactory = sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
     var dbContext = dbContextFactory.CreateDbContext();
     var azureOpenAIEndpointEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_OPENAI_ENDPOINT_KEY);
-    if (azureOpenAIEndpointEntity is null)
-        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_OPENAI_ENDPOINT_KEY} in database");
+    Constants.ConfigurationSecretsKeys.AZURE_OPENAI_ENDPOINT_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_OPENAI_ENDPOINT_KEY} in database");
     var azureOpenAIKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_OPENAI_KEY_KEY);
-    if (azureOpenAIKeyEntity is null)
-        throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_OPENAI_KEY_KEY} in database");
-
+    Constants.ConfigurationSecretsKeys.AZURE_OPENAI_KEY_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_OPENAI_KEY_KEY} in database");
     OpenAIClient openAIClient = new(endpoint: new Uri(azureOpenAIEndpointEntity.Value),
         keyCredential: new Azure.AzureKeyCredential(azureOpenAIKeyEntity.Value));
     return openAIClient;

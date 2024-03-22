@@ -32,7 +32,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                 (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processing)
                 .Select(p => p.VideoId)
                 .ToArrayAsync(stoppingToken);
-            if (allVideosInProcessingStatus.Any())
+            if (allVideosInProcessingStatus.Length != 0)
             {
                 var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
                 var getviTokenResult = await azureVideoIndexerService.GetAccessTokenForArmAccountAsync(armAccessToken, stoppingToken);

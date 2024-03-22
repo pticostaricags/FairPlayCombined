@@ -1,5 +1,5 @@
 ﻿namespace FairPlayCombined.Services.Common;
-
+#pragma warning disable IDE1006 // Naming Styles
 public class ChatCompletionResponseModel
 {
     public string? id { get; set; }
@@ -10,3 +10,4 @@ public class ChatCompletionResponseModel
     public ChatCompletionResponseUsageModel? usage { get; set; }
     public string? system_fingerprint { get; set; }
 }
+#pragma warning restore IDE1006 // Naming Styles

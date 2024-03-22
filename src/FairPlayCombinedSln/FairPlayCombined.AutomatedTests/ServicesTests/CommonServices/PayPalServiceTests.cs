@@ -31,7 +31,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             PayPalService payPalService = new(payPalHttpClient, logger);
             var result = await payPalService.CreatePayoutAsync("Test Email Message",
                 "Test Email Subject", sandboxBuyer,
-                1,CancellationToken.None);
+                1);
             Assert.IsNotNull(result);
         }
     }

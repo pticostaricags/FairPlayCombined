@@ -22,7 +22,7 @@ namespace FairPlayCombined.Services.Common
             if (paginationRequest.SortingItems?.Length > 0)
                 orderByString =
                     String.Join(",",
-                    paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {base.GetSortTypeString(p.SortType)}"));
+                    paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.AspNetRoles
                 .AsNoTracking()
                 .Select(p => new RoleModel()
