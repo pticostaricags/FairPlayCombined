@@ -4,6 +4,7 @@ using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.Common.GeoNames;
 using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using NetTopologySuite.Utilities;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.Arm;
@@ -24,125 +25,171 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             }
             var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
-            await dbContext.UserProfile.ExecuteDeleteAsync(stoppingToken);
-            await dbContext.Post.ExecuteDeleteAsync(stoppingToken);
-            await dbContext.Photo.ExecuteDeleteAsync(stoppingToken);
-            await dbContext.AspNetUsers.ExecuteDeleteAsync(stoppingToken);
-            await dbContext.SaveChangesAsync(stoppingToken);
-            var allGenders = await dbContext.Gender.ToArrayAsync(stoppingToken);
-            var allEyesColors = await dbContext.EyesColor.ToArrayAsync(stoppingToken);
-            var allDateObjectives = await dbContext.DateObjective.ToArrayAsync(stoppingToken);
-            var allHairColor = await dbContext.HairColor.ToArrayAsync(stoppingToken);
-            var allKidStatus = await dbContext.KidStatus.ToArrayAsync(stoppingToken);
-            var allReligions = await dbContext.Religion.ToArrayAsync(stoppingToken);
-            var allTattooStatuses = await dbContext.TattooStatus.ToArrayAsync(stoppingToken);
-            var humansPhotosDirectory = Environment.GetEnvironmentVariable("HumansPhotosDirectory");
-            string[]? allHumansPhotosPaths = null;
-            if (!String.IsNullOrWhiteSpace(humansPhotosDirectory))
-            {
-                allHumansPhotosPaths = Directory.GetFiles(humansPhotosDirectory, "*.jpg", SearchOption.AllDirectories);
-            }
+            await ResetDataAsync(dbContext, stoppingToken);
+            var (allGenders, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions,
+                allTattooStatuses) = 
+            await GetAllEntitiesListsAsync(dbContext, stoppingToken);
+            string[]? allHumansPhotosPaths = PreparaHumansPhotosPaths();
             HttpClient httpClient = new();
-            var loggerFactory = 
-            LoggerFactory.Create(configure => 
+            var loggerFactory =
+            LoggerFactory.Create(configure =>
             {
                 configure.AddConsole();
             });
             var geoNamesServiceLogger = loggerFactory.CreateLogger<GeoNamesService>();
             GeoNamesService geoNamesService = new(httpClient, geoNamesServiceLogger);
             List<geodata> geoDataCollection = [];
-            for (int i = 0; i < 50; i++)
-            {
-                geodata? randomGeoLocation = null;
-                logger.LogInformation("Getting random location {i} of 50",i);
-                try
-                {
-                    randomGeoLocation = await geoNamesService.GeoRandomLocationAsync(CancellationToken.None);
-                }
-                catch (Exception)
-                {
-                    randomGeoLocation = new geodata()
-                    {
-                        nearest = new geodataNearest()
-                        {
-                            latt = 3.5158M,
-                            longt = -74.37231M
-                        }
-                    };
-                }
-                geoDataCollection.Add(randomGeoLocation);
-            }
+            await PreparerandomLocations(logger, geoNamesService, geoDataCollection);
             int itemsCount = 5000;
             var geoDataArray = geoDataCollection.ToArray();
             for (int i = 0; i < itemsCount; i++)
             {
-                geodata? randomGeoLocation =
-                    Random.Shared.GetItems<geodata>(geoDataArray.ToArray(), 1)[0];
-                var currentGeoLocation = new NetTopologySuite.Geometries
-                        .Point
-                        (
-                        (double)randomGeoLocation!.nearest!.longt,
-                        (double)randomGeoLocation.nearest.latt
-                        )
-                {
-                    SRID = FairPlayCombined.Common.Constants.GeoCoordinates.SRID
-                };
-                Photo photo = new()
-                {
-                    Filename = "test",
-                    Name = "test"
-                };
-                if (allHumansPhotosPaths?.Length > 0)
-                {
-                    string randomPath = Random.Shared.GetItems<string>(allHumansPhotosPaths, 1)[0];
-                    photo.PhotoBytes = File.ReadAllBytes(randomPath);
-                }
-                else
-                {
-                    photo.PhotoBytes = Properties.Resources.EmptyProfilePhoto;
-                }
-                string email = $"GTEST-{Random.Shared.Next(1000000)}-{Faker.Internet.Email()}";
-                string emailNormalized = email.Normalize();
-                var maxDateOfBirthAllowed = DateTimeOffset.UtcNow.AddYears(-20);
-                var minDateOfBirthDallowed = DateTimeOffset.UtcNow.AddYears(-40);
-                var dateOfBirthTicks =
-                Random.Shared.NextInt64(minDateOfBirthDallowed.Ticks, maxDateOfBirthAllowed.Ticks);
-                logger.LogInformation("Adding item {x} of {y}", i, itemsCount);
-                await dbContext.AspNetUsers.AddAsync(new AspNetUsers()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    UserName = email,
-                    NormalizedUserName = emailNormalized,
-                    Email = email,
-                    NormalizedEmail = emailNormalized,
-                    PasswordHash = "TestPassword123",
-                    EmailConfirmed = false,
-                    LockoutEnabled = true,
-                    UserProfile = new UserProfile()
-                    {
-                        BiologicalGenderId = Random.Shared.GetItems<Gender>(allGenders, 1)[0].GenderId,
-                        About = "Photos from https://generated.photos",
-                        BirthDate = new DateTime(dateOfBirthTicks, DateTimeKind.Utc),
-                        CurrentDateObjectiveId = Random.Shared.GetItems<DateObjective>(allDateObjectives, 1)[0].DateObjectiveId,
-                        EyesColorId = Random.Shared.GetItems<EyesColor>(allEyesColors, 1)[0].EyesColorId,
-                        HairColorId = Random.Shared.GetItems<HairColor>(allHairColor, 1)[0].HairColorId,
-                        KidStatusId = Random.Shared.GetItems<KidStatus>(allKidStatus, 1)[0].KidStatusId,
-                        PreferredEyesColorId = Random.Shared.GetItems<EyesColor>(allEyesColors, 1)[0].EyesColorId,
-                        PreferredHairColorId = Random.Shared.GetItems<HairColor>(allHairColor, 1)[0].HairColorId,
-                        PreferredKidStatusId = Random.Shared.GetItems<KidStatus>(allKidStatus, 1)[0].KidStatusId,
-                        PreferredReligionId = Random.Shared.GetItems<Religion>(allReligions, 1)[0].ReligionId,
-                        ReligionId = Random.Shared.GetItems<Religion>(allReligions, 1)[0].ReligionId,
-                        TattooStatusId = Random.Shared.GetItems<TattooStatus>(allTattooStatuses, 1)[0].TattooStatusId,
-                        PreferredTattooStatusId = Random.Shared.GetItems<TattooStatus>(allTattooStatuses, 1)[0].TattooStatusId,
-                        ProfilePhoto = photo,
-                        CurrentGeoLocation = currentGeoLocation,
-                        CurrentLatitude = (double)randomGeoLocation.nearest.latt,
-                        CurrentLongitude =(double)randomGeoLocation.nearest.longt
-                    }
-                }, stoppingToken);
+                SetGeoLocation(geoDataArray, out geodata randomGeoLocation, out Point currentGeoLocation);
+                Photo photo = InitilizePhoto(allHumansPhotosPaths);
+                await AddUserAsync(logger, dbContext, allGenders, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions, allTattooStatuses, itemsCount, i, randomGeoLocation, currentGeoLocation, photo, stoppingToken);
             }
             await dbContext.SaveChangesAsync(stoppingToken);
             await Task.Delay(1000, stoppingToken);
         }
+    }
+
+    private static async Task AddUserAsync(ILogger<TestDataGenerator> logger, FairPlayCombinedDbContext dbContext, Gender[] allGenders, EyesColor[] allEyesColors, DateObjective[] allDateObjectives, HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions, TattooStatus[] allTattooStatuses, int itemsCount, int i, geodata randomGeoLocation, Point currentGeoLocation, Photo photo, CancellationToken stoppingToken)
+    {
+        string email = $"GTEST-{Random.Shared.Next(1000000)}-{Faker.Internet.Email()}";
+        string emailNormalized = email.Normalize();
+        var maxDateOfBirthAllowed = DateTimeOffset.UtcNow.AddYears(-20);
+        var minDateOfBirthDallowed = DateTimeOffset.UtcNow.AddYears(-40);
+        var dateOfBirthTicks =
+        Random.Shared.NextInt64(minDateOfBirthDallowed.Ticks, maxDateOfBirthAllowed.Ticks);
+        logger.LogInformation("Adding item {x} of {y}", i, itemsCount);
+        await dbContext.AspNetUsers.AddAsync(new AspNetUsers()
+        {
+            Id = Guid.NewGuid().ToString(),
+            UserName = email,
+            NormalizedUserName = emailNormalized,
+            Email = email,
+            NormalizedEmail = emailNormalized,
+            PasswordHash = "TestPassword123",
+            EmailConfirmed = false,
+            LockoutEnabled = true,
+            UserProfile = new UserProfile()
+            {
+                BiologicalGenderId = Random.Shared.GetItems<Gender>(allGenders, 1)[0].GenderId,
+                About = "Photos from https://generated.photos",
+                BirthDate = new DateTime(dateOfBirthTicks, DateTimeKind.Utc),
+                CurrentDateObjectiveId = Random.Shared.GetItems<DateObjective>(allDateObjectives, 1)[0].DateObjectiveId,
+                EyesColorId = Random.Shared.GetItems<EyesColor>(allEyesColors, 1)[0].EyesColorId,
+                HairColorId = Random.Shared.GetItems<HairColor>(allHairColor, 1)[0].HairColorId,
+                KidStatusId = Random.Shared.GetItems<KidStatus>(allKidStatus, 1)[0].KidStatusId,
+                PreferredEyesColorId = Random.Shared.GetItems<EyesColor>(allEyesColors, 1)[0].EyesColorId,
+                PreferredHairColorId = Random.Shared.GetItems<HairColor>(allHairColor, 1)[0].HairColorId,
+                PreferredKidStatusId = Random.Shared.GetItems<KidStatus>(allKidStatus, 1)[0].KidStatusId,
+                PreferredReligionId = Random.Shared.GetItems<Religion>(allReligions, 1)[0].ReligionId,
+                ReligionId = Random.Shared.GetItems<Religion>(allReligions, 1)[0].ReligionId,
+                TattooStatusId = Random.Shared.GetItems<TattooStatus>(allTattooStatuses, 1)[0].TattooStatusId,
+                PreferredTattooStatusId = Random.Shared.GetItems<TattooStatus>(allTattooStatuses, 1)[0].TattooStatusId,
+                ProfilePhoto = photo,
+                CurrentGeoLocation = currentGeoLocation,
+                CurrentLatitude = (double)randomGeoLocation.nearest!.latt,
+                CurrentLongitude = (double)randomGeoLocation.nearest.longt
+            }
+        }, stoppingToken);
+    }
+
+    private static Photo InitilizePhoto(string[]? allHumansPhotosPaths)
+    {
+        Photo photo = new()
+        {
+            Filename = "test",
+            Name = "test"
+        };
+        if (allHumansPhotosPaths?.Length > 0)
+        {
+            string randomPath = Random.Shared.GetItems<string>(allHumansPhotosPaths, 1)[0];
+            photo.PhotoBytes = File.ReadAllBytes(randomPath);
+        }
+        else
+        {
+            photo.PhotoBytes = Properties.Resources.EmptyProfilePhoto;
+        }
+
+        return photo;
+    }
+
+    private static void SetGeoLocation(geodata[] geoDataArray, out geodata randomGeoLocation, out Point currentGeoLocation)
+    {
+        randomGeoLocation = Random.Shared.GetItems<geodata>(geoDataArray.ToArray(), 1)[0];
+        currentGeoLocation = new NetTopologySuite.Geometries
+                                .Point
+                                (
+                                (double)randomGeoLocation!.nearest!.longt,
+                                (double)randomGeoLocation.nearest.latt
+                                )
+        {
+            SRID = FairPlayCombined.Common.Constants.GeoCoordinates.SRID
+        };
+    }
+
+    private static string[]? PreparaHumansPhotosPaths()
+    {
+        var humansPhotosDirectory = Environment.GetEnvironmentVariable("HumansPhotosDirectory");
+        string[]? allHumansPhotosPaths = null;
+        if (!String.IsNullOrWhiteSpace(humansPhotosDirectory))
+        {
+            allHumansPhotosPaths = Directory.GetFiles(humansPhotosDirectory, "*.jpg", SearchOption.AllDirectories);
+        }
+
+        return allHumansPhotosPaths;
+    }
+
+    private static async Task PreparerandomLocations(ILogger<TestDataGenerator> logger, GeoNamesService geoNamesService, List<geodata> geoDataCollection)
+    {
+        for (int i = 0; i < 50; i++)
+        {
+            logger.LogInformation("Getting random location {i} of 50", i);
+            geodata? randomGeoLocation;
+            try
+            {
+                randomGeoLocation = await geoNamesService.GeoRandomLocationAsync(CancellationToken.None);
+            }
+            catch (Exception)
+            {
+                randomGeoLocation = new geodata()
+                {
+                    nearest = new geodataNearest()
+                    {
+                        latt = 3.5158M,
+                        longt = -74.37231M
+                    }
+                };
+            }
+            geoDataCollection.Add(randomGeoLocation);
+        }
+    }
+
+    private static async Task<(
+        Gender[] allGenders, EyesColor[] allEyesColors, DateObjective[] allDateObjectives, 
+        HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions, 
+        TattooStatus[] allTattooStatuses)> GetAllEntitiesListsAsync(FairPlayCombinedDbContext dbContext, 
+        CancellationToken stoppingToken)
+    {
+        var allGenders = await dbContext.Gender.ToArrayAsync(stoppingToken);
+        var allEyesColors = await dbContext.EyesColor.ToArrayAsync(stoppingToken);
+        var allDateObjectives = await dbContext.DateObjective.ToArrayAsync(stoppingToken);
+        var allHairColor = await dbContext.HairColor.ToArrayAsync(stoppingToken);
+        var allKidStatus = await dbContext.KidStatus.ToArrayAsync(stoppingToken);
+        var allReligions = await dbContext.Religion.ToArrayAsync(stoppingToken);
+        var allTattooStatuses = await dbContext.TattooStatus.ToArrayAsync(stoppingToken);
+        return (allGenders, allEyesColors, allDateObjectives,
+        allHairColor, allKidStatus, allReligions, allTattooStatuses);
+    }
+
+    private static async Task ResetDataAsync(FairPlayCombinedDbContext dbContext, CancellationToken stoppingToken)
+    {
+        await dbContext.UserProfile.ExecuteDeleteAsync(stoppingToken);
+        await dbContext.Post.ExecuteDeleteAsync(stoppingToken);
+        await dbContext.Photo.ExecuteDeleteAsync(stoppingToken);
+        await dbContext.AspNetUsers.ExecuteDeleteAsync(stoppingToken);
+        await dbContext.SaveChangesAsync(stoppingToken);
     }
 }

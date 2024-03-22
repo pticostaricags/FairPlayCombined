@@ -32,6 +32,5 @@ public class FairPlayCombinedDbInitializer(ILogger<FairPlayCombinedDbInitializer
             },
             stoppingToken
             );
-        var roles = await dbContext.AspNetRoles.ToArrayAsync(stoppingToken);
     }
 }

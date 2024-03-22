@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.AspNetCore.Identity;
 using FairPlayCombined.Models.Pagination;
 using FairPlayCombined.Common.GeneratorsAttributes;
+using System.Runtime.InteropServices;
 
 namespace FairPlayAdminPortal.Components.Pages
 {
-    public partial class RoleList
+    public partial class RoleList : IDisposable
     {
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private GridItemsProvider<RoleModel>? ItemsProvider;
@@ -61,6 +62,28 @@ namespace FairPlayAdminPortal.Components.Pages
                     this.toastService!.ShowError(message);
                 }
             }
+        }
+
+        private bool isDisposed=false;
+        // Dispose() calls Dispose(true)
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        // The bulk of the clean-up code is implemented in Dispose(bool)
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed) return;
+
+            if (disposing)
+            {
+                // free managed resources
+                this.cancellationTokenSource.Dispose();
+            }
+
+            isDisposed = true;
         }
     }
 }

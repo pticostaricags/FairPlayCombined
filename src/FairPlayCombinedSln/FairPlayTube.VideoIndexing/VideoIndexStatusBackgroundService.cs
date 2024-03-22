@@ -71,8 +71,8 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                         }, stoppingToken);
                         singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
                         singleVideoEntity.VideoDurationInSeconds =
-                            videosIndex!.results!.Where(p => p.id == singleVideoEntity.VideoId)
-                            .Single().durationInSeconds;
+                            videosIndex!.results!
+                            .Single(p => p.id == singleVideoEntity.VideoId).durationInSeconds;
                         var completedVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
                             singleVideoEntity.VideoId, getviTokenResult.AccessToken!,
                             stoppingToken);
