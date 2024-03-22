@@ -9,9 +9,9 @@ namespace FairPlayAdminPortal.Components.Pages
 {
     public partial class RoleList
     {
-        private CancellationTokenSource cancellationTokenSource = new();
+        private readonly CancellationTokenSource cancellationTokenSource = new();
         private GridItemsProvider<RoleModel>? ItemsProvider;
-        private PaginationState pagination = new PaginationState()
+        private readonly PaginationState pagination = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
@@ -19,7 +19,7 @@ namespace FairPlayAdminPortal.Components.Pages
         {
             ItemsProvider ??= async req =>
             {
-                PaginationRequest paginationRequest = new PaginationRequest()
+                PaginationRequest paginationRequest = new()
                 {
                     StartIndex = req.StartIndex,
                     SortingItems = req.GetSortByProperties()
@@ -34,7 +34,7 @@ namespace FairPlayAdminPortal.Components.Pages
                 };
                 var paginationResult = await this.roleService!.GetPaginatedRoleListAsync(
                     paginationRequest, this.cancellationTokenSource.Token);
-                paginationResult.Items = req.ApplySorting(paginationResult!.Items!.AsQueryable()).ToArray();
+                paginationResult.Items = [.. req.ApplySorting(paginationResult!.Items!.AsQueryable())];
                 var result = GridItemsProviderResult.From(
                 items: paginationResult.Items!,
                 totalItemCount: paginationResult!.TotalItems);

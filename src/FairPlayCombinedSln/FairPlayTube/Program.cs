@@ -120,11 +120,11 @@ builder.Services.AddTransient<OpenAIService>(sp =>
         throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY} in database");
     
     int timeoutMinutes = 3;
-    HttpClient openAIAuthorizedHttpClient = new HttpClient();
+    HttpClient openAIAuthorizedHttpClient = new();
     openAIAuthorizedHttpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
     openAIAuthorizedHttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
         "Bearer", openAIKeyEntity.Value);
-    HttpClient genericHttpClient = new HttpClient();
+    HttpClient genericHttpClient = new();
     genericHttpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
     return new OpenAIService(openAIAuthorizedHttpClient,
         genericHttpClient: genericHttpClient, new OpenAIServiceConfiguration()

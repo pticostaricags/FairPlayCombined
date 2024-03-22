@@ -30,7 +30,7 @@ namespace FairPlayCombined.Services.FairPlayDating
                 .Include(p => p.UserProfile)
                 .Where(p => p.Id == myUserId)
                 .Select(p => p.UserProfile)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(cancellationToken);
             if (myUserProfile != null)
             {
 #pragma warning disable S1125 // Boolean literals should not be redundant

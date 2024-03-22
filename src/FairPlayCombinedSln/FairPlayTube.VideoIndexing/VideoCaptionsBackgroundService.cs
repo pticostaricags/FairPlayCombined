@@ -76,7 +76,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
                 if (ex.Message.Contains("Too Many Requests"))
                 {
                     logger.LogWarning("Retrying getting captions in 1 minute");
-                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
                     try
                     {
                         videoCaptions =

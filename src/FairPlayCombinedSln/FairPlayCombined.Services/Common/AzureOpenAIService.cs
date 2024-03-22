@@ -45,7 +45,7 @@ namespace FairPlayCombined.Services.Common
         }
         public async Task<TextModerationResponse?> ModerateTextContentAsync(string text, CancellationToken cancellationToken)
         {
-            TextModerationRequest textModerationRequest = new TextModerationRequest()
+            TextModerationRequest textModerationRequest = new()
             {
                 TextToModerate = text
             };
@@ -54,11 +54,11 @@ namespace FairPlayCombined.Services.Common
                 IsOffensive = true,
                 IsSexuallyExplicit = true,
                 IsSexuallySuggestive = true,
-                OffensivePhrases = new[] { "Offensive Phrase 1", "Offensive Phrase 2" },
-                PersonalIdentifiableInformation = new[] { "PII Phrase 1", "PII Phrase 2" },
-                Profanity = new string[] { "Profanity Phrase 1", "Profanity Phrase 2" },
-                SexuallyExplicitPhrases = new string[] { "Sexually Explicit Phrase 1", "Sexually Explicit Phrase 2" },
-                SexuallySuggestivePhrases = new string[] { "Sexually Suggestive Phrase 1", "Sexually Suggestive Phrase 2" },
+                OffensivePhrases = ["Offensive Phrase 1", "Offensive Phrase 2"],
+                PersonalIdentifiableInformation = ["PII Phrase 1", "PII Phrase 2"],
+                Profanity = ["Profanity Phrase 1", "Profanity Phrase 2"],
+                SexuallyExplicitPhrases = ["Sexually Explicit Phrase 1", "Sexually Explicit Phrase 2"],
+                SexuallySuggestivePhrases = ["Sexually Suggestive Phrase 1", "Sexually Suggestive Phrase 2"],
                 TextModerated = "Text moderated"
             };
             string jsonRequest = JsonSerializer.Serialize(textModerationRequest);

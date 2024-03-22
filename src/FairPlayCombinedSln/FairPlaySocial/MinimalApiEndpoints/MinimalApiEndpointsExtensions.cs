@@ -50,7 +50,7 @@ namespace FairPlaySocial.MinimalApiEndpoints
                 [FromQuery] int startIndex,
                 CancellationToken cancellationToken) =>
             {
-                PaginationRequest paginationRequest = new PaginationRequest()
+                PaginationRequest paginationRequest = new()
                 {
                     StartIndex = startIndex,
                     PageSize = Constants.Pagination.PageSize

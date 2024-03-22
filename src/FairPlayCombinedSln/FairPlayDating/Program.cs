@@ -94,7 +94,7 @@ builder.Services.AddTransient<OpenAIClient>((sp) =>
     Constants.ConfigurationSecretsKeys.AZURE_OPENAI_KEY_KEY);
     if (azureOpenAIKeyEntity is null)
         throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_OPENAI_KEY_KEY} in database");
-    OpenAIClient openAIClient = new OpenAIClient(endpoint: new Uri(azureOpenAIEndpointEntity.Value),
+    OpenAIClient openAIClient = new(endpoint: new Uri(azureOpenAIEndpointEntity.Value),
         keyCredential: new Azure.AzureKeyCredential(azureOpenAIKeyEntity.Value));
     return openAIClient;
 });
@@ -112,7 +112,7 @@ builder.Services.AddTransient<ContentModeratorClient>(sp =>
     if (azureContentModeratorKeyEntity is null)
         throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_MODERATOR_KEY_KEY} in database");
     ContentModeratorClient contentModeratorClient =
-                new ContentModeratorClient(new ApiKeyServiceClientCredentials(azureContentModeratorKeyEntity.Value));
+                new(new ApiKeyServiceClientCredentials(azureContentModeratorKeyEntity.Value));
     contentModeratorClient.Endpoint = azureContentModeratorEndpointEntity.Value;
     return contentModeratorClient;
 });

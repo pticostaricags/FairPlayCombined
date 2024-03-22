@@ -26,17 +26,17 @@ namespace FairPlayCombined.Services.Common
         public async Task<TextModerationResultModel> ModeratePlainTextAsync(string text, CancellationToken cancellationToken)
         {
             var textBytes = Encoding.UTF8.GetBytes(text);
-            MemoryStream stream = new MemoryStream(textBytes);
+            MemoryStream stream = new(textBytes);
             var detectedLanguage = await contentModeratorClient.TextModeration
                 .DetectLanguageAsync("text/plain", stream,
                 cancellationToken: cancellationToken);
-            stream = new MemoryStream(textBytes);
+            stream = new (textBytes);
             var moderationResult = await contentModeratorClient.TextModeration
                 .ScreenTextAsync(textContentType: "text/plain", textContent: stream,
                 language: detectedLanguage.DetectedLanguageProperty,
                 autocorrect:false, pII:true,classify:true, cancellationToken:cancellationToken);
             //Check https://learn.microsoft.com/en-us/azure/ai-services/content-moderator/text-moderation-api#classification
-            TextModerationResultModel result = new TextModerationResultModel()
+            TextModerationResultModel result = new()
             {
                 IsSexuallyExplicity = moderationResult.Classification.Category1.Score >= 0.5,
                 IsSexuallySuggestive = moderationResult.Classification.Category2.Score >= 0.5,

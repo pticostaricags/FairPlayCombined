@@ -13,9 +13,9 @@ namespace FairPlayCombined.Services.Common
         public async Task<ImageModerationResultModel> AnalyzeImageAsync(byte[] imageBytes,
             CancellationToken cancellationToken)
         {
-            BinaryData binaryData = new BinaryData(imageBytes);
+            BinaryData binaryData = new(imageBytes);
             var response = await contentSafetyClient.AnalyzeImageAsync(binaryData, cancellationToken);
-            ImageModerationResultModel result = new ImageModerationResultModel()
+            ImageModerationResultModel result = new()
             {
                 IsAdult = response?.Value?.CategoriesAnalysis?.SingleOrDefault(p=>p.Category == 
                 ImageCategory.Sexual)?.Severity > 0,
@@ -32,7 +32,7 @@ namespace FairPlayCombined.Services.Common
         public async Task<TextModerationResultModel> AnalyzeTextAsync(string text, CancellationToken cancellationToken)
         {
             var response = await contentSafetyClient.AnalyzeTextAsync(text, cancellationToken);
-            TextModerationResultModel result = new TextModerationResultModel()
+            TextModerationResultModel result = new()
             {
                 IsSexuallyExplicity = response?.Value?.CategoriesAnalysis?.SingleOrDefault(p => p.Category ==
                 TextCategory.Sexual)?.Severity > 4,

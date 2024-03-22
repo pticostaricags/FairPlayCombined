@@ -77,12 +77,12 @@ namespace FairPlayCombined.Services.Generators
                                         listModelProperties.Join(dbEntityProperties,
                                         Inner => Inner, Outer => Outer,
                                         (a, b) => a);
-                                    StringBuilder createAssignment = new StringBuilder();
+                                    StringBuilder createAssignment = new();
                                     foreach (var property in propertiesInBothCreateModelAndDbEntity)
                                     {
                                         createAssignment.AppendLine($"{property} = createModel.{property},");
                                     }
-                                    StringBuilder listAssignment = new StringBuilder();
+                                    StringBuilder listAssignment = new();
                                     foreach (var property in propertiesInBothListModelAndDbEntity)
                                     {
                                         listAssignment.AppendLine($"{property} = p.{property},");
@@ -96,7 +96,7 @@ namespace FairPlayCombined.Services.Generators
                                         ).SingleOrDefault() as IPropertySymbol;
                                     string classContent = $$"""
                                         using System.Threading.Tasks;
-                                        using {{createModel.ContainingNamespace.ToString()}};
+                                        using {{createModel.ContainingNamespace}};
                                         using {{dbContextArgument.ContainingNamespace}};
                                         using Microsoft.EntityFrameworkCore;
                                         using {{dbEntityArgument.ContainingNamespace}};
@@ -118,7 +118,7 @@ namespace FairPlayCombined.Services.Generators
                                                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
                                                 {{entityName}} entity = new()
                                                 {
-                                                    {{createAssignment.ToString()}}
+                                                    {{createAssignment}}
                                                 };
                                                 await dbContext.{{entityName}}.AddAsync(entity, cancellationToken);
                                                 await dbContext.SaveChangesAsync(cancellationToken);
@@ -134,7 +134,7 @@ namespace FairPlayCombined.Services.Generators
                                                 .AsNoTracking()
                                                 .Select(p=>new {{listActivityModel.Name}}()
                                                 {
-                                                    {{listAssignment.ToString()}}
+                                                    {{listAssignment}}
                                                 }).ToArrayAsync(cancellationToken);
                                                 return result;
                                             }
@@ -149,7 +149,7 @@ namespace FairPlayCombined.Services.Generators
                                                 .AsNoTracking()
                                                 .Select(p=>new {{listActivityModel.Name}}
                                                 {
-                                                    {{listAssignment.ToString()}}
+                                                    {{listAssignment}}
                                                 })
                                                 .SingleOrDefaultAsync(cancellationToken);
                                                 return result;
@@ -181,7 +181,7 @@ namespace FairPlayCombined.Services.Generators
                                                 var query = dbContext.{{entityName}}
                                                     .Select(p=>new {{listActivityModel}}
                                                     {
-                                                        {{listAssignment.ToString()}}
+                                                        {{listAssignment}}
                                                     });
                                                 if (!String.IsNullOrEmpty(orderByString))
                                                     query = query.OrderBy(orderByString);

@@ -27,15 +27,15 @@ namespace FairPlayCombinedSln.ServiceDefaults
                         StackTrace = exception.StackTrace,
                         Message = exception.Message
                     };
-                    await fairPlayCombinedDbContext.ErrorLog.AddAsync(errorLog);
-                    await fairPlayCombinedDbContext.SaveChangesAsync();
+                    await fairPlayCombinedDbContext.ErrorLog.AddAsync(errorLog, cancellationToken);
+                    await fairPlayCombinedDbContext.SaveChangesAsync(cancellationToken);
                     errorId = errorLog.ErrorLogId;
                 }
                 catch (Exception)
                 {
                     //Global exception, not rethrowing so server app does not crash
                 }
-                ProblemDetails problemDetails = new ProblemDetails();
+                ProblemDetails problemDetails = new();
                 if (exception is RuleException || exception is ValidationException)
                 {
                     problemDetails.Detail = exception.Message;
@@ -50,7 +50,7 @@ namespace FairPlayCombinedSln.ServiceDefaults
                     problemDetails.Detail = userVisibleError;
                 }
                 problemDetails.Status = (int)System.Net.HttpStatusCode.BadRequest;
-                await httpContext.Response.WriteAsJsonAsync<ProblemDetails>(problemDetails);
+                await httpContext.Response.WriteAsJsonAsync<ProblemDetails>(problemDetails, cancellationToken);
             return true;
         }
     }

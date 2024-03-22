@@ -42,7 +42,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             {
                 allHumansPhotosPaths = Directory.GetFiles(humansPhotosDirectory, "*.jpg", SearchOption.AllDirectories);
             }
-            HttpClient httpClient = new HttpClient();
+            HttpClient httpClient = new();
             var loggerFactory = 
             LoggerFactory.Create(configure => 
             {
@@ -50,7 +50,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             });
             var geoNamesServiceLogger = loggerFactory.CreateLogger<GeoNamesService>();
             GeoNamesService geoNamesService = new(httpClient, geoNamesServiceLogger);
-            List<geodata> geoDataCollection = new List<geodata>();
+            List<geodata> geoDataCollection = [];
             for (int i = 0; i < 50; i++)
             {
                 geodata? randomGeoLocation = null;
@@ -87,7 +87,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 {
                     SRID = FairPlayCombined.Common.Constants.GeoCoordinates.SRID
                 };
-                Photo photo = new Photo()
+                Photo photo = new()
                 {
                     Filename = "test",
                     Name = "test"

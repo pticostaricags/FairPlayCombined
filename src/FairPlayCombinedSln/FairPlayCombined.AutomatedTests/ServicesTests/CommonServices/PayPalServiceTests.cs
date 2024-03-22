@@ -24,8 +24,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var clientId = configuration["PayPal:ClientId"]!;
             var clientSecret = configuration["PayPal:ClientSecret"]!;
             var sandboxBuyer = configuration["PayPal:SandboxBuyer"]!;
-            SandboxEnvironment sandboxEnvironment=new SandboxEnvironment(clientId, clientSecret);
-            PayPalHttpClient payPalHttpClient=new PayPalHttpClient(sandboxEnvironment);
+            SandboxEnvironment sandboxEnvironment=new(clientId, clientSecret);
+            PayPalHttpClient payPalHttpClient=new(sandboxEnvironment);
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<PayPalService>();
             PayPalService payPalService = new(payPalHttpClient, logger);

@@ -28,7 +28,8 @@ public class FairPlayCombinedDbInitializer(ILogger<FairPlayCombinedDbInitializer
             {
                 var rolesCount = await dbContext.AspNetRoles.CountAsync(cancellationToken);
                 return rolesCount > 0;
-            }
+            },
+            stoppingToken
             );
         var roles = await dbContext.AspNetRoles.ToArrayAsync(stoppingToken);
     }

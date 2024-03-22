@@ -4,6 +4,8 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using PayoutsSdk.Core;
 using PayoutsSdk.Payouts;
+using PayPal.v1.BillingPlans;
+using PayPal.v1.Payments;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -29,7 +31,7 @@ namespace FairPlayCombined.Services.Common
                     new PayoutItem()
                     {
                         RecipientType="EMAIL",
-                        Amount=new Currency(){
+                        Amount=new PayoutsSdk.Payouts.Currency(){
                             CurrencyCode="USD",
                             Value=amount.ToString(),
                         },

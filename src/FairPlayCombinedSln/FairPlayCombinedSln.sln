@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.DatabaseMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayBudget", "FairPlayBudget\FairPlayBudget.csproj", "{7A94972A-A31B-4AA8-98F4-55D0A215173E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{123F2EE1-42C9-418B-89DE-1B1809B3CC8A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Enable_Paid_Tests|Any CPU = Debug_Enable_Paid_Tests|Any CPU
