@@ -23,8 +23,10 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var key = configuration["AzureContentModerator:Key"];
             var adultImageFilePath = configuration["AdultImageFilePath"];
             ContentModeratorClient contentModeratorClient =
-                new(new ApiKeyServiceClientCredentials(key));
-            contentModeratorClient.Endpoint = endpoint;
+                new(new ApiKeyServiceClientCredentials(key))
+                {
+                    Endpoint = endpoint
+                };
             AzureContentModeratorService azureContentModeratorService = new(contentModeratorClient);
             var imageStream = File.OpenRead(adultImageFilePath!);
             var result = await azureContentModeratorService.ModerateImageAsync(imageStream,
@@ -39,15 +41,17 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var configuration = configurationBuilder.Build();
             var endpoint = configuration["AzureContentModerator:Endpoint"];
             var key = configuration["AzureContentModerator:Key"];
-            ContentModeratorClient contentModeratorClient = 
-                new(new ApiKeyServiceClientCredentials(key));
-            contentModeratorClient.Endpoint = endpoint;
+            ContentModeratorClient contentModeratorClient =
+                new(new ApiKeyServiceClientCredentials(key))
+                {
+                    Endpoint = endpoint
+                };
             AzureContentModeratorService azureContentModeratorService = new(contentModeratorClient);
             var testSexuallyOffensivePhrase = configuration["testSexuallyOffensivePhrase"]!;
             var moderationResult = await azureContentModeratorService.ModeratePlainTextAsync(testSexuallyOffensivePhrase,
                 CancellationToken.None);
             Assert.Inconclusive("Azure content moderator not detecting the slang");
-            //Assert.IsTrue(moderationResult.IsSexuallyExplicity);
+            Assert.IsTrue(moderationResult.IsSexuallyExplicity);
         }
     }
 }

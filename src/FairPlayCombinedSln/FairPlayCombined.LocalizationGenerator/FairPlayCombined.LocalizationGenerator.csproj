@@ -10,11 +10,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FairPlayAdminPortal\FairPlayAdminPortal.csproj">
-      <Private>
-      </Private>
-      <ExcludeAssets>all</ExcludeAssets>
-    </ProjectReference>
+	<ProjectReference Include="..\FairPlayAdminPortal\FairPlayAdminPortal.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
     <ProjectReference Include="..\FairPlayDating\FairPlayDating.csproj" />
