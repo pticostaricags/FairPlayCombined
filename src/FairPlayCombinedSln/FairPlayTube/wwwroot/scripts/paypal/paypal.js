@@ -21,7 +21,7 @@
         createOrder: function (data, actions) {
             var selectedItemDescription = itemOptions.options[itemOptions.selectedIndex].value;
             var selectedItemPrice = parseFloat(itemOptions.options[itemOptions.selectedIndex].getAttribute("price"));
-            var tax = (0 === 0) ? 0 : (selectedItemPrice * (parseFloat(0) / 100));
+            var tax = (selectedItemPrice === 0) ? 0 : (selectedItemPrice * (parseFloat(selectedItemPrice) / 100));
             if (quantitySelect.options.length > 0) {
                 quantity = parseInt(quantitySelect.options[quantitySelect.selectedIndex].value);
             } else {
