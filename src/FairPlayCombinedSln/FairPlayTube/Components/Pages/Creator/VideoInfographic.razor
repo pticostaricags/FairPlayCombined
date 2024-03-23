@@ -1,4 +1,4 @@
-﻿@page "/User/YouTubeThumbnail/{VideoInfoId:long}"
+﻿@page "/Creator/VideoInfographic/{VideoInfoId:long}"
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
@@ -15,21 +15,21 @@
 @inject VideoCaptionsService videoCaptionsService
 
 <PageTitle>
-    Video Thumbnail
+    Video Infographic
 </PageTitle>
 
 <h3>
-    Video Thumbnail
+    Video Infographic
 </h3>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 
 <div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
+    @if (!String.IsNullOrWhiteSpace(this.GeneratedinfographicUri))
     {
-        <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
-            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
+        <a data-enhance-nav="false" href="@this.GeneratedinfographicUri" target="_blank">
+            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedinfographicUri" />
         </a>
         <p>
             @this.RevisedPrompt
@@ -44,7 +44,7 @@
     private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
     private CancellationTokenSource cancellationTokenSource = new();
-    private string? GeneratedYouTubeThumbnailUri { get; set; }
+    private string? GeneratedinfographicUri { get; set; }
     private string? RevisedPrompt { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -56,13 +56,13 @@
         var englishCaptions = await this.videoCaptionsService
         .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
         language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        string prompt = $"YouTube Thumbnail for video based on the following data. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+        string prompt = $"Infographic for video based on the following data. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
         if (prompt.Length > 4000)
             prompt = prompt.Substring(0, 4000);
         var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
         if (result != null)
         {
-            this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
+            this.GeneratedinfographicUri = result!.data![0]!.url!;
             this.RevisedPrompt = result!.data[0]!.revised_prompt;
         }
         this.IsBusy = false;

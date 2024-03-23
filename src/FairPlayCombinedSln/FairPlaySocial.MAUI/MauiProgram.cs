@@ -60,16 +60,14 @@ namespace FairPlaySocial.MAUI
                 });
             return builder.Build();
         }
-    }
-}
+        public class CustomAccessTokenAuthenticationProvider : IAccessTokenProvider
+        {
+            public AllowedHostsValidator AllowedHostsValidator => new AllowedHostsValidator();
 
-
-public class CustomAccessTokenAuthenticationProvider : IAccessTokenProvider
-{
-    public AllowedHostsValidator AllowedHostsValidator => new AllowedHostsValidator();
-
-    public Task<string> GetAuthorizationTokenAsync(Uri uri, Dictionary<string, object>? additionalAuthenticationContext = null, CancellationToken cancellationToken = default)
-    {
-        return Task.FromResult(UserContext.AccessToken ?? String.Empty);
+            public Task<string> GetAuthorizationTokenAsync(Uri uri, Dictionary<string, object>? additionalAuthenticationContext = null, CancellationToken cancellationToken = default)
+            {
+                return Task.FromResult(UserContext.AccessToken ?? String.Empty);
+            }
+        }
     }
 }

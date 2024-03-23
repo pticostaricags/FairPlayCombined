@@ -1,4 +1,5 @@
-﻿@page "/User/MyVideos"
+﻿@attribute [Route(Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos)]
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
@@ -181,36 +182,36 @@
 
     private void OnManageYouTubeCaptionsButtonClicked(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/User/VideoCaptions/VideoInfo{videoInfoModel.VideoInfoId}/YouTube/{videoInfoModel.YouTubeVideoId}");
+        this.navigationManager.NavigateTo($"/Creator/VideoCaptions/VideoInfo{videoInfoModel.VideoInfoId}/YouTube/{videoInfoModel.YouTubeVideoId}");
     }
 
     private void OnCreateYouTubeThumbnailClicked(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/User/YouTubeThumbnail/{videoInfoModel.VideoInfoId}");
+        this.navigationManager.NavigateTo($"/Creator/YouTubeThumbnail/{videoInfoModel.VideoInfoId}");
     }
 
     private void OnCreateInfographicClicked(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/User/VideoInfographic/{videoInfoModel.VideoInfoId}");
+        this.navigationManager.NavigateTo($"/Creator/VideoInfographic/{videoInfoModel.VideoInfoId}");
     }
 
     private void OnGetLinkedInDigitalMarketingIdeasClicked(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/User/VideoDigitalMarketing/{videoInfoModel.VideoInfoId}");
+        this.navigationManager.NavigateTo($"/Creator/VideoDigitalMarketing/{videoInfoModel.VideoInfoId}");
     }
 
     private void OnGetPassiveIncomeIdeas(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/User/VideoPassiveIncome/{videoInfoModel.VideoInfoId}");
+        this.navigationManager.NavigateTo($"/Creator/VideoPassiveIncome/{videoInfoModel.VideoInfoId}");
     }
 
     private void OnGetLinkedInDailyPostsClicked(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/User/VideoDailyPosts/{videoInfoModel.VideoInfoId}");
+        this.navigationManager.NavigateTo($"/Creator/VideoDailyPosts/{videoInfoModel.VideoInfoId}");
     }
 
     private void OnCreateLinkedInArticleClicked(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/User/VideoLinkedInArticle/{videoInfoModel.VideoInfoId}");
+        this.navigationManager.NavigateTo($"/Creator/VideoLinkedInArticle/{videoInfoModel.VideoInfoId}");
     }
 }

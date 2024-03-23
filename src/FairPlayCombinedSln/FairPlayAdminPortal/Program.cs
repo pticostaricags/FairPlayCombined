@@ -75,6 +75,8 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<ApplicationUserVouchService>();
+builder.Services.AddTransient<ResourceService>();
+builder.Services.AddTransient<ConfigurationSecretService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -96,7 +98,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-await Task.Delay(TimeSpan.FromSeconds(60));
 using var scope = app.Services.CreateScope();
 using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
 

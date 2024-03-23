@@ -1,0 +1,31 @@
+{
+  "solution": {
+    "path": "FairPlayCombinedSln.sln",
+    "projects": [
+      "FairPlayAdminPortal\\FairPlayAdminPortal.csproj",
+      "FairPlayBudget\\FairPlayBudget.csproj",
+      "FairPlayCombined.AutomatedTests\\FairPlayCombined.AutomatedTests.csproj",
+      "FairPlayCombined.CitiesImporter\\FairPlayCombined.CitiesImporter.csproj",
+      "FairPlayCombined.Common\\FairPlayCombined.Common.csproj",
+      "FairPlayCombined.DataAccess\\FairPlayCombined.DataAccess.csproj",
+      "FairPlayCombined.DatabaseManager\\FairPlayCombined.DatabaseManager.csproj",
+      "FairPlayCombined.Interfaces\\FairPlayCombined.Interfaces.csproj",
+      "FairPlayCombined.LocalizationGenerator\\FairPlayCombined.LocalizationGenerator.csproj",
+      "FairPlayCombined.Models\\FairPlayCombined.Models.csproj",
+      "FairPlayCombined.Services.Generators\\FairPlayCombined.Services.Generators.csproj",
+      "FairPlayCombined.Services\\FairPlayCombined.Services.csproj",
+      "FairPlayCombined.Shared\\FairPlayCombined.Shared.csproj",
+      "FairPlayCombinedDb\\FairPlayCombinedDb.sqlproj",
+      "FairPlayCombinedSln.AppHost\\FairPlayCombinedSln.AppHost.csproj",
+      "FairPlayCombinedSln.ServiceDefaults\\FairPlayCombinedSln.ServiceDefaults.csproj",
+      "FairPlayDating.TestDataGenerator\\FairPlayDating.TestDataGenerator.csproj",
+      "FairPlayDating\\FairPlayDating.csproj",
+      "FairPlayShop\\FairPlayShop.csproj",
+      "FairPlaySocial.ClientServices\\FairPlaySocial.ClientServices.csproj",
+      "FairPlaySocial.TestDataGenerator\\FairPlaySocial.TestDataGenerator.csproj",
+      "FairPlaySocial\\FairPlaySocial.csproj",
+      "FairPlayTube.VideoIndexing\\FairPlayTube.VideoIndexing.csproj",
+      "FairPlayTube\\FairPlayTube.csproj"
+    ]
+  }
+}

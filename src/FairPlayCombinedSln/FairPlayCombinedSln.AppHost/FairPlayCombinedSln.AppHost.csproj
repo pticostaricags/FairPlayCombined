@@ -1,43 +1,35 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAspireHost>true</IsAspireHost>
     <UserSecretsId>e867248f-3eea-4583-af41-43c0cf232d5b</UserSecretsId>
     <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Enable_Paid_Tests|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting" Version="8.0.0-preview.1.23557.2" />
+    <PackageReference Include="Aspire.Hosting" Version="9.0.0-preview.2.24162.2" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.12.0.78982">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\FairPlayAdminPortal\FairPlayAdminPortal.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
     <ProjectReference Include="..\FairPlayBudget\FairPlayBudget.csproj" />
-    <ProjectReference Include="..\FairPlayCombined.CitiesImporter\FairPlayCombined.CitiesImporter.csproj">
-      <ExcludeAssets>all</ExcludeAssets>
-    </ProjectReference>
+    <ProjectReference Include="..\FairPlayCombined.CitiesImporter\FairPlayCombined.CitiesImporter.csproj" />
     <ProjectReference Include="..\FairPlayCombined.DatabaseManager\FairPlayCombined.DatabaseManager.csproj" />
     <ProjectReference Include="..\FairPlayCombined.LocalizationGenerator\FairPlayCombined.LocalizationGenerator.csproj">
       <ExcludeAssets>all</ExcludeAssets>
@@ -62,5 +54,4 @@
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
   </ItemGroup>
-
 </Project>

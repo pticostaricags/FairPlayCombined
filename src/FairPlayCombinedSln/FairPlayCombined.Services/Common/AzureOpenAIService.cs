@@ -45,7 +45,7 @@ namespace FairPlayCombined.Services.Common
         }
         public async Task<TextModerationResponse?> ModerateTextContentAsync(string text, CancellationToken cancellationToken)
         {
-            TextModerationRequest textModerationRequest = new TextModerationRequest()
+            TextModerationRequest textModerationRequest = new()
             {
                 TextToModerate = text
             };
@@ -54,11 +54,11 @@ namespace FairPlayCombined.Services.Common
                 IsOffensive = true,
                 IsSexuallyExplicit = true,
                 IsSexuallySuggestive = true,
-                OffensivePhrases = new[] { "Offensive Phrase 1", "Offensive Phrase 2" },
-                PersonalIdentifiableInformation = new[] { "PII Phrase 1", "PII Phrase 2" },
-                Profanity = new string[] { "Profanity Phrase 1", "Profanity Phrase 2" },
-                SexuallyExplicitPhrases = new string[] { "Sexually Explicit Phrase 1", "Sexually Explicit Phrase 2" },
-                SexuallySuggestivePhrases = new string[] { "Sexually Suggestive Phrase 1", "Sexually Suggestive Phrase 2" },
+                OffensivePhrases = ["Offensive Phrase 1", "Offensive Phrase 2"],
+                PersonalIdentifiableInformation = ["PII Phrase 1", "PII Phrase 2"],
+                Profanity = ["Profanity Phrase 1", "Profanity Phrase 2"],
+                SexuallyExplicitPhrases = ["Sexually Explicit Phrase 1", "Sexually Explicit Phrase 2"],
+                SexuallySuggestivePhrases = ["Sexually Suggestive Phrase 1", "Sexually Suggestive Phrase 2"],
                 TextModerated = "Text moderated"
             };
             string jsonRequest = JsonSerializer.Serialize(textModerationRequest);
@@ -100,8 +100,8 @@ namespace FairPlayCombined.Services.Common
             {
                 if (ex.ErrorCode == "content_filter")
                 {
-                    int startOfError = ex.Message.IndexOf("{");
-                    int endOfError = ex.Message.LastIndexOf("}");
+                    int startOfError = ex.Message.IndexOf('{');
+                    int endOfError = ex.Message.LastIndexOf('}');
                     string errorContent = ex.Message.Substring(startOfError, endOfError - startOfError + 1);
                     ContentFilterJsonException contentFilterJsonException =
                         JsonSerializer.Deserialize<ContentFilterJsonException>(errorContent)!;
@@ -176,6 +176,7 @@ namespace FairPlayCombined.Services.Common
 
 #pragma warning disable S2166 // Classes named like "Exception" should extend "Exception" or a subclass
 #pragma warning disable S101 // Types should be named in PascalCase
+#pragma warning disable IDE1006 // Naming Styles
     public class ContentFilterJsonException
     {
         public Error? error { get; set; }
@@ -231,3 +232,4 @@ namespace FairPlayCombined.Services.Common
 
 
 }
+#pragma warning restore IDE1006 // Naming Styles

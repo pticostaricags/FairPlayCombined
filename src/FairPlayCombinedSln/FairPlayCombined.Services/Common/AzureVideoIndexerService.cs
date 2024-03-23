@@ -21,13 +21,16 @@ using static FairPlayCombined.Common.Constants;
 
 namespace FairPlayCombined.Services.Common
 {
+#pragma warning disable IDE1006 // Naming Styles
     public class AzureVideoIndexerService(
         AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration,
         HttpClient httpClient)
     {
+#pragma warning disable CA1822 // Mark members as static
         public async Task<string> AuthenticateToAzureArmAsync()
+#pragma warning restore CA1822 // Mark members as static
         {
-            var tokenRequestContext = new TokenRequestContext(new[] { "https://management.azure.com/.default" });
+            var tokenRequestContext = new TokenRequestContext(["https://management.azure.com/.default"]);
             var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, CancellationToken.None);
             return tokenRequestResult.Token;
         }
@@ -53,7 +56,7 @@ namespace FairPlayCombined.Services.Common
             }
             else
             {
-                var errorDetails = await response.Content.ReadAsStringAsync();
+                var errorDetails = await response.Content.ReadAsStringAsync(cancellationToken:cancellationToken);
                 throw new AzureVideoIndexerException($"Error. Reason: {response.ReasonPhrase}. Details: {errorDetails}");
             }
         }
@@ -69,22 +72,26 @@ namespace FairPlayCombined.Services.Common
                 $"?name={indexVideoFromBase64FormatModel.Name}" +
                 $"&filename={indexVideoFromBase64FormatModel.Name}";
             MultipartFormDataContent multipartContent =
-                   new MultipartFormDataContent();
-            multipartContent.Add(
-                new StreamContent(new MemoryStream(indexVideoFromBase64FormatModel!.FileBytes!)),
-                "file", indexVideoFromBase64FormatModel.Name!);
+                   new()
+                   {
+                       {
+                           new StreamContent(new MemoryStream(indexVideoFromBase64FormatModel!.FileBytes!)),
+                           "file",
+                           indexVideoFromBase64FormatModel.Name!
+                       }
+                   };
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", viAccountAccessToken);
             var response = await httpClient.PostAsync(requestUrl, multipartContent, cancellationToken: cancellationToken);
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<UploadVideoResponseModel>();
+                var result = await response.Content.ReadFromJsonAsync<UploadVideoResponseModel>(cancellationToken: cancellationToken);
                 return result;
             }
             else
             {
                 var reasonPhrase = response.ReasonPhrase;
-                var responseContent = await response.Content.ReadAsStringAsync();
+                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken:cancellationToken);
                 throw new AzureVideoIndexerException($"Error: {reasonPhrase} - Details:{responseContent}");
             }
         }
@@ -117,13 +124,13 @@ namespace FairPlayCombined.Services.Common
                 var response = await httpClient.PostAsync(requestUrl, null, cancellationToken);
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<UploadVideoResponseModel>();
+                    var result = await response.Content.ReadFromJsonAsync<UploadVideoResponseModel>(cancellationToken:cancellationToken);
                     return result;
                 }
                 else
                 {
                     var reasonPhrase = response.ReasonPhrase;
-                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var responseContent = await response.Content.ReadAsStringAsync(cancellationToken:cancellationToken);
                     throw new AzureVideoIndexerException($"Error: {reasonPhrase} - Details:{responseContent}");
                 }
             }
@@ -287,3 +294,4 @@ namespace FairPlayCombined.Services.Common
         public string? personModelId { get; set; }
     }
 }
+#pragma warning restore IDE1006 // Naming Styles

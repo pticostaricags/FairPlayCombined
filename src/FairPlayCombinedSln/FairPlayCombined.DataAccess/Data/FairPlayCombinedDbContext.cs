@@ -38,6 +38,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<City> City { get; set; }
 
+    public virtual DbSet<ConfigurationSecret> ConfigurationSecret { get; set; }
+
     public virtual DbSet<Country> Country { get; set; }
 
     public virtual DbSet<Culture> Culture { get; set; }
@@ -102,6 +104,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<TattooStatus> TattooStatus { get; set; }
 
+    public virtual DbSet<ThemeConfiguration> ThemeConfiguration { get; set; }
+
     public virtual DbSet<UserActivity> UserActivity { get; set; }
 
     public virtual DbSet<UserMessage> UserMessage { get; set; }
@@ -129,6 +133,10 @@ public partial class FairPlayCombinedDbContext : DbContext
     public virtual DbSet<VideoJob> VideoJob { get; set; }
 
     public virtual DbSet<VideoJobApplicationStatus> VideoJobApplicationStatus { get; set; }
+
+    public virtual DbSet<VideoKeyword> VideoKeyword { get; set; }
+
+    public virtual DbSet<VideoTopic> VideoTopic { get; set; }
 
     public virtual DbSet<VideoVisibility> VideoVisibility { get; set; }
 
@@ -473,9 +481,9 @@ public partial class FairPlayCombinedDbContext : DbContext
         modelBuilder.Entity<VideoInfo>(entity =>
         {
             entity.Property(e => e.ApplicationUserId).HasComment("Video Owner Id");
-            entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("getutcdate()");
-            entity.Property(e => e.RowCreationUser).HasDefaultValueSql("'unknown'");
-            entity.Property(e => e.SourceApplication).HasDefaultValueSql("'unknown'");
+            entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.RowCreationUser).HasDefaultValueSql("'Unknown'");
+            entity.Property(e => e.SourceApplication).HasDefaultValueSql("'Unknown'");
             entity.Property(e => e.VideoVisibilityId).HasDefaultValueSql("1");
 
             entity.HasOne(d => d.ApplicationUser).WithMany(p => p.VideoInfo)
@@ -511,6 +519,20 @@ public partial class FairPlayCombinedDbContext : DbContext
         modelBuilder.Entity<VideoJobApplicationStatus>(entity =>
         {
             entity.Property(e => e.VideoJobApplicationStatusId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<VideoKeyword>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoKeyword)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoKeyword_VideoInfo");
+        });
+
+        modelBuilder.Entity<VideoTopic>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoTopic)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoTopic_VideoInfo");
         });
 
         modelBuilder.Entity<VideoVisibility>(entity =>

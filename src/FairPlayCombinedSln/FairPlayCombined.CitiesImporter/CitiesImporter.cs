@@ -1,14 +1,7 @@
 namespace FairPlayCombined.CitiesImporter;
 
-public class CitiesImporter : BackgroundService
+public class CitiesImporter(ILogger<CitiesImporter> _logger) : BackgroundService
 {
-    private readonly ILogger<CitiesImporter> _logger;
-
-    public CitiesImporter(ILogger<CitiesImporter> logger)
-    {
-        _logger = logger;
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (!stoppingToken.IsCancellationRequested)

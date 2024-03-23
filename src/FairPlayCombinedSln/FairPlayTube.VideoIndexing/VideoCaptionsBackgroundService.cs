@@ -12,7 +12,6 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(TimeSpan.FromSeconds(5)); //Workaround waiting for db container to be ready
         TimeSpan timeToWait = TimeSpan.FromMinutes(5);
         var scope = serviceScopeFactory.CreateScope();
         var dbContextFactory = scope.ServiceProvider
@@ -77,7 +76,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
                 if (ex.Message.Contains("Too Many Requests"))
                 {
                     logger.LogWarning("Retrying getting captions in 1 minute");
-                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
                     try
                     {
                         videoCaptions =

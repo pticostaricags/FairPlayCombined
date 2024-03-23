@@ -12,7 +12,7 @@ public class FairPlayCombinedDbInitializer(ILogger<FairPlayCombinedDbInitializer
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(TimeSpan.FromSeconds(10));
+        logger.LogInformation("Start of method: {methodName}", nameof(ExecuteAsync));
         var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
         var strategy = dbContext.Database.CreateExecutionStrategy();
@@ -29,8 +29,8 @@ public class FairPlayCombinedDbInitializer(ILogger<FairPlayCombinedDbInitializer
             {
                 var rolesCount = await dbContext.AspNetRoles.CountAsync(cancellationToken);
                 return rolesCount > 0;
-            }
+            },
+            stoppingToken
             );
-        var roles = await dbContext.AspNetRoles.ToArrayAsync(stoppingToken);
     }
 }

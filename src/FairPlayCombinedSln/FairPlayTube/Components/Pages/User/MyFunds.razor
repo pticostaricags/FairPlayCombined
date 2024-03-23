@@ -1,0 +1,13 @@
+﻿@page "/User/MyFunds"
+@using FairPlayTube.Components.PayPal
+@attribute [Authorize]
+@rendermode RenderMode.InteractiveServer
+
+<PayPalCheckout OnFundsAdded="OnFundsAdded"></PayPalCheckout>
+@code
+{
+    private async Task OnFundsAdded()
+    {
+        await Task.Yield();
+    }
+}

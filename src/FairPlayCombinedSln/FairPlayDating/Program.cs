@@ -18,6 +18,9 @@ using FairPlayCombined.Shared.CustomLocalization.EF;
 using Azure.AI.OpenAI;
 using FairPlayCombined.Common.Identity;
 using Microsoft.Azure.CognitiveServices.ContentModerator;
+using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Common;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,29 +82,31 @@ builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var azureOpenAIKey = builder.Configuration["AzureOpenAIKey"] ??
-    throw new InvalidOperationException("'AzureOpenAIKey' not found");
-var azureOpenAIEndpoint = builder.Configuration["AzureOpenAIEndpoint"] ??
-    throw new InvalidOperationException("'AzureOpenAIEndpoint' not found");
-
 
 builder.Services.AddTransient<OpenAIClient>((sp) => 
 {
-    OpenAIClient openAIClient = new OpenAIClient(endpoint: new Uri(azureOpenAIEndpoint),
-        keyCredential: new Azure.AzureKeyCredential(azureOpenAIKey));
-    return openAIClient;
+    var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+    var azureOpenAIEndpointEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_OPENAI_ENDPOINT_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_OPENAI_ENDPOINT_KEY} in database");
+    var azureOpenAIKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_OPENAI_KEY_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_OPENAI_KEY_KEY} in database");
+    return new OpenAIClient(endpoint: new Uri(azureOpenAIEndpointEntity.Value),
+        keyCredential: new Azure.AzureKeyCredential(azureOpenAIKeyEntity.Value));
 });
 builder.Services.AddTransient<AzureOpenAIService>();
 
-var azureContentModeratorEndpoint = builder.Configuration["AzureContentModeratorEndpoint"] ??
-    throw new InvalidOperationException("'AzureContentModeratorEndpoint' not found");
-var azureContentModeratorKey = builder.Configuration["AzureContentModeratorKey"] ??
-    throw new InvalidOperationException("'AzureContentModeratorKey' not found");
 builder.Services.AddTransient<ContentModeratorClient>(sp => 
 {
+    var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+    var azureContentModeratorEndpointEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_CONTENT_MODERATOR_ENDPOINT_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_MODERATOR_ENDPOINT_KEY} in database");
+    var azureContentModeratorKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_CONTENT_MODERATOR_KEY_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_MODERATOR_KEY_KEY} in database");
     ContentModeratorClient contentModeratorClient =
-                new ContentModeratorClient(new ApiKeyServiceClientCredentials(azureContentModeratorKey));
-    contentModeratorClient.Endpoint = azureContentModeratorEndpoint;
+                new(new ApiKeyServiceClientCredentials(azureContentModeratorKeyEntity.Value))
+                {
+                    Endpoint = azureContentModeratorEndpointEntity.Value
+                };
     return contentModeratorClient;
 });
 builder.Services.AddTransient<AzureContentModeratorService>();
@@ -152,7 +157,7 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-await Task.Delay(TimeSpan.FromSeconds(60));
+
 using var scope = app.Services.CreateScope();
 using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
 

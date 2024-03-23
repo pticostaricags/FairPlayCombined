@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+#pragma warning disable IDE1006 // Naming Styles
 namespace FairPlayCombined.Models.AzureVideoIndexer
 {
 
@@ -21,3 +21,4 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
     }
 
 }
+#pragma warning restore IDE1006 // Naming Styles

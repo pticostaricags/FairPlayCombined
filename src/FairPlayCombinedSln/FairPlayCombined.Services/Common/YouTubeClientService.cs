@@ -41,9 +41,9 @@ namespace FairPlayCombined.Services.Common
                     GoogleClientSecrets.FromStream(stream).Secrets,
                     // This OAuth 2.0 access scope allows an application to upload files to the
                     // authenticated user's YouTube channel, but doesn't allow other types of access.
-                    new[] { YouTubeService.Scope.YoutubeUpload,
+                    [ YouTubeService.Scope.YoutubeUpload,
                     YouTubeService.Scope.YoutubeForceSsl,
-                    YouTubeService.Scope.Youtubepartner},
+                    YouTubeService.Scope.Youtubepartner],
                     userName,
                     CancellationToken.None
                 );
@@ -57,15 +57,17 @@ namespace FairPlayCombined.Services.Common
             return youtubeService;
         }
 
-        public async Task<UploadStatus> UploadCaptionsAsync(string youtubeVideoId, string language, 
+        public static async Task<UploadStatus> UploadCaptionsAsync(string youtubeVideoId, string language, 
             YouTubeService youTubeService,
             MemoryStream captionsStream,
             Action<IUploadProgress> progressChanged,
             Action<Caption> responseReceived,
             CancellationToken cancellationToken)
         {
-            Caption caption = new Caption();
-            caption.Snippet = new CaptionSnippet();
+            Caption caption = new()
+            {
+                Snippet = new CaptionSnippet()
+            };
             caption.Snippet.Name = $"VI";
             caption.Snippet.Language = language;
             caption.Snippet.VideoId = youtubeVideoId;
@@ -74,9 +76,7 @@ namespace FairPlayCombined.Services.Common
                 captionsStream, "*/*");
             uploadCaptionsOperation.ProgressChanged += progressChanged;
             uploadCaptionsOperation.ResponseReceived += responseReceived;
-#pragma warning disable S1481 // Unused local variables should be removed
             var result = await uploadCaptionsOperation.UploadAsync(cancellationToken);
-#pragma warning restore S1481 // Unused local variables should be removed
             return result.Status;
         }
     }

@@ -26,7 +26,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var azureVideoIndexerResourceGroup = configuration["AzureVideoIndexerResourceGroup"];
             var azureVideoIndexerResourceName = configuration["AzureVideoIndexerResourceName"];
             var azureVideoIndexerSubscriptionId = configuration["AzureVideoIndexerSubscriptionId"];
-            var testVideoId = configuration["TestVideoId"];
+            _ = configuration["TestVideoId"];
             AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration =
                 new()
                 {
@@ -227,9 +227,11 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             Assert.IsNotNull(result);
         }
 
+#pragma warning disable CA1822 // Mark members as static
         private async Task<string> AuthenticatedToAzureArmAsync()
+#pragma warning restore CA1822 // Mark members as static
         {
-            var tokenRequestContext = new TokenRequestContext(new[] { "https://management.azure.com/.default" });
+            var tokenRequestContext = new TokenRequestContext(["https://management.azure.com/.default"]);
             var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, CancellationToken.None);
             return tokenRequestResult.Token;
         }

@@ -123,7 +123,7 @@ Import From File:
     private CancellationTokenSource cancellationTokenSource = new();
     private int? SelectedCurrencyIdForOverride { get; set; }
     private bool IsBusy { get; set; }
-    private IQueryable<CreateTransactionModel> Transactions => this.createMonthlyBudgetInfoModel.Transactions.AsQueryable();
+    private IQueryable<CreateTransactionModel> Transactions => this.createMonthlyBudgetInfoModel.Transactions!.AsQueryable();
 
     protected override async Task OnInitializedAsync()
     {
@@ -211,8 +211,7 @@ Import From File:
             int maxAllowedSizeInKb = maxAllowedSizeInMB * 1024 * 1024;
             var stream = inputFileChangeEventArgs.File.OpenReadStream(maxAllowedSizeInKb,
             cancellationToken: CancellationToken.None);
-            var tmpCreateMonthlyBudgetInfoModel = await this.monthlyBudgetInfoService!
-            .ImportFromTransactionsFileStreamAsync(stream, cancellationToken: CancellationToken.None);
+            var tmpCreateMonthlyBudgetInfoModel = await MonthlyBudgetInfoService.ImportFromTransactionsFileStreamAsync(stream, cancellationToken: CancellationToken.None);
             tmpCreateMonthlyBudgetInfoModel.OwnerId = this.createMonthlyBudgetInfoModel.OwnerId;
             tmpCreateMonthlyBudgetInfoModel.Description = this.createMonthlyBudgetInfoModel.Description;
             this.createMonthlyBudgetInfoModel = tmpCreateMonthlyBudgetInfoModel;

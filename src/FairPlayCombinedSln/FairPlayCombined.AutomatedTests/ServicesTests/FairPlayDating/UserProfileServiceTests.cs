@@ -21,7 +21,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestCleanup]
         public async Task TestCleanupAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
@@ -82,20 +82,20 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_CreateUserProfileAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserProfileService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            (AspNetUsers fromUser, AspNetUsers toUser, 
-                Activity activity, Gender gender,
+            (AspNetUsers fromUser, _,
+                _, Gender gender,
                 DateObjective dateObjective, EyesColor eyesColor, 
                 HairColor hairColor, KidStatus kidStatus, Religion religion,
                 TattooStatus tattooStatus, Photo photo) = 
                 await CreateTestRecordsAsync(dbContext);
             var UserProfileService = sp.GetRequiredService<UserProfileService>();
-            CreateUserProfileModel createUserProfileModel = new CreateUserProfileModel()
+            CreateUserProfileModel createUserProfileModel = new()
             {
                 ApplicationUserId = fromUser.Id,
                 ProfilePhotoId = photo.PhotoId,
@@ -149,7 +149,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             string fromUserName = "fromuser@test.test";
             string toUserName = "toUser@test.test";
-            AspNetUsers fromUser = new AspNetUsers()
+            AspNetUsers fromUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = fromUserName,
@@ -157,7 +157,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 Email = fromUserName,
                 NormalizedEmail = fromUserName.Normalize()
             };
-            AspNetUsers toUser = new AspNetUsers()
+            AspNetUsers toUser = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = toUserName,
@@ -167,47 +167,47 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             };
             await dbContext.AspNetUsers.AddRangeAsync(fromUser);
             await dbContext.AspNetUsers.AddRangeAsync(toUser);
-            Activity activity = new Activity()
+            Activity activity = new()
             {
                 Name = "TEST ACTIVITY"
             };
             await dbContext.Activity.AddAsync(activity);
-            Gender gender = new Gender()
+            Gender gender = new()
             {
                 Name = "TEST GENDER"
             };
             await dbContext.Gender.AddAsync(gender);
-            DateObjective dateObjective = new DateObjective()
+            DateObjective dateObjective = new()
             {
                 Name = "TEST OBJECTIVE"
             };
             await dbContext.DateObjective.AddAsync(dateObjective);
-            EyesColor eyesColor = new EyesColor()
+            EyesColor eyesColor = new()
             {
                 Name = "TEST EYES COLOR"
             };
             await dbContext.EyesColor.AddAsync(eyesColor);
-            HairColor hairColor = new HairColor()
+            HairColor hairColor = new()
             {
                 Name = "TEST HAIR COLOR"
             };
             await dbContext.HairColor.AddAsync(hairColor);
-            KidStatus kidStatus = new KidStatus()
+            KidStatus kidStatus = new()
             {
                 Name = "TEST STATUS"
             };
             await dbContext.KidStatus.AddAsync(kidStatus);
-            Religion religion = new Religion()
+            Religion religion = new()
             {
                 Name = "TEST RELIGION",
             };
             await dbContext.Religion.AddAsync(religion);
-            TattooStatus tattooStatus = new TattooStatus()
+            TattooStatus tattooStatus = new()
             {
                 Name = "TEST STATUS"
             };
             await dbContext.TattooStatus.AddAsync(tattooStatus);
-            Photo photo = new Photo()
+            Photo photo = new()
             {
                 Name = nameof(Properties.Resources.TestProduct),
                 Filename = $"{Properties.Resources.TestProduct}.bmp",
@@ -222,20 +222,20 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_DeleteUserProfileAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserProfileService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            (AspNetUsers fromUser, AspNetUsers toUser,
-                            Activity activity, Gender gender,
+            (AspNetUsers fromUser, _,
+                            _, Gender gender,
                             DateObjective dateObjective, EyesColor eyesColor,
                             HairColor hairColor, KidStatus kidStatus, Religion religion,
                             TattooStatus tattooStatus, Photo photo) =
                             await CreateTestRecordsAsync(dbContext);
             var UserProfileService = sp.GetRequiredService<UserProfileService>();
-            UserProfile entity = new UserProfile()
+            UserProfile entity = new()
             {
                 ApplicationUserId = fromUser.Id,
                 ProfilePhotoId = photo.PhotoId,
@@ -270,20 +270,20 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetPaginatedUserProfileAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserProfileService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            (AspNetUsers fromUser, AspNetUsers toUser,
-                            Activity activity, Gender gender,
+            (AspNetUsers fromUser, _,
+                            _, Gender gender,
                             DateObjective dateObjective, EyesColor eyesColor,
                             HairColor hairColor, KidStatus kidStatus, Religion religion,
                             TattooStatus tattooStatus, Photo photo) =
                             await CreateTestRecordsAsync(dbContext);
             var UserProfileService = sp.GetRequiredService<UserProfileService>();
-            UserProfile entity = new UserProfile()
+            UserProfile entity = new()
             {
                 ApplicationUserId = fromUser.Id,
                 ProfilePhotoId = photo.PhotoId,
@@ -317,7 +317,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                     StartIndex = 0,
                     SortingItems = new SortingItem[]
                     {
-                        new SortingItem()
+                        new()
                         {
                             PropertyName = nameof(UserProfileModel.UserProfileId),
                             SortType = Common.GeneratorsAttributes.SortType.Descending
@@ -331,20 +331,20 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         [TestMethod]
         public async Task Test_GetUserProfileByIdAsync()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             RegisterDbContext(services);
             services.AddTransient<UserProfileService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            (AspNetUsers fromUser, AspNetUsers toUser,
-                            Activity activity, Gender gender,
+            (AspNetUsers fromUser, _,
+                            _, Gender gender,
                             DateObjective dateObjective, EyesColor eyesColor,
                             HairColor hairColor, KidStatus kidStatus, Religion religion,
                             TattooStatus tattooStatus, Photo photo) =
                             await CreateTestRecordsAsync(dbContext);
             var UserProfileService = sp.GetRequiredService<UserProfileService>();
-            UserProfile entity = new UserProfile()
+            UserProfile entity = new()
             {
                 ApplicationUserId = fromUser.Id,
                 ProfilePhotoId = photo.PhotoId,

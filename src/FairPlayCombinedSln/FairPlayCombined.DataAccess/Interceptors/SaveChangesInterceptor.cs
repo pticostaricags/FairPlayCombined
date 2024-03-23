@@ -23,8 +23,7 @@ namespace FairPlayCombined.DataAccess.Interceptors
             var changedEntities = eventData!.Context!.ChangeTracker.Entries();
             foreach (var entityEntry in changedEntities.Where(entityEntry => entityEntry.Entity is IOriginatorInfo))
             {
-                var entity = entityEntry.Entity as IOriginatorInfo;
-                if (entity != null)
+                if (entityEntry.Entity is IOriginatorInfo entity)
                 {
                     var connectionString = eventData.Context.Database.GetConnectionString();
                     SqlConnectionStringBuilder sqlConnectionStringBuilder = new(connectionString);
