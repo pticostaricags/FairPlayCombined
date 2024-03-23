@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using PayPal.v1.BillingPlans;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,13 +32,13 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
-            var sandboxBuyer = configuration["PayPal:SandboxBuyer"]!;
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<PayPalPlanService>();
             PayPalPlanService payPalPlanService = new(
                 new PayPal.Core.PayPalHttpClient(GetPayPalCoreEnvironment(configuration,true)),
                 logger);
-            await payPalPlanService.CreatePlan();
+            var result = await payPalPlanService.CreatePlan();
+            Assert.IsNotNull(result);
         }
 
         [TestMethod]
@@ -46,9 +47,6 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
-            var clientId = configuration["PayPal:ClientId"]!;
-            var clientSecret = configuration["PayPal:ClientSecret"]!;
-            var sandboxBuyer = configuration["PayPal:SandboxBuyer"]!;
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<PayPalPlanService>();
             PayPal.Core.PayPalEnvironment payPalEnvironment =
@@ -56,7 +54,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             PayPalPlanService payPalPlanService = new(
                 new PayPal.Core.PayPalHttpClient(payPalEnvironment),
                 logger);
-            await payPalPlanService.ListPlansAsync();
+            var result = await payPalPlanService.ListPlansAsync();
+            Assert.IsNotNull(result);
         }
     }
 }

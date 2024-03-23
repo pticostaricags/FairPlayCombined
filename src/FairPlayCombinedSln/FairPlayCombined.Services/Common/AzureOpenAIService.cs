@@ -176,6 +176,7 @@ namespace FairPlayCombined.Services.Common
 
 #pragma warning disable S2166 // Classes named like "Exception" should extend "Exception" or a subclass
 #pragma warning disable S101 // Types should be named in PascalCase
+#pragma warning disable IDE1006 // Naming Styles
     public class ContentFilterJsonException
     {
         public Error? error { get; set; }
@@ -231,3 +232,4 @@ namespace FairPlayCombined.Services.Common
 
 
 }
+#pragma warning restore IDE1006 // Naming Styles

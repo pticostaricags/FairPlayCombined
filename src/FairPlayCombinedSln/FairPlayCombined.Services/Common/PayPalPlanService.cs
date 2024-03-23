@@ -19,7 +19,7 @@ namespace FairPlayCombined.Services.Common
             var result = response.Result<PlanList>();
             return result;
         }
-        public async Task CreatePlan()
+        public async Task<Plan> CreatePlan()
         {
             //Check https://github.com/paypal/PayPal-NET-SDK/blob/releasinator/Samples/Source/BillingPlanCreate.aspx.cs
             PayPal.v1.BillingPlans.Plan plan = new()
@@ -57,6 +57,7 @@ namespace FairPlayCombined.Services.Common
             var response = await httpClient!.Execute(planCreateRequest);
             var planResult= response.Result<Plan>();
             logger.LogInformation(message:"Plan created: {planInfo}", planResult!.ToString());
+            return planResult;
         }
     }
 }
