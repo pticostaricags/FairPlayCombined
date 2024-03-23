@@ -46,7 +46,8 @@ namespace FairPlayCombined.Services.Common
             }
             catch (Exception ex)
             {
-                logger.LogError(exception: ex, message: $"Exception occurred in {nameof(CreatePayoutAsync)}");
+                logger.LogError(exception: ex, message: "Exception occurred in {methodName}. " +
+                    $"Message: {{message}}", nameof(CreatePayoutAsync), ex.Message);
                 throw;
             }
         }

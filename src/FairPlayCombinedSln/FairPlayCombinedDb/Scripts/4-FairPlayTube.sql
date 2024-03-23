@@ -1,15 +1,4 @@
-﻿/*
-Post-Deployment Script Template							
---------------------------------------------------------------------------------------
- This file contains SQL statements that will be appended to the build script.		
- Use SQLCMD syntax to include a file in the post-deployment script.			
- Example:      :r .\myfile.sql								
- Use SQLCMD syntax to reference a variable in the post-deployment script.		
- Example:      :setvar TableName MyTable							
-               SELECT * FROM [$(TableName)]					
---------------------------------------------------------------------------------------
-*/
-BEGIN TRANSACTION
+﻿BEGIN TRANSACTION
 --START OF DEFAULT VIDEO INDEX STATUSES
 DECLARE @VIDEO_INDEX_STATUS NVARCHAR(50) = 'Pending'
 IF NOT EXISTS (SELECT * FROM [FairPlayTube].[VideoIndexStatus] VIS WHERE [VIS].[Name] = @VIDEO_INDEX_STATUS)
