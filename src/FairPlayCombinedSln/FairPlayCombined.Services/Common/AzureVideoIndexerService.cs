@@ -26,6 +26,7 @@ namespace FairPlayCombined.Services.Common
         AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration,
         HttpClient httpClient)
     {
+        private const string BEARER_SCHEME = "Bearer";
 #pragma warning disable CA1822 // Mark members as static
         public async Task<string> AuthenticateToAzureArmAsync()
 #pragma warning restore CA1822 // Mark members as static
@@ -46,7 +47,7 @@ namespace FairPlayCombined.Services.Common
                 PermissionType = "Contributor",
                 Scope = "Account"
             };
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(BEARER_SCHEME, bearerToken);
             var response = await httpClient.PostAsJsonAsync(requestUrl, getAccessTokenRequestModel, cancellationToken: cancellationToken);
             if (response.IsSuccessStatusCode)
             {
@@ -81,7 +82,7 @@ namespace FairPlayCombined.Services.Common
                        }
                    };
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", viAccountAccessToken);
+                new AuthenticationHeaderValue(BEARER_SCHEME, viAccountAccessToken);
             var response = await httpClient.PostAsync(requestUrl, multipartContent, cancellationToken: cancellationToken);
             if (response.IsSuccessStatusCode)
             {
@@ -120,7 +121,7 @@ namespace FairPlayCombined.Services.Common
                 requestUrl +=
                 $"&sendSuccessEmail={true}";
                 httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", armAccessToken);
+                new AuthenticationHeaderValue(BEARER_SCHEME, armAccessToken);
                 var response = await httpClient.PostAsync(requestUrl, null, cancellationToken);
                 if (response.IsSuccessStatusCode)
                 {
@@ -155,7 +156,7 @@ namespace FairPlayCombined.Services.Common
                     $"/Videos/Search" +
                     $"?{idQueryString}";
                 httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", viAccessToken);
+                new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
                 var result = await httpClient.GetFromJsonAsync<SearchVideosResponseModel>(requestUrl, cancellationToken: cancellationToken);
                 return result;
             }
@@ -180,7 +181,7 @@ namespace FairPlayCombined.Services.Common
             try
             {
                 httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", viAccessToken);
+                new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
                 var result = await httpClient.GetStringAsync(requestUrl, cancellationToken: cancellationToken);
                 return result;
             }
@@ -199,7 +200,7 @@ namespace FairPlayCombined.Services.Common
             try
             {
                 httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", viAccessToken);
+                new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
                 var result = await httpClient.GetFromJsonAsync<SupportedLanguageModel[]>(requestUrl, cancellationToken: cancellationToken);
                 return result;
             }
@@ -221,7 +222,7 @@ namespace FairPlayCombined.Services.Common
             try
             {
                 httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", viAccessToken);
+                new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
                 var result = await httpClient.GetFromJsonAsync<GetVideoIndexResponseModel>(requestUrl, cancellationToken: cancellationToken);
                 return result;
             }

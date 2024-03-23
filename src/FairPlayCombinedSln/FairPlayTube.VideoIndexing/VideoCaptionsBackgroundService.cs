@@ -72,10 +72,10 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
             }
             catch (Exception ex)
             {
-                logger.LogWarning("Exception when retrieving captions: {exception}", ex.ToString());
+                logger.LogWarning(exception: ex,"Exception when retrieving captions: {exception}", ex.Message);
                 if (ex.Message.Contains("Too Many Requests"))
                 {
-                    logger.LogWarning("Retrying getting captions in 1 minute");
+                    logger.LogInformation("Retrying getting captions in 1 minute");
                     await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
                     try
                     {
@@ -87,7 +87,8 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
                     }
                     catch (Exception retryException)
                     {
-                        logger.LogError("Retry exception getting captions: {exceptions}", retryException.ToString());
+                        logger.LogError(exception:retryException,
+                            "Retry exception getting captions: {exceptions}", retryException.Message);
                         throw;
                     }
                 }

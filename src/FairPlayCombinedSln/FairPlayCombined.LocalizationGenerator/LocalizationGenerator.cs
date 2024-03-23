@@ -20,31 +20,68 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         var skipTranslations = Convert.ToBoolean(conf["skipTranslations"]);
         FairPlayCombinedDbContext fairPlayCombinedDbContext =
             scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
-        var adminPortalAssembly = typeof(ApplicationUser).Assembly;
-        var adminPortalTypes = adminPortalAssembly.GetTypes();
+        List<Type> typesToCheck = GetTypesToCheck();
+        await InsertNewResources(fairPlayCombinedDbContext, typesToCheck, stoppingToken);
+        if (skipTranslations)
+        {
+            logger.LogInformation("Skipping Translation");
+            return;
+        }
+        var allEnglishUSKeys =
+            await fairPlayCombinedDbContext.Resource
+            .Include(p => p.Culture)
+            .Where(p => p.Culture.Name == "en-US")
+            .ToListAsync(stoppingToken);
+        IAzureOpenAIService azureOpenAIService =
+            scope.ServiceProvider.GetRequiredService<IAzureOpenAIService>();
+        try
+        {
+            foreach (var resource in allEnglishUSKeys)
+            {
+                foreach (var singleCulture in await fairPlayCombinedDbContext.Culture.ToArrayAsync(cancellationToken: stoppingToken))
+                {
+                    await InsertTranslations(logger, fairPlayCombinedDbContext, azureOpenAIService, resource, singleCulture, stoppingToken);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "{Message}", ex.Message);
+        }
+        logger.LogInformation("Process {processName} completed", nameof(LocalizationGenerator));
+    }
 
-        var fairplaySocialAssembly = typeof(FairPlaySocial.Components.App).Assembly;
-        var fairplaySocialTypes = fairplaySocialAssembly.GetTypes();
+    private static async Task InsertTranslations(ILogger<LocalizationGenerator> logger, FairPlayCombinedDbContext fairPlayCombinedDbContext, IAzureOpenAIService azureOpenAIService, Resource? resource, Culture? singleCulture, CancellationToken stoppingToken)
+    {
+        if (!await fairPlayCombinedDbContext.Resource
+                                .AnyAsync(p => p.CultureId == singleCulture!.CultureId &&
+                                p.Key == resource!.Key && p.Type == resource.Type, cancellationToken: stoppingToken))
+        {
+            logger.LogInformation("Translating: \"{Value}\" to \"{Name}\"", resource!.Value, singleCulture!.Name);
+            TranslationResponse? translationResponse = await
+                azureOpenAIService!
+                .TranslateSimpleTextAsync(resource.Value,
+                "en-US", singleCulture.Name,
+                cancellationToken: stoppingToken);
+            if (translationResponse != null)
+            {
+                await fairPlayCombinedDbContext.Resource
+                    .AddAsync(new Resource()
+                    {
+                        CultureId = singleCulture.CultureId,
+                        Key = resource.Key,
+                        Type = resource.Type,
+                        Value = translationResponse.TranslatedText ?? resource.Value
+                    },
+                    cancellationToken: stoppingToken);
+                await fairPlayCombinedDbContext
+                    .SaveChangesAsync(cancellationToken: stoppingToken);
+            }
+        }
+    }
 
-        var fairPlayDatingAssembly = typeof(FairPlayDating.Components.App).Assembly;
-        var fairPlayDatingTypes = fairPlayDatingAssembly.GetTypes();
-
-        var modelsAssembly = typeof(Models.UserModel).Assembly;
-        var modelsTypes = modelsAssembly.GetTypes();
-
-        var serverSideServicesAssembly = typeof(BaseService).Assembly;
-        var serverSideServicesTypes = serverSideServicesAssembly.GetTypes();
-
-        var commonAssembly = typeof(Common.Constants).Assembly;
-        var commonTypes = commonAssembly.GetTypes();
-        List<Type> typesToCheck = [
-            .. adminPortalTypes,
-            .. modelsTypes,
-            .. serverSideServicesTypes,
-            .. commonTypes,
-            .. fairplaySocialTypes,
-            .. fairPlayDatingTypes];
-
+    private static async Task InsertNewResources(FairPlayCombinedDbContext fairPlayCombinedDbContext, List<Type> typesToCheck, CancellationToken stoppingToken)
+    {
         foreach (var singleTypeToCheck in typesToCheck)
         {
             string typeFullName = singleTypeToCheck!.FullName!;
@@ -82,57 +119,34 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         }
         if (fairPlayCombinedDbContext.ChangeTracker.HasChanges())
             await fairPlayCombinedDbContext.SaveChangesAsync(stoppingToken);
-        if (skipTranslations)
-        {
-            logger.LogInformation("Skipping Translation");
-            return;
-        }
-        var allEnglishUSKeys =
-            await fairPlayCombinedDbContext.Resource
-            .Include(p => p.Culture)
-            .Where(p => p.Culture.Name == "en-US")
-            .ToListAsync(stoppingToken);
-        IAzureOpenAIService azureOpenAIService =
-            scope.ServiceProvider.GetRequiredService<IAzureOpenAIService>();
-        try
-        {
-            foreach (var resource in allEnglishUSKeys)
-            {
-                foreach (var singleCulture in await fairPlayCombinedDbContext.Culture.ToArrayAsync(cancellationToken: stoppingToken))
-                {
-                    if (!await fairPlayCombinedDbContext.Resource
-                        .AnyAsync(p => p.CultureId == singleCulture.CultureId &&
-                        p.Key == resource.Key && p.Type == resource.Type, cancellationToken: stoppingToken))
-                    {
-                        logger.LogInformation("Translating: \"{Value}\" to \"{Name}\"", resource.Value, singleCulture.Name);
-                        TranslationResponse? translationResponse = await
-                            azureOpenAIService!
-                            .TranslateSimpleTextAsync(resource.Value,
-                            "en-US", singleCulture.Name,
-                            cancellationToken: stoppingToken);
-                        if (translationResponse != null)
-                        {
-                            await fairPlayCombinedDbContext.Resource
-                                .AddAsync(new Resource()
-                                {
-                                    CultureId = singleCulture.CultureId,
-                                    Key = resource.Key,
-                                    Type = resource.Type,
-                                    Value = translationResponse.TranslatedText ?? resource.Value
-                                },
-                                cancellationToken: stoppingToken);
-                            await fairPlayCombinedDbContext
-                                .SaveChangesAsync(cancellationToken: stoppingToken);
-                        }
+    }
 
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "{Message}", ex.Message);
-        }
-        logger.LogInformation("Process {processName} completed", nameof(LocalizationGenerator));
+    private static List<Type> GetTypesToCheck()
+    {
+        var adminPortalAssembly = typeof(ApplicationUser).Assembly;
+        var adminPortalTypes = adminPortalAssembly.GetTypes();
+
+        var fairplaySocialAssembly = typeof(FairPlaySocial.Components.App).Assembly;
+        var fairplaySocialTypes = fairplaySocialAssembly.GetTypes();
+
+        var fairPlayDatingAssembly = typeof(FairPlayDating.Components.App).Assembly;
+        var fairPlayDatingTypes = fairPlayDatingAssembly.GetTypes();
+
+        var modelsAssembly = typeof(Models.UserModel).Assembly;
+        var modelsTypes = modelsAssembly.GetTypes();
+
+        var serverSideServicesAssembly = typeof(BaseService).Assembly;
+        var serverSideServicesTypes = serverSideServicesAssembly.GetTypes();
+
+        var commonAssembly = typeof(Common.Constants).Assembly;
+        var commonTypes = commonAssembly.GetTypes();
+        List<Type> typesToCheck = [
+            .. adminPortalTypes,
+            .. modelsTypes,
+            .. serverSideServicesTypes,
+            .. commonTypes,
+            .. fairplaySocialTypes,
+            .. fairPlayDatingTypes];
+        return typesToCheck;
     }
 }

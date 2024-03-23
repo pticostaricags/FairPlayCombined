@@ -11,6 +11,7 @@ namespace FairPlayCombined.Common
 {
     public static class IpAddressProvider
     {
+
         public static async Task<List<string>> GetCurrentHostIPv4AddressesAsync(bool getPublicIpAddress = true)
         {
             if (getPublicIpAddress)
@@ -47,8 +48,10 @@ namespace FairPlayCombined.Common
             return lstIps;
         }
 
-        public static async Task<IPAddress> GetPublicIpAsync(string serviceUrl = "https://ipinfo.io/ip")
+        public static async Task<IPAddress> GetPublicIpAsync(string? serviceUrl = null)
         {
+            if (String.IsNullOrWhiteSpace(serviceUrl))
+                serviceUrl = Properties.Resources.IpInfoUrl;
             HttpClient httpClient = new();
             var ipAddress = await httpClient.GetStringAsync(serviceUrl);
             return IPAddress.Parse(ipAddress.Trim());

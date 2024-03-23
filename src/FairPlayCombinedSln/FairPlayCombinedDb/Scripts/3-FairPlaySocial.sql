@@ -1,15 +1,4 @@
-﻿/*
-Post-Deployment Script Template							
---------------------------------------------------------------------------------------
- This file contains SQL statements that will be appended to the build script.		
- Use SQLCMD syntax to include a file in the post-deployment script.			
- Example:      :r .\myfile.sql								
- Use SQLCMD syntax to reference a variable in the post-deployment script.		
- Example:      :setvar TableName MyTable							
-               SELECT * FROM [$(TableName)]					
---------------------------------------------------------------------------------------
-*/
-BEGIN TRANSACTION
+﻿BEGIN TRANSACTION
 --START OF DEFAULT POST VISIBILITY
 SET IDENTITY_INSERT [FairPlaySocial].[PostVisibility] ON
 DECLARE @POST_VISIBILITY_ID SMALLINT = 1

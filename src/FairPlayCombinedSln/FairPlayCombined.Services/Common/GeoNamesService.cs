@@ -32,7 +32,7 @@ namespace FairPlayCombined.Services.Common
             }
             catch (Exception ex)
             {
-                logger.LogError("{Error}", ex.Message);
+                logger.LogError(exception: ex,"{Message}",ex.Message);
                 throw;
             }
         }
