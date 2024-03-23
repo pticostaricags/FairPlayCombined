@@ -13,8 +13,8 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.AddServiceDefaults();
 
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
-    throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
+    throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
     optionsAction =>
     {
