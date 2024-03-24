@@ -2,23 +2,27 @@
 @using FairPlayCombined.Common
 @using FairPlayCombined.Models.ThemeConfiguration
 
-<h3>ThemeConfigurationManage</h3>
+<FluentLabel Typo="Typography.H3">
+    ThemeConfigurationManage
+</FluentLabel>
 
 @if (this.themeConfigurationModel?.Length > 0)
 {
     <EditForm FormName="frmThemeConfiguration" Model="this.themeConfigurationModel"
               OnValidSubmit="OnValidSubmitAsync">
-        @foreach (var singleThemeConfiguration in this.themeConfigurationModel)
-        {
-            <div class="row">
-                <div class="col">
-                    @singleThemeConfiguration.Key
-                </div>
-                <div class="col">
-                    <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="@singleThemeConfiguration.Value"></InputText>
-                </div>
-            </div>
-        }
+        <FluentGrid>
+            @foreach (var singleThemeConfiguration in this.themeConfigurationModel)
+            {
+                <FluentGridItem xs="6">
+                    <FluentLabel Typo="Typography.Body">
+                        @singleThemeConfiguration.Key
+                    </FluentLabel>
+                </FluentGridItem>
+                <FluentGridItem xs="6">
+                    <FluentTextField @bind-Value="@singleThemeConfiguration.Value"></FluentTextField>
+                </FluentGridItem>
+            }
+        </FluentGrid>
         <button type="submit" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Save</button>
     </EditForm>
 }
