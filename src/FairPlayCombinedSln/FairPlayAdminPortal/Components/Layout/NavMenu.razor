@@ -5,14 +5,28 @@
 <FluentNavLink Href="/">Home</FluentNavLink>
 <AuthorizeView>
     <Authorized>
-        <FluentNavLink Href="Account/Manage">Manage Account</FluentNavLink>
-        <FluentNavLink Href="/UserList">User List</FluentNavLink>
-        <FluentNavLink Href="/RoleList">Role List</FluentNavLink>
-        <FluentNavLink Href="/RoleCreate">Role Create</FluentNavLink>
-        <FluentNavLink Href="/ResourceManage">Resource Manage</FluentNavLink>
-        <FluentNavLink Href="/FairPlayDating">FairPlayDating</FluentNavLink>
-        <FluentNavLink Href="/ThemeConfigurationManage">ThemeConfigurationManage</FluentNavLink>
-        <FluentNavLink Href="/ConfigurationSecretsManage">ConfigurationSecretsManage</FluentNavLink>
+        <FluentNavGroup Title="Accounts">
+            <FluentNavLink Href="Account/Manage">Manage Account</FluentNavLink>
+        </FluentNavGroup>
+        <FluentNavGroup Title="Users">
+            <FluentNavLink Href="/UserList">User List</FluentNavLink>
+        </FluentNavGroup>
+        <FluentNavGroup Title="Roles">
+            <FluentNavLink Href="/RoleList">Role List</FluentNavLink>
+            <FluentNavLink Href="/RoleCreate">Role Create</FluentNavLink>
+        </FluentNavGroup>
+        <FluentNavGroup Title="Resources">
+            <FluentNavLink Href="/ResourceManage">Resource Manage</FluentNavLink>
+        </FluentNavGroup>
+        <FluentNavGroup Title="Themes">
+            <FluentNavLink Href="/ThemeConfigurationManage">ThemeConfigurationManage</FluentNavLink>
+        </FluentNavGroup>
+        <FluentNavGroup Title="Configuration">
+            <FluentNavLink Href="/ConfigurationSecretsManage">ConfigurationSecretsManage</FluentNavLink>
+        </FluentNavGroup>
+        <FluentNavGroup Title="Apps">
+            <FluentNavLink Href="/FairPlayDating">FairPlayDating</FluentNavLink>
+        </FluentNavGroup>
         <div class="nav-item px-3">
             <form action="Account/Logout" method="post">
                 <AntiforgeryToken />
