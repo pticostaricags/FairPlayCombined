@@ -3,7 +3,6 @@
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using FairPlayCombined.Models.Pagination
 @using Microsoft.AspNetCore.Identity
 @using FairPlayCombined.Common.GeneratorsAttributes
@@ -18,7 +17,7 @@
         Retrieval Duration: @this.RetrievalDuration
     </p>
 }
-<QuickGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
+<FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
     <PropertyColumn Property="@(p=>p.Id)" Sortable="true"></PropertyColumn>
     <PropertyColumn Property="@(p=>p.UserName)" Sortable="true"></PropertyColumn>
     <PropertyColumn Property="@(p=>p.LockoutEnabled)" Sortable="true"></PropertyColumn>
@@ -38,16 +37,16 @@
             </button>
         }
     </TemplateColumn>
-</QuickGrid>
+</FluentDataGrid>
 
-<Paginator State="@pagination">
-</Paginator>
+<FluentPaginator State="@pagination">
+</FluentPaginator>
 
 @code {
     private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
     private CancellationTokenSource cancellationTokenSource = new();
     private GridItemsProvider<UserModel>? ItemsProvider;
-    private PaginationState pagination = new PaginationState()
+    private PaginationState pagination = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };

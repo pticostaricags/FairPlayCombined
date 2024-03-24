@@ -3,7 +3,6 @@
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models
 @using FairPlayCombined.Models.Role
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using FairPlayCombined.Models.Pagination
 @using Microsoft.AspNetCore.Identity
 @inject IRoleService roleService
@@ -13,14 +12,14 @@
 @attribute [StreamRendering(enabled: true)]
 <h3>RoleList</h3>
 
-<QuickGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
+<FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
     <PropertyColumn Property="@(p=>p.Id)" Sortable="true"></PropertyColumn>
     <PropertyColumn Property="@(p=>p.Name)" Sortable="true"></PropertyColumn>
     <TemplateColumn>
         <button type="button" class="btn btn-danger" 
         @onclick="@(async ()=> await OnDeleteRoleAsync(context.Id))">Delete</button>
     </TemplateColumn>
-</QuickGrid>
+</FluentDataGrid>
 
-<Paginator State="@pagination">
-</Paginator>
+<FluentPaginator State="@pagination">
+</FluentPaginator>

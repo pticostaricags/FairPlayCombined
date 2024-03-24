@@ -9,7 +9,7 @@ namespace FairPlayCombined.Services.Common
 {
     public class AzureOpenAIService(OpenAIClient openAIClient) : IAzureOpenAIService
     {
-        private const string DeploymentName = "translationschat";
+        internal const string DeploymentName = "translationschat";
 
         public enum ArticleMood
         {
