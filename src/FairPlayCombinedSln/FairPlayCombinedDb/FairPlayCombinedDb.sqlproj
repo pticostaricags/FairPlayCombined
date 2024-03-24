@@ -161,6 +161,9 @@
   <ItemGroup>
     <None Include="Scripts\3-FairPlaySocial.sql" />
     <None Include="Scripts\4-FairPlayTube.sql" />
+    <None Include="..\FairPlayAdminPortal\Components\Layout\FluentToastProvider.razor">
+      <Link>FluentToastProvider.razor</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="FairPlayCombinedDb.refactorlog" />
