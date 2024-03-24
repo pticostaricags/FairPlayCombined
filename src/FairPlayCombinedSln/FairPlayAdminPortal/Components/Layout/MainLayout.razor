@@ -1,20 +1,24 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<FluentMainLayout NavMenuWidth="400">
+    <Header>
+        <h3>
+            @nameof(FairPlayAdminPortal)
+        </h3>
+    </Header>
+    <SubHeader>
+        <p>
+            Your FairPlay platform Admininistation Portal
+        </p>
+    </SubHeader>
+    <Body>
+        @Body
+    </Body>
+    <NavMenuContent>
+        <NavMenu></NavMenu>
+    </NavMenuContent>
+</FluentMainLayout>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
