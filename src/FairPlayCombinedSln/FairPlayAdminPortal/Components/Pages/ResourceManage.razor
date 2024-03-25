@@ -17,7 +17,7 @@
     <EditForm FormName="frmResources" Model="this.resources" OnValidSubmit="OnValidSubmitAsync" Context="formContext">
         <div class="mb-3">
             <ObjectGraphDataAnnotationsValidator></ObjectGraphDataAnnotationsValidator>
-            <ValidationSummary></ValidationSummary>
+            <FluentValidationSummary></FluentValidationSummary>
         </div>
         <div class="mb-3">
             <FluentDataGrid Items="this.resourcesQueryable">
@@ -30,7 +30,7 @@
             </FluentDataGrid>
         </div>
         <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Save</button>
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Save</FluentButton>
         </div>
     </EditForm>
 }

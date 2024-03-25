@@ -1,20 +1,24 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<FluentMainLayout NavMenuWidth="400">
+    <Header>
+        <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center">
+            @nameof(FairPlayAdminPortal)
+        </FluentLabel>
+    </Header>
+    <SubHeader>
+        <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
+            Your FairPlay platform Admininistation Portal
+        </FluentLabel>
+    </SubHeader>
+    <Body>
+        @Body
+    </Body>
+    <NavMenuContent>
+        <NavMenu></NavMenu>
+    </NavMenuContent>
+</FluentMainLayout>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
@@ -22,6 +26,7 @@
     <a class="dismiss">🗙</a>
 </div>
 
+<FluentToastProvider />
 <FluentDialogProvider />
 <FluentTooltipProvider />
 <FluentMessageBarProvider />
