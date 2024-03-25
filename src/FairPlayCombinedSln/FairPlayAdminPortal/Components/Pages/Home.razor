@@ -4,17 +4,28 @@
 @inject IStringLocalizer<Home> localizer
 <PageTitle>@localizer[HomeTextKey]</PageTitle>
 
-<h1>Hello, world!</h1>
+<FluentLabel Typo="Typography.H1">
+    Hello, world!
+</FluentLabel>
 
-Welcome to your new app.
+<FluentLabel Typo="Typography.Body">
+    Welcome to your new app.
+</FluentLabel>
+
 
 <AuthorizeView>
     <Authorized>
-        <div>Your claims</div>
+        <div>
+            <FluentLabel Typo="Typography.Body">
+                Your claims
+            </FluentLabel>
+        </div>
         @foreach (var singleClaim in context.User.Claims)
         {
             <div>
-                @singleClaim.ToString()
+                <FluentLabel Typo="Typography.Body">
+                    @singleClaim.ToString()
+                </FluentLabel>
             </div>
         }
     </Authorized>

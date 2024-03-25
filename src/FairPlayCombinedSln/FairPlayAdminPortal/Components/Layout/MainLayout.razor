@@ -3,14 +3,14 @@
 
 <FluentMainLayout NavMenuWidth="400">
     <Header>
-        <h3>
+        <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center">
             @nameof(FairPlayAdminPortal)
-        </h3>
+        </FluentLabel>
     </Header>
     <SubHeader>
-        <p>
+        <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
             Your FairPlay platform Admininistation Portal
-        </p>
+        </FluentLabel>
     </SubHeader>
     <Body>
         @Body
@@ -26,6 +26,7 @@
     <a class="dismiss">🗙</a>
 </div>
 
+<FluentToastProvider />
 <FluentDialogProvider />
 <FluentTooltipProvider />
 <FluentMessageBarProvider />
