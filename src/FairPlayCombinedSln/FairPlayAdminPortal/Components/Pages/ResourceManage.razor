@@ -6,33 +6,38 @@
 @inject ResourceService resourceService
 @inject IToastService toastService
 @rendermode RenderMode.InteractiveServer
-@attribute [StreamRendering(enabled:true)]
+@attribute [StreamRendering(enabled: true)]
 
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-<h3>ResourceManage</h3>
+<FluentLabel Typo="Typography.H3">
+    ResourceManage
+</FluentLabel>
+
 
 @if (this.resources?.Count() > 0)
 {
-    <EditForm FormName="frmResources" Model="this.resources" OnValidSubmit="OnValidSubmitAsync" Context="formContext">
-        <div class="mb-3">
+    <FluentEditForm FormName="frmResources" Model="this.resources" OnValidSubmit="OnValidSubmitAsync" Context="formContext">
+        <div>
             <ObjectGraphDataAnnotationsValidator></ObjectGraphDataAnnotationsValidator>
             <FluentValidationSummary></FluentValidationSummary>
         </div>
-        <div class="mb-3">
+        <div>
             <FluentDataGrid Items="this.resourcesQueryable">
                 <PropertyColumn Property="@( p=> p.CultureName)" Title="@nameof(ResourceModel.CultureName)"></PropertyColumn>
                 <PropertyColumn Property="@( p=> p.Type)" Title="@nameof(ResourceModel.Type)"></PropertyColumn>
                 <PropertyColumn Property="@( p=> p.Key)" Title="@nameof(ResourceModel.Key)"></PropertyColumn>
                 <TemplateColumn Title="@nameof(ResourceModel.Value)">
-                    <InputText class="form-control" @bind-Value="@context.Value"></InputText>
+                    <FluentTextField @bind-Value="@context.Value"></FluentTextField>
                 </TemplateColumn>
             </FluentDataGrid>
         </div>
         <div class="mb-3">
-            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Save</FluentButton>
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Loading="this.IsBusy">
+                Save
+            </FluentButton>
         </div>
-    </EditForm>
+    </FluentEditForm>
 }
 
 @code
