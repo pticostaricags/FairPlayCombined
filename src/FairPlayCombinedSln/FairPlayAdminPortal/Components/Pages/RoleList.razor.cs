@@ -15,10 +15,13 @@ namespace FairPlayAdminPortal.Components.Pages
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
+        private bool IsBusy { get; set; }
+
         protected override void OnInitialized()
         {
             ItemsProvider ??= async req =>
             {
+                this.IsBusy = true;
                 PaginationRequest paginationRequest = new()
                 {
                     StartIndex = req.StartIndex,
@@ -38,12 +41,15 @@ namespace FairPlayAdminPortal.Components.Pages
                 var result = GridItemsProviderResult.From(
                 items: paginationResult.Items!,
                 totalItemCount: paginationResult!.TotalItems);
+                this.IsBusy = false;
                 return result;
             };
         }
 
         private async Task OnDeleteRoleAsync(string? roleId)
         {
+            this.IsBusy = true;
+            StateHasChanged();
             using var scope = serviceScopeFactory.CreateScope();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var role = await roleManager.FindByIdAsync(roleId!);
@@ -61,6 +67,7 @@ namespace FairPlayAdminPortal.Components.Pages
                     this.toastService!.ShowError(message);
                 }
             }
+            this.IsBusy = false;
         }
 
         private bool isDisposed=false;
