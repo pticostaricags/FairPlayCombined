@@ -1,4 +1,3 @@
-using Azure.AI.OpenAI;
 using Blazored.Toast;
 using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
@@ -21,6 +20,7 @@ using Microsoft.Azure.CognitiveServices.ContentModerator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.Net.Mime;
+using FairPlayCombined.Services.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,15 +101,7 @@ builder.Services.AddSingleton<AzureOpenAIServiceConfiguration>(sp =>
     };
     return azureOpenAIServiceConfiguration;
 });
-builder.Services.AddTransient<OpenAIClient>(sp =>
-{
-    AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration =
-    sp.GetRequiredService<AzureOpenAIServiceConfiguration>();
-    OpenAIClient openAIClient = new(endpoint: new Uri(azureOpenAIServiceConfiguration.Endpoint!),
-        keyCredential: new Azure.AzureKeyCredential(azureOpenAIServiceConfiguration.Key!));
-    return openAIClient;
-});
-builder.Services.AddTransient<AzureOpenAIService>();
+builder.Services.AddAzureOpenAIService();
 
 builder.Services.AddTransient<ContentModeratorClient>(sp =>
 {
