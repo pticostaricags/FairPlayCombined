@@ -12,6 +12,7 @@
       "FairPlayCombined.Interfaces\\FairPlayCombined.Interfaces.csproj",
       "FairPlayCombined.LocalizationGenerator\\FairPlayCombined.LocalizationGenerator.csproj",
       "FairPlayCombined.Models\\FairPlayCombined.Models.csproj",
+      "FairPlayCombined.Services.AI\\FairPlayCombined.Services.AI.csproj",
       "FairPlayCombined.Services.Generators\\FairPlayCombined.Services.Generators.csproj",
       "FairPlayCombined.Services\\FairPlayCombined.Services.csproj",
       "FairPlayCombined.Shared\\FairPlayCombined.Shared.csproj",
