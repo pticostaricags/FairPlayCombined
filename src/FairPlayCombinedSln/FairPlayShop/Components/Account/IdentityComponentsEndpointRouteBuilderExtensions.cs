@@ -1,15 +1,14 @@
-using System.Security.Claims;
-using System.Text.Json;
+using FairPlayCombined.Common.Identity;
+using FairPlayShop.Components.Account.Pages;
+using FairPlayShop.Components.Account.Pages.Manage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using FairPlayShop.Components.Account.Pages;
-using FairPlayShop.Components.Account.Pages.Manage;
-using FairPlayShop.Data;
-using FairPlayCombined.Common.Identity;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace Microsoft.AspNetCore.Routing;
 

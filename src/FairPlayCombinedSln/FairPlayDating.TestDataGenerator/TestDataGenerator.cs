@@ -5,11 +5,6 @@ using FairPlayCombined.Models.Common.GeoNames;
 using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
-using NetTopologySuite.Utilities;
-using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.Arm;
-using System.Security.Cryptography;
-using static Azure.Core.HttpHeader;
 
 namespace FairPlayDating.TestDataGenerator;
 
@@ -27,7 +22,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
             await ResetDataAsync(dbContext, stoppingToken);
             var (allGenders, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions,
-                allTattooStatuses) = 
+                allTattooStatuses) =
             await GetAllEntitiesListsAsync(dbContext, stoppingToken);
             string[]? allHumansPhotosPaths = PreparaHumansPhotosPaths();
             HttpClient httpClient = new();
@@ -170,9 +165,9 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
     }
 
     private static async Task<(
-        Gender[] allGenders, EyesColor[] allEyesColors, DateObjective[] allDateObjectives, 
-        HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions, 
-        TattooStatus[] allTattooStatuses)> GetAllEntitiesListsAsync(FairPlayCombinedDbContext dbContext, 
+        Gender[] allGenders, EyesColor[] allEyesColors, DateObjective[] allDateObjectives,
+        HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions,
+        TattooStatus[] allTattooStatuses)> GetAllEntitiesListsAsync(FairPlayCombinedDbContext dbContext,
         CancellationToken stoppingToken)
     {
         var allGenders = await dbContext.Gender.ToArrayAsync(stoppingToken);

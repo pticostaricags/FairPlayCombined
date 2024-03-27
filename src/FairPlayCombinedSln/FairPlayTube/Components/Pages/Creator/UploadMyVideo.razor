@@ -1,4 +1,6 @@
 ﻿@page "/Creator/UploadMyVideo"
+@implements IDisposable
+
 @using Blazored.Toast.Services
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.FairPlayTube.Enums
@@ -57,7 +59,7 @@
 @code {
     [SupplyParameterFromForm]
     private CreateVideoInfoModel createVideoInfoModel { get; set; } = new();
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
     private EditForm? frmCreateVideoInfo;
     private long bytesSent { get; set; }
@@ -175,5 +177,10 @@
         }
         this.IsBusy = false;
         StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

@@ -1,13 +1,11 @@
 ﻿using Azure.AI.OpenAI;
-using Azure.Core.Pipeline;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.AzureOpenAI;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace FairPlayCombined.Services.Common
 {
-    public class AzureOpenAIService(OpenAIClient openAIClient, 
+    public class AzureOpenAIService(OpenAIClient openAIClient,
         AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration) : IAzureOpenAIService
     {
         public enum ArticleMood
@@ -17,7 +15,7 @@ namespace FairPlayCombined.Services.Common
             Professional
         }
         public async Task<string?> GenerateLinkedInArticleFromVideoCaptionsAsync(string videoTitle,
-            string videoCaptions,ArticleMood articleMood, CancellationToken cancellationToken)
+            string videoCaptions, ArticleMood articleMood, CancellationToken cancellationToken)
         {
             string systemMessage = "You will take the role of an expert in LinkedIn SEO. " +
                     "I will give you the information of one of my videos, your job is to use that information to create a draft LinkedIn article." +

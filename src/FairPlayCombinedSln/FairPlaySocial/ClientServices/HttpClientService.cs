@@ -1,6 +1,4 @@
-﻿using static Azure.Core.HttpHeader;
-
-namespace FairPlaySocial.ClientServices
+﻿namespace FairPlaySocial.ClientServices
 {
     public class HttpClientService(IHttpClientFactory httpClientFactory)
     {

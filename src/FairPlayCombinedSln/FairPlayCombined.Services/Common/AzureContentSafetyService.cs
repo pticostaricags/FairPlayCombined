@@ -1,10 +1,4 @@
 ﻿using Azure.AI.ContentSafety;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -17,7 +11,7 @@ namespace FairPlayCombined.Services.Common
             var response = await contentSafetyClient.AnalyzeImageAsync(binaryData, cancellationToken);
             ImageModerationResultModel result = new()
             {
-                IsAdult = response?.Value?.CategoriesAnalysis?.SingleOrDefault(p=>p.Category == 
+                IsAdult = response?.Value?.CategoriesAnalysis?.SingleOrDefault(p => p.Category ==
                 ImageCategory.Sexual)?.Severity > 0,
                 IsHate = response?.Value?.CategoriesAnalysis?.SingleOrDefault(p => p.Category ==
                 ImageCategory.Hate)?.Severity > 0,
@@ -39,7 +33,7 @@ namespace FairPlayCombined.Services.Common
                 IsSexuallySuggestive = response?.Value?.CategoriesAnalysis?.SingleOrDefault(p => p.Category ==
                 TextCategory.Sexual)?.Severity > 0,
                 IsOffensive = response?.Value?.CategoriesAnalysis?.SingleOrDefault(p => p.Category ==
-                TextCategory.Hate )?.Severity > 0 ||
+                TextCategory.Hate)?.Severity > 0 ||
                 response?.Value?.CategoriesAnalysis?.SingleOrDefault(p => p.Category ==
                 TextCategory.Violence)?.Severity > 0,
             };

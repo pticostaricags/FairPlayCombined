@@ -12,45 +12,45 @@ namespace FairPlayCombinedSln.ServiceDefaults
     public class GlobalExceptionHandler : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(
-            HttpContext httpContext, 
-            Exception exception, 
+            HttpContext httpContext,
+            Exception exception,
             CancellationToken cancellationToken)
         {
-                long? errorId = default;
-                try
+            long? errorId = default;
+            try
+            {
+                FairPlayCombinedDbContext fairPlayCombinedDbContext =
+                httpContext.RequestServices.GetRequiredService<FairPlayCombinedDbContext>();
+                ErrorLog errorLog = new()
                 {
-                    FairPlayCombinedDbContext fairPlayCombinedDbContext =
-                    httpContext.RequestServices.GetRequiredService<FairPlayCombinedDbContext>();
-                    ErrorLog errorLog = new()
-                    {
-                        FullException = exception.ToString(),
-                        StackTrace = exception.StackTrace,
-                        Message = exception.Message
-                    };
-                    await fairPlayCombinedDbContext.ErrorLog.AddAsync(errorLog, cancellationToken);
-                    await fairPlayCombinedDbContext.SaveChangesAsync(cancellationToken);
-                    errorId = errorLog.ErrorLogId;
-                }
-                catch (Exception)
+                    FullException = exception.ToString(),
+                    StackTrace = exception.StackTrace,
+                    Message = exception.Message
+                };
+                await fairPlayCombinedDbContext.ErrorLog.AddAsync(errorLog, cancellationToken);
+                await fairPlayCombinedDbContext.SaveChangesAsync(cancellationToken);
+                errorId = errorLog.ErrorLogId;
+            }
+            catch (Exception)
+            {
+                //Global exception, not rethrowing so server app does not crash
+            }
+            ProblemDetails problemDetails = new();
+            if (exception is RuleException || exception is ValidationException)
+            {
+                problemDetails.Detail = exception.Message;
+            }
+            else
+            {
+                string userVisibleError = "An error ocurred.";
+                if (errorId.GetValueOrDefault(0) > 0)
                 {
-                    //Global exception, not rethrowing so server app does not crash
+                    userVisibleError += $" Error code: {errorId}";
                 }
-                ProblemDetails problemDetails = new();
-                if (exception is RuleException || exception is ValidationException)
-                {
-                    problemDetails.Detail = exception.Message;
-                }
-                else
-                {
-                    string userVisibleError = "An error ocurred.";
-                    if (errorId.GetValueOrDefault(0) > 0)
-                    {
-                        userVisibleError += $" Error code: {errorId}";
-                    }
-                    problemDetails.Detail = userVisibleError;
-                }
-                problemDetails.Status = (int)System.Net.HttpStatusCode.BadRequest;
-                await httpContext.Response.WriteAsJsonAsync<ProblemDetails>(problemDetails, cancellationToken);
+                problemDetails.Detail = userVisibleError;
+            }
+            problemDetails.Status = (int)System.Net.HttpStatusCode.BadRequest;
+            await httpContext.Response.WriteAsJsonAsync<ProblemDetails>(problemDetails, cancellationToken);
             return true;
         }
     }

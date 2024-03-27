@@ -6,10 +6,8 @@ using FairPlayCombined.DataAccess.Models.FairPlayBudgetSchema;
 using FairPlayCombined.Models.FairPlayBudget.MonthlyBudgetInfo;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
-using System.Formats.Asn1;
 using System.Globalization;
 using System.Linq.Dynamic.Core;
-using System.Runtime.Serialization;
 
 namespace FairPlayCombined.Services.FairPlayBudget
 {
@@ -101,7 +99,7 @@ namespace FairPlayCombined.Services.FairPlayBudget
             }
         }
 
-        public async Task UpdateMonthlyBudgetInfoWithTransactionsAsync(long monthlyBudgetInfoModelId, 
+        public async Task UpdateMonthlyBudgetInfoWithTransactionsAsync(long monthlyBudgetInfoModelId,
             CreateMonthlyBudgetInfoModel createMonthlyBudgetInfoModel, CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);

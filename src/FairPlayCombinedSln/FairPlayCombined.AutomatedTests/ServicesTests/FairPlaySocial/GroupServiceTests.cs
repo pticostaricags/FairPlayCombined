@@ -71,7 +71,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             {
                 Name = "TestModel",
                 Description = "Description",
-                OwnerApplicationUserId=testUser.Id,
+                OwnerApplicationUserId = testUser.Id,
                 TopicTag = "AT Tag"
             };
             await GroupService.CreateGroupAsync(createGroupModel, CancellationToken.None);
@@ -109,7 +109,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             };
             await dbContext.AspNetUsers.AddAsync(testUser);
             await dbContext.SaveChangesAsync();
-            DataAccess.Models.FairPlaySocialSchema.Group entity = new ()
+            DataAccess.Models.FairPlaySocialSchema.Group entity = new()
             {
                 Name = "TestModel",
                 Description = "Description",

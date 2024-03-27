@@ -1,27 +1,26 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Azure.AI.OpenAI;
+using Blazored.Toast;
+using FairPlayCombined.Common;
+using FairPlayCombined.Common.Identity;
+using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Interceptors;
+using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Interfaces;
+using FairPlayCombined.Models.AzureOpenAI;
+using FairPlayCombined.Services.Common;
+using FairPlayCombined.Services.FairPlayDating;
+using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayDating.Components;
 using FairPlayDating.Components.Account;
 using FairPlayDating.Data;
-using Microsoft.AspNetCore.Mvc;
-using FairPlayCombined.DataAccess.Data;
-using FairPlayCombined.Interfaces;
-using FairPlayCombined.Services.Common;
-using FairPlayCombined.DataAccess.Interceptors;
-using FairPlayCombined.Services.FairPlayDating;
-using Blazored.Toast;
 using FairPlayDating.Services;
-using System.Net.Mime;
-using Microsoft.Extensions.Localization;
-using FairPlayCombined.Shared.CustomLocalization.EF;
-using Azure.AI.OpenAI;
-using FairPlayCombined.Common.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.CognitiveServices.ContentModerator;
-using FairPlayCombined.DataAccess.Models.dboSchema;
-using FairPlayCombined.Common;
-using Microsoft.Extensions.DependencyInjection;
-using FairPlayCombined.Models.AzureOpenAI;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using System.Net.Mime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,7 +111,7 @@ builder.Services.AddTransient<OpenAIClient>(sp =>
 });
 builder.Services.AddTransient<AzureOpenAIService>();
 
-builder.Services.AddTransient<ContentModeratorClient>(sp => 
+builder.Services.AddTransient<ContentModeratorClient>(sp =>
 {
     var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
     var azureContentModeratorEndpointEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
@@ -151,7 +150,7 @@ app.MapGet("api/photoimage/{photoId}", async (
     long photoId) =>
 {
     var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-    var photoEntity = await dbContext.Photo.AsNoTracking().SingleAsync(p=>p.PhotoId == photoId);
+    var photoEntity = await dbContext.Photo.AsNoTracking().SingleAsync(p => p.PhotoId == photoId);
     var mimeType = MediaTypeNames.Image.Png;
     return Results.File(photoEntity.PhotoBytes, contentType: mimeType);
 });

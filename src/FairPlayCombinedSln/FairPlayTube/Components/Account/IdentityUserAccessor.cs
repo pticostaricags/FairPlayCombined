@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Identity;
-using FairPlayTube.Data;
 using FairPlayCombined.Common.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace FairPlayTube.Components.Account;
 

@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 
 namespace FairPlayCombined.Services.Common;
 public class OpenAIService(
-    HttpClient openAIAuthorizedHttpClient, 
+    HttpClient openAIAuthorizedHttpClient,
     HttpClient genericHttpClient,
     OpenAIServiceConfiguration openAIServiceConfiguration,
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
@@ -18,7 +18,7 @@ public class OpenAIService(
         var requestUrl = openAIServiceConfiguration.ChatCompletionsUrl;
         ChatCompletionRequestModel request = new()
         {
-            model= "gpt-4-1106-preview",
+            model = "gpt-4-1106-preview",
             messages =
             [
                 new()
@@ -34,9 +34,9 @@ public class OpenAIService(
             ]
         };
         var response = await openAIAuthorizedHttpClient.PostAsJsonAsync<ChatCompletionRequestModel>(requestUrl,
-            request, cancellationToken:cancellationToken);
+            request, cancellationToken: cancellationToken);
         response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<ChatCompletionResponseModel>(cancellationToken:cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<ChatCompletionResponseModel>(cancellationToken: cancellationToken);
         return result;
     }
     public async Task<GenerateDallE3ResponseModel?> GenerateDallE3ImageAsync(string prompt, CancellationToken cancellationToken)
@@ -55,19 +55,19 @@ public class OpenAIService(
         var response = await openAIAuthorizedHttpClient.PostAsJsonAsync<GenerateDallE3RequestModel>(requestUrl,
             requestModel, cancellationToken: cancellationToken);
         response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<GenerateDallE3ResponseModel>(cancellationToken:cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<GenerateDallE3ResponseModel>(cancellationToken: cancellationToken);
         try
         {
-            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken:cancellationToken);
-            await dbContext.OpenAiprompt.AddAsync(new OpenAiprompt() 
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
+            await dbContext.OpenAiprompt.AddAsync(new OpenAiprompt()
             {
                 OriginalPrompt = prompt,
                 Model = model,
                 RevisedPrompt = result!.data![0].revised_prompt,
-                GeneratedImageBytes=await genericHttpClient
-                .GetByteArrayAsync(requestUri: result.data[0].url,cancellationToken:cancellationToken)
+                GeneratedImageBytes = await genericHttpClient
+                .GetByteArrayAsync(requestUri: result.data[0].url, cancellationToken: cancellationToken)
             },
-                cancellationToken:cancellationToken);
+                cancellationToken: cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
         }
         catch (Exception)

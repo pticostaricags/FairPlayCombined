@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using FairPlayCombined.Common;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace FairPlayCombined.Common.Identity
 {

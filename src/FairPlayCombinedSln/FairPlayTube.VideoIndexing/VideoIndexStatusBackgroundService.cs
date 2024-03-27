@@ -1,12 +1,9 @@
-using FairPlayCombined.Common.FairPlayTube.Enums;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Models.AzureVideoIndexer;
 using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
 
 namespace FairPlayTube.VideoIndexing;
 
@@ -28,7 +25,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
             {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             }
-            string[] allVideosInProcessingStatus = 
+            string[] allVideosInProcessingStatus =
                 await GetAllVideosInProcessingStatusAsync(dbContext, stoppingToken);
             if (allVideosInProcessingStatus.Length != 0)
             {

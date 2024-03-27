@@ -1,22 +1,22 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using FairPlaySocial.Components;
-using FairPlaySocial.Components.Account;
-using FairPlaySocial.Data;
+using Blazored.Toast;
+using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
-using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Services.FairPlaySocial;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
-using Blazored.Toast;
-using FairPlaySocial.ClientServices;
-using Microsoft.Extensions.Localization;
 using FairPlayCombined.Shared.CustomLocalization.EF;
+using FairPlaySocial.ClientServices;
+using FairPlaySocial.Components;
+using FairPlaySocial.Components.Account;
+using FairPlaySocial.Data;
 using FairPlaySocial.MinimalApiEndpoints;
-using FairPlayCombined.Common.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 

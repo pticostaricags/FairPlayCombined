@@ -1,14 +1,7 @@
-﻿using FairPlayCombined.Services;
-using FairPlayCombined.Services.Common;
+﻿using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using PayoutsSdk.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
 {
@@ -24,8 +17,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var clientId = configuration["PayPal:ClientId"]!;
             var clientSecret = configuration["PayPal:ClientSecret"]!;
             var sandboxBuyer = configuration["PayPal:SandboxBuyer"]!;
-            SandboxEnvironment sandboxEnvironment=new(clientId, clientSecret);
-            PayPalHttpClient payPalHttpClient=new(sandboxEnvironment);
+            SandboxEnvironment sandboxEnvironment = new(clientId, clientSecret);
+            PayPalHttpClient payPalHttpClient = new(sandboxEnvironment);
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<PayPalService>();
             PayPalService payPalService = new(payPalHttpClient, logger);

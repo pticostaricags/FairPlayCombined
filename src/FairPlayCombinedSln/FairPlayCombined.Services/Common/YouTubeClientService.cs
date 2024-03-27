@@ -4,13 +4,7 @@ using Google.Apis.Upload;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -57,7 +51,7 @@ namespace FairPlayCombined.Services.Common
             return youtubeService;
         }
 
-        public static async Task<UploadStatus> UploadCaptionsAsync(string youtubeVideoId, string language, 
+        public static async Task<UploadStatus> UploadCaptionsAsync(string youtubeVideoId, string language,
             YouTubeService youTubeService,
             MemoryStream captionsStream,
             Action<IUploadProgress> progressChanged,
@@ -71,7 +65,7 @@ namespace FairPlayCombined.Services.Common
             caption.Snippet.Name = $"VI";
             caption.Snippet.Language = language;
             caption.Snippet.VideoId = youtubeVideoId;
-            var uploadCaptionsOperation = 
+            var uploadCaptionsOperation =
             youTubeService.Captions.Insert(body: caption, "snippet",
                 captionsStream, "*/*");
             uploadCaptionsOperation.ProgressChanged += progressChanged;

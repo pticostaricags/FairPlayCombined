@@ -10,7 +10,6 @@ using FairPlayCombined.Services.FairPlayDating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Testcontainers.MsSql;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
 {
@@ -26,7 +25,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<UserActivityService>();
             var sp = services.BuildServiceProvider();
@@ -89,12 +88,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                     optionsAction.AddInterceptors(
                         new SaveChangesInterceptor(new TestUserProviderService())
                         );
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<IUserProviderService, TestUserProviderService>();
         }
 
-        private static async Task<(AspNetUsers fromUser, AspNetUsers toUser, Activity activity)> 
+        private static async Task<(AspNetUsers fromUser, AspNetUsers toUser, Activity activity)>
             CreateTestRecordsAsync(FairPlayCombinedDbContext dbContext)
         {
             string fromUserName = "fromuser@test.test";

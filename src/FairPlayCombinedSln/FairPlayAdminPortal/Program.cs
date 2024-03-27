@@ -1,18 +1,18 @@
 
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using FairPlayAdminPortal.Components;
 using FairPlayAdminPortal.Components.Account;
 using FairPlayAdminPortal.Data;
+using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
-using Microsoft.Extensions.Localization;
-using FairPlayCombined.Shared.CustomLocalization.EF;
-using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Services.FairPlayDating;
-using FairPlayCombined.Common.Identity;
+using FairPlayCombined.Shared.CustomLocalization.EF;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,7 +52,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 .AddDefaultTokenProviders();
 
 builder.Services.AddTransient<IUserProviderService, UserProviderService>();
-builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp => 
+builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
 {
     IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
     DbContextOptionsBuilder<FairPlayCombinedDbContext> optionsBuilder = new();

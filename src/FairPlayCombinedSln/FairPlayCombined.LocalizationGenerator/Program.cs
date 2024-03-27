@@ -1,6 +1,5 @@
 using Azure.AI.OpenAI;
 using FairPlayCombined.Common;
-using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
@@ -8,7 +7,6 @@ using FairPlayCombined.LocalizationGenerator;
 using FairPlayCombined.Models.AzureOpenAI;
 using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Azure;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -28,7 +26,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
                     errorNumbersToAdd: null);
             });
     });
-builder.Services.AddSingleton<AzureOpenAIServiceConfiguration>(sp => 
+builder.Services.AddSingleton<AzureOpenAIServiceConfiguration>(sp =>
 {
     var dbContextFactory = sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
     var dbContext = dbContextFactory.CreateDbContext();

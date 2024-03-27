@@ -4,12 +4,6 @@ using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.FairPlayDating.UserProfile;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SqlServer.Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.FairPlayDating
 {

@@ -142,7 +142,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             };
             await dbContext.PostVisibility.AddAsync(postVisibility);
             await dbContext.SaveChangesAsync();
-            Post entity = new ()
+            Post entity = new()
             {
                 OwnerApplicationUserId = testUser.Id,
                 PostTypeId = postType.PostTypeId,
@@ -198,7 +198,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             };
             await dbContext.PostVisibility.AddAsync(postVisibility);
             await dbContext.SaveChangesAsync();
-            Post entity = new ()
+            Post entity = new()
             {
                 OwnerApplicationUserId = testUser.Id,
                 PostTypeId = postType.PostTypeId,
@@ -267,7 +267,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             };
             await dbContext.PostVisibility.AddAsync(postVisibility);
             await dbContext.SaveChangesAsync();
-            Post entity = new ()
+            Post entity = new()
             {
                 OwnerApplicationUserId = testUser.Id,
                 PostTypeId = postType.PostTypeId,

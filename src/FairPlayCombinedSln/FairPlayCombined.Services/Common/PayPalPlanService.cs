@@ -1,11 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using PayPal.Core;
 using PayPal.v1.BillingPlans;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -27,7 +22,7 @@ namespace FairPlayCombined.Services.Common
                 MerchantPreferences = new MerchantPreferences()
                 {
                     AutoBillAmount = "YES",
-                    InitialFailAmountAction="CONTINUE",
+                    InitialFailAmountAction = "CONTINUE",
                     MaxFailAttempts = "0",
                     CancelUrl = "http://localhost/Cancel",
                     ReturnUrl = "http://localhost/Return"
@@ -55,8 +50,8 @@ namespace FairPlayCombined.Services.Common
             PlanCreateRequest planCreateRequest = new();
             planCreateRequest.RequestBody(plan);
             var response = await httpClient!.Execute(planCreateRequest);
-            var planResult= response.Result<Plan>();
-            logger.LogInformation(message:"Plan created: {planInfo}", planResult!.ToString());
+            var planResult = response.Result<Plan>();
+            logger.LogInformation(message: "Plan created: {planInfo}", planResult!.ToString());
             return planResult;
         }
     }

@@ -10,7 +10,6 @@ using FairPlayCombined.Services.FairPlayDating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Testcontainers.MsSql;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
 {
@@ -26,7 +25,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<UserProfileService>();
             var sp = services.BuildServiceProvider();
@@ -40,11 +39,11 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             {
                 dbContext.Activity.Remove(singleActivity);
             }
-            foreach (var singleGender in  dbContext.Gender)
+            foreach (var singleGender in dbContext.Gender)
             {
                 dbContext.Gender.Remove(singleGender);
             }
-            foreach (var singleDateObjective  in dbContext.DateObjective)
+            foreach (var singleDateObjective in dbContext.DateObjective)
             {
                 dbContext.DateObjective.Remove(singleDateObjective);
             }
@@ -52,7 +51,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             {
                 dbContext.EyesColor.Remove(singleEyeColor);
             }
-            foreach (var singleHairColor in  dbContext.HairColor)
+            foreach (var singleHairColor in dbContext.HairColor)
             {
                 dbContext.HairColor.Remove(singleHairColor);
             }
@@ -90,9 +89,9 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.Database.EnsureCreatedAsync();
             (AspNetUsers fromUser, _,
                 _, Gender gender,
-                DateObjective dateObjective, EyesColor eyesColor, 
+                DateObjective dateObjective, EyesColor eyesColor,
                 HairColor hairColor, KidStatus kidStatus, Religion religion,
-                TattooStatus tattooStatus, Photo photo) = 
+                TattooStatus tattooStatus, Photo photo) =
                 await CreateTestRecordsAsync(dbContext);
             var UserProfileService = sp.GetRequiredService<UserProfileService>();
             CreateUserProfileModel createUserProfileModel = new()
@@ -114,11 +113,11 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 ReligionId = religion.ReligionId,
                 TattooStatusId = tattooStatus.TattooStatusId,
                 CurrentGeoLocation = new NetTopologySuite.Geometries
-                        .Point(-74.37231,3.5158)
+                        .Point(-74.37231, 3.5158)
                 {
                     SRID = FairPlayCombined.Common.Constants.GeoCoordinates.SRID
                 }
-        };
+            };
             await UserProfileService.CreateUserProfileAsync(createUserProfileModel, CancellationToken.None);
             var result = await dbContext.UserProfile.SingleOrDefaultAsync();
             Assert.IsNotNull(result);
@@ -135,7 +134,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                     optionsAction.AddInterceptors(
                         new SaveChangesInterceptor(new TestUserProviderService())
                         );
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<IUserProviderService, TestUserProviderService>();
         }
@@ -143,7 +142,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         private static async Task<(AspNetUsers fromUser, AspNetUsers toUser, Activity activity,
             Gender gender, DateObjective dateObjective,
             EyesColor eyesColor, HairColor hairColor, KidStatus kidStatus,
-            Religion religion, TattooStatus tattooStatus, 
+            Religion religion, TattooStatus tattooStatus,
             Photo photo)>
             CreateTestRecordsAsync(FairPlayCombinedDbContext dbContext)
         {

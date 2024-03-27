@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
-namespace FairPlayCombined.Models.Common.GeoNames
+﻿namespace FairPlayCombined.Models.Common.GeoNames
 {
 #pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable S101 // Types should be named in PascalCase

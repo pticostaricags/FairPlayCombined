@@ -1,8 +1,8 @@
 ﻿using FairPlayCombined.Common;
+using FairPlayCombined.Common.GeneratorsAttributes;
+using FairPlayCombined.Models.Pagination;
 using FairPlayCombined.Models.Role;
 using Microsoft.AspNetCore.Identity;
-using FairPlayCombined.Models.Pagination;
-using FairPlayCombined.Common.GeneratorsAttributes;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace FairPlayAdminPortal.Components.Pages
@@ -70,7 +70,7 @@ namespace FairPlayAdminPortal.Components.Pages
             this.IsBusy = false;
         }
 
-        private bool isDisposed=false;
+        private bool isDisposed = false;
         // Dispose() calls Dispose(true)
         public void Dispose()
         {

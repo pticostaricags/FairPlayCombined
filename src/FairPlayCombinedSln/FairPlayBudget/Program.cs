@@ -1,18 +1,18 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Blazored.Toast;
 using FairPlayBudget.Components;
 using FairPlayBudget.Components.Account;
 using FairPlayBudget.Data;
-using Microsoft.Extensions.Localization;
-using FairPlayCombined.Shared.CustomLocalization.EF;
-using FairPlayCombined.Interfaces;
-using FairPlayCombined.DataAccess.Interceptors;
-using FairPlayCombined.Services.Common;
-using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Common.Identity;
-using Blazored.Toast;
+using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Interceptors;
+using FairPlayCombined.Interfaces;
+using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayBudget;
+using FairPlayCombined.Shared.CustomLocalization.EF;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 

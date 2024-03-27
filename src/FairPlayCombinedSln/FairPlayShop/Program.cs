@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using FairPlayCombined.Common.Identity;
 using FairPlayShop.Components;
 using FairPlayShop.Components.Account;
 using FairPlayShop.Data;
-using FairPlayCombined.Common.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

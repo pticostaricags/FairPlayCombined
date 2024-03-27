@@ -2,7 +2,6 @@
 using FairPlayCombined.Models.OpenAI;
 using Microsoft.SemanticKernel;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FairPlayCombined.Services.AI
 {
@@ -25,12 +24,12 @@ From Language: {{${fromLanguage}}}.
 To Language: {{${toLanguage}}}.
 Text: {{${text}}}.";
             var function = kernel.CreateFunctionFromPrompt(promptTemplate);
-            var result = await kernel.InvokeAsync(function, new() 
+            var result = await kernel.InvokeAsync(function, new()
             {
                 [nameof(fromLanguage)] = fromLanguage,
                 [nameof(toLanguage)] = toLanguage,
                 [nameof(text)] = text
-            }, cancellationToken:cancellationToken);
+            }, cancellationToken: cancellationToken);
             return result;
         }
 
