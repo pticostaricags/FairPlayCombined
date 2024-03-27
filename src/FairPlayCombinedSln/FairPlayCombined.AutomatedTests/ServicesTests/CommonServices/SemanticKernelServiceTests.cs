@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Services.AI;
+﻿using FairPlayCombined.Models.AzureOpenAI;
+using FairPlayCombined.Services.AI;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -23,13 +24,13 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 throw new Exception("'AzureOpenAI:Key' is not in configuration");
             var deploymentName = configuration["AzureOpenAI:DeploymentName"] ??
                 throw new Exception("'AzureOpenAI:DeploymentName' is not in configuration");
-            AzureOpenAIConfiguration azureOpenAIConfiguration = new()
+            AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration = new()
             {
                 DeploymentName = deploymentName,
                 Endpoint = endpoint,
                 Key = key
             };
-            SemanticKernelService semanticKernelService = new(azureOpenAIConfiguration);
+            SemanticKernelService semanticKernelService = new(azureOpenAIServiceConfiguration);
             var result = await semanticKernelService.TranslateTextAsync("This is a test",
                 fromLanguage: "en-US", toLanguage: "es-CR",
                 cancellationToken:CancellationToken.None);

@@ -1,15 +1,16 @@
-﻿using Microsoft.SemanticKernel;
+﻿using FairPlayCombined.Models.AzureOpenAI;
+using Microsoft.SemanticKernel;
 
 namespace FairPlayCombined.Services.AI
 {
-    public class SemanticKernelService(AzureOpenAIConfiguration azureOpenAIConfiguration)
+    public class SemanticKernelService(AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration)
     {
         public async Task<FunctionResult?> TranslateTextAsync(string text, string fromLanguage, string toLanguage,
             CancellationToken cancellationToken)
         {
             var builder = Kernel.CreateBuilder()
-                .AddAzureOpenAIChatCompletion(deploymentName:azureOpenAIConfiguration.DeploymentName!,
-                endpoint:azureOpenAIConfiguration.Endpoint!, apiKey:azureOpenAIConfiguration.Key!);
+                .AddAzureOpenAIChatCompletion(deploymentName: azureOpenAIServiceConfiguration.DeploymentName!,
+                endpoint: azureOpenAIServiceConfiguration.Endpoint!, apiKey: azureOpenAIServiceConfiguration.Key!);
             var kernel = builder.Build();
             string promptTemplate = @$"Translate text between languages. 
 From Language: {{${fromLanguage}}}. 
@@ -24,12 +25,5 @@ Text: {{${text}}}.";
             }, cancellationToken:cancellationToken);
             return result;
         }
-    }
-
-    public class AzureOpenAIConfiguration
-    {
-        public string? DeploymentName { get; set; }
-        public string? Endpoint { get; set; }
-        public string? Key { get; set; }
     }
 }

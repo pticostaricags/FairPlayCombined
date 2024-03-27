@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.6.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
+  </ItemGroup>
+
 </Project>

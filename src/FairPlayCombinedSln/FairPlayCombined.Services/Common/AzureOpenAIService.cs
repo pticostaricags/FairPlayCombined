@@ -7,10 +7,9 @@ using System.Text.Json.Serialization;
 
 namespace FairPlayCombined.Services.Common
 {
-    public class AzureOpenAIService(OpenAIClient openAIClient) : IAzureOpenAIService
+    public class AzureOpenAIService(OpenAIClient openAIClient, 
+        AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration) : IAzureOpenAIService
     {
-        internal const string DeploymentName = "translationschat";
-
         public enum ArticleMood
         {
             Hilarious,
@@ -29,7 +28,7 @@ namespace FairPlayCombined.Services.Common
             }
             ChatCompletionsOptions chatCompletionsOptions = new()
             {
-                DeploymentName = DeploymentName,
+                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
                     new ChatMessage(ChatRole.System, systemMessage),
@@ -64,7 +63,7 @@ namespace FairPlayCombined.Services.Common
             string jsonRequest = JsonSerializer.Serialize(textModerationRequest);
             ChatCompletionsOptions chatCompletionsOptions = new()
             {
-                DeploymentName = DeploymentName,
+                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
                     new ChatMessage(ChatRole.System, "You are an expert content moderator. " +
@@ -126,7 +125,7 @@ namespace FairPlayCombined.Services.Common
             };
             ChatCompletionsOptions chatCompletionsOptions = new()
             {
-                DeploymentName = DeploymentName,
+                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
                     new ChatMessage(ChatRole.System, "You are an expert translator. Your jobs is to translate the text I give you." +
@@ -151,7 +150,7 @@ namespace FairPlayCombined.Services.Common
         {
             ChatCompletionsOptions chatCompletionsOptions = new()
             {
-                DeploymentName = DeploymentName,
+                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
                     new ChatMessage(ChatRole.System, "You are an expert translator. Your jobs is to translate the text I give you." +
