@@ -1,4 +1,5 @@
 ﻿@page "/RoleList"
+@using FairPlayAdminPortal.Components.Spinners
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models
@@ -10,14 +11,23 @@
 @inject IToastService toastService
 @rendermode RenderMode.InteractiveServer
 @attribute [StreamRendering(enabled: true)]
-<h3>RoleList</h3>
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<FluentLabel Typo="Typography.H3">
+    RoleList
+</FluentLabel>
 
 <FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
     <PropertyColumn Property="@(p=>p.Id)" Sortable="true"></PropertyColumn>
     <PropertyColumn Property="@(p=>p.Name)" Sortable="true"></PropertyColumn>
     <TemplateColumn>
-        <button type="button" class="btn btn-danger" 
-        @onclick="@(async ()=> await OnDeleteRoleAsync(context.Id))">Delete</button>
+        <FluentButton Type="ButtonType.Button" Loading="@this.IsBusy" 
+                      IconStart="@(new Icons.Regular.Size16.Delete())"
+                      BackgroundColor="var(--error)"
+                      OnClick="@(async ()=> await OnDeleteRoleAsync(context.Id))">
+            Delete
+        </FluentButton>
     </TemplateColumn>
 </FluentDataGrid>
 

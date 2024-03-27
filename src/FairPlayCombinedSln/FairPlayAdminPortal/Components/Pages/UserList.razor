@@ -1,4 +1,5 @@
 ﻿@page "/UserList"
+@using FairPlayAdminPortal.Components.Spinners
 @using FairPlayAdminPortal.Data
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
@@ -10,11 +11,19 @@
 @inject IServiceScopeFactory serviceScopeFactory
 @rendermode NoPreRender
 @attribute [StreamRendering(enabled: true)]
-<h3>UserList</h3>
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<FluentLabel Typo="Typography.H3">
+    UserList
+</FluentLabel>
+
 @if (this.RetrievalDuration != null)
 {
     <p>
-        Retrieval Duration: @this.RetrievalDuration
+        <FluentLabel Typo="Typography.Body">
+            Retrieval Duration: @this.RetrievalDuration
+        </FluentLabel>
     </p>
 }
 <FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
@@ -24,17 +33,21 @@
     <TemplateColumn>
         @if (context.LockoutEnabled)
         {
-            <button type="button" class="btn btn-secondary"
-                    @onclick=@( async ()=> await OnDisableLockoutClicked(context.Id))>
+            <FluentButton Type="ButtonType.Button" Loading="this.IsBusy"
+                          IconStart="@(new Icons.Regular.Size16.Add())"
+                          BackgroundColor="var(--success)"
+            OnClick="@( async ()=> await OnDisableLockoutClicked(context.Id))">
                 Disable Lockout
-            </button>
+            </FluentButton>
         }
         else
         {
-            <button type="button" class="btn btn-secondary"
-                    @onclick=@( async ()=> await OnEnableLockoutClicked(context.Id))>
+            <FluentButton Type="ButtonType.Button" Loading="this.IsBusy"
+                          IconStart="@(new Icons.Regular.Size16.Delete())"
+                          BackgroundColor="var(--error)"
+                    OnClick="@( async ()=> await OnEnableLockoutClicked(context.Id))">
                 Enable Lockout
-            </button>
+            </FluentButton>
         }
     </TemplateColumn>
 </FluentDataGrid>
@@ -51,25 +64,26 @@
             ItemsPerPage = Constants.Pagination.PageSize
         };
     private TimeSpan? RetrievalDuration;
+    private bool IsBusy { get; set; }
 
     protected override void OnInitialized()
     {
         ItemsProvider ??= async req =>
             {
-                // this.IsBusy = true;
+                this.IsBusy = true;
                 StateHasChanged();
                 PaginationRequest paginationRequest = new PaginationRequest()
                     {
                         StartIndex = req.StartIndex,
                         SortingItems = req.GetSortByProperties()
-                                .Select(p => new SortingItem()
-                                {
-                                    PropertyName = p.PropertyName,
-                                    SortType = (p.Direction == SortDirection.Ascending) ?
-                                    SortType.Ascending
-                                    :
-                                    SortType.Descending
-                                }).ToArray()
+                                        .Select(p => new SortingItem()
+                                        {
+                                            PropertyName = p.PropertyName,
+                                            SortType = (p.Direction == SortDirection.Ascending) ?
+                                            SortType.Ascending
+                                            :
+                                            SortType.Descending
+                                        }).ToArray()
                     };
                 System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 var paginationResult = await this.userService!.GetPaginatedUserListAsync(
@@ -79,7 +93,7 @@
                 var result = GridItemsProviderResult.From(
                 items: paginationResult.Items!,
                 totalItemCount: paginationResult!.TotalItems);
-                // this.IsBusy = false;
+                this.IsBusy = false;
                 StateHasChanged();
                 return result;
             };
@@ -87,6 +101,8 @@
 
     private async Task OnDisableLockoutClicked(string? userId)
     {
+        this.IsBusy = true;
+        StateHasChanged();
         using var scope = serviceScopeFactory.CreateScope();
         var userManager = scope.ServiceProvider
         .GetRequiredService<UserManager<ApplicationUser>>();
@@ -96,11 +112,14 @@
             await userManager.SetLockoutEnabledAsync(user, false);
         }
         await pagination.SetCurrentPageIndexAsync(0);
+        this.IsBusy = false;
         StateHasChanged();
     }
 
     private async Task OnEnableLockoutClicked(string? userId)
     {
+        this.IsBusy = true;
+        StateHasChanged();
         using var scope = serviceScopeFactory.CreateScope();
         var userManager = scope.ServiceProvider
         .GetRequiredService<UserManager<ApplicationUser>>();
@@ -110,6 +129,7 @@
             await userManager.SetLockoutEnabledAsync(user, true);
         }
         await pagination.SetCurrentPageIndexAsync(0);
+        this.IsBusy = false;
         StateHasChanged();
     }
 

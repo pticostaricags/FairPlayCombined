@@ -117,3 +117,12 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();
+
+namespace Utilities
+{
+    public static class ThemesHelper
+    {
+        public static DesignThemeModes DesignThemeMode { get; set; } = DesignThemeModes.Light;
+        public static OfficeColor? OfficeColor { get; set; } = Microsoft.FluentUI.AspNetCore.Components.OfficeColor.Default;
+    }
+}
