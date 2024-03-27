@@ -28,7 +28,9 @@ namespace FairPlayCombined.Services.Generators
             context.RegisterSourceOutput(compilation, Execute);
         }
 
+#pragma warning disable S3776 // Cognitive Complexity of methods should not be too high
         private void Execute(SourceProductionContext context, (Compilation Left, ImmutableArray<ClassDeclarationSyntax> Right) tuple)
+#pragma warning restore S3776 // Cognitive Complexity of methods should not be too high
         {
             var (compilation, list) = tuple;
             foreach (var syntax in list)

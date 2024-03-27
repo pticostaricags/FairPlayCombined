@@ -219,11 +219,14 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 .GetAccessTokenForArmAccountAsync(armAccesstoken, CancellationToken.None);
             Assert.IsNotNull(getAccessTokenResult);
             var result = await azureVideoIndexerService.IndexVideoFromUriAsync(
-                videoUri: new Uri(videoToIndexUrl!),
-                armAccessToken: getAccessTokenResult.AccessToken!,
-                name: $"AT File {Random.Shared.Next(1, 100)}",
-                description: "Test Desc",
-                fileName: "TestFile");
+                new AzureVideoIndexerService.IndexVideoFromUriParameters()
+                {
+                    ArmAccessToken = getAccessTokenResult.AccessToken!,
+                    Description = "Test Desc",
+                    FileName = "TestFile",
+                    Name = $"AT File {Random.Shared.Next(1, 100)}",
+                    VideoUri = new Uri(videoToIndexUrl!)
+                });
             Assert.IsNotNull(result);
         }
 

@@ -53,7 +53,9 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         }
     }
 
+#pragma warning disable S107 // Methods should not have too many parameters
     private static async Task AddUserAsync(ILogger<TestDataGenerator> logger, FairPlayCombinedDbContext dbContext, Gender[] allGenders, EyesColor[] allEyesColors, DateObjective[] allDateObjectives, HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions, TattooStatus[] allTattooStatuses, int itemsCount, int i, geodata randomGeoLocation, Point currentGeoLocation, Photo photo, CancellationToken stoppingToken)
+#pragma warning restore S107 // Methods should not have too many parameters
     {
         string email = $"GTEST-{Random.Shared.Next(1000000)}-{Faker.Internet.Email()}";
         string emailNormalized = email.Normalize();

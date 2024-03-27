@@ -8,11 +8,13 @@ namespace FairPlayDating.Migrations
     /// <inheritdoc />
     public partial class CreateIdentitySchema : Migration
     {
+        private const string AspNetRoles = "AspNetRoles";
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AspNetRoles",
+                name: AspNetRoles,
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -66,7 +68,7 @@ namespace FairPlayDating.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
+                        principalTable: AspNetRoles,
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -125,7 +127,7 @@ namespace FairPlayDating.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
+                        principalTable: AspNetRoles,
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -163,7 +165,7 @@ namespace FairPlayDating.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                table: "AspNetRoles",
+                table: AspNetRoles,
                 column: "NormalizedName",
                 unique: true,
                 filter: "[NormalizedName] IS NOT NULL");
@@ -215,7 +217,7 @@ namespace FairPlayDating.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: AspNetRoles);
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

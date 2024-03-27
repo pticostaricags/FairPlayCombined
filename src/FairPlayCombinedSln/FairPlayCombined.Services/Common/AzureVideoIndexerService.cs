@@ -96,13 +96,19 @@ namespace FairPlayCombined.Services.Common
                 throw new AzureVideoIndexerException($"Error: {reasonPhrase} - Details:{responseContent}");
             }
         }
+        public class IndexVideoFromUriParameters
+        {
 
-        public async Task<UploadVideoResponseModel?> IndexVideoFromUriAsync(Uri videoUri,
-            string armAccessToken,
-            string name,
-            string description, string fileName,
-            string language = "auto",
-            string indexingPreset = "Default",
+            public Uri? VideoUri { get; set; }
+            public string? ArmAccessToken { get;set; }
+            public string? Name { get; set; }
+            public string? Description { get; set; }
+            public string? FileName { get; set; }
+            public string? Language { get; set; } = "auto";
+            public string? IndexingPreset { get; set; } = "Default";
+        }
+        public async Task<UploadVideoResponseModel?> IndexVideoFromUriAsync(
+            IndexVideoFromUriParameters indexVideoFromUriParameters,
             CancellationToken cancellationToken = default)
         {
             try
@@ -111,17 +117,17 @@ namespace FairPlayCombined.Services.Common
                     $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +
                     $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
                     $"/Videos" +
-                    $"?name={name}" +
-                    $"&description={HttpUtility.UrlEncode(description)}";
+                    $"?name={indexVideoFromUriParameters.Name}" +
+                    $"&description={HttpUtility.UrlEncode(indexVideoFromUriParameters.Description)}";
                 requestUrl +=
-                $"&language={language}" +
-                $"&videoUrl={HttpUtility.UrlEncode(videoUri.ToString())}" +
-                $"&fileName={HttpUtility.UrlEncode(fileName)}" +
-                $"&indexingPreset={indexingPreset}";
+                $"&language={indexVideoFromUriParameters.Language}" +
+                $"&videoUrl={HttpUtility.UrlEncode(indexVideoFromUriParameters.VideoUri!.ToString())}" +
+                $"&fileName={HttpUtility.UrlEncode(indexVideoFromUriParameters.FileName)}" +
+                $"&indexingPreset={indexVideoFromUriParameters.IndexingPreset}";
                 requestUrl +=
                 $"&sendSuccessEmail={true}";
                 httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(BEARER_SCHEME, armAccessToken);
+                new AuthenticationHeaderValue(BEARER_SCHEME, indexVideoFromUriParameters.ArmAccessToken);
                 var response = await httpClient.PostAsync(requestUrl, null, cancellationToken);
                 if (response.IsSuccessStatusCode)
                 {
