@@ -1,4 +1,6 @@
 ﻿@page "/UserList"
+@implements IDisposable
+
 @using FairPlayAdminPortal.Components.Spinners
 @using FairPlayAdminPortal.Data
 @using FairPlayCombined.Common
@@ -57,9 +59,9 @@
 
 @code {
     private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private GridItemsProvider<UserModel>? ItemsProvider;
-    private PaginationState pagination = new()
+    private readonly PaginationState pagination = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
@@ -131,6 +133,11 @@
         await pagination.SetCurrentPageIndexAsync(0);
         this.IsBusy = false;
         StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 
 }

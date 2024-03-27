@@ -43,7 +43,6 @@
         var nestedTypes = T.GetNestedTypes(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
         foreach (var singleNestedType in nestedTypes)
         {
-            var nestedTypeName = singleNestedType.Name;
             var nestedTypeStaticProperties = singleNestedType.GetProperties(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
             foreach (var singleStaticProperty in nestedTypeStaticProperties)
             {

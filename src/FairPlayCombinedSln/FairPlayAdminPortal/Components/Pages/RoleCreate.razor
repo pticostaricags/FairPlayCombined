@@ -1,4 +1,6 @@
 ﻿@page "/RoleCreate"
+@implements IDisposable
+
 @using FairPlayCombined.Models.Role
 @using Microsoft.AspNetCore.Identity
 @inject RoleManager<IdentityRole> roleManager
@@ -32,7 +34,7 @@
 @code {
     [SupplyParameterFromForm]
     private CreateRoleModel createRoleModel { get; set; } = new();
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
 
     private async void OnValidSubmitAsync()
@@ -55,5 +57,10 @@
             this.toastService!.ShowError(message);
         }
         this.IsBusy = false;
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

@@ -1,4 +1,6 @@
 ﻿@page "/ResourceManage"
+@implements IDisposable
+
 @using FairPlayAdminPortal.Components.Spinners
 @using FairPlayCombined.Models.Common.Resource
 @using FairPlayCombined.Services.Common
@@ -45,7 +47,7 @@
     [SupplyParameterFromForm]
     private ResourceModel[]? resources { get; set; }
     private IQueryable<ResourceModel> resourcesQueryable => resources!.AsQueryable();
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
     protected override async Task OnInitializedAsync()
     {
@@ -88,5 +90,10 @@
             this.IsBusy = false;
             await InvokeAsync(() => StateHasChanged());
         }
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }
