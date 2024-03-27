@@ -1,9 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
 using System.Collections.Immutable;
-using System.Collections.Specialized;
 using System.Text;
 
 namespace FairPlayCombined.Services.Generators
@@ -28,7 +26,9 @@ namespace FairPlayCombined.Services.Generators
             context.RegisterSourceOutput(compilation, Execute);
         }
 
+#pragma warning disable S3776 // Cognitive Complexity of methods should not be too high
         private void Execute(SourceProductionContext context, (Compilation Left, ImmutableArray<ClassDeclarationSyntax> Right) tuple)
+#pragma warning restore S3776 // Cognitive Complexity of methods should not be too high
         {
             var (compilation, list) = tuple;
             foreach (var syntax in list)

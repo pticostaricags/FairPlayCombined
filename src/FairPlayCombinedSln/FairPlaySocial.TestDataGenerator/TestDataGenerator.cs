@@ -1,4 +1,3 @@
-using FairPlayCombined.Common.FairPlaySocial.Enums;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;

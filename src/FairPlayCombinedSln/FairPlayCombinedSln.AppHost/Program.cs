@@ -10,7 +10,7 @@ var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??
 var googleAuthClientSecretsFilePath = builder.Configuration["GoogleAuthClientSecretsFilePath"] ??
     throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
 
-IResourceBuilder<IResourceWithConnectionString> sqlResourceWithConnectionString = 
+IResourceBuilder<IResourceWithConnectionString> sqlResourceWithConnectionString =
     builder.AddConnectionString("FairPlayCombinedDb");
 
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);

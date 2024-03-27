@@ -1,20 +1,13 @@
+using FairPlayCombinedSln.ServiceDefaults;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using FairPlayCombined.DataAccess.Data;
-using FairPlayCombined.DataAccess.Models.dboSchema;
-using Microsoft.Data.SqlClient;
-using FairPlayCombined.Common.CustomExceptions;
-using System.ComponentModel.DataAnnotations;
-using FairPlayCombinedSln.ServiceDefaults;
 
 namespace Microsoft.Extensions.Hosting;
 

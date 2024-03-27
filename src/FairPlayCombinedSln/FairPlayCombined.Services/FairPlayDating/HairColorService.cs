@@ -3,11 +3,6 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.FairPlayDating.HairColor;
 using FairPlayCombined.Models.Pagination;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.FairPlayDating
 {
@@ -20,7 +15,7 @@ namespace FairPlayCombined.Services.FairPlayDating
         PaginationRequest,
         PaginationOfT<HairColorModel>
         >]
-    public partial class HairColorService  : BaseService
+    public partial class HairColorService : BaseService
     {
     }
 }

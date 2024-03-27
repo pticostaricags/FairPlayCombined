@@ -1,11 +1,7 @@
 ﻿using FairPlayCombined.Interfaces;
-using Google.Apis.Logging;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using PayoutsSdk.Core;
 using PayoutsSdk.Payouts;
-using PayPal.v1.BillingPlans;
-using PayPal.v1.Payments;
 
 namespace FairPlayCombined.Services.Common
 {

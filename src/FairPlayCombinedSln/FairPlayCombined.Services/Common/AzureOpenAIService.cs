@@ -1,16 +1,13 @@
 ﻿using Azure.AI.OpenAI;
-using Azure.Core.Pipeline;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.AzureOpenAI;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace FairPlayCombined.Services.Common
 {
-    public class AzureOpenAIService(OpenAIClient openAIClient) : IAzureOpenAIService
+    public class AzureOpenAIService(OpenAIClient openAIClient,
+        AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration) : IAzureOpenAIService
     {
-        internal const string DeploymentName = "translationschat";
-
         public enum ArticleMood
         {
             Hilarious,
@@ -18,7 +15,7 @@ namespace FairPlayCombined.Services.Common
             Professional
         }
         public async Task<string?> GenerateLinkedInArticleFromVideoCaptionsAsync(string videoTitle,
-            string videoCaptions,ArticleMood articleMood, CancellationToken cancellationToken)
+            string videoCaptions, ArticleMood articleMood, CancellationToken cancellationToken)
         {
             string systemMessage = "You will take the role of an expert in LinkedIn SEO. " +
                     "I will give you the information of one of my videos, your job is to use that information to create a draft LinkedIn article." +
@@ -29,7 +26,7 @@ namespace FairPlayCombined.Services.Common
             }
             ChatCompletionsOptions chatCompletionsOptions = new()
             {
-                DeploymentName = DeploymentName,
+                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
                     new ChatMessage(ChatRole.System, systemMessage),
@@ -64,7 +61,7 @@ namespace FairPlayCombined.Services.Common
             string jsonRequest = JsonSerializer.Serialize(textModerationRequest);
             ChatCompletionsOptions chatCompletionsOptions = new()
             {
-                DeploymentName = DeploymentName,
+                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
                     new ChatMessage(ChatRole.System, "You are an expert content moderator. " +
@@ -126,7 +123,7 @@ namespace FairPlayCombined.Services.Common
             };
             ChatCompletionsOptions chatCompletionsOptions = new()
             {
-                DeploymentName = DeploymentName,
+                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
                     new ChatMessage(ChatRole.System, "You are an expert translator. Your jobs is to translate the text I give you." +
@@ -151,7 +148,7 @@ namespace FairPlayCombined.Services.Common
         {
             ChatCompletionsOptions chatCompletionsOptions = new()
             {
-                DeploymentName = DeploymentName,
+                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
                     new ChatMessage(ChatRole.System, "You are an expert translator. Your jobs is to translate the text I give you." +

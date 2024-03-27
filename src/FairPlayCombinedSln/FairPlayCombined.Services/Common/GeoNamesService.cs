@@ -1,11 +1,5 @@
 ﻿using FairPlayCombined.Models.Common.GeoNames;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -32,7 +26,7 @@ namespace FairPlayCombined.Services.Common
             }
             catch (Exception ex)
             {
-                logger.LogError(exception: ex,"{Message}",ex.Message);
+                logger.LogError(exception: ex, "{Message}", ex.Message);
                 throw;
             }
         }

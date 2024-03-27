@@ -3,13 +3,9 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.Pagination;
-using FairPlayCombined.Services.Common;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.YouTube.v3;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
-using System.Text;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
@@ -38,7 +34,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.VideoInfo
-                .Where(p => p.VideoIndexStatusId == (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed 
+                .Where(p => p.VideoIndexStatusId == (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed
                 && p.ApplicationUserId == userId)
                 .Select(p => new VideoInfoModel
                 {

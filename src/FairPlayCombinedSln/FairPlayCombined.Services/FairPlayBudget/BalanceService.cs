@@ -1,13 +1,7 @@
 ﻿using FairPlayCombined.DataAccess.Data;
-using FairPlayCombined.DataAccess.Models.FairPlayBudgetSchema;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.FairPlayBudget.Balance;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.FairPlayBudget
 {

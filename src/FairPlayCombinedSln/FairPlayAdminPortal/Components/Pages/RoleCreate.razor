@@ -1,4 +1,6 @@
 ﻿@page "/RoleCreate"
+@implements IDisposable
+
 @using FairPlayCombined.Models.Role
 @using Microsoft.AspNetCore.Identity
 @inject RoleManager<IdentityRole> roleManager
@@ -6,29 +8,38 @@
 @inject IToastService toastService
 @rendermode RenderMode.InteractiveServer
 
-<h3>RoleCreateAsync</h3>
+<FluentLabel Typo="Typography.H3">
+    RoleCreateAsync
+</FluentLabel>
 
-<EditForm FormName="frmCreateRole" Model="this.createRoleModel" OnValidSubmit="OnValidSubmitAsync">
-    <div class="mb-3">
+<FluentEditForm FormName="frmCreateRole" Model="this.createRoleModel" OnValidSubmit="OnValidSubmitAsync">
+    <div>
         <DataAnnotationsValidator></DataAnnotationsValidator>
-        <ValidationSummary></ValidationSummary>
+        <FluentValidationSummary></FluentValidationSummary>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Name</label>
-        <InputText class="form-control" @bind-Value="createRoleModel.Name"></InputText>
+    <div>
+        <FluentLabel Typo="Typography.Body">Name</FluentLabel>
+        <FluentTextField @bind-Value="createRoleModel.Name"></FluentTextField>
     </div>
-    <div class="mb-3">
-        <button type="submit" class="btn btn-primary">Save</button>
+    <div>
+        <FluentButton Type="ButtonType.Submit"
+                      IconStart="@(new Icons.Regular.Size16.Save())"
+                      BackgroundColor="var(--success)"
+        Loading="this.IsBusy">
+            Save
+        </FluentButton>
     </div>
-</EditForm>
+</FluentEditForm>
 
 @code {
     [SupplyParameterFromForm]
     private CreateRoleModel createRoleModel { get; set; } = new();
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; }
 
     private async void OnValidSubmitAsync()
     {
+        this.IsBusy = true;
         IdentityRole role = new()
             {
                 Name = createRoleModel.Name,
@@ -45,5 +56,11 @@
             var message = String.Join(",", result.Errors.Select(p => p.Description));
             this.toastService!.ShowError(message);
         }
+        this.IsBusy = false;
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

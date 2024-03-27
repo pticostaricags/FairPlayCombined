@@ -1,15 +1,9 @@
 ﻿using FairPlayCombined.Common;
 using FairPlayCombined.DataAccess.Interceptors.Interfaces;
-using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.DataAccess.Interceptors
 {

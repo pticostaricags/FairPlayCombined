@@ -1,10 +1,10 @@
-﻿using FairPlayCombined.DataAccess.Data;
+﻿using FairPlayCombined.Common;
+using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.Pagination;
+using FairPlayCombined.Models.Role;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
-using FairPlayCombined.Common;
-using FairPlayCombined.Models.Role;
 
 namespace FairPlayCombined.Services.Common
 {

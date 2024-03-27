@@ -5,13 +5,6 @@ using FairPlayCombined.Models.Pagination;
 using FairPlayCombined.Services.FairPlayDating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Testcontainers.MsSql;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
 {
@@ -26,7 +19,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<ActivityService>();
             var sp = services.BuildServiceProvider();
@@ -44,9 +37,9 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             ServiceCollection services = new();
             var cs = _msSqlContainer!.GetConnectionString();
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
-                optionsAction => 
+                optionsAction =>
                 {
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<ActivityService>();
             var sp = services.BuildServiceProvider();
@@ -71,7 +64,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<ActivityService>();
             var sp = services.BuildServiceProvider();
@@ -87,7 +80,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             Assert.AreNotEqual(0, entity.ActivityId);
             await activityService.DeleteActivityByIdAsync(entity.ActivityId, CancellationToken.None);
             var itemsCount = await dbContext.Activity.CountAsync(CancellationToken.None);
-            Assert.AreEqual(0,itemsCount);
+            Assert.AreEqual(0, itemsCount);
         }
 
         [TestMethod]
@@ -98,7 +91,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<ActivityService>();
             var sp = services.BuildServiceProvider();
@@ -117,7 +110,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     PageSize = 10,
                     StartIndex = 0,
-                    SortingItems=new SortingItem[]
+                    SortingItems = new SortingItem[]
                     {
                         new()
                         {
@@ -138,7 +131,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<ActivityService>();
             var sp = services.BuildServiceProvider();
@@ -153,7 +146,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             await dbContext.SaveChangesAsync();
             Assert.AreNotEqual(0, entity.ActivityId);
             var result = await activityService.GetActivityByIdAsync(entity.ActivityId, CancellationToken.None);
-            Assert.IsNotNull (result);
+            Assert.IsNotNull(result);
             Assert.AreEqual(entity.Name, result.Name);
         }
     }

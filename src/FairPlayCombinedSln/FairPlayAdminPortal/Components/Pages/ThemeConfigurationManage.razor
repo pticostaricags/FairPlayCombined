@@ -1,14 +1,16 @@
 ﻿@page "/ThemeConfigurationManage"
+@using FairPlayAdminPortal.Components.Spinners
 @using FairPlayCombined.Common
 @using FairPlayCombined.Models.ThemeConfiguration
 
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 <FluentLabel Typo="Typography.H3">
     ThemeConfigurationManage
 </FluentLabel>
 
 @if (this.themeConfigurationModel?.Length > 0)
 {
-    <EditForm FormName="frmThemeConfiguration" Model="this.themeConfigurationModel"
+    <FluentEditForm FormName="frmThemeConfiguration" Model="this.themeConfigurationModel"
               OnValidSubmit="OnValidSubmitAsync">
         <FluentGrid>
             @foreach (var singleThemeConfiguration in this.themeConfigurationModel)
@@ -23,21 +25,24 @@
                 </FluentGridItem>
             }
         </FluentGrid>
-        <button type="submit" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Save</button>
-    </EditForm>
+        <FluentButton Type="ButtonType.Submit" Loading="this.IsBusy"
+                      IconStart="@(new Icons.Regular.Size16.Save())"
+                      BackgroundColor="var(--success)">Save</FluentButton>
+    </FluentEditForm>
 }
 
 @code {
     private ThemeConfigurationModel[]? themeConfigurationModel;
+    private bool IsBusy { get; set; }
 
     protected override void OnInitialized()
     {
+        this.IsBusy = true;
         List<ThemeConfigurationModel> lstThemeConfiguration = new List<ThemeConfigurationModel>();
         var T = typeof(FairPlayCombined.Common.ThemeConfiguration);
         var nestedTypes = T.GetNestedTypes(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
         foreach (var singleNestedType in nestedTypes)
         {
-            var nestedTypeName = singleNestedType.Name;
             var nestedTypeStaticProperties = singleNestedType.GetProperties(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
             foreach (var singleStaticProperty in nestedTypeStaticProperties)
             {
@@ -51,10 +56,13 @@
             }
         }
         this.themeConfigurationModel = lstThemeConfiguration.ToArray();
+        this.IsBusy = false;
     }
 
     private async Task OnValidSubmitAsync()
     {
+        this.IsBusy = true;
         await Task.Yield();
+        this.IsBusy = false;
     }
 }

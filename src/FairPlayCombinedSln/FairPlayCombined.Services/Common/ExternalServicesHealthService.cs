@@ -1,12 +1,5 @@
 ﻿using Azure.AI.OpenAI;
-using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using Microsoft.Azure.CognitiveServices.ContentModerator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static FairPlayCombined.Services.Common.AzureOpenAIService;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -21,7 +14,7 @@ namespace FairPlayCombined.Services.Common
                 string systemMessage = "Reply with 'YES'";
                 ChatCompletionsOptions chatCompletionsOptions = new()
                 {
-                    DeploymentName = AzureOpenAIService.DeploymentName,
+                    DeploymentName = externalServicesConfigurationModel.AzureOpenDeploymentName,
                     Messages =
                 {
                     new ChatMessage(ChatRole.System, systemMessage)
@@ -45,6 +38,7 @@ namespace FairPlayCombined.Services.Common
 
     public class ExternalServicesConfigurationModel
     {
+        public string? AzureOpenDeploymentName { get; set; }
         public Azure.AI.OpenAI.OpenAIClient? OpenAIClient { get; set; }
         public ContentModeratorClient? ContentModeratorClient
         {

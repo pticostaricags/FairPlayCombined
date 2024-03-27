@@ -7,9 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 builder.AddSqlServerDbContext<FairPlayCombinedDbContext>("FairPlayCombinedDb",
-    configureDbContextOptions: (options) => 
+    configureDbContextOptions: (options) =>
     {
-        options.UseSqlServer(builder => 
+        options.UseSqlServer(builder =>
         {
             builder.MigrationsAssembly(typeof(Program).Assembly.GetName().Name);
             builder.UseNetTopologySuite();

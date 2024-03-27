@@ -1,11 +1,5 @@
 ﻿using Microsoft.Azure.CognitiveServices.ContentModerator;
-using Microsoft.Azure.CognitiveServices.ContentModerator.Models;
-using NetTopologySuite.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -13,7 +7,7 @@ namespace FairPlayCombined.Services.Common
     {
         public async Task<ImageModerationResultModel> ModerateImageAsync(Stream imageStream, CancellationToken cancellationToken)
         {
-            var evaluateResponse = await 
+            var evaluateResponse = await
             contentModeratorClient.ImageModeration.EvaluateFileInputAsync(imageStream,
                 cancellationToken: cancellationToken);
             ImageModerationResultModel result = new()
@@ -30,11 +24,11 @@ namespace FairPlayCombined.Services.Common
             var detectedLanguage = await contentModeratorClient.TextModeration
                 .DetectLanguageAsync("text/plain", stream,
                 cancellationToken: cancellationToken);
-            stream = new (textBytes);
+            stream = new(textBytes);
             var moderationResult = await contentModeratorClient.TextModeration
                 .ScreenTextAsync(textContentType: "text/plain", textContent: stream,
                 language: detectedLanguage.DetectedLanguageProperty,
-                autocorrect:false, pII:true,classify:true, cancellationToken:cancellationToken);
+                autocorrect: false, pII: true, classify: true, cancellationToken: cancellationToken);
             //Check https://learn.microsoft.com/en-us/azure/ai-services/content-moderator/text-moderation-api#classification
             TextModerationResultModel result = new()
             {

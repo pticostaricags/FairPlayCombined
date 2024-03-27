@@ -1,10 +1,7 @@
 ﻿using Blazored.Toast.Services;
 using FairPlayCombined.Common.FairPlaySocial;
-using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.FairPlaySocial.Notification;
-using FairPlaySocial.ClientServices;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace FairPlaySocial.Components.Notifications
@@ -24,7 +21,7 @@ namespace FairPlaySocial.Components.Notifications
             {
                 this.IsBusy = true;
                 var hubUrl = this.NavigationManager!
-                    .ToAbsoluteUri($"{Constants.Hubs.UserMessageHub}");                
+                    .ToAbsoluteUri($"{Constants.Hubs.UserMessageHub}");
                 this.HubConnection = new HubConnectionBuilder()
                     .WithUrl(hubUrl)
                     .Build();

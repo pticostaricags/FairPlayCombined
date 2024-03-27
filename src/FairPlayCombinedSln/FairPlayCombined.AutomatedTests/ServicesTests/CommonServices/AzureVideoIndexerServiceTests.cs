@@ -2,17 +2,12 @@
 using Azure.Identity;
 using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
 {
 
     [TestClass]
-    public class AzureVideoIndexerServiceTests: ServicesBase
+    public class AzureVideoIndexerServiceTests : ServicesBase
     {
 
         [TestMethod]
@@ -81,7 +76,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var result =
             await azureVideoIndexerService.GetVideoVTTCaptionsAsync(testVideoId!,
                 getAccessToken!.AccessToken!,
-                language:"en",
+                language: "en",
                 CancellationToken.None);
             Assert.IsNotNull(result);
         }
@@ -114,8 +109,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var getAccessToken = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
             Assert.IsNotNull(getAccessToken);
-            var result = 
-            await azureVideoIndexerService.GetVideoIndexAsync(testVideoId!, 
+            var result =
+            await azureVideoIndexerService.GetVideoIndexAsync(testVideoId!,
                 getAccessToken!.AccessToken!,
                 CancellationToken.None);
             Assert.IsNotNull(result);
@@ -137,7 +132,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 new()
                 {
                     AccountId = azureVideoIndexerAccountId,
-                    IsArmAccount=true,
+                    IsArmAccount = true,
                     Location = azureVideoIndexerLocation,
                     ResourceGroup = azureVideoIndexerResourceGroup,
                     ResourceName = azureVideoIndexerResourceName,
@@ -184,8 +179,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 new IndexVideoFromBytesFormatModel()
                 {
                     FileBytes = fileBytes,
-                    Name = $"AT File {Random.Shared.Next(1,100)}"
-                }, 
+                    Name = $"AT File {Random.Shared.Next(1, 100)}"
+                },
                 viAccountAccessToken: getAccessTokenResult!.AccessToken!, CancellationToken.None);
             Assert.IsNotNull(result);
         }
@@ -219,11 +214,14 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 .GetAccessTokenForArmAccountAsync(armAccesstoken, CancellationToken.None);
             Assert.IsNotNull(getAccessTokenResult);
             var result = await azureVideoIndexerService.IndexVideoFromUriAsync(
-                videoUri: new Uri(videoToIndexUrl!),
-                armAccessToken: getAccessTokenResult.AccessToken!,
-                name: $"AT File {Random.Shared.Next(1, 100)}",
-                description: "Test Desc",
-                fileName: "TestFile");
+                new AzureVideoIndexerService.IndexVideoFromUriParameters()
+                {
+                    ArmAccessToken = getAccessTokenResult.AccessToken!,
+                    Description = "Test Desc",
+                    FileName = "TestFile",
+                    Name = $"AT File {Random.Shared.Next(1, 100)}",
+                    VideoUri = new Uri(videoToIndexUrl!)
+                });
             Assert.IsNotNull(result);
         }
 

@@ -1,12 +1,6 @@
 ﻿using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using PayPal.v1.BillingPlans;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
 {
@@ -35,7 +29,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<PayPalPlanService>();
             PayPalPlanService payPalPlanService = new(
-                new PayPal.Core.PayPalHttpClient(GetPayPalCoreEnvironment(configuration,true)),
+                new PayPal.Core.PayPalHttpClient(GetPayPalCoreEnvironment(configuration, true)),
                 logger);
             var result = await payPalPlanService.CreatePlan();
             Assert.IsNotNull(result);

@@ -1,8 +1,8 @@
-﻿using FairPlayCombined.Common.CustomExceptions;
+﻿using BrowserInterop.Extensions;
+using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.Common.GeoLocation;
 using Microsoft.JSInterop;
-using BrowserInterop.Extensions;
 
 namespace FairPlayDating.Services
 {

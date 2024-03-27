@@ -50,11 +50,11 @@ builder.Services.AddTransient(sp =>
     AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = new()
     {
         AccountId = azureVideoIndexerAccountIdEntity.Value,
-        IsArmAccount=true,
-        Location=azureVideoIndexerLocationEntity.Value,
-        ResourceGroup=azureVideoIndexerResourceGroupEntity.Value,
-        ResourceName=azureVideoIndexerResourceNameEntity.Value,
-        SubscriptionId=azureVideoIndexerSubscriptionIdEntity.Value
+        IsArmAccount = true,
+        Location = azureVideoIndexerLocationEntity.Value,
+        ResourceGroup = azureVideoIndexerResourceGroupEntity.Value,
+        ResourceName = azureVideoIndexerResourceNameEntity.Value,
+        SubscriptionId = azureVideoIndexerSubscriptionIdEntity.Value
     };
     return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
         new HttpClient());

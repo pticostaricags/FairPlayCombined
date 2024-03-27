@@ -6,12 +6,10 @@ using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.FairPlayDating.NotLikedUserProfile;
 using FairPlayCombined.Models.Pagination;
-using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayDating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Testcontainers.MsSql;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
 {
@@ -27,7 +25,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             services.AddDbContextFactory<FairPlayCombinedDbContext>(
                 optionsAction =>
                 {
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<NotLikedUserProfileService>();
             var sp = services.BuildServiceProvider();
@@ -75,7 +73,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                     optionsAction.AddInterceptors(
                         new SaveChangesInterceptor(new TestUserProviderService())
                         );
-                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction=>sqlServerOptionsAction.UseNetTopologySuite());
+                    optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
             services.AddTransient<IUserProviderService, TestUserProviderService>();
         }

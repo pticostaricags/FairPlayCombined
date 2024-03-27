@@ -4,11 +4,6 @@ using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Models.Common.ConfigurationSecret;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Common
 {

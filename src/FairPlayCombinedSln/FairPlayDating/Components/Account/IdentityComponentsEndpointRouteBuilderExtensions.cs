@@ -1,15 +1,14 @@
-using System.Security.Claims;
-using System.Text.Json;
+using FairPlayCombined.Common.Identity;
+using FairPlayDating.Components.Account.Pages;
+using FairPlayDating.Components.Account.Pages.Manage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using FairPlayDating.Components.Account.Pages;
-using FairPlayDating.Components.Account.Pages.Manage;
-using FairPlayDating.Data;
-using FairPlayCombined.Common.Identity;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace FairPlayDating.Components.Account;
 

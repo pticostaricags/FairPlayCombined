@@ -9,7 +9,7 @@ using System.Linq.Dynamic.Core;
 namespace FairPlayCombined.Services.Common
 {
     public class UserService(
-        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) : 
+        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) :
         BaseService,
         IUserService
     {

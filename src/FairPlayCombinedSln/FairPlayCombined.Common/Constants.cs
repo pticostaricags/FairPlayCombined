@@ -20,6 +20,7 @@
             public const string GOOGLE_AUTH_CLIENT_ID_KEY = "GoogleAuthClientId";
             public const string AZURE_OPENAI_ENDPOINT_KEY = "AzureOpenAIEndpoint";
             public const string AZURE_OPENAI_KEY_KEY = "AzureOpenAIKey";
+            public const string AZURE_OPENAI_DEPLOYMENT_NAME_KEY = "AzureOpenAIDeploymentName";
             public const string AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY = "AzureVideoIndexerAccountId";
             public const string AZURE_VIDEOINDEXER_LOCATION_KEY = "AzureVideoIndexerLocation";
             public const string AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY = "AzureVideoIndexerResourceGroup";

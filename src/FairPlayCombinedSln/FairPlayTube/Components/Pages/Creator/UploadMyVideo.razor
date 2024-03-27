@@ -1,4 +1,6 @@
 ﻿@page "/Creator/UploadMyVideo"
+@implements IDisposable
+
 @using Blazored.Toast.Services
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.FairPlayTube.Enums
@@ -57,7 +59,7 @@
 @code {
     [SupplyParameterFromForm]
     private CreateVideoInfoModel createVideoInfoModel { get; set; } = new();
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
     private EditForm? frmCreateVideoInfo;
     private long bytesSent { get; set; }
@@ -92,11 +94,15 @@
             var authToken = await this.azureVideoIndexerService.AuthenticateToAzureArmAsync();
             var accountAccessToken = await this.azureVideoIndexerService.GetAccessTokenForArmAccountAsync(authToken, this.cancellationTokenSource.Token);
             var indexVideoResult = await this.azureVideoIndexerService
-            .IndexVideoFromUriAsync(new Uri(this.createVideoInfoModel.ExternalVideoSourceUrl!),
-            armAccessToken: accountAccessToken!.AccessToken!,
-            this.createVideoInfoModel.Name!,
-            this.createVideoInfoModel.Description!,
-            this.createVideoInfoModel.Name!);
+            .IndexVideoFromUriAsync(
+                new AzureVideoIndexerService.IndexVideoFromUriParameters()
+                    {
+                        ArmAccessToken = accountAccessToken!.AccessToken!,
+                        Description = this.createVideoInfoModel.Description!,
+                        FileName = this.createVideoInfoModel.Name!,
+                        Name = this.createVideoInfoModel.Name!,
+                        VideoUri = new Uri(this.createVideoInfoModel.ExternalVideoSourceUrl!)
+                    });
             this.createVideoInfoModel.VideoId = indexVideoResult!.id;
             this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
             this.frmCreateVideoInfo.EditContext.Validate();
@@ -128,19 +134,19 @@
             }
             var fileBytes = await new HttpClient().GetByteArrayAsync(this.createVideoInfoModel.ExternalVideoSourceUrl);
             MemoryStream stream = new MemoryStream(fileBytes);
-            Video video=new();
+            Video video = new();
             video.Snippet = new VideoSnippet();
             video.Snippet.Title = this.createVideoInfoModel.Name;
             video.Snippet.Description = this.createVideoInfoModel.Description;
             video.Status = new VideoStatus();
             video.Status.PrivacyStatus = "unlisted";
-            await this.youTubeClientService.UploadVideoAsync(video, stream, 
+            await this.youTubeClientService.UploadVideoAsync(video, stream,
             progressChanged: async (uploadProgress) =>
             {
                 this.bytesSent = uploadProgress.BytesSent;
                 await InvokeAsync(() => StateHasChanged());
             },
-            responseReceived: (video)=>
+            responseReceived: (video) =>
             {
                 this.createVideoInfoModel.YouTubeVideoId = video.Id;
                 this.toastService.ShowSuccess($"Video uploaded to YouTube. Id: {video.Id}");
@@ -171,5 +177,10 @@
         }
         this.IsBusy = false;
         StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

@@ -1,23 +1,24 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Blazored.Toast;
+using FairPlayCombined.Common;
+using FairPlayCombined.Common.Identity;
+using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Interceptors;
+using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Interfaces;
+using FairPlayCombined.Models.OpenAI;
+using FairPlayCombined.Services.Common;
+using FairPlayCombined.Services.FairPlayTube;
+using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayTube.Components;
 using FairPlayTube.Components.Account;
 using FairPlayTube.Data;
-using FairPlayCombined.Common.Identity;
-using Blazored.Toast;
-using FairPlayCombined.Interfaces;
-using FairPlayCombined.Services.Common;
-using FairPlayCombined.DataAccess.Data;
-using FairPlayCombined.DataAccess.Interceptors;
-using Microsoft.Extensions.Localization;
-using FairPlayCombined.Shared.CustomLocalization.EF;
-using FairPlayCombined.Services.FairPlayTube;
-using Microsoft.AspNetCore.Mvc;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.YouTube.v3;
-using FairPlayCombined.Common;
-using FairPlayCombined.DataAccess.Models.dboSchema;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +43,7 @@ var googleAuthClientSecret = Environment.GetEnvironmentVariable("GoogleAuthClien
     throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
 var googleAuthClientSecretsFilePath = Environment.GetEnvironmentVariable("GoogleAuthClientSecretsFilePath") ??
     throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
-builder.Services.AddSingleton<YouTubeClientServiceConfiguration>(new YouTubeClientServiceConfiguration() 
+builder.Services.AddSingleton<YouTubeClientServiceConfiguration>(new YouTubeClientServiceConfiguration()
 {
     ClientSecretsFilePath = googleAuthClientSecretsFilePath
 });
@@ -52,7 +53,7 @@ builder.Services.AddAuthentication(configureOptions =>
     configureOptions.DefaultScheme = IdentityConstants.ApplicationScheme;
     configureOptions.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
-    .AddGoogle(options => 
+    .AddGoogle(options =>
     {
         options.ClientId = googleAuthClientId;
         options.ClientSecret = googleAuthClientSecret;
@@ -103,7 +104,7 @@ builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
 builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 
-builder.Services.AddTransient<OpenAIService>(sp => 
+builder.Services.AddTransient<OpenAIService>(sp =>
 {
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
     sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
@@ -124,11 +125,12 @@ builder.Services.AddTransient<OpenAIService>(sp =>
     };
     return new OpenAIService(openAIAuthorizedHttpClient,
         genericHttpClient: genericHttpClient, new OpenAIServiceConfiguration()
-    {
-        GenerateDall3ImageUrl = generateDall3ImageUrlEntity.Value,
-        ChatCompletionsUrl = openAIChatCompletionEntity.Value
-    },
-    dbContextFactory:dbContextFactory);
+        {
+            Key = openAIKeyEntity.Value,
+            GenerateDall3ImageUrl = generateDall3ImageUrlEntity.Value,
+            ChatCompletionsUrl = openAIChatCompletionEntity.Value
+        },
+    dbContextFactory: dbContextFactory);
 });
 
 builder.Services.AddSignalR(hubOptions =>
@@ -140,7 +142,7 @@ builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>()
 builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
-builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp => 
+builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp =>
 {
     var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
     var azureVideoIndexerAccountIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
@@ -228,13 +230,13 @@ app.MapAdditionalIdentityEndpoints();
 app.MapGet("/api/video/{videoId}/captions/{language}",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        [FromRoute] string videoId, 
+        [FromRoute] string videoId,
         [FromRoute] string language,
-        CancellationToken cancellationToken) => 
+        CancellationToken cancellationToken) =>
     {
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         var result = await dbContext.VideoCaptions
-        .Include(p=>p.VideoInfo)
+        .Include(p => p.VideoInfo)
         .Where(p => p.VideoInfo.VideoId == videoId &&
         p.Language == language)
         .Select(p => p.Content)

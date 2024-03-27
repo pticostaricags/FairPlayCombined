@@ -29,7 +29,7 @@ namespace FairPlayCombined.Services.FairPlaySocial
         public PostService(
             IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
             IHubContext<PostNotificationHub, IPostNotificationHub> hubContext,
-            ILogger<PostService> logger):
+            ILogger<PostService> logger) :
             this(dbContextFactory, logger)
         {
             this.hubContext = hubContext;
@@ -39,7 +39,7 @@ namespace FairPlayCombined.Services.FairPlaySocial
             CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-            var postEntity = await dbContext.Post.SingleAsync(p=>p.PostId == postId, cancellationToken);
+            var postEntity = await dbContext.Post.SingleAsync(p => p.PostId == postId, cancellationToken);
             var userEntity = await dbContext
                 .AspNetUsers.SingleAsync(p => p.Id == postEntity.OwnerApplicationUserId,
                 cancellationToken: cancellationToken);
@@ -51,7 +51,7 @@ namespace FairPlayCombined.Services.FairPlaySocial
                 Message = postEntity.Text,
                 Post = new PostModel()
                 {
-                    GroupId=postEntity.GroupId,
+                    GroupId = postEntity.GroupId,
                     OwnerApplicationUserId = postEntity.OwnerApplicationUserId,
                     OwnerApplicationUserName = userEntity.UserName,
                     PhotoId = postEntity.PhotoId,
@@ -84,7 +84,7 @@ namespace FairPlayCombined.Services.FairPlaySocial
             result.PageSize = paginationRequest.PageSize;
             result.TotalPages = (int)Math.Ceiling((decimal)result.TotalItems / result.PageSize);
             result.Items = await query
-                .OrderByDescending(p=>p.PostId)
+                .OrderByDescending(p => p.PostId)
             .Skip(paginationRequest.StartIndex)
             .Take(paginationRequest.PageSize)
             .ToArrayAsync(cancellationToken);

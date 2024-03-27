@@ -1,12 +1,6 @@
 ﻿using FairPlayCombined.Services.Common;
 using Microsoft.Azure.CognitiveServices.ContentModerator;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Rest;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
 {
