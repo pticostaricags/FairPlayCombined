@@ -17,7 +17,9 @@
     <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
         <TemplateColumn>
             <div>
-                <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss" @onclick="@( () => OnPlayVideoClicked(context!.VideoId!))">Play</button>
+                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size16.Play())"
+                              OnClick="@( () => OnPlayVideoClicked(context!.VideoId!))">Play</FluentButton>
             </div>
         </TemplateColumn>
         <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
@@ -26,7 +28,11 @@
         <TemplateColumn>
             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
             {
-                <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
+                <FluentAnchor Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
+                    <FluentIcon Value="@(new Icons.Regular.Size16.Play())"
+                                Color="Color.Accent" Slot="start"></FluentIcon>
+                    View On YouTube
+                </FluentAnchor>
             }
         </TemplateColumn>
     </FluentDataGrid>
