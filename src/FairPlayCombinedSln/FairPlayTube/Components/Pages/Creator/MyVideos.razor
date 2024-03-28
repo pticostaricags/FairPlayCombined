@@ -7,7 +7,7 @@
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
-@using Microsoft.AspNetCore.Components.QuickGrid
+
 @rendermode RenderMode.InteractiveServer
 @inject IJSRuntime jsRuntime
 @inject AzureVideoIndexerService azureVideoIndexerService
@@ -22,7 +22,7 @@
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
-    <QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+    <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
         <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
         <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
@@ -64,9 +64,9 @@
                 </a>
             }
         </TemplateColumn>
-    </QuickGrid>
+    </FluentDataGrid>
 </div>
-<Paginator State="this.paginationState"></Paginator>
+<FluentPaginator State="this.paginationState"></FluentPaginator>
 <div class="@ThemeConfiguration.Divisions.DefaultCss">
     @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
     {

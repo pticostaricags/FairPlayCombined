@@ -1,4 +1,3 @@
-using Blazored.Toast;
 using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
@@ -19,10 +18,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddFluentUIComponents();
 
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
@@ -139,7 +140,6 @@ builder.Services.AddSignalR(hubOptions =>
 });
 
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
-builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp =>

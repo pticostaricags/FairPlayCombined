@@ -17,9 +17,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0-preview.2.24162.2" />
-    <PackageReference Include="Blazored.Toast" Version="4.2.1" />
+	  
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.0-preview.2.24128.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="9.0.0-preview.2.24128.4" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.0-preview.2.24128.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0-preview.2.24128.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0-preview.2.24128.4" />
@@ -27,6 +26,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.5.1-preview.24080.3" />
+	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.5.0" />
+	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.5.0" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.0.88079">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

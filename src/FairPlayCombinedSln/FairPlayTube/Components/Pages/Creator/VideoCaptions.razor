@@ -1,10 +1,9 @@
 ﻿@page "/Creator/VideoCaptions/VideoInfo{VideoInfoId:long}/YouTube/{YouTubeVideoId}"
-@using Blazored.Toast.Services
+
 @using FairPlayCombined.Models.FairPlaySocial.VideoCaptions
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using Google.Apis.YouTube.v3
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using System.Text
 
 @rendermode RenderMode.InteractiveServer
@@ -24,14 +23,14 @@
 
 @if (this.Items != null)
 {
-    <QuickGrid Items="this.Items!.AsQueryable()">
+    <FluentDataGrid Items="this.Items!.AsQueryable()">
         <PropertyColumn Property="@(p=>p.Language)"></PropertyColumn>
         <TemplateColumn>
             <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
             @onclick="@( async () => await OnUploadToYouTubeButtonClickedAsync(context))"
             >Upload To YouTube</button>
         </TemplateColumn>
-    </QuickGrid>
+    </FluentDataGrid>
 }
 
 @code {

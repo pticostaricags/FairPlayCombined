@@ -2,87 +2,34 @@
 
 @inject NavigationManager NavigationManager
 
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">FairPlayTube</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
+<FluentNavLink Href="/">Home</FluentNavLink>
+<AuthorizeView>
+    <Authorized>
+        <FluentNavGroup Title="Accounts">
+            <FluentNavLink Href="Account/Manage">Manage Account</FluentNavLink>
+        </FluentNavGroup>
+        <FluentNavGroup Title="Creators">
+            <FluentNavLink Href="/Creator/UploadMyVideo">Upload My Video</FluentNavLink>
+            <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos">My Videos</FluentNavLink>
+            <FluentNavLink Href="/Creator/NewVideoRecommendation">Recommendations</FluentNavLink>
+            <FluentNavLink Href="/User/MyFunds">My Funds</FluentNavLink>
+        </FluentNavGroup>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
+            <form action="Account/Logout" method="post">
+                <AntiforgeryToken />
+                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                <button type="submit" class="nav-link">
+                    <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                </button>
+            </form>
         </div>
+    </Authorized>
+    <NotAuthorized>
+        <FluentNavLink Href="Account/Register">Register</FluentNavLink>
+        <FluentNavLink Href="Account/Login">Login</FluentNavLink>
+    </NotAuthorized>
+</AuthorizeView>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
-
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Creator/UploadMyVideo">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Upload My Video
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> My Videos
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Creator/NewVideoRecommendation">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Recommendations
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/User/MyFunds">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> My Funds
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
-    </nav>
-</div>
 
 @code {
     private string? currentUrl;

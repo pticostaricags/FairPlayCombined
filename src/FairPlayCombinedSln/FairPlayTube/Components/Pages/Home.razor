@@ -5,7 +5,7 @@
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
-@using Microsoft.AspNetCore.Components.QuickGrid
+
 @rendermode RenderMode.InteractiveServer
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject VideoInfoService videoInfoService
@@ -14,7 +14,7 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
-    <QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+    <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
         <TemplateColumn>
             <div>
                 <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss" @onclick="@( () => OnPlayVideoClicked(context!.VideoId!))">Play</button>
@@ -29,9 +29,9 @@
                 <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">View On YouTube</a>
             }
         </TemplateColumn>
-    </QuickGrid>
+    </FluentDataGrid>
 </div>
-<Paginator State="this.paginationState"></Paginator>
+<FluentPaginator State="this.paginationState"></FluentPaginator>
 @code
 {
     private bool IsBusy { get; set; }
