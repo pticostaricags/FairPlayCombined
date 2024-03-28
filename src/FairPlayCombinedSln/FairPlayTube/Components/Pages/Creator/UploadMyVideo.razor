@@ -21,39 +21,40 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<EditForm FormName="frmCreateVideoInfo" Model="this.createVideoInfoModel"
+<FluentEditForm FormName="frmCreateVideoInfo" Model="this.createVideoInfoModel"
           OnValidSubmit="OnValidSubmitAsync" @ref="frmCreateVideoInfo">
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
+    <div>
         <DataAnnotationsValidator></DataAnnotationsValidator>
-        <ValidationSummary></ValidationSummary>
+        <FluentValidationSummary></FluentValidationSummary>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <label class="@ThemeConfiguration.Labels.DefaultCss">Description</label>
-        <InputTextArea class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.Description"></InputTextArea>
+    <div>
+        <FluentLabel Typo="Typography.Body">Description</FluentLabel>
+        <FluentTextArea @bind-Value="this.createVideoInfoModel.Description" style="width:100%;"></FluentTextArea>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <label class="@ThemeConfiguration.Labels.DefaultCss">Name</label>
-        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.Name"></InputText>
+    <div>
+        <FluentLabel Typo="Typography.Body">Name</FluentLabel>
+        <FluentTextField @bind-Value="this.createVideoInfoModel.Name" style="width:100%;"></FluentTextField>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <label class="@ThemeConfiguration.Labels.DefaultCss">Video Url</label>
-        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl"></InputText>
-        <button class="@ThemeConfiguration.Buttons.SecondaryButtonCss" type="button" @onclick="OnProcessFileButtonClickedAsync">Process File</button>
-        <button class="@ThemeConfiguration.Buttons.SecondaryButtonCss" type="button" @onclick="UploadToYouTubeAsync">Upload To YouTube</button>
-        <label class="@ThemeConfiguration.Labels.DefaultCss">Bytes Sent: @bytesSent</label>
+    <div>
+        <FluentLabel Typo="Typography.Body">Video Url</FluentLabel>
+        <FluentTextField @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl" style="width:100%;"></FluentTextField>
+        <FluentButton Type="ButtonType.Button" OnClick="OnProcessFileButtonClickedAsync">Process File</FluentButton>
+        <FluentButton Type="ButtonType.Button" OnClick="UploadToYouTubeAsync">Upload To YouTube</FluentButton>
+        <FluentLabel Typo="Typography.Body">Bytes Sent: @bytesSent</FluentLabel>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <label class="@ThemeConfiguration.Divisions.DefaultCss">Video Id (Azure Video Indexer)</label>
-        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.VideoId"></InputText>
+    <div>
+        <FluentLabel Typo="Typography.Body">Video Id (Azure Video Indexer)</FluentLabel>
+        <FluentTextField @bind-Value="this.createVideoInfoModel.VideoId" style="width:100%;"></FluentTextField>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <label class="@ThemeConfiguration.Labels.DefaultCss">Video Id (YouTube)</label>
-        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.YouTubeVideoId"></InputText>
+    <div>
+        <FluentLabel Typo="Typography.Subject">Video Id (YouTube)</FluentLabel>
+        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss"
+                   @bind-Value="this.createVideoInfoModel.YouTubeVideoId" style="width:100%;"></InputText>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <button class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Save</button>
+    <div>
+        <FluentButton Type="ButtonType.Submit">Save</FluentButton>
     </div>
-</EditForm>
+</FluentEditForm>
 
 @code {
     [SupplyParameterFromForm]

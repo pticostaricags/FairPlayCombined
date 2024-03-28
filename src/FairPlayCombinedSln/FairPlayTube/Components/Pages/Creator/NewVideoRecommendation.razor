@@ -19,23 +19,25 @@
     New Video Recommendation
 </PageTitle>
 
-<h3>
+<FluentLabel Typo="Typography.H3">
     New Video Recommendation
-</h3>
+</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
-            @onclick="OnRecreateNewVideoRecommendationButtonclickedAsync">
+<div>
+    <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" Loading="this.IsBusy"
+            OnClick="OnRecreateNewVideoRecommendationButtonclickedAsync">
         Re-Create Recommendation
-    </button>
+    </FluentButton>
 </div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
+<div>
     @if (!String.IsNullOrWhiteSpace(this.NewVideoRecommendationIdea))
     {
         <p>
-            @((MarkupString)this.NewVideoRecommendationIdea)
+            <FluentLabel Typo="Typography.Body">
+                @((MarkupString)this.NewVideoRecommendationIdea)
+            </FluentLabel>
         </p>
     }
 </div>
