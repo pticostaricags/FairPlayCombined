@@ -26,37 +26,37 @@
         <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
         <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
-        <TemplateColumn>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
-                    @onclick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
+        <TemplateColumn Class="multiline-text">
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
+                    OnClick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
                 <i class="bi bi-image-fill"></i>
-            </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
-                    @onclick="@( ()=> OnCreateInfographicClicked(context))">
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
+                    OnClick="@( ()=> OnCreateInfographicClicked(context))">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
-            </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
-                    @onclick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
+                    OnClick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
                 <i class="bi bi-list-task"></i>
-            </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
-                    @onclick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
+                    OnClick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
                 <i class="bi bi-linkedin"></i>
-            </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
-                    @onclick="@( ()=> OnGetPassiveIncomeIdeas(context))">
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
+                    OnClick="@( ()=> OnGetPassiveIncomeIdeas(context))">
                 <i class="bi bi-currency-dollar"></i>
-            </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
-                    @onclick="@( ()=> OnCreateLinkedInArticleClicked(context))">
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
+                    OnClick="@( ()=> OnCreateLinkedInArticleClicked(context))">
                 <i class="bi bi-file-richtext-fill"></i>
-            </button>
+            </FluentButton>
             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
             {
-                <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
+                <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
                         @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
                     <i class="bi bi-badge-cc-fill"></i>
-                </button>
+                </FluentButton>
                 <a data-enhance-nav="false"
                    data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
                    href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">
