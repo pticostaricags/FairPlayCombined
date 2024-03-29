@@ -54,7 +54,7 @@
             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
             {
                 <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
-                        @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
+                        OnClick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
                     <i class="bi bi-badge-cc-fill"></i>
                 </FluentButton>
                 <FluentAnchor data-enhance-nav="false"
@@ -62,6 +62,10 @@
                    Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
                     <i class="bi bi-youtube"></i>
                 </FluentAnchor>
+                <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Chapters"
+                              OnClick="@( () => OnCreateYouTubeChaptersClicked(context))">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.Timeline())"></FluentIcon>
+                </FluentButton>
             }
         </TemplateColumn>
     </FluentDataGrid>
@@ -161,5 +165,10 @@
     private void OnCreateLinkedInArticleClicked(VideoInfoModel videoInfoModel)
     {
         this.navigationManager.NavigateTo($"/Creator/VideoLinkedInArticle/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnCreateYouTubeChaptersClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoChapters/{videoInfoModel.VideoInfoId}");
     }
 }
