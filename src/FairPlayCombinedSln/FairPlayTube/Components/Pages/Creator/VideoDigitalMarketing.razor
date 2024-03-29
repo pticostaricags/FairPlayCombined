@@ -19,19 +19,18 @@
     Video Digital Marketing Strategy
 </PageTitle>
 
-<h3>
+<FluentLabel Typo="Typography.H3">
     Video Digital Marketing Strategy
-</h3>
+</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
-            @onclick="OnRecreatePlanButtonclickedAsync">
+<div>
+    <FluentButton Type="ButtonType.Button" OnClick="OnRecreatePlanButtonclickedAsync">
         Re-Create Plan
-    </button>
+    </FluentButton>
 </div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
+<div>
     @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
     {
         <p>

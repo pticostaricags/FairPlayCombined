@@ -27,7 +27,7 @@
 
 <div>
     <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" Loading="this.IsBusy"
-            OnClick="OnRecreateNewVideoRecommendationButtonclickedAsync">
+                  OnClick="OnRecreateNewVideoRecommendationButtonclickedAsync">
         Re-Create Recommendation
     </FluentButton>
 </div>
@@ -35,9 +35,7 @@
     @if (!String.IsNullOrWhiteSpace(this.NewVideoRecommendationIdea))
     {
         <p>
-            <FluentLabel Typo="Typography.Body">
-                @((MarkupString)this.NewVideoRecommendationIdea)
-            </FluentLabel>
+            @((MarkupString)this.NewVideoRecommendationIdea)
         </p>
     }
 </div>
@@ -75,7 +73,7 @@
             {
                 PageSize = 5,
                 SortingItems = new[]
-                        {
+                            {
                     new SortingItem()
                     {
                         PropertyName=nameof(VideoInfoModel.VideoInfoId),
@@ -83,12 +81,12 @@
                     }
                 },
                 StartIndex = 0
-            }, 
+            },
             this.userProviderService.GetCurrentUserId()!,
             this.cancellationTokenSource.Token);
 
         var titles = videos!.Items!.Select(p => $"* Title: {p.Name}\r\n");
-        var userMessage = $"Video Titles: {String.Join(".",titles)}.";
+        var userMessage = $"Video Titles: {String.Join(".", titles)}.";
         var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
         if (result != null)
         {

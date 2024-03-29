@@ -19,14 +19,14 @@
     Video Daily Posts
 </PageTitle>
 
-<h3>
+<FluentLabel Typo="Typography.H3">
     Video Daily Posts
-</h3>
+</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
+<div>
     @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingDailyPostsIdeas))
     {
         <p>

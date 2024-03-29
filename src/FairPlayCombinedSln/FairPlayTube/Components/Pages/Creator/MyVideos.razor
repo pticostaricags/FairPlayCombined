@@ -57,62 +57,17 @@
                         @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
                     <i class="bi bi-badge-cc-fill"></i>
                 </FluentButton>
-                <a data-enhance-nav="false"
+                <FluentAnchor data-enhance-nav="false"
                    data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
-                   href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">
+                   Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
                     <i class="bi bi-youtube"></i>
-                </a>
+                </FluentAnchor>
             }
         </TemplateColumn>
     </FluentDataGrid>
 </div>
 <FluentPaginator State="this.paginationState"></FluentPaginator>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
-    {
-        <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
-            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
-        </a>
-        <p>
-            @this.RevisedPrompt
-        </p>
-    }
-</div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.GeneratedinfographicUri))
-    {
-        <a data-enhance-nav="false" href="@this.GeneratedinfographicUri" target="_blank">
-            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedinfographicUri" />
-        </a>
-        <p>
-            @this.RevisedPrompt
-        </p>
-    }
-</div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.LinkedInDailyPostsIdeas))
-    {
-        <p>
-            @((MarkupString)this.LinkedInDailyPostsIdeas)
-        </p>
-    }
-</div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingDailyPostsIdeas))
-    {
-        <p>
-            @((MarkupString)this.DigitalMarketingDailyPostsIdeas)
-        </p>
-    }
-</div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.PassiveIncomeIdeas))
-    {
-        <p>
-            @((MarkupString)this.PassiveIncomeIdeas)
-        </p>
-    }
-</div>
+
 @code
 {
     private bool IsBusy { get; set; }
@@ -122,13 +77,6 @@
             ItemsPerPage = Constants.Pagination.PageSize
         };
     private CancellationTokenSource cancellationTokenSource = new();
-    private string? GeneratedYouTubeThumbnailUri { get; set; }
-    private string? GeneratedinfographicUri { get; set; }
-    private string? RevisedPrompt { get; set; }
-    private string? DigitalMarketingIdeas { get; set; }
-    private string? LinkedInDailyPostsIdeas { get; set; }
-    private string? DigitalMarketingDailyPostsIdeas { get; set; }
-    private string? PassiveIncomeIdeas { get; set; }
 
     protected override void OnInitialized()
     {

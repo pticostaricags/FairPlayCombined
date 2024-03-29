@@ -18,21 +18,23 @@
     Video Thumbnail
 </PageTitle>
 
-<h3>
+<FluentLabel Typo="Typography.H3">
     Video Thumbnail
-</h3>
+</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
+<div>
     @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
     {
         <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
             <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
         </a>
         <p>
-            @this.RevisedPrompt
+            <FluentLabel Typo="Typography.Body">
+                @this.RevisedPrompt
+            </FluentLabel>
         </p>
     }
 </div>

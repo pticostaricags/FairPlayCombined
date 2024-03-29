@@ -11,7 +11,7 @@
 @using Google.Apis.YouTube.v3.Data
 @attribute [Authorize]
 @rendermode RenderMode.InteractiveServer
-<h3>UploadMyVideo</h3>
+
 @inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject VideoInfoService videoInfoService
@@ -19,10 +19,14 @@
 @inject IUserProviderService userProviderService
 @inject YouTubeClientService youTubeClientService
 
+
+<FluentLabel Typo="Typography.H3">
+    UploadMyVideo
+</FluentLabel>
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <FluentEditForm FormName="frmCreateVideoInfo" Model="this.createVideoInfoModel"
-          OnValidSubmit="OnValidSubmitAsync" @ref="frmCreateVideoInfo">
+                OnValidSubmit="OnValidSubmitAsync" @ref="frmCreateVideoInfo">
     <div>
         <DataAnnotationsValidator></DataAnnotationsValidator>
         <FluentValidationSummary></FluentValidationSummary>

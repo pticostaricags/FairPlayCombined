@@ -8,13 +8,13 @@
 
 @rendermode RenderMode.InteractiveServer
 @attribute [Authorize]
-@attribute [StreamRendering(enabled:true)]
+@attribute [StreamRendering(enabled: true)]
 
 @inject VideoCaptionsService videoCaptionsService
 @inject YouTubeClientService youTubeClientService
 @inject IToastService toastService
 
-<h3>VideoCaptions</h3>
+<FluentLabel Typo="Typography.H3">VideoCaptions</FluentLabel>
 
 @if (!String.IsNullOrWhiteSpace(this.YouTubeVideoId))
 {
@@ -26,9 +26,10 @@
     <FluentDataGrid Items="this.Items!.AsQueryable()">
         <PropertyColumn Property="@(p=>p.Language)"></PropertyColumn>
         <TemplateColumn>
-            <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
-            @onclick="@( async () => await OnUploadToYouTubeButtonClickedAsync(context))"
-            >Upload To YouTube</button>
+            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                          OnClick="@( async () => await OnUploadToYouTubeButtonClickedAsync(context))">
+                Upload To YouTube
+            </FluentButton>
         </TemplateColumn>
     </FluentDataGrid>
 }
