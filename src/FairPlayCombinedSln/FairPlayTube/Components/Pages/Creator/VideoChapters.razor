@@ -75,7 +75,7 @@
         var englishCaptions = await this.videoCaptionsService
             .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
             language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        var systemMessage = "You will take the role of an expert in YouTube SEO. I will give you the information for one of my videos. Your job is to generate the repective YouTube Chapters, timestamp must be in format: hh:mm:ss, do not add milliseconds. Return them as an HTML 5 bullet list.";
+        var systemMessage = "You will take the role of an expert in YouTube SEO. I will give you the information for one of my videos. Your job is to generate the repective YouTube Chapters, timestamp must be in format: hh:mm:ss, do not add milliseconds, always start with 00:00:00. Return them as an HTML 5 bullet list.";
         var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
         var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
         if (result != null)
