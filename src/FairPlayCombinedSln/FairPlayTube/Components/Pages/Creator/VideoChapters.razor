@@ -15,11 +15,11 @@
 @inject VideoCaptionsService videoCaptionsService
 
 <PageTitle>
-    Video Chapters
+    Video Chapters @(videoInfoModel != null ? $"- {videoInfoModel.Name}" : String.Empty)
 </PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    Video Chapters
+    Video Chapters @(videoInfoModel != null ? $"- {videoInfoModel.Name}" : String.Empty)
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -42,6 +42,7 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
+    private VideoInfoModel? videoInfoModel { get; set; }
     private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
     private CancellationTokenSource cancellationTokenSource = new();
@@ -52,8 +53,9 @@
     {
         this.IsBusy = true;
         StateHasChanged();
-        var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
+        this.videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
         cancellationToken: this.cancellationTokenSource.Token);
+        StateHasChanged();
         await this.GenerateYouTubeChaptersAsync(videoInfoModel);
         this.IsBusy = false;
         StateHasChanged();
