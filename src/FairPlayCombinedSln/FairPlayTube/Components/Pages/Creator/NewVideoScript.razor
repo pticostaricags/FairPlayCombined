@@ -1,0 +1,107 @@
+﻿@page "/Creator/NewVideoScript"
+@using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlayTube.NewVideoScript
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.GoogleGemini
+@using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.Common
+@using FairPlayCombined.Services.FairPlayTube
+@using FairPlayTube.Components.Spinners
+
+@rendermode NoPreRenderServerMode
+@inject GoogleGeminiService googleGeminiService
+
+<PageTitle>
+    New Video Script
+</PageTitle>
+
+<FluentLabel Typo="Typography.H3">
+    New Video Script
+</FluentLabel>
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<EditForm FormName="frmNewVideoScript" Model="this.newVideoScriptModel" OnValidSubmit="GenerateNewVideoRecommendationIdeaAsync">
+    <div>
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <FluentValidationSummary></FluentValidationSummary>
+        <ObjectGraphDataAnnotationsValidator></ObjectGraphDataAnnotationsValidator>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">@nameof(newVideoScriptModel.VideoTitle)</FluentLabel>
+        <FluentTextField @bind-Value="this.newVideoScriptModel.VideoTitle"></FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">@nameof(newVideoScriptModel.VideoDescription)</FluentLabel>
+        <FluentTextField @bind-Value="this.newVideoScriptModel.VideoDescription"></FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Subject">Links</FluentLabel>
+        @foreach (var singleLink in this.newVideoScriptModel.Links!)
+        {
+            <FluentLabel Typo="Typography.Body">Link</FluentLabel>
+            <FluentTextField @bind-Value="@singleLink.Url"></FluentTextField>
+            <FluentValidationMessage For="@(()=>singleLink.Url)"></FluentValidationMessage>
+        }
+    </div>
+    <div>
+        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Loading="this.IsBusy">Generate</FluentButton>
+    </div>
+</EditForm>
+
+<div>
+    @if (!String.IsNullOrWhiteSpace(this.NewVideoRecommendationIdea))
+    {
+        <p>
+            @((MarkupString)this.NewVideoRecommendationIdea)
+        </p>
+    }
+</div>
+
+@code
+{
+    private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
+    private bool IsBusy { get; set; }
+    private CancellationTokenSource cancellationTokenSource = new();
+    private string? NewVideoRecommendationIdea { get; set; }
+    private string? RevisedPrompt { get; set; }
+
+    [SupplyParameterFromForm]
+    private NewVideoScriptModel newVideoScriptModel { get; set; } = new NewVideoScriptModel()
+        {
+            Links = new NewVideoScriptLink[]
+                            {
+                    new NewVideoScriptLink(),
+                    new NewVideoScriptLink(),
+                    new NewVideoScriptLink(),
+                    new NewVideoScriptLink(),
+                    new NewVideoScriptLink()
+                            }
+        };
+
+    private async Task GenerateNewVideoRecommendationIdeaAsync()
+    {
+        string linksString = String.Join(",", this.newVideoScriptModel!.Links!.Select(p => p.Url));
+        string prompt = $"Give me a fully detailed script, including dialogue for a 30-minute video. Video Title: \"{this.newVideoScriptModel.VideoTitle}\". Video Description: \"{this.newVideoScriptModel.VideoDescription}\". Use the official documentation in the following links to futher improve your response:\n* {linksString}.\n\nYour response must be in standard VTT format, including the full dialogue for a 30-minute video.";
+        var requestModel = GenerateContentRequestModel.DefaultGenerateContentRequestModel;
+        requestModel.contents = new Content[]
+        {
+            new Content()
+            {
+                parts=new Part[]
+                {
+                    new Part()
+                    {
+                        text = prompt
+                    }
+                }
+            }
+        };
+        var result = await this.googleGeminiService.GenerateContentAsync(requestModel, this.cancellationTokenSource.Token);
+        if (result != null)
+        {
+            this.NewVideoRecommendationIdea = result!.candidates![0].content!.parts![0].text;
+        }
+    }
+}

@@ -40,4 +40,9 @@
     <ProjectReference Include="..\FairPlayCombined.Shared\FairPlayCombined.Shared.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="Components\Pages\Creator\NewVideoScript.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
 </Project>
