@@ -14,8 +14,8 @@ namespace FairPlayCombined.Services.Common
         public async Task<GenerateContentResponseModel?> GenerateContentAsync(GenerateContentRequestModel generateContentRequestModel, 
             CancellationToken cancellationToken)
         {
-            string version = "v1"; //or v1beta
-            string model = "gemini-1.0-pro";
+            string version = "v1beta"; //or v1beta
+            string model = "gemini-1.0-pro-latest";
             string requestUrl = $"https://generativelanguage.googleapis.com/" +
                 $"{version}/models/{model}:generateContent?key={googleGeminiConfiguration.Key}";
             var response = await httpClient.PostAsJsonAsync<GenerateContentRequestModel>(

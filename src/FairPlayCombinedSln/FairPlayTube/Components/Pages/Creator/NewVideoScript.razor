@@ -24,24 +24,23 @@
 
 <EditForm FormName="frmNewVideoScript" Model="this.newVideoScriptModel" OnValidSubmit="GenerateNewVideoRecommendationIdeaAsync">
     <div>
-        <DataAnnotationsValidator></DataAnnotationsValidator>
-        <FluentValidationSummary></FluentValidationSummary>
         <ObjectGraphDataAnnotationsValidator></ObjectGraphDataAnnotationsValidator>
+        <FluentValidationSummary></FluentValidationSummary>
     </div>
     <div>
         <FluentLabel Typo="Typography.Body">@nameof(newVideoScriptModel.VideoTitle)</FluentLabel>
-        <FluentTextField @bind-Value="this.newVideoScriptModel.VideoTitle"></FluentTextField>
+        <FluentTextField style="width:100%;" @bind-Value="this.newVideoScriptModel.VideoTitle"></FluentTextField>
     </div>
     <div>
         <FluentLabel Typo="Typography.Body">@nameof(newVideoScriptModel.VideoDescription)</FluentLabel>
-        <FluentTextField @bind-Value="this.newVideoScriptModel.VideoDescription"></FluentTextField>
+        <FluentTextField style="width:100%;" @bind-Value="this.newVideoScriptModel.VideoDescription"></FluentTextField>
     </div>
     <div>
         <FluentLabel Typo="Typography.Subject">Links</FluentLabel>
         @foreach (var singleLink in this.newVideoScriptModel.Links!)
         {
             <FluentLabel Typo="Typography.Body">Link</FluentLabel>
-            <FluentTextField @bind-Value="@singleLink.Url"></FluentTextField>
+            <FluentTextField style="width:100%;" @bind-Value="@singleLink.Url"></FluentTextField>
             <FluentValidationMessage For="@(()=>singleLink.Url)"></FluentValidationMessage>
         }
     </div>
@@ -82,13 +81,18 @@
 
     private async Task GenerateNewVideoRecommendationIdeaAsync()
     {
-        string linksString = String.Join(",", this.newVideoScriptModel!.Links!.Select(p => p.Url));
-        string prompt = $"Give me a fully detailed script, including dialogue for a 30-minute video. Video Title: \"{this.newVideoScriptModel.VideoTitle}\". Video Description: \"{this.newVideoScriptModel.VideoDescription}\". Use the official documentation in the following links to futher improve your response:\n* {linksString}.\n\nYour response must be in standard VTT format, including the full dialogue for a 30-minute video.";
+        this.IsBusy = true;
+        StateHasChanged();
+        string linksString = String.Join("\r\n", this.newVideoScriptModel!.Links!.Select(p => $"* {p.Url}"));
+        string prompt = $"Give me a fully detailed script for a video, including the dialogue. Video Title: \"{this.newVideoScriptModel.VideoTitle}\". Video Description: \"{this.newVideoScriptModel.VideoDescription}\". Use the official documentation in the following links to further improve your response:\n{linksString}\n\nYour response must be in standard VTT format. The VTT must have 30 minutes of dialogue and not a second less.";
         var requestModel = GenerateContentRequestModel.DefaultGenerateContentRequestModel;
+        requestModel.generationConfig!.maxOutputTokens = 1000000;
         requestModel.contents = new Content[]
         {
             new Content()
             {
+
+                role="user",
                 parts=new Part[]
                 {
                     new Part()
@@ -103,5 +107,7 @@
         {
             this.NewVideoRecommendationIdea = result!.candidates![0].content!.parts![0].text;
         }
+        this.IsBusy = false;
+        StateHasChanged();
     }
 }
