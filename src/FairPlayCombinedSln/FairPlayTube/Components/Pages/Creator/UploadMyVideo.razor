@@ -18,7 +18,7 @@
 @inject IToastService toastService
 @inject IUserProviderService userProviderService
 @inject YouTubeClientService youTubeClientService
-
+@inject ILogger<UploadMyVideo> logger
 
 <FluentLabel Typo="Typography.H3">
     UploadMyVideo
@@ -82,6 +82,7 @@
     {
         try
         {
+            logger.LogInformation(message: "Processing video from url: {url}", this.createVideoInfoModel.ExternalVideoSourceUrl);
             this.IsBusy = true;
             StateHasChanged();
             this.frmCreateVideoInfo!.EditContext!.Validate();
@@ -113,6 +114,7 @@
         }
         catch (Exception ex)
         {
+            logger.LogError(exception: ex, message: "Failed to process video. {message}", ex.Message);
             this.toastService.ShowError(ex.Message);
         }
         this.IsBusy = false;
