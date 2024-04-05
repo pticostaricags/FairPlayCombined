@@ -494,6 +494,8 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoInfo_VideoIndexStatus");
 
+            entity.HasOne(d => d.VideoThumbnailPhoto).WithMany(p => p.VideoInfo).HasConstraintName("FK_VideoInfo_Photo_Thumbnail");
+
             entity.HasOne(d => d.VideoVisibility).WithMany(p => p.VideoInfo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoInfo_VideoVisibility");

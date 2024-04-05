@@ -266,7 +266,7 @@
          "ObjectType": 3
       }
    ],
-   "UiHint": "..\\FairPlayCombinedDb\\FairPlayCombinedDb.sqlproj",
+   "UiHint": null,
    "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,

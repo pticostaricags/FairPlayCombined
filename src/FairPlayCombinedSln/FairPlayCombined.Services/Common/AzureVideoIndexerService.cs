@@ -224,6 +224,36 @@ namespace FairPlayCombined.Services.Common
                 throw new AzureVideoIndexerException(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Gets the thumnail for the specified video
+        /// </summary>
+        /// <param name="videoId"></param>
+        /// <param name="thumbnailId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<byte[]?> GetVideoThumbnailAsync(string videoId, string thumbnailId, 
+            string viAccessToken,
+            CancellationToken cancellationToken = default)
+        {
+            string format = "Jpeg"; // Jpeg or Base64
+            string requestUrl = $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +
+                $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
+                $"/Videos/{videoId}" +
+                $"/Thumbnails/{thumbnailId}" +
+                $"?format={format}";
+            try
+            {
+                httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
+                var imageBytes = await httpClient.GetByteArrayAsync(requestUrl, cancellationToken: cancellationToken);
+                return imageBytes;
+            }
+            catch (Exception ex)
+            {
+                throw new AzureVideoIndexerException(ex.Message);
+            }
+        }
     }
 
 

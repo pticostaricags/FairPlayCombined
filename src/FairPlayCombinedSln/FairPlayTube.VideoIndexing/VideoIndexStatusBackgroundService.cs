@@ -12,63 +12,81 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        TimeSpan timeToWait = TimeSpan.FromMinutes(5);
-        var scope = serviceScopeFactory.CreateScope();
-        var dbContextFactory = scope.ServiceProvider
-            .GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
-        var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
-        var azureVideoIndexerService =
-            scope.ServiceProvider.GetRequiredService<AzureVideoIndexerService>();
-        while (!stoppingToken.IsCancellationRequested)
+        try
         {
-            if (logger.IsEnabled(LogLevel.Information))
+            TimeSpan timeToWait = TimeSpan.FromMinutes(5);
+            var scope = serviceScopeFactory.CreateScope();
+            var dbContextFactory = scope.ServiceProvider
+                .GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
+            var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
+            var azureVideoIndexerService =
+                scope.ServiceProvider.GetRequiredService<AzureVideoIndexerService>();
+            while (!stoppingToken.IsCancellationRequested)
             {
-                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-            }
-            string[] allVideosInProcessingStatus =
-                await GetAllVideosInProcessingStatusAsync(dbContext, stoppingToken);
-            if (allVideosInProcessingStatus.Length != 0)
-            {
-                GetAccessTokenResponseModel? getviTokenResult = await AuthenticateAsync(azureVideoIndexerService, stoppingToken);
-                var videosIndex = await azureVideoIndexerService.SearchVideosByIdsAsync(
-                    getviTokenResult!.AccessToken!, allVideosInProcessingStatus, stoppingToken);
-                LogVideoIndexStatus(logger, videosIndex);
-                var indexCompleteVideos = videosIndex?.results?.Where(p => p.state ==
-                FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed.ToString());
-                if (indexCompleteVideos?.Count() > 0)
+                if (logger.IsEnabled(LogLevel.Information))
                 {
-                    var indexCompleteVideosIds = indexCompleteVideos.Select(p => p.id).ToArray();
-                    var query = dbContext.VideoInfo
-                        .Include(p => p.ApplicationUser).Where(p => indexCompleteVideosIds.Contains(p.VideoId));
-
-                    var costPerMinute = dbContext.VideoIndexingCost
-                        .OrderByDescending(d => d.RowCreationDateTime)
-                        .First()
-                        .CostPerMinute;
-
-                    foreach (var singleVideoEntity in query)
-                    {
-                        await dbContext.VideoIndexingTransaction.AddAsync(new VideoIndexingTransaction()
-                        {
-                            VideoInfoId = singleVideoEntity.VideoInfoId,
-                            IndexingCost = costPerMinute * ((decimal)singleVideoEntity.VideoDurationInSeconds / 60)
-                        }, stoppingToken);
-                        singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
-                        singleVideoEntity.VideoDurationInSeconds =
-                            videosIndex!.results!
-                            .Single(p => p.id == singleVideoEntity.VideoId).durationInSeconds;
-                        var completedVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
-                            singleVideoEntity.VideoId, getviTokenResult.AccessToken!,
-                            stoppingToken);
-                        singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
-                        InsertInsights(singleVideoEntity, completedVideoIndex);
-                    }
-
-                    await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);
+                    logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
+                string[] allVideosInProcessingStatus =
+                    await GetAllVideosInProcessingStatusAsync(dbContext, stoppingToken);
+                if (allVideosInProcessingStatus.Length != 0)
+                {
+                    GetAccessTokenResponseModel? getviTokenResult = await AuthenticateAsync(azureVideoIndexerService, stoppingToken);
+                    var videosIndex = await azureVideoIndexerService.SearchVideosByIdsAsync(
+                        getviTokenResult!.AccessToken!, allVideosInProcessingStatus, stoppingToken);
+                    LogVideoIndexStatus(logger, videosIndex);
+                    var indexCompleteVideos = videosIndex?.results?.Where(p => p.state ==
+                    FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed.ToString());
+                    if (indexCompleteVideos?.Count() > 0)
+                    {
+                        var indexCompleteVideosIds = indexCompleteVideos.Select(p => p.id).ToArray();
+                        var query = dbContext.VideoInfo
+                            .Include(p => p.ApplicationUser).Where(p => indexCompleteVideosIds.Contains(p.VideoId));
+
+                        var costPerMinute = dbContext.VideoIndexingCost
+                            .OrderByDescending(d => d.RowCreationDateTime)
+                            .First()
+                            .CostPerMinute;
+
+                        foreach (var singleVideoEntity in query)
+                        {
+                            var thumbnailBytes = await azureVideoIndexerService
+                                .GetVideoThumbnailAsync(singleVideoEntity.VideoId,
+                                indexCompleteVideos.Single(p => p.id == singleVideoEntity.VideoId)
+                                .thumbnailId!,
+                                getviTokenResult.AccessToken!, stoppingToken);
+                            singleVideoEntity.VideoThumbnailPhoto = new()
+                            {
+                                Filename = $"Thumbnail-{singleVideoEntity.VideoId}.jpg",
+                                Name = $"Thumbnail-{singleVideoEntity.VideoId}",
+                                PhotoBytes = thumbnailBytes
+                            };
+                            await dbContext.VideoIndexingTransaction.AddAsync(new VideoIndexingTransaction()
+                            {
+                                VideoInfoId = singleVideoEntity.VideoInfoId,
+                                IndexingCost = costPerMinute * ((decimal)singleVideoEntity.VideoDurationInSeconds / 60)
+                            }, stoppingToken);
+                            singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
+                            singleVideoEntity.VideoDurationInSeconds =
+                                videosIndex!.results!
+                                .Single(p => p.id == singleVideoEntity.VideoId).durationInSeconds;
+                            var completedVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
+                                singleVideoEntity.VideoId, getviTokenResult.AccessToken!,
+                                stoppingToken);
+                            singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
+                            InsertInsights(singleVideoEntity, completedVideoIndex);
+                        }
+
+                        await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);
+                    }
+                }
+                logger.LogInformation("Current Iteration finished at: {time}. Next Iteration at {time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
+                await Task.Delay(timeToWait, stoppingToken);
             }
-            logger.LogInformation("Current Iteration finished at: {time}. Next Iteration at {time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
-            await Task.Delay(timeToWait, stoppingToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogCritical(exception: ex, "Error: {errorMessage}", ex.Message);
         }
     }
 

@@ -39,4 +39,7 @@ public partial class Photo
 
     [InverseProperty("ProfilePhoto")]
     public virtual ICollection<UserProfile> UserProfile { get; set; } = new List<UserProfile>();
+
+    [InverseProperty("VideoThumbnailPhoto")]
+    public virtual ICollection<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
 }

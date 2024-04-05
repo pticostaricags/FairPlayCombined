@@ -250,6 +250,19 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
 
+app.MapGet("/api/video/{videoId}/thumbnail",
+    async (
+        [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        [FromRoute] string videoId,
+        CancellationToken cancellationToken) =>
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await dbContext.VideoInfo
+        .Include(p => p.VideoThumbnailPhoto)
+        .Where(p => p.VideoId == videoId)
+        .SingleOrDefaultAsync(cancellationToken);
+        return TypedResults.File(result!.VideoThumbnailPhoto.PhotoBytes, System.Net.Mime.MediaTypeNames.Image.Jpeg);
+    });
 app.MapGet("/api/video/{videoId}/captions/{language}",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,

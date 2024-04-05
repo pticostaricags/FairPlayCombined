@@ -16,6 +16,9 @@
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
     <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
         <TemplateColumn>
+            <img src="@($"/api/video/{context.VideoId}/thumbnail")" width="100" />
+        </TemplateColumn>
+        <TemplateColumn>
             <div>
                 <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
                               IconStart="@(new Icons.Regular.Size16.Play())"

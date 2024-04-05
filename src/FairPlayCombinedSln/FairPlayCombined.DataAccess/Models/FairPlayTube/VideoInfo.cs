@@ -98,6 +98,8 @@ public partial class VideoInfo
     [Column("VideoIndexJSON")]
     public string VideoIndexJson { get; set; }
 
+    public long? VideoThumbnailPhotoId { get; set; }
+
     [ForeignKey("ApplicationUserId")]
     [InverseProperty("VideoInfo")]
     public virtual AspNetUsers ApplicationUser { get; set; }
@@ -126,6 +128,10 @@ public partial class VideoInfo
 
     [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoKeyword> VideoKeyword { get; set; } = new List<VideoKeyword>();
+
+    [ForeignKey("VideoThumbnailPhotoId")]
+    [InverseProperty("VideoInfo")]
+    public virtual Photo VideoThumbnailPhoto { get; set; }
 
     [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoTopic> VideoTopic { get; set; } = new List<VideoTopic>();
