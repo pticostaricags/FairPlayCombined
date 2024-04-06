@@ -205,6 +205,7 @@ builder.Services.AddTransient<YouTubeClientService>();
 builder.Services.AddTransient<VideoCaptionsService>();
 builder.Services.AddTransient<VideoDigitalMarketingPlanService>();
 builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
+builder.Services.AddTransient<PromptGeneratorService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -86,6 +86,10 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<ProductStatus> ProductStatus { get; set; }
 
+    public virtual DbSet<Prompt> Prompt { get; set; }
+
+    public virtual DbSet<PromptVariable> PromptVariable { get; set; }
+
     public virtual DbSet<Religion> Religion { get; set; }
 
     public virtual DbSet<Resource> Resource { get; set; }
@@ -307,6 +311,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.ThumbnailPhoto).WithMany(p => p.Product)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Product_Photo");
+        });
+
+        modelBuilder.Entity<PromptVariable>(entity =>
+        {
+            entity.HasOne(d => d.Prompt).WithMany(p => p.PromptVariable)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PromptVariable_Prompt");
         });
 
         modelBuilder.Entity<Resource>(entity =>

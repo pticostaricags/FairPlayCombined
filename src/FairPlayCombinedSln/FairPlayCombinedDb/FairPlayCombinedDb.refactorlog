@@ -105,4 +105,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[FK_VideoInfo_Photo_Thumbnail]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="f298a1ec-5ba5-440d-b57e-87bcc2f63125" ChangeDateTime="04/06/2024 17:19:39">
+    <Property Name="ElementName" Value="[dbo].[Prompt].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Prompt]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PromptId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9960610b-f617-4e67-afdb-48d980398610" ChangeDateTime="04/06/2024 17:19:54">
+    <Property Name="ElementName" Value="[dbo].[Prompt].[BaseTex]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Prompt]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BaseText" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="87442c12-01d0-4039-8431-21a58f75cbfe" ChangeDateTime="04/06/2024 17:37:33">
+    <Property Name="ElementName" Value="[dbo].[PromptVariable].[PromptVariable]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PromptVariable]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PromptVariableId" />
+  </Operation>
 </Operations>

@@ -13,6 +13,7 @@
 @inject IUserProviderService userProviderService
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
+@inject PromptGeneratorService promptGeneratorService
 
 <PageTitle>
     Video Thumbnail
@@ -53,12 +54,14 @@
     {
         this.IsBusy = true;
         StateHasChanged();
+        var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
+        "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
         var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
         cancellationToken: this.cancellationTokenSource.Token);
         var englishCaptions = await this.videoCaptionsService
         .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
         language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        string prompt = $"YouTube Thumbnail for video based on the following data. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+        string prompt = $"{promptInfo!.BaseText}. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
         if (prompt.Length > 4000)
             prompt = prompt.Substring(0, 4000);
         var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);

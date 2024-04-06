@@ -71,6 +71,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Prompt]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PromptVariable]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Resource]",
          "ObjectType": 0
       },
