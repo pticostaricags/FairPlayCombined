@@ -78,6 +78,7 @@ builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<ApplicationUserVouchService>();
 builder.Services.AddTransient<ResourceService>();
 builder.Services.AddTransient<ConfigurationSecretService>();
+builder.Services.AddTransient<OpenAIPromptService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
