@@ -13,33 +13,29 @@
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-<div class="@ThemeConfiguration.Grids.GridContainerCss">
-    <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-        <TemplateColumn>
-            <img src="@($"/api/video/{context.VideoId}/thumbnail")" width="100" />
-        </TemplateColumn>
-        <TemplateColumn>
+
+@if (this.PageItems != null)
+{
+    <FluentStack Orientation="Orientation.Horizontal">
+        @foreach (var singleItem in this.PageItems.Value.Items)
+        {
             <div>
-                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
-                              IconStart="@(new Icons.Regular.Size16.Play())"
-                              OnClick="@( () => OnPlayVideoClicked(context!.VideoId!))">Play</FluentButton>
+                <div>
+                    <img src="@($"/api/video/{singleItem.VideoId}/thumbnail")" width="400" />
+                </div>
+                <div>
+                    <FluentLabel Typo="Typography.Body">@singleItem.Name</FluentLabel>
+                </div>
+                <div>
+                    <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                                  IconStart="@(new Icons.Regular.Size16.Play())"
+                                  OnClick="@( () => OnPlayVideoClicked(singleItem.VideoId!))">Play</FluentButton>
+                </div>
             </div>
-        </TemplateColumn>
-        <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
-        <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
-        <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
-        <TemplateColumn>
-            @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
-            {
-                <FluentAnchor Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
-                    <FluentIcon Value="@(new Icons.Regular.Size16.Play())"
-                                Color="Color.Accent" Slot="start"></FluentIcon>
-                    View On YouTube
-                </FluentAnchor>
-            }
-        </TemplateColumn>
-    </FluentDataGrid>
-</div>
+        }
+    </FluentStack>
+}
+
 <FluentPaginator State="this.paginationState"></FluentPaginator>
 @code
 {
@@ -49,9 +45,10 @@
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
+    private GridItemsProviderResult<VideoInfoModel>? PageItems { get; set; }
     private CancellationTokenSource cancellationTokenSource = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         ItemsProvider = async req =>
         {
@@ -60,7 +57,15 @@
             PaginationRequest paginationRequest = new()
                 {
                     PageSize = paginationState.ItemsPerPage,
-                    StartIndex = req.StartIndex
+                    StartIndex = req.StartIndex,
+                    SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName=nameof(VideoInfoModel.VideoInfoId),
+                            SortType = FairPlayCombined.Common.GeneratorsAttributes.SortType.Descending
+                        }
+                    }
                 };
             var items = await videoInfoService.GetPaginatedCompletedVideoInfoAsync(paginationRequest,
             this.cancellationTokenSource.Token);
@@ -69,6 +74,13 @@
             var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
             return result;
         };
+        this.PageItems = await this.ItemsProvider(new GridItemsProviderRequest<VideoInfoModel>()
+            {
+                CancellationToken = this.cancellationTokenSource.Token,
+                StartIndex = 0,
+
+            });
+        StateHasChanged();
     }
 
     private void OnPlayVideoClicked(string videoId)

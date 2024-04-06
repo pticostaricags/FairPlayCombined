@@ -179,6 +179,7 @@
         }
         catch (Exception ex)
         {
+            logger.LogError(exception:ex, message:"Error: {errorMessage}", ex.Message);
             this.toastService.ShowError(ex.Message);
         }
         this.IsBusy = false;
