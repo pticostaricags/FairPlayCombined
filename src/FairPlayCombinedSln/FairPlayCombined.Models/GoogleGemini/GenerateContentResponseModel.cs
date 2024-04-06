@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Models.GoogleGemini
 {
-
+#pragma warning disable IDE1006 // Naming Styles
     public class GenerateContentResponseModel
     {
         public GenerateContentResponseCandidate[]? candidates { get; set; }
@@ -48,5 +48,5 @@ namespace FairPlayCombined.Models.GoogleGemini
         public string? category { get; set; }
         public string? probability { get; set; }
     }
-
+#pragma warning restore IDE1006 // Naming Styles
 }

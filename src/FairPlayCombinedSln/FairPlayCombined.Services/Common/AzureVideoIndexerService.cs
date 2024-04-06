@@ -255,8 +255,9 @@ namespace FairPlayCombined.Services.Common
                     throw new AzureVideoIndexerException(ex.Message);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 throw;
             }
         }

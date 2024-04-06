@@ -44,8 +44,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             {
                 BaseText = promptBaseText,
                 PromptName = promptName,
-                PromptVariable = new PromptVariable[]
-                {
+                PromptVariable =
+                [
                     new()
                     {
                         VariableName = "Video Title",
@@ -54,7 +54,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                     {
                         VariableName="Video Description"
                     }
-                }
+                ]
             }, cancellationToken: CancellationToken.None);
             await dbContext.SaveChangesAsync();
             var promptGeneratorService = sp.GetRequiredService<PromptGeneratorService>();

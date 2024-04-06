@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Models.GoogleGemini
 {
-
+#pragma warning disable IDE1006 // Naming Styles
     public class GenerateContentRequestModel
     {
         public Content[]? contents { get; set; }
@@ -28,8 +28,8 @@ namespace FairPlayCombined.Models.GoogleGemini
                     topP=1,
                     maxOutputTokens=2048
                 },
-                safetySettings=new Safetysetting[] 
-                {
+                safetySettings=
+                [
                     new()
                     {
                         category = SAFETY_SETTINGS_CATEGORY_HARASSMENT,
@@ -45,7 +45,7 @@ namespace FairPlayCombined.Models.GoogleGemini
                         category = SAFET_SETTINGS_CATEGORY_DANGEROUS_CONTENT,
                         threshold = SAFETY_SETTINGS_TRESHOLD_MEDIUM_AND_ABOVE
                     }
-                }
+                ]
             };
     }
 
@@ -74,5 +74,5 @@ namespace FairPlayCombined.Models.GoogleGemini
         public string? category { get; set; }
         public string? threshold { get; set; }
     }
-
+#pragma warning restore IDE1006 // Naming Styles
 }

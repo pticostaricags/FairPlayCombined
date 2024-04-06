@@ -77,7 +77,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 CancellationToken.None);
             Assert.IsNotNull(indexResponse);
             var result = await azureVideoIndexerService.GetVideoThumbnailAsync(testVideoId,
-                indexResponse.videos!.First().thumbnailId!,
+                indexResponse.videos![0].thumbnailId!,
                 getAccessToken.AccessToken!, CancellationToken.None);
             Assert.IsNotNull(result);
         }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
 namespace FairPlayDating.TestDataGenerator;
-
+#pragma warning disable S6678 // Use PascalCase for named placeholders
 public class TestDataGenerator(ILogger<TestDataGenerator> logger,
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) : BackgroundService
 {
@@ -190,3 +190,4 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         await dbContext.SaveChangesAsync(stoppingToken);
     }
 }
+#pragma warning restore S6678 // Use PascalCase for named placeholders
