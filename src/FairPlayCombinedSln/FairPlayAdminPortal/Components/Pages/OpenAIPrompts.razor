@@ -33,8 +33,12 @@
 <FluentHorizontalScroll Easing="ScrollEasing.EaseInOut">
     <FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
         <PropertyColumn Property="@(p=>p.OpenAipromptId)" 
+            style="width:200px;"
             IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Descending"></PropertyColumn>
-        <TemplateColumn>
+        <PropertyColumn Property="@(p=>p.RevisedPrompt)"
+                        style="width:200px;"
+            Sortable="true" Class="multiline-text"></PropertyColumn>
+        <TemplateColumn style="width:500px;">
             @if (context.GeneratedImageBytes != null)
             {
                 <img width="400" src="@($"data:image/png;base64, {Convert.ToBase64String(context.GeneratedImageBytes)}")" />
