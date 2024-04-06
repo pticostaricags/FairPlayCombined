@@ -1,10 +1,12 @@
 ﻿@page "/Public/WatchVideo/{VideoId}"
 @implements IAsyncDisposable
+@using FairPlayCombined.Models.AzureVideoIndexer
 @using FairPlayCombined.Services.Common
 @using FairPlayTube.Components.Spinners
 
 @rendermode NoPreRender
 
+@inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject IJSRuntime jsRuntime
 
@@ -12,28 +14,45 @@
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-
-<div id="container" data-permanent>
-    <video id="video"
-           class="azuremediaplayer amp-default-skin amp-stream-skin"
-           autoplay
-           controls
-           width="200"
-           height="200">
-        <p class="amp-no-js">
-            To view this video please enable JavaScript, and consider upgrading to
-            a web browser that supports HTML5 video
-        </p>
-    </video>
-    <div class="inline"></div>
-</div>
+@if (!this.UseFallbackMode)
+{
+    <div id="container" data-permanent>
+        <video id="video"
+               class="azuremediaplayer amp-default-skin amp-stream-skin"
+               autoplay
+               controls
+               width="200"
+               height="200">
+            <p class="amp-no-js">
+                To view this video please enable JavaScript, and consider upgrading to
+                a web browser that supports HTML5 video
+            </p>
+        </video>
+        <div class="inline"></div>
+    </div>
+    <div>
+        <FluentButton Type="ButtonType.Button"
+                      Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
+                      OnClick="OnUseFallbackMode">Can't see the video? Click here!</FluentButton>
+    </div>
+}
+else
+{
+    <div>
+        <iframe src="@this.FallbackModeUrl" width="600" allowfullscreen></iframe>
+    </div>
+}
 
 @code {
     [Parameter]
     public string? VideoId { get; set; }
     private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
+    private GetVideoIndexResponseModel? videoIndex { get; set; }
+    private GetAccessTokenResponseModel? viAccessTokenResponse { get; set; }
     private CancellationTokenSource cancellationTokenSource = new();
+    private bool UseFallbackMode { get; set; }
+    private string? FallbackModeUrl { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -42,9 +61,9 @@
             this.IsBusy = true;
             StateHasChanged();
             var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
-            var viAccessTokenResponse = await azureVideoIndexerService
+            this.viAccessTokenResponse = await azureVideoIndexerService
             .GetAccessTokenForArmAccountAsync(armAccessToken, this.cancellationTokenSource.Token);
-            var videoIndex = await azureVideoIndexerService
+            this.videoIndex = await azureVideoIndexerService
             .GetVideoIndexAsync(this.VideoId!, viAccessTokenResponse!.AccessToken!,
             this.cancellationTokenSource.Token);
             var supportedLanguages = await azureVideoIndexerService
@@ -52,8 +71,8 @@
             this.cancellationTokenSource.Token);
             var singleVideoIndex = videoIndex!.videos!.Single();
             await jsRuntime.InvokeVoidAsync(
-                identifier: "initSource", 
-                cancellationToken:this.cancellationTokenSource.Token,
+                identifier: "initSource",
+                cancellationToken: this.cancellationTokenSource.Token,
             "video",
             singleVideoIndex.publishedUrl,
             singleVideoIndex.viewToken,
@@ -68,6 +87,13 @@
             this.IsBusy = false;
             StateHasChanged();
         }
+    }
+
+    private void OnUseFallbackMode()
+    {
+        this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.videoIndex!.accountId}/{this.videoIndex.id}/?locale=en&location={azureVideoIndexerServiceConfiguration.Location}&accessToken={this.viAccessTokenResponse!.AccessToken}";
+        this.UseFallbackMode = true;
+        StateHasChanged();
     }
 
     public ValueTask DisposeAsync()
