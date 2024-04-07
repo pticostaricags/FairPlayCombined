@@ -34,6 +34,9 @@ namespace FairPlayCombined.Services.FairPlayTube
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.VideoInfo
+                .Include(p=>p.VideoKeyword)
+                .Include(p=>p.VideoTopic)
+                .Include(p=>p.VideoCaptions)
                 .Where(p => p.VideoIndexStatusId == (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed
                 && p.ApplicationUserId == userId)
                 .Select(p => new VideoInfoModel
@@ -56,8 +59,11 @@ namespace FairPlayCombined.Services.FairPlayTube
                     VideoLanguageCode = p.VideoLanguageCode,
                     VideoVisibilityId = p.VideoVisibilityId,
                     ThumbnailUrl = p.ThumbnailUrl,
-                    YouTubeVideoId = p.YouTubeVideoId
-
+                    YouTubeVideoId = p.YouTubeVideoId,
+                    VideoKeywords = p.VideoKeyword.Select(p=>p.Keyword).ToArray(),
+                    VideoTopics = p.VideoTopic.Select(p=>p.Topic).ToArray(),
+                    EnglishCaptions = p.VideoCaptions.Where(p=>p.Language== "en-US")
+                    .Select(p=>p.Content).SingleOrDefault()
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);
