@@ -20,7 +20,7 @@ jobs:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
-      GoogleAuthClientId: ${{ vars.GoogleAuthClientId }}
+      GoogleAuthClientSecretsFileInfo: ${{ vars.GoogleAuthClientSecretsFileInfo }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

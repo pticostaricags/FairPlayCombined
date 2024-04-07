@@ -4,6 +4,7 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Models.GoogleGemini;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.Common;
@@ -39,15 +40,13 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-var googleAuthClientId = Environment.GetEnvironmentVariable("GoogleAuthClientId") ??
-    throw new InvalidOperationException("'GoogleAuthClientId' not found");
-var googleAuthClientSecret = Environment.GetEnvironmentVariable("GoogleAuthClientSecret") ??
-    throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
-var googleAuthClientSecretsFilePath = Environment.GetEnvironmentVariable("GoogleAuthClientSecretsFilePath") ??
-    throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
+var googleAuthClientInfoJson = Environment.GetEnvironmentVariable("GoogleAuthClientInfo") ??
+    throw new InvalidOperationException("'GoogleAuthClientInfo' not found");
+GoogleAuthClientSecretInfo googleAuthClientSecretInfo = 
+    System.Text.Json.JsonSerializer.Deserialize<GoogleAuthClientSecretInfo>(googleAuthClientInfoJson)!;
 builder.Services.AddSingleton<YouTubeClientServiceConfiguration>(new YouTubeClientServiceConfiguration()
 {
-    ClientSecretsFilePath = googleAuthClientSecretsFilePath
+    GoogleAuthClientSecretInfo = googleAuthClientSecretInfo
 });
 
 builder.Services.AddAuthentication(configureOptions =>
@@ -57,8 +56,8 @@ builder.Services.AddAuthentication(configureOptions =>
 })
     .AddGoogle(options =>
     {
-        options.ClientId = googleAuthClientId;
-        options.ClientSecret = googleAuthClientSecret;
+        options.ClientId = googleAuthClientSecretInfo.installed!.client_id!;
+        options.ClientSecret = googleAuthClientSecretInfo.installed.client_secret!;
         options.Scope.Add(YouTubeService.Scope.YoutubeUpload);
         options.Scope.Add(YouTubeService.Scope.YoutubeForceSsl);
         options.Scope.Add(YouTubeService.Scope.Youtubepartner);
@@ -198,8 +197,8 @@ builder.Services.AddTransient(sp =>
 builder.Services.AddTransient<VideoInfoService>();
 builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
 {
-    ClientId = googleAuthClientId,
-    ClientSecret = googleAuthClientSecret
+    ClientId = googleAuthClientSecretInfo.installed!.client_id,
+    ClientSecret = googleAuthClientSecretInfo.installed.client_secret
 });
 builder.Services.AddTransient<YouTubeClientService>();
 builder.Services.AddTransient<VideoCaptionsService>();

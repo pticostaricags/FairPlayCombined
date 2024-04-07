@@ -1,10 +1,13 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using FairPlayCombined.Models.GoogleAuth;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Upload;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using Microsoft.AspNetCore.Http;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -29,7 +32,10 @@ namespace FairPlayCombined.Services.Common
         {
             var userName = httpContextAccessor.HttpContext.User.Identity!.Name;
             UserCredential credential;
-            using (var stream = new FileStream(youTubeClientServiceConfiguration.ClientSecretsFilePath!, FileMode.Open, FileAccess.Read))
+            var json = JsonSerializer.Serialize(youTubeClientServiceConfiguration!.GoogleAuthClientSecretInfo!);
+            var bytes = Encoding.UTF8.GetBytes(json);
+            MemoryStream memoryStream = new(bytes);
+            using (var stream = memoryStream)
             {
                 credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.FromStream(stream).Secrets,
@@ -77,6 +83,6 @@ namespace FairPlayCombined.Services.Common
 
     public class YouTubeClientServiceConfiguration
     {
-        public string? ClientSecretsFilePath { get; set; }
+        public GoogleAuthClientSecretInfo? GoogleAuthClientSecretInfo { get; set; }
     }
 }

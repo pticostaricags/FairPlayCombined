@@ -2,13 +2,18 @@ using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
-var googleAuthClientId = builder.Configuration["GoogleAuthClientId"] ??
-    throw new InvalidOperationException("'GoogleAuthClientId' not found");
-var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??
-    throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
-
-var googleAuthClientSecretsFilePath = builder.Configuration["GoogleAuthClientSecretsFilePath"] ??
-    throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
+string googleAuthClientInfo = string.Empty;
+try
+{
+    var googleAuthClientSecretsFilePath = builder.Configuration["GoogleAuthClientSecretsFilePath"] ??
+        throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
+    googleAuthClientInfo = System.IO.File.ReadAllText(googleAuthClientSecretsFilePath);
+}
+catch (Exception)
+{
+    googleAuthClientInfo = builder.Configuration["GoogleAuthClientSecretsFileInfo"] ??
+        throw new InvalidOperationException("'GoogleAuthClientSecretsFileInfo' not found");
+}
 
 IResourceBuilder<IResourceWithConnectionString> sqlResourceWithConnectionString =
     builder.AddConnectionString("FairPlayCombinedDb");
@@ -30,9 +35,7 @@ if (addFairPlayTube)
     builder.AddProject<Projects.FairPlayTube>(nameof(Projects.FairPlayTube).ToLower())
     .WithEnvironment(callback =>
     {
-        callback.EnvironmentVariables.Add("GoogleAuthClientId", googleAuthClientId);
-        callback.EnvironmentVariables.Add("GoogleAuthClientSecret", googleAuthClientSecret);
-        callback.EnvironmentVariables.Add("GoogleAuthClientSecretsFilePath", googleAuthClientSecretsFilePath);
+        callback.EnvironmentVariables.Add("GoogleAuthClientInfo", googleAuthClientInfo);
     })
     .WithReference(sqlResourceWithConnectionString);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")
