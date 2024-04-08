@@ -19,6 +19,7 @@
 @inject IUserProviderService userProviderService
 @inject YouTubeClientService youTubeClientService
 @inject ILogger<UploadMyVideo> logger
+@inject NavigationManager navigationManager
 
 <FluentLabel Typo="Typography.H3">
     UploadMyVideo
@@ -111,6 +112,7 @@
             this.createVideoInfoModel.VideoId = indexVideoResult!.id;
             this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
             this.frmCreateVideoInfo.EditContext.Validate();
+            this.toastService.ShowInfo("Your has been sent to be processed.");
         }
         catch (Exception ex)
         {
@@ -175,7 +177,8 @@
             this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
             await this.videoInfoService.CreateVideoInfoAsync(this.createVideoInfoModel,
             this.cancellationTokenSource.Token);
-            this.toastService.ShowSuccess("Your video has been save. You'll be notified when indexing is ready");
+            this.toastService.ShowSuccess("Your video has been saved. You'll be notified when indexing is ready. It will take a while for your video to become visible.");
+            this.navigationManager.NavigateTo("/");
         }
         catch (Exception ex)
         {
