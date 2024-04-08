@@ -495,6 +495,7 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
             entity.Property(e => e.RowCreationUser).HasDefaultValueSql("'Unknown'");
             entity.Property(e => e.SourceApplication).HasDefaultValueSql("'Unknown'");
+            entity.Property(e => e.VideoIndexingProcessingPercentage).HasDefaultValueSql("0");
             entity.Property(e => e.VideoVisibilityId).HasDefaultValueSql("1");
 
             entity.HasOne(d => d.ApplicationUser).WithMany(p => p.VideoInfo)

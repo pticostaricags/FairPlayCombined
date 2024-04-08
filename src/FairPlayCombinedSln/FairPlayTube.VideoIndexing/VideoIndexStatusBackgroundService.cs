@@ -14,7 +14,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
     {
         try
         {
-            TimeSpan timeToWait = TimeSpan.FromMinutes(5);
+            TimeSpan timeToWait = TimeSpan.FromMinutes(1);
             var scope = serviceScopeFactory.CreateScope();
             var dbContextFactory = scope.ServiceProvider
                 .GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
@@ -35,6 +35,32 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     var videosIndex = await azureVideoIndexerService.SearchVideosByIdsAsync(
                         getviTokenResult!.AccessToken!, allVideosInProcessingStatus, stoppingToken);
                     LogVideoIndexStatus(logger, videosIndex);
+                    var processingVideos = videosIndex?.results?.Where(p => p.state ==
+                    FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processing.ToString());
+                    if (processingVideos?.Count() > 0)
+                    {
+                        foreach (var singleProcessingVideo in processingVideos)
+                        {
+                            var singleVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
+                                singleProcessingVideo.id!, getviTokenResult.AccessToken!,
+                                cancellationToken: stoppingToken);
+                            var videoEntity = await dbContext.VideoInfo.SingleAsync(p => p.VideoId == singleProcessingVideo.id,
+                                cancellationToken: stoppingToken);
+                            if (!String.IsNullOrWhiteSpace(singleVideoIndex!.videos![0].processingProgress))
+                            {
+                                int processingProgress = Convert.ToInt32(singleVideoIndex!.videos![0].processingProgress!.Trim('%'));
+                                logger.LogInformation("Updating processingProgress for " +
+                                    "video:{videoId}. processingProgress:{processingProgress}",
+                                    singleVideoIndex.id, singleVideoIndex!.videos![0].processingProgress);
+                                //avoid doing a database call if processingProgress value has not changed
+                                if (processingProgress != videoEntity.VideoIndexingProcessingPercentage)
+                                {
+                                    videoEntity.VideoIndexingProcessingPercentage = processingProgress;
+                                    await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);
+                                }
+                            }
+                        }
+                    }
                     var indexCompleteVideos = videosIndex?.results?.Where(p => p.state ==
                     FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed.ToString());
                     if (indexCompleteVideos?.Count() > 0)
@@ -67,6 +93,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                                 IndexingCost = costPerMinute * ((decimal)singleVideoEntity.VideoDurationInSeconds / 60)
                             }, stoppingToken);
                             singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
+                            singleVideoEntity.VideoIndexingProcessingPercentage = 100;
                             singleVideoEntity.VideoDurationInSeconds =
                                 videosIndex!.results!
                                 .Single(p => p.id == singleVideoEntity.VideoId).durationInSeconds;
