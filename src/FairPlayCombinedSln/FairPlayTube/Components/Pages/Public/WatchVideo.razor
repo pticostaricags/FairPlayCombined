@@ -14,21 +14,22 @@
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-@if (!this.UseFallbackMode)
+@if (!this.UseFallbackMode && !String.IsNullOrWhiteSpace(this.VideoUrl))
 {
     <div id="container" data-permanent>
-        <video id="video"
-               class="azuremediaplayer amp-default-skin amp-stream-skin"
-               autoplay
-               controls
-               width="200"
-               height="200">
-            <p class="amp-no-js">
-                To view this video please enable JavaScript, and consider upgrading to
-                a web browser that supports HTML5 video
-            </p>
+        <!-- HTML -->
+        <video id="my_video_1" class="video-js vjs-default-skin" controls preload="auto" width="640" height="268"
+               data-setup='{}'>
+            <source src="@this.VideoUrl" type="application/x-mpegURL">
+            @if (this.SupportedLanguages?.Length > 0)
+            {
+                foreach (var singleSupportedLanguage in this.SupportedLanguages)
+                {
+                    <track kind="captions" src="@($"/api/video/{this.VideoId}/captions/{singleSupportedLanguage.languageCode}")"
+                           srclang="@singleSupportedLanguage.languageCode" label="@singleSupportedLanguage.name" />
+                }
+            }
         </video>
-        <div class="inline"></div>
     </div>
     <div>
         <FluentButton Type="ButtonType.Button"
@@ -53,6 +54,8 @@ else
     private CancellationTokenSource cancellationTokenSource = new();
     private bool UseFallbackMode { get; set; }
     private string? FallbackModeUrl { get; set; }
+    private string? VideoUrl { get; set; }
+    private SupportedLanguageModel[]? SupportedLanguages { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -66,24 +69,12 @@ else
             this.videoIndex = await azureVideoIndexerService
             .GetVideoIndexAsync(this.VideoId!, viAccessTokenResponse!.AccessToken!,
             this.cancellationTokenSource.Token);
-            var supportedLanguages = await azureVideoIndexerService
+            this.VideoUrl = $"{videoIndex!.videos![0].publishedUrl}?accessToken={viAccessTokenResponse.AccessToken}";
+            this.SupportedLanguages = await azureVideoIndexerService
             .GetSupportedLanguagesAsync(viAccessTokenResponse!.AccessToken!,
             this.cancellationTokenSource.Token);
-            var singleVideoIndex = videoIndex!.videos!.Single();
-            await jsRuntime.InvokeVoidAsync(
-                identifier: "initSource",
-                cancellationToken: this.cancellationTokenSource.Token,
-            "video",
-            singleVideoIndex.publishedUrl,
-            singleVideoIndex.viewToken,
-            this.VideoId,
-            supportedLanguages!.Select(p => new
-            {
-                src = $"/api/video/{this.VideoId}/captions/{p.languageCode}",
-                srclang = p.languageCode,
-                kind = "subtitles",
-                label = p.name
-            }).OrderBy(p => p.label).ToArray());
+            StateHasChanged();
+            await jsRuntime.InvokeVoidAsync("initializeVideoJsPlayer", "my_video_1");
             this.IsBusy = false;
             StateHasChanged();
         }
