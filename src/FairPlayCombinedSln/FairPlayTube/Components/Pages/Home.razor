@@ -16,7 +16,7 @@
 
 @if (this.PageItems != null)
 {
-    <FluentStack Orientation="Orientation.Horizontal">
+    <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
         @foreach (var singleItem in this.PageItems.Value.Items)
         {
             <div>
