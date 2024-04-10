@@ -54,14 +54,7 @@
         </FluentAccordion>
     </div>
     <div>
-        @if (!this.IsPlanCreated)
-        {
-            <FluentButton Type="ButtonType.Submit">Save</FluentButton>
-        }
-        else
-        {
-            <FluentLabel Typo="Typography.Body">Your Plan has been updated</FluentLabel>
-        }
+        <FluentButton Type="ButtonType.Submit">Save</FluentButton>
     </div>
 </FluentEditForm>
 
@@ -88,7 +81,6 @@
     private bool IsBusy { get; set; }
     private string? GeneratedYouTubeThumbnailUri { get; set; }
     private string? RevisedPrompt { get; set; }
-    private bool IsPlanCreated { get; set; }
     private VideoPlanModel? originalVideoPlan { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -128,7 +120,6 @@
                 this.updateVideoPlanModel, this.cancellationTokenSource.Token);
             this.toastService.ShowSuccess("Your Plan has been updated");
             StateHasChanged();
-            this.IsPlanCreated = true;
             var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
                     "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
             string prompt = $"{promptInfo!.BaseText}. Video Title: {this.updateVideoPlanModel.VideoName}. Video Description: {this.updateVideoPlanModel.VideoDescription}. Video Script: {this.updateVideoPlanModel.VideoScript}";
