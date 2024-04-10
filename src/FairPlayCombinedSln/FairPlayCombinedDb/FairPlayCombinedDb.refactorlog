@@ -126,4 +126,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="PromptVariableId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="a6ea068a-30e5-43be-9ac3-50ec67295b1c" ChangeDateTime="04/10/2024 00:07:38">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoPlan].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoPlan]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoPlanId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2870821d-72cb-4350-b55e-24edea4f47a2" ChangeDateTime="04/10/2024 00:13:33">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoPlanThumbnail].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoPlanThumbnail]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoPlanThumbnailId" />
+  </Operation>
 </Operations>

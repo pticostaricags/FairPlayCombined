@@ -262,6 +262,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoPlan]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoPlanThumbnail]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoTopic]",
          "ObjectType": 0
       },
