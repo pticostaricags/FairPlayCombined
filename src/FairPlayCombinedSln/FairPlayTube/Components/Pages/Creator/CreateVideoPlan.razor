@@ -1,0 +1,117 @@
+﻿@page "/Creator/CreateVideoPlan"
+@implements IDisposable
+
+@using FairPlayCombined.Common
+@using FairPlayCombined.Common.FairPlayTube.Enums
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.FairPlayTube.VideoPlan
+@using FairPlayCombined.Services.Common
+@using FairPlayCombined.Services.FairPlayTube
+@using FairPlayTube.Components.Spinners
+@using Google.Apis.YouTube.v3.Data
+@attribute [Authorize]
+@rendermode RenderMode.InteractiveServer
+
+@inject PromptGeneratorService promptGeneratorService
+@inject OpenAIService openAIService
+@inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
+@inject AzureVideoIndexerService azureVideoIndexerService
+@inject VideoPlanService videoPlanService
+@inject IToastService toastService
+@inject IUserProviderService userProviderService
+@inject YouTubeClientService youTubeClientService
+@inject ILogger<UploadMyVideo> logger
+@inject NavigationManager navigationManager
+
+<FluentLabel Typo="Typography.H3">
+    Create Video Plan
+</FluentLabel>
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<FluentEditForm FormName="frmCreateVideoPlan" Model="this.createVideoPlanModel"
+                OnValidSubmit="OnValidSubmitAsync">
+    <div>
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <FluentValidationSummary></FluentValidationSummary>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Name</FluentLabel>
+        <FluentTextField @bind-Value="this.createVideoPlanModel.VideoName" Maxlength="100" style="width:100%;"></FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Description</FluentLabel>
+        <FluentTextArea @bind-Value="this.createVideoPlanModel.VideoDescription" Maxlength="500" style="width:100%;"></FluentTextArea>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Video Script</FluentLabel>
+        <FluentTextArea @bind-Value="this.createVideoPlanModel.VideoScript" Maxlength="1000" style="width:100%;"></FluentTextArea>
+    </div>
+    <div>
+        <FluentButton Type="ButtonType.Submit">Save</FluentButton>
+    </div>
+</FluentEditForm>
+
+<div>
+    @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
+    {
+        <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
+            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
+        </a>
+        <p>
+            <FluentLabel Typo="Typography.Body">
+                @this.RevisedPrompt
+            </FluentLabel>
+        </p>
+    }
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private CreateVideoPlanModel createVideoPlanModel { get; set; } = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; }
+    private string? GeneratedYouTubeThumbnailUri { get; set; }
+    private string? RevisedPrompt { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.createVideoPlanModel.ApplicationUserId = this.userProviderService.GetCurrentUserId();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            await this.videoPlanService.CreateVideoPlanAsync(
+                this.createVideoPlanModel, this.cancellationTokenSource.Token);
+            var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
+                    "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
+            string prompt = $"{promptInfo!.BaseText}. Video Title: {this.createVideoPlanModel.VideoName}. Video Description: {this.createVideoPlanModel.VideoDescription}. Video Script: {this.createVideoPlanModel.VideoScript}";
+            if (prompt.Length > 4000)
+                prompt = prompt.Substring(0, 4000);
+            var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
+            if (result != null)
+            {
+                this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
+                this.RevisedPrompt = result!.data[0]!.revised_prompt;
+            }
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
+    }
+}
