@@ -37,18 +37,31 @@
     </div>
     <div>
         <FluentLabel Typo="Typography.Body">Name</FluentLabel>
-        <FluentTextField @bind-Value="this.createVideoPlanModel.VideoName" Maxlength="100" style="width:100%;"></FluentTextField>
+        <FluentTextField @bind-Value="this.createVideoPlanModel.VideoName" Maxlength="50" style="width:100%;"></FluentTextField>
     </div>
     <div>
-        <FluentLabel Typo="Typography.Body">Description</FluentLabel>
-        <FluentTextArea @bind-Value="this.createVideoPlanModel.VideoDescription" Maxlength="500" style="width:100%;"></FluentTextArea>
+        <FluentAccordion>
+            <FluentAccordionItem Heading="Description" Expanded="true">
+                <FluentTextArea @bind-Value="this.createVideoPlanModel.VideoDescription" Rows="10" Maxlength="500" style="width:100%;"></FluentTextArea>
+            </FluentAccordionItem>
+        </FluentAccordion>
     </div>
     <div>
-        <FluentLabel Typo="Typography.Body">Video Script</FluentLabel>
-        <FluentTextArea @bind-Value="this.createVideoPlanModel.VideoScript" Maxlength="1000" style="width:100%;"></FluentTextArea>
+        <FluentAccordion>
+            <FluentAccordionItem Heading="Video Script" Expanded="true">
+                <FluentTextArea @bind-Value="this.createVideoPlanModel.VideoScript" Rows="40" Maxlength="3000" style="width:100%;"></FluentTextArea>
+            </FluentAccordionItem>
+        </FluentAccordion>
     </div>
     <div>
-        <FluentButton Type="ButtonType.Submit">Save</FluentButton>
+        @if (!this.IsPlanCreated)
+        {
+            <FluentButton Type="ButtonType.Submit">Save</FluentButton>
+        }
+        else
+        {
+            <FluentLabel Typo="Typography.Body">Your Plan has been created</FluentLabel>
+        }
     </div>
 </FluentEditForm>
 
@@ -73,6 +86,7 @@
     private bool IsBusy { get; set; }
     private string? GeneratedYouTubeThumbnailUri { get; set; }
     private string? RevisedPrompt { get; set; }
+    private bool IsPlanCreated { get; set; }
 
     protected override void OnInitialized()
     {
@@ -87,6 +101,9 @@
             StateHasChanged();
             await this.videoPlanService.CreateVideoPlanAsync(
                 this.createVideoPlanModel, this.cancellationTokenSource.Token);
+            this.toastService.ShowSuccess("Your Plan has been created");
+            StateHasChanged();
+            this.IsPlanCreated = true;
             var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
                     "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
             string prompt = $"{promptInfo!.BaseText}. Video Title: {this.createVideoPlanModel.VideoName}. Video Description: {this.createVideoPlanModel.VideoDescription}. Video Script: {this.createVideoPlanModel.VideoScript}";
@@ -97,6 +114,11 @@
             {
                 this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
                 this.RevisedPrompt = result!.data[0]!.revised_prompt;
+                this.toastService.ShowSuccess("Your thumbnail has been created");
+            }
+            else
+            {
+                this.toastService.ShowError("Your thumbnail could not be created");
             }
         }
         catch (Exception ex)

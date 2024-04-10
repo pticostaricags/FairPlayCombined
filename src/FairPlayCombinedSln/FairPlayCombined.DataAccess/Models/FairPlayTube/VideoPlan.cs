@@ -34,7 +34,7 @@ public partial class VideoPlan
     public string VideoDescription { get; set; }
 
     [Required]
-    [StringLength(1000)]
+    [StringLength(3000)]
     public string VideoScript { get; set; }
 
     [ForeignKey("ApplicationUserId")]

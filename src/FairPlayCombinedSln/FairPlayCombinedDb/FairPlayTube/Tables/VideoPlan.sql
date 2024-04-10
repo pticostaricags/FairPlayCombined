@@ -6,7 +6,7 @@
     [VideoDescription] NVARCHAR(500) NOT NULL 
    
     CONSTRAINT [FK_VideoPlan_ApplicationUser] FOREIGN KEY ([ApplicationUserId]) REFERENCES [dbo].[AspNetUsers]([Id]), 
-    [VideoScript] NVARCHAR(1000) NOT NULL
+    [VideoScript] NVARCHAR(3000) NOT NULL
 )
 
 GO
