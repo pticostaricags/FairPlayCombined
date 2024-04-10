@@ -10,6 +10,7 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoPlan
 {
     public class VideoPlanModel : IListModel
     {
+        public long VideoPlanId { get; set; }
         [Required]
         public string? ApplicationUserId { get; set; }
 

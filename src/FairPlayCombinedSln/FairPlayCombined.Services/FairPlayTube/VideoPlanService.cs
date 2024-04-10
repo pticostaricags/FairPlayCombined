@@ -3,6 +3,8 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Models.FairPlayTube.VideoPlan;
 using FairPlayCombined.Models.Pagination;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
@@ -17,5 +19,21 @@ namespace FairPlayCombined.Services.FairPlayTube
         >]
     public partial class VideoPlanService : BaseService
     {
+        public async Task UpdateVideoPlanAsync(UpdateVideoPlanModel createModel,
+            CancellationToken cancellationToken)
+        {
+            logger.LogInformation(message: "Start of method: {methodName}", nameof(UpdateVideoPlanAsync));
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            VideoPlan entity = await dbContext.VideoPlan
+                .SingleAsync(p=>p.VideoPlanId == createModel.VideoPlanId,
+                cancellationToken:cancellationToken);
+
+            entity.ApplicationUserId = createModel.ApplicationUserId;
+            entity.VideoName = createModel.VideoName;
+            entity.VideoDescription = createModel.VideoDescription;
+            entity.VideoScript = createModel.VideoScript;
+
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }
