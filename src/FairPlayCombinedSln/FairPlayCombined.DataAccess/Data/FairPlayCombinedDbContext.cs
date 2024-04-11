@@ -495,6 +495,10 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<VideoInfo>(entity =>
         {
+            entity.HasIndex(e => e.YouTubeVideoId, "UI_VideoInfo_YouTubeVideoId")
+                .IsUnique()
+                .HasFilter("YouTubeVideoId IS NOT NULL");
+
             entity.Property(e => e.ApplicationUserId).HasComment("Video Owner Id");
             entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
             entity.Property(e => e.RowCreationUser).HasDefaultValueSql("'Unknown'");

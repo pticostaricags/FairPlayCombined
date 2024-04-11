@@ -17,7 +17,6 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 [Table("VideoInfo", Schema = "FairPlayTube")]
 [Index("VideoId", Name = "UI_VideoInfo_VideoId", IsUnique = true)]
-[Index("YouTubeVideoId", Name = "UI_VideoInfo_YouTubeVideoId", IsUnique = true)]
 public partial class VideoInfo
 {
     [Key]
