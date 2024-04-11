@@ -111,8 +111,9 @@ namespace FairPlayCombined.Services.FairPlayTube
                     VideoLanguageCode = p.VideoLanguageCode,
                     VideoVisibilityId = p.VideoVisibilityId,
                     ThumbnailUrl = p.ThumbnailUrl,
-                    YouTubeVideoId = p.YouTubeVideoId
-
+                    YouTubeVideoId = p.YouTubeVideoId,
+                    LifetimeSessions = p.VideoWatchTime.Count,
+                    LifetimeWatchTime = TimeSpan.FromSeconds(p.VideoWatchTime.Sum(p=>p.WatchTime))
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);

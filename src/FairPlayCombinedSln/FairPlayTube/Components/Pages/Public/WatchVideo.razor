@@ -62,7 +62,7 @@ else
     private string? VideoUrl { get; set; }
     private SupportedLanguageModel[]? SupportedLanguages { get; set; }
     private DotNetObjectReference<WatchVideo>? dotNetObjectReference;
-
+    private bool IsSessionCreated { get; set; } = false;
     protected override void OnInitialized()
     {
         this.dotNetObjectReference = DotNetObjectReference.Create<WatchVideo>(this);
@@ -92,13 +92,13 @@ else
     }
 
     [JSInvokable]
-    public async void UpdateWatchTime(int watchTime, string currentSessionGuid)
+    public async void UpdateWatchTime(double watchTime, string currentSessionGuid)
     {
         try
         {
             var currentUserId = this.userProviderService.GetCurrentUserId();
             System.Diagnostics.Debug.WriteLine($"Watch Time (s): {watchTime}. Session: {currentSessionGuid}");
-            if (watchTime == 1)
+            if (!IsSessionCreated)
             {
                 await this.videoWatchTimeService.CreateVideoWatchTimeAsync(
                     this.VideoId!,
@@ -108,8 +108,9 @@ else
                         SessionId = Guid.Parse(currentSessionGuid),
                         WatchTime = watchTime
                     }, cancellationToken: cancellationTokenSource.Token);
+                this.IsSessionCreated = true;
             }
-            else if (watchTime % 30 == 0)
+            else
             {
                 await this.videoWatchTimeService.UpdateVideoWatchTimeAsync(
                     this.VideoId!,

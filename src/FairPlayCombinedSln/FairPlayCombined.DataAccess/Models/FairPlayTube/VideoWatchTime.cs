@@ -29,7 +29,7 @@ public partial class VideoWatchTime
 
     public DateTimeOffset SessionStartDatetime { get; set; }
 
-    public int WatchTime { get; set; }
+    public double WatchTime { get; set; }
 
     [StringLength(450)]
     public string WatchedByApplicationUserId { get; set; }

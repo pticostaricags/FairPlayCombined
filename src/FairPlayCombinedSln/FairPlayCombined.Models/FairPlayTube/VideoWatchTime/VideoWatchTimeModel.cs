@@ -18,7 +18,7 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoWatchTime
         public Guid? SessionId { get; set; }= Guid.Empty;
         [Required]
         public DateTimeOffset? SessionStartDatetime { get; set; }
-        public int WatchTime { get; set; }
+        public double WatchTime { get; set; }
         [StringLength(450)]
         public string? WatchedByApplicationUserId { get; set; }
     }
