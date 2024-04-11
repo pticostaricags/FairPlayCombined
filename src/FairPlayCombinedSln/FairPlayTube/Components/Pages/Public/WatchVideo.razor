@@ -56,6 +56,12 @@ else
     private string? FallbackModeUrl { get; set; }
     private string? VideoUrl { get; set; }
     private SupportedLanguageModel[]? SupportedLanguages { get; set; }
+    private DotNetObjectReference<WatchVideo>? dotNetObjectReference;
+
+    protected override void OnInitialized()
+    {
+        this.dotNetObjectReference = DotNetObjectReference.Create<WatchVideo>(this);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -74,10 +80,16 @@ else
             .GetSupportedLanguagesAsync(viAccessTokenResponse!.AccessToken!,
             this.cancellationTokenSource.Token);
             StateHasChanged();
-            await jsRuntime.InvokeVoidAsync("initializeVideoJsPlayer", "my_video_1");
+            await jsRuntime.InvokeVoidAsync("initializeVideoJsPlayer", "my_video_1", Guid.NewGuid().ToString(), this.dotNetObjectReference);
             this.IsBusy = false;
             StateHasChanged();
         }
+    }
+
+    [JSInvokable]
+    public void UpdateWatchTime(decimal watchTime, string currentSessionGuid)
+    {
+        System.Diagnostics.Debug.WriteLine($"Watch Time (s): {watchTime}. Session: {currentSessionGuid}");
     }
 
     private void OnUseFallbackMode()
