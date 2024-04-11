@@ -158,6 +158,7 @@
     <Build Include="dbo\Tables\PromptVariable.sql" />
     <Build Include="FairPlayTube\Tables\VideoPlan.sql" />
     <Build Include="FairPlayTube\Tables\VideoPlanThumbnail.sql" />
+    <Build Include="FairPlayTube\Tables\VideoWatchTime.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />

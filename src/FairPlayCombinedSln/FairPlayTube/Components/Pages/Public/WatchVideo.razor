@@ -1,7 +1,9 @@
 ﻿@page "/Public/WatchVideo/{VideoId}"
 @implements IAsyncDisposable
+@using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.AzureVideoIndexer
 @using FairPlayCombined.Services.Common
+@using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
 
 @rendermode NoPreRender
@@ -9,6 +11,9 @@
 @inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject IJSRuntime jsRuntime
+@inject VideoWatchTimeService videoWatchTimeService
+@inject ILogger<WatchVideo> logger;
+@inject IUserProviderService userProviderService
 
 
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
@@ -87,9 +92,39 @@ else
     }
 
     [JSInvokable]
-    public void UpdateWatchTime(decimal watchTime, string currentSessionGuid)
+    public async void UpdateWatchTime(int watchTime, string currentSessionGuid)
     {
-        System.Diagnostics.Debug.WriteLine($"Watch Time (s): {watchTime}. Session: {currentSessionGuid}");
+        try
+        {
+            var currentUserId = this.userProviderService.GetCurrentUserId();
+            System.Diagnostics.Debug.WriteLine($"Watch Time (s): {watchTime}. Session: {currentSessionGuid}");
+            if (watchTime == 1)
+            {
+                await this.videoWatchTimeService.CreateVideoWatchTimeAsync(
+                    this.VideoId!,
+                    new FairPlayCombined.Models.FairPlayTube.VideoWatchTime.VideoWatchTimeModel()
+                    {
+                        WatchedByApplicationUserId = currentUserId,
+                        SessionId = Guid.Parse(currentSessionGuid),
+                        WatchTime = watchTime
+                    }, cancellationToken: cancellationTokenSource.Token);
+            }
+            else if (watchTime % 30 == 0)
+            {
+                await this.videoWatchTimeService.UpdateVideoWatchTimeAsync(
+                    this.VideoId!,
+                    new FairPlayCombined.Models.FairPlayTube.VideoWatchTime.VideoWatchTimeModel()
+                        {
+                            WatchedByApplicationUserId = currentUserId,
+                            SessionId = Guid.Parse(currentSessionGuid),
+                            WatchTime = watchTime
+                        }, cancellationToken: cancellationTokenSource.Token);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(exception: ex, "Error: {message}", ex.Message);
+        }
     }
 
     private void OnUseFallbackMode()

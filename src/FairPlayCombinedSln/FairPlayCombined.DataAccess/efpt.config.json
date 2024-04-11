@@ -278,6 +278,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoWatchTime]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayBudget].[vwBalance]",
          "ObjectType": 3
       }

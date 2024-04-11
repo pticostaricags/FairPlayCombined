@@ -140,4 +140,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="VideoPlanThumbnailId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="439df478-3354-4198-9880-4c19a3b58772" ChangeDateTime="04/11/2024 14:58:27">
+    <Property Name="ElementName" Value="[dbo].[VideoWatchTime].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[VideoWatchTime]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoWatchTimeId" />
+  </Operation>
 </Operations>

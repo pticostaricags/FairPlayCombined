@@ -148,6 +148,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<VideoVisibility> VideoVisibility { get; set; }
 
+    public virtual DbSet<VideoWatchTime> VideoWatchTime { get; set; }
+
     public virtual DbSet<VwBalance> VwBalance { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -574,6 +576,15 @@ public partial class FairPlayCombinedDbContext : DbContext
         modelBuilder.Entity<VideoVisibility>(entity =>
         {
             entity.Property(e => e.VideoVisibilityId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<VideoWatchTime>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoWatchTime)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoWatchTime_VideoInfo");
+
+            entity.HasOne(d => d.WatchedByApplicationUser).WithMany(p => p.VideoWatchTime).HasConstraintName("FK_VideoWatchTime_AspNetUsers");
         });
 
         modelBuilder.Entity<VwBalance>(entity =>

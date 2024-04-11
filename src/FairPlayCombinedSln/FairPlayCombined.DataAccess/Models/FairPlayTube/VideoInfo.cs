@@ -140,4 +140,7 @@ public partial class VideoInfo
     [ForeignKey("VideoVisibilityId")]
     [InverseProperty("VideoInfo")]
     public virtual VideoVisibility VideoVisibility { get; set; }
+
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoWatchTime> VideoWatchTime { get; set; } = new List<VideoWatchTime>();
 }
