@@ -23,7 +23,7 @@
 
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
     <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-        <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+        <PropertyColumn Class="multiline-text" Property="@(p=>p.Name)"></PropertyColumn>
         <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
         <TemplateColumn Class="multiline-text">
