@@ -2,18 +2,27 @@ using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
-string googleAuthClientInfo = string.Empty;
-try
-{
-    var googleAuthClientSecretsFilePath = builder.Configuration["GoogleAuthClientSecretsFilePath"] ??
-        throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
-    googleAuthClientInfo = System.IO.File.ReadAllText(googleAuthClientSecretsFilePath);
-}
-catch (Exception)
-{
-    googleAuthClientInfo = builder.Configuration["GoogleAuthClientSecretsFileInfo"] ??
-        throw new InvalidOperationException("'GoogleAuthClientSecretsFileInfo' not found");
-}
+
+var googleAuthClientId = builder.Configuration["GoogleAuthClientId"] ??
+        throw new InvalidOperationException("'GoogleAuthClientId' not found");
+
+var googleAuthProjectId = builder.Configuration["GoogleAuthProjectId"] ??
+        throw new InvalidOperationException("'GoogleAuthProjectId' not found");
+
+var googleAuthUri = builder.Configuration["GoogleAuthUri"] ??
+        throw new InvalidOperationException("'GoogleAuthUri' not found");
+
+var googleAuthTokenUri = builder.Configuration["GoogleAuthTokenUri"] ??
+        throw new InvalidOperationException("'GoogleAuthTokenUri' not found");
+
+var googleAuthProviderCertUri = builder.Configuration["GoogleAuthProviderCertUri"] ??
+        throw new InvalidOperationException("'GoogleAuthProviderCertUri' not found");
+
+var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??
+        throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
+
+var googleAuthRedirectUri = builder.Configuration["GoogleAuthRedirectUri"] ??
+        throw new InvalidOperationException("'GoogleAuthRedirectUri' not found");
 
 IResourceBuilder<IResourceWithConnectionString> sqlResourceWithConnectionString =
     builder.AddConnectionString("FairPlayCombinedDb");
@@ -35,7 +44,13 @@ if (addFairPlayTube)
     builder.AddProject<Projects.FairPlayTube>(nameof(Projects.FairPlayTube).ToLower())
     .WithEnvironment(callback =>
     {
-        callback.EnvironmentVariables.Add("GoogleAuthClientInfo", googleAuthClientInfo);
+        callback.EnvironmentVariables.Add("GoogleAuthClientId", googleAuthClientId);
+        callback.EnvironmentVariables.Add("GoogleAuthProjectId", googleAuthProjectId);
+        callback.EnvironmentVariables.Add("GoogleAuthUri", googleAuthUri);
+        callback.EnvironmentVariables.Add("GoogleAuthTokenUri", googleAuthTokenUri);
+        callback.EnvironmentVariables.Add("GoogleAuthProviderCertUri", googleAuthProviderCertUri);
+        callback.EnvironmentVariables.Add("GoogleAuthClientSecret", googleAuthClientSecret);
+        callback.EnvironmentVariables.Add("GoogleAuthRedirectUri", googleAuthRedirectUri);
     })
     .WithReference(sqlResourceWithConnectionString);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")
