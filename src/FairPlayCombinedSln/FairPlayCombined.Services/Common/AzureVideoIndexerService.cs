@@ -110,7 +110,8 @@ namespace FairPlayCombined.Services.Common
                 $"&language={indexVideoFromUriParameters.Language}" +
                 $"&videoUrl={HttpUtility.UrlEncode(indexVideoFromUriParameters.VideoUri!.ToString())}" +
                 $"&fileName={HttpUtility.UrlEncode(indexVideoFromUriParameters.FileName)}" +
-                $"&indexingPreset={indexVideoFromUriParameters.IndexingPreset}";
+                $"&indexingPreset={indexVideoFromUriParameters.IndexingPreset}" +
+                $"&Privacy=Public";
                 requestUrl +=
                 $"&sendSuccessEmail={true}";
                 httpClient.DefaultRequestHeaders.Authorization =

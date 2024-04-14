@@ -101,6 +101,9 @@ public partial class VideoInfo
 
     public int? VideoIndexingProcessingPercentage { get; set; }
 
+    [StringLength(1000)]
+    public string PublishedUrl { get; set; }
+
     [ForeignKey("ApplicationUserId")]
     [InverseProperty("VideoInfo")]
     public virtual AspNetUsers ApplicationUser { get; set; }

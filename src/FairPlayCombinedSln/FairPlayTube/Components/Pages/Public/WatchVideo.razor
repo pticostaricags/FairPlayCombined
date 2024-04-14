@@ -8,14 +8,13 @@
 
 @rendermode NoPreRender
 
-@inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
-@inject AzureVideoIndexerService azureVideoIndexerService
 @inject IJSRuntime jsRuntime
 @inject VideoWatchTimeService videoWatchTimeService
 @inject ILogger<WatchVideo> logger;
 @inject IUserProviderService userProviderService
 @inject SupportedLanguageService supportedLanguageService
-
+@inject VideoInfoService videoInfoService
+@inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
 
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
 
@@ -55,8 +54,6 @@ else
     public string? VideoId { get; set; }
     private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
-    private GetVideoIndexResponseModel? videoIndex { get; set; }
-    private GetAccessTokenResponseModel? viAccessTokenResponse { get; set; }
     private CancellationTokenSource cancellationTokenSource = new();
     private bool UseFallbackMode { get; set; }
     private string? FallbackModeUrl { get; set; }
@@ -75,13 +72,11 @@ else
         {
             this.IsBusy = true;
             StateHasChanged();
-            var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
-            this.viAccessTokenResponse = await azureVideoIndexerService
-            .GetAccessTokenForArmAccountAsync(armAccessToken, this.cancellationTokenSource.Token);
-            this.videoIndex = await azureVideoIndexerService
-            .GetVideoIndexAsync(this.VideoId!, viAccessTokenResponse!.AccessToken!,
-            this.cancellationTokenSource.Token);
-            this.VideoUrl = $"{videoIndex!.videos![0].publishedUrl}?accessToken={viAccessTokenResponse.AccessToken}";
+            var videoInfo = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
+                this.VideoId!,
+                this.cancellationTokenSource.Token
+            );
+            this.VideoUrl = videoInfo!.PublishedUrl;
             this.SupportedLanguages = await supportedLanguageService
             .GetAllSupportedLanguageAsync(this.cancellationTokenSource.Token);
             StateHasChanged();
@@ -130,7 +125,7 @@ else
 
     private void OnUseFallbackMode()
     {
-        this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.videoIndex!.accountId}/{this.videoIndex.id}/?locale=en&location={azureVideoIndexerServiceConfiguration.Location}&accessToken={this.viAccessTokenResponse!.AccessToken}";
+        this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.azureVideoIndexerServiceConfiguration.AccountId}/{this.VideoId}/?locale=en&location={azureVideoIndexerServiceConfiguration.Location}";
         this.UseFallbackMode = true;
         StateHasChanged();
     }

@@ -28,5 +28,6 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
         public string? EnglishCaptions { get; set; }
         public int LifetimeSessions { get; set; }
         public TimeSpan LifetimeWatchTime { get; set; }
+        public string? PublishedUrl { get; set; }
     }
 }

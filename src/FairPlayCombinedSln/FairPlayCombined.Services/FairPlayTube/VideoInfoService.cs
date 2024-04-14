@@ -126,5 +126,39 @@ namespace FairPlayCombined.Services.FairPlayTube
             .ToArrayAsync(cancellationToken);
             return result;
         }
+
+        public async Task<VideoInfoModel?> GetVideoInfoByVideoIdAsync(string videoId, 
+            CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var result = await dbContext.VideoInfo
+            .Where(p => p.VideoId == videoId)
+            .AsNoTracking()
+            .Select(p => new VideoInfoModel
+            {
+                VideoInfoId = p.VideoInfoId,
+                AccountId = p.AccountId,
+                VideoId = p.VideoId,
+                Location = p.Location,
+                Name = p.Name,
+                Description = p.Description,
+                FileName = p.FileName,
+                VideoBloblUrl = p.VideoBloblUrl,
+                IndexedVideoUrl = p.IndexedVideoUrl,
+                ApplicationUserId = p.ApplicationUserId,
+                VideoIndexStatusId = p.VideoIndexStatusId,
+                VideoDurationInSeconds = p.VideoDurationInSeconds,
+                VideoIndexSourceClass = p.VideoIndexSourceClass,
+                Price = p.Price,
+                ExternalVideoSourceUrl = p.ExternalVideoSourceUrl,
+                VideoLanguageCode = p.VideoLanguageCode,
+                VideoVisibilityId = p.VideoVisibilityId,
+                ThumbnailUrl = p.ThumbnailUrl,
+                YouTubeVideoId = p.YouTubeVideoId,
+                PublishedUrl = p.PublishedUrl
+            })
+            .SingleOrDefaultAsync(cancellationToken);
+            return result;
+        }
     }
 }

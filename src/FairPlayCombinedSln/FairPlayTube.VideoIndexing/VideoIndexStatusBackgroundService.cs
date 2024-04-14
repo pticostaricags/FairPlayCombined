@@ -124,6 +124,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                             var completedVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
                                 singleVideoEntity.VideoId, getviTokenResult.AccessToken!,
                                 stoppingToken);
+                            singleVideoEntity.PublishedUrl = completedVideoIndex!.videos![0].publishedUrl;
                             singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
                             InsertInsights(singleVideoEntity, completedVideoIndex);
                         }
