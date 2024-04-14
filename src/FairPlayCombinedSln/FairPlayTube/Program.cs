@@ -237,6 +237,7 @@ builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
 builder.Services.AddTransient<VideoPlanService>();
 builder.Services.AddTransient<PromptGeneratorService>();
 builder.Services.AddTransient<VideoWatchTimeService>();
+builder.Services.AddTransient<SupportedLanguageService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

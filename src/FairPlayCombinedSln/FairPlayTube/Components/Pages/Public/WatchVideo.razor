@@ -14,6 +14,7 @@
 @inject VideoWatchTimeService videoWatchTimeService
 @inject ILogger<WatchVideo> logger;
 @inject IUserProviderService userProviderService
+@inject SupportedLanguageService supportedLanguageService
 
 
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
@@ -81,9 +82,8 @@ else
             .GetVideoIndexAsync(this.VideoId!, viAccessTokenResponse!.AccessToken!,
             this.cancellationTokenSource.Token);
             this.VideoUrl = $"{videoIndex!.videos![0].publishedUrl}?accessToken={viAccessTokenResponse.AccessToken}";
-            this.SupportedLanguages = await azureVideoIndexerService
-            .GetSupportedLanguagesAsync(viAccessTokenResponse!.AccessToken!,
-            this.cancellationTokenSource.Token);
+            this.SupportedLanguages = await supportedLanguageService
+            .GetAllSupportedLanguageAsync(this.cancellationTokenSource.Token);
             StateHasChanged();
             await jsRuntime.InvokeVoidAsync("initializeVideoJsPlayer", "my_video_1", Guid.NewGuid().ToString(), this.dotNetObjectReference);
             this.IsBusy = false;

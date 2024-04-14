@@ -21,6 +21,31 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
             var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
             var azureVideoIndexerService =
                 scope.ServiceProvider.GetRequiredService<AzureVideoIndexerService>();
+            GetAccessTokenResponseModel? getviTokenResult = null;
+            if (!stoppingToken.IsCancellationRequested)
+            {
+                getviTokenResult = await AuthenticateAsync(azureVideoIndexerService, stoppingToken);
+                var viSupportedLanguages = await azureVideoIndexerService
+                    .GetSupportedLanguagesAsync(getviTokenResult!.AccessToken!, stoppingToken);
+                if (viSupportedLanguages != null && viSupportedLanguages?.Length > 0)
+                {
+                    foreach (var singleViSupportedLanguage in viSupportedLanguages!)
+                    {
+                        if (await dbContext.VideoIndexerSupportedLanguage
+                            .SingleOrDefaultAsync(p => p.LanguageCode == singleViSupportedLanguage.languageCode,
+                            stoppingToken) is null)
+                        {
+                            await dbContext.VideoIndexerSupportedLanguage.AddAsync(
+                                new VideoIndexerSupportedLanguage()
+                                {
+                                    LanguageCode = singleViSupportedLanguage.languageCode,
+                                    Name = singleViSupportedLanguage.name
+                                }, stoppingToken);
+                            await dbContext.SaveChangesAsync(stoppingToken);
+                        }
+                    }
+                }
+            }
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (logger.IsEnabled(LogLevel.Information))
@@ -31,7 +56,6 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     await GetAllVideosInProcessingStatusAsync(dbContext, stoppingToken);
                 if (allVideosInProcessingStatus.Length != 0)
                 {
-                    GetAccessTokenResponseModel? getviTokenResult = await AuthenticateAsync(azureVideoIndexerService, stoppingToken);
                     var videosIndex = await azureVideoIndexerService.SearchVideosByIdsAsync(
                         getviTokenResult!.AccessToken!, allVideosInProcessingStatus, stoppingToken);
                     LogVideoIndexStatus(logger, videosIndex);

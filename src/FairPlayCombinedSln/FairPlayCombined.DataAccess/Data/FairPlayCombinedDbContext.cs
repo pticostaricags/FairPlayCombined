@@ -124,6 +124,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<VideoIndexStatus> VideoIndexStatus { get; set; }
 
+    public virtual DbSet<VideoIndexerSupportedLanguage> VideoIndexerSupportedLanguage { get; set; }
+
     public virtual DbSet<VideoIndexingCost> VideoIndexingCost { get; set; }
 
     public virtual DbSet<VideoIndexingMargin> VideoIndexingMargin { get; set; }

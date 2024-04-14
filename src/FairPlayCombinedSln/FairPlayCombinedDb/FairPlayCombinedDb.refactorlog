@@ -147,4 +147,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="VideoWatchTimeId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="dd23fec8-eee8-4a9f-8772-7c9aca60ae9a" ChangeDateTime="04/14/2024 15:15:20">
+    <Property Name="ElementName" Value="[dbo].[VideoIndexerSupportedLanguage].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[VideoIndexerSupportedLanguage]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoIndexerSupportedLanguageId" />
+  </Operation>
 </Operations>
