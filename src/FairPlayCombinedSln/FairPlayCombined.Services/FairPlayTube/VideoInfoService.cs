@@ -112,6 +112,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                     VideoVisibilityId = p.VideoVisibilityId,
                     ThumbnailUrl = p.ThumbnailUrl,
                     YouTubeVideoId = p.YouTubeVideoId,
+                    LifetimeViewers = p.VideoWatchTime.Select(p=>p.WatchedByApplicationUserId).Distinct().Count(),
                     LifetimeSessions = p.VideoWatchTime.Count,
                     LifetimeWatchTime = TimeSpan.FromSeconds(p.VideoWatchTime.Sum(p=>p.WatchTime))
                 });

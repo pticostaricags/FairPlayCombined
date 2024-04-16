@@ -51,6 +51,10 @@
                     OnClick="@( ()=> OnCreateLinkedInArticleClicked(context))">
                 <i class="bi bi-file-richtext-fill"></i>
             </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="View My Video Viewers"
+                              OnClick="@( () => OnViewMyVideoViewersClicked(context))">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
+                </FluentButton>
             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
             {
                 <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
@@ -130,6 +134,11 @@
         }).OrderBy(p => p.label).ToArray());
         this.IsBusy = false;
         StateHasChanged();
+    }
+
+    private void OnViewMyVideoViewersClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideoViewers}/{videoInfoModel.VideoId}");
     }
 
     private void OnManageYouTubeCaptionsButtonClicked(VideoInfoModel videoInfoModel)

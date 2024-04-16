@@ -9,6 +9,7 @@
                 public static class CreatorRoutes
                 {
                     public const string MyVideos = $"/Creator/{nameof(MyVideos)}";
+                    public const string MyVideoViewers = $"/Creator/{nameof(MyVideoViewers)}";
                 }
             }
         }
