@@ -114,6 +114,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<UserMessage> UserMessage { get; set; }
 
+    public virtual DbSet<UserMessage1> UserMessage1 { get; set; }
+
     public virtual DbSet<UserProfile> UserProfile { get; set; }
 
     public virtual DbSet<VideoCaptions> VideoCaptions { get; set; }
@@ -403,6 +405,17 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.ToApplicationUser).WithMany(p => p.UserMessageToApplicationUser)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ToApplicationUserId_ApplicationUser");
+        });
+
+        modelBuilder.Entity<UserMessage1>(entity =>
+        {
+            entity.HasOne(d => d.FromApplicationUser).WithMany(p => p.UserMessage1FromApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FromApplicationUserId_AspNetUsers");
+
+            entity.HasOne(d => d.ToApplicationUser).WithMany(p => p.UserMessage1ToApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ToApplicationUserId_AspNetUsers");
         });
 
         modelBuilder.Entity<UserProfile>(entity =>

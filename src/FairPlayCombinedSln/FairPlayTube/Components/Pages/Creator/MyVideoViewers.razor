@@ -18,7 +18,26 @@
 
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
     <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-        <PropertyColumn Property="@( p=> p.Username)" Class="multiline-text"></PropertyColumn>
+        <TemplateColumn Class="multiline-text">
+            @if (String.IsNullOrWhiteSpace(context.Username))
+            {
+                <FluentLabel>Anonymous</FluentLabel>
+            }
+            else
+            {
+                <FluentLabel>@context.Username</FluentLabel>
+            }
+        </TemplateColumn>
+        <TemplateColumn Title="Actions">
+            @if (!String.IsNullOrWhiteSpace(context.Username))
+            {
+                <FluentAnchor data-enhance-nav="false"
+                              data-bs-toggle="tooltip" data-bs-placement="top" title="Send Email"
+                              Href="@($"mailto://{context.Username}")" Target="_blank">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.MailAdd())"></FluentIcon>
+                </FluentAnchor>
+            }
+        </TemplateColumn>
         <TemplateColumn Title="@nameof(VideoViewerModel.TotalTimeWatched)">
             @TimeSpan.FromSeconds(context.TotalTimeWatched)
         </TemplateColumn>
@@ -52,7 +71,7 @@
                 };
             var items = await videoViewerService
             .GetPaginatedVideoViewerInfoForUserIdAsync(paginationRequest,
-                videoId:this.VideoId!,
+                videoId: this.VideoId!,
                 userId: this.userProviderService!.GetCurrentUserId()!,
             this.cancellationTokenSource.Token);
             StateHasChanged();

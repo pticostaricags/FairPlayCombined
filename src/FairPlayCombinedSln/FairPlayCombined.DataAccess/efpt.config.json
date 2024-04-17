@@ -214,6 +214,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[UserMessage]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoCaptions]",
          "ObjectType": 0
       },

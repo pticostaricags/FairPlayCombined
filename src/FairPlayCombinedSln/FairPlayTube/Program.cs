@@ -239,6 +239,7 @@ builder.Services.AddTransient<PromptGeneratorService>();
 builder.Services.AddTransient<VideoWatchTimeService>();
 builder.Services.AddTransient<SupportedLanguageService>();
 builder.Services.AddTransient<VideoViewerService>();
+builder.Services.AddTransient<UserMessageService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
