@@ -18,8 +18,7 @@
 
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
     <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-        <PropertyColumn Property="@( p=> p.Username)"></PropertyColumn>
-        <PropertyColumn Property="@( p=> p.VideoName)"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.Username)" Class="multiline-text"></PropertyColumn>
         <TemplateColumn Title="@nameof(VideoViewerModel.TotalTimeWatched)">
             @TimeSpan.FromSeconds(context.TotalTimeWatched)
         </TemplateColumn>
