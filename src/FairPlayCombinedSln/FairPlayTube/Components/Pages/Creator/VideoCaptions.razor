@@ -1,21 +1,20 @@
 ﻿@page "/Creator/VideoCaptions/VideoInfo{VideoInfoId:long}/YouTube/{YouTubeVideoId}"
-@using Blazored.Toast.Services
+
 @using FairPlayCombined.Models.FairPlaySocial.VideoCaptions
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using Google.Apis.YouTube.v3
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using System.Text
 
 @rendermode RenderMode.InteractiveServer
 @attribute [Authorize]
-@attribute [StreamRendering(enabled:true)]
+@attribute [StreamRendering(enabled: true)]
 
 @inject VideoCaptionsService videoCaptionsService
 @inject YouTubeClientService youTubeClientService
 @inject IToastService toastService
 
-<h3>VideoCaptions</h3>
+<FluentLabel Typo="Typography.H3">VideoCaptions</FluentLabel>
 
 @if (!String.IsNullOrWhiteSpace(this.YouTubeVideoId))
 {
@@ -24,14 +23,15 @@
 
 @if (this.Items != null)
 {
-    <QuickGrid Items="this.Items!.AsQueryable()">
+    <FluentDataGrid Items="this.Items!.AsQueryable()">
         <PropertyColumn Property="@(p=>p.Language)"></PropertyColumn>
         <TemplateColumn>
-            <button type="button" class="@ThemeConfiguration.Buttons.PrimaryButtonCss"
-            @onclick="@( async () => await OnUploadToYouTubeButtonClickedAsync(context))"
-            >Upload To YouTube</button>
+            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                          OnClick="@( async () => await OnUploadToYouTubeButtonClickedAsync(context))">
+                Upload To YouTube
+            </FluentButton>
         </TemplateColumn>
-    </QuickGrid>
+    </FluentDataGrid>
 }
 
 @code {

@@ -105,6 +105,12 @@ public partial class AspNetUsers
     public virtual ICollection<UserActivity> UserActivity { get; set; } = new List<UserActivity>();
 
     [InverseProperty("FromApplicationUser")]
+    public virtual ICollection<UserMessage1> UserMessage1FromApplicationUser { get; set; } = new List<UserMessage1>();
+
+    [InverseProperty("ToApplicationUser")]
+    public virtual ICollection<UserMessage1> UserMessage1ToApplicationUser { get; set; } = new List<UserMessage1>();
+
+    [InverseProperty("FromApplicationUser")]
     public virtual ICollection<UserMessage> UserMessageFromApplicationUser { get; set; } = new List<UserMessage>();
 
     [InverseProperty("ToApplicationUser")]
@@ -115,6 +121,12 @@ public partial class AspNetUsers
 
     [InverseProperty("ApplicationUser")]
     public virtual ICollection<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
+
+    [InverseProperty("ApplicationUser")]
+    public virtual ICollection<VideoPlan> VideoPlan { get; set; } = new List<VideoPlan>();
+
+    [InverseProperty("WatchedByApplicationUser")]
+    public virtual ICollection<VideoWatchTime> VideoWatchTime { get; set; } = new List<VideoWatchTime>();
 
     [ForeignKey("UserId")]
     [InverseProperty("User")]

@@ -1,0 +1,103 @@
+﻿@page "/OpenAIPrompts"
+@implements IDisposable
+
+@using FairPlayAdminPortal.Components.Spinners
+@using FairPlayAdminPortal.Data
+@using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models
+@using FairPlayCombined.Models.OpenAIPrompt
+@using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.Common
+@using Microsoft.AspNetCore.Identity
+@using FairPlayCombined.Common.GeneratorsAttributes
+@inject OpenAIPromptService openAIPromptService
+@inject IServiceScopeFactory serviceScopeFactory
+@rendermode NoPreRender
+@attribute [StreamRendering(enabled: true)]
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<FluentLabel Typo="Typography.H3">
+    OpenAIPrompts
+</FluentLabel>
+
+@if (this.RetrievalDuration != null)
+{
+    <p>
+        <FluentLabel Typo="Typography.Body">
+            Retrieval Duration: @this.RetrievalDuration
+        </FluentLabel>
+    </p>
+}
+<FluentHorizontalScroll Easing="ScrollEasing.EaseInOut">
+    <FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
+        <PropertyColumn Property="@(p=>p.OpenAipromptId)" 
+            style="width:200px;"
+            IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Descending"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.RevisedPrompt)"
+                        style="width:200px;"
+            Sortable="true" Class="multiline-text"></PropertyColumn>
+        <TemplateColumn style="width:500px;">
+            @if (context.GeneratedImageBytes != null)
+            {
+                <img width="400" src="@($"data:image/png;base64, {Convert.ToBase64String(context.GeneratedImageBytes)}")" />
+            }
+        </TemplateColumn>
+    </FluentDataGrid>
+</FluentHorizontalScroll>
+
+<FluentPaginator State="@pagination">
+</FluentPaginator>
+
+@code {
+    private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private GridItemsProvider<OpenAIPromptModel>? ItemsProvider;
+    private readonly PaginationState pagination = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
+    private TimeSpan? RetrievalDuration;
+    private bool IsBusy { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ItemsProvider ??= async req =>
+            {
+                this.IsBusy = true;
+                StateHasChanged();
+                PaginationRequest paginationRequest = new PaginationRequest()
+                    {
+                        PageSize=pagination.ItemsPerPage,
+                        StartIndex = req.StartIndex,
+                        SortingItems = req.GetSortByProperties()
+                                            .Select(p => new SortingItem()
+                                            {
+                                                PropertyName = p.PropertyName,
+                                                SortType = (p.Direction == SortDirection.Ascending) ?
+                                                SortType.Ascending
+                                                :
+                                                SortType.Descending
+                                            }).ToArray()
+                    };
+                System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                var paginationResult = await this.openAIPromptService!.GetPaginatedOpenAipromptAsync(
+                    paginationRequest, this.cancellationTokenSource.Token);
+                stopwatch.Stop();
+                this.RetrievalDuration = stopwatch.Elapsed;
+                var result = GridItemsProviderResult.From(
+                items: paginationResult.Items!,
+                totalItemCount: paginationResult!.TotalItems);
+                this.IsBusy = false;
+                StateHasChanged();
+                return result;
+            };
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
+    }
+
+}

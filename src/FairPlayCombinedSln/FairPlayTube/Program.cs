@@ -1,10 +1,11 @@
-using Blazored.Toast;
 using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Models.GoogleAuth;
+using FairPlayCombined.Models.GoogleGemini;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayTube;
@@ -19,10 +20,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddFluentUIComponents();
 
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
@@ -37,15 +40,43 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-var googleAuthClientId = Environment.GetEnvironmentVariable("GoogleAuthClientId") ??
-    throw new InvalidOperationException("'GoogleAuthClientId' not found");
-var googleAuthClientSecret = Environment.GetEnvironmentVariable("GoogleAuthClientSecret") ??
-    throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
-var googleAuthClientSecretsFilePath = Environment.GetEnvironmentVariable("GoogleAuthClientSecretsFilePath") ??
-    throw new InvalidOperationException("'GoogleAuthClientSecretsFilePath' not found");
+var googleAuthClientId = builder.Configuration["GoogleAuthClientId"] ??
+        throw new InvalidOperationException("'GoogleAuthClientId' not found");
+
+var googleAuthProjectId = builder.Configuration["GoogleAuthProjectId"] ??
+        throw new InvalidOperationException("'GoogleAuthProjectId' not found");
+
+var googleAuthUri = builder.Configuration["GoogleAuthUri"] ??
+        throw new InvalidOperationException("'GoogleAuthUri' not found");
+
+var googleAuthTokenUri = builder.Configuration["GoogleAuthTokenUri"] ??
+        throw new InvalidOperationException("'GoogleAuthTokenUri' not found");
+
+var googleAuthProviderCertUri = builder.Configuration["GoogleAuthProviderCertUri"] ??
+        throw new InvalidOperationException("'GoogleAuthProviderCertUri' not found");
+
+var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??
+        throw new InvalidOperationException("'GoogleAuthClientSecret' not found");
+
+var googleAuthRedirectUri = builder.Configuration["GoogleAuthRedirectUri"] ??
+        throw new InvalidOperationException("'GoogleAuthRedirectUri' not found");
+
+GoogleAuthClientSecretInfo googleAuthClientSecretInfo = new()
+{
+    installed = new Installed()
+    {
+        auth_provider_x509_cert_url = googleAuthProviderCertUri,
+        auth_uri = googleAuthUri,
+        client_id = googleAuthClientId,
+        client_secret = googleAuthClientSecret,
+        project_id = googleAuthProjectId,
+        redirect_uris = [googleAuthRedirectUri],
+        token_uri = googleAuthTokenUri
+    }
+};
 builder.Services.AddSingleton<YouTubeClientServiceConfiguration>(new YouTubeClientServiceConfiguration()
 {
-    ClientSecretsFilePath = googleAuthClientSecretsFilePath
+    GoogleAuthClientSecretInfo = googleAuthClientSecretInfo
 });
 
 builder.Services.AddAuthentication(configureOptions =>
@@ -55,8 +86,8 @@ builder.Services.AddAuthentication(configureOptions =>
 })
     .AddGoogle(options =>
     {
-        options.ClientId = googleAuthClientId;
-        options.ClientSecret = googleAuthClientSecret;
+        options.ClientId = googleAuthClientSecretInfo.installed!.client_id!;
+        options.ClientSecret = googleAuthClientSecretInfo.installed.client_secret!;
         options.Scope.Add(YouTubeService.Scope.YoutubeUpload);
         options.Scope.Add(YouTubeService.Scope.YoutubeForceSsl);
         options.Scope.Add(YouTubeService.Scope.Youtubepartner);
@@ -133,13 +164,34 @@ builder.Services.AddTransient<OpenAIService>(sp =>
     dbContextFactory: dbContextFactory);
 });
 
+builder.Services.AddSingleton<GoogleGeminiConfiguration>(sp =>
+{
+    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
+    sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
+    var dbContext = dbContextFactory.CreateDbContext();
+    var googleGeminiKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.GOOGLE_GEMINI_KEY_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.GOOGLE_GEMINI_KEY_KEY} in database");
+    return new GoogleGeminiConfiguration()
+    {
+        Key = googleGeminiKeyEntity.Value
+    };
+});
+
+builder.Services.AddTransient<GoogleGeminiService>(sp => 
+{
+    GoogleGeminiConfiguration googleGeminiConfiguration = sp.GetRequiredService<GoogleGeminiConfiguration>();
+    HttpClient httpClient = new()
+    {
+        Timeout = TimeSpan.FromMinutes(3)
+    };
+    return new GoogleGeminiService(googleGeminiConfiguration, httpClient);
+});
+
 builder.Services.AddSignalR(hubOptions =>
 {
     hubOptions.MaximumReceiveMessageSize = 20 * 1024 * 1024;
 });
 
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
-builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp =>
@@ -154,7 +206,7 @@ builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp =>
     var azureVideoIndexerResourceNameEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
     Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY} in database");
     var azureVideoIndexerSubscriptionIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY} in database");
+    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY} in database");
     AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = new()
     {
         AccountId = azureVideoIndexerAccountIdEntity.Value,
@@ -175,13 +227,19 @@ builder.Services.AddTransient(sp =>
 builder.Services.AddTransient<VideoInfoService>();
 builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
 {
-    ClientId = googleAuthClientId,
-    ClientSecret = googleAuthClientSecret
+    ClientId = googleAuthClientSecretInfo.installed!.client_id,
+    ClientSecret = googleAuthClientSecretInfo.installed.client_secret
 });
 builder.Services.AddTransient<YouTubeClientService>();
 builder.Services.AddTransient<VideoCaptionsService>();
 builder.Services.AddTransient<VideoDigitalMarketingPlanService>();
 builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
+builder.Services.AddTransient<VideoPlanService>();
+builder.Services.AddTransient<PromptGeneratorService>();
+builder.Services.AddTransient<VideoWatchTimeService>();
+builder.Services.AddTransient<SupportedLanguageService>();
+builder.Services.AddTransient<VideoViewerService>();
+builder.Services.AddTransient<UserMessageService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -227,6 +285,19 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
 
+app.MapGet("/api/video/{videoId}/thumbnail",
+    async (
+        [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        [FromRoute] string videoId,
+        CancellationToken cancellationToken) =>
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await dbContext.VideoInfo
+        .Include(p => p.VideoThumbnailPhoto)
+        .Where(p => p.VideoId == videoId)
+        .SingleOrDefaultAsync(cancellationToken);
+        return TypedResults.File(result!.VideoThumbnailPhoto.PhotoBytes, System.Net.Mime.MediaTypeNames.Image.Jpeg);
+    });
 app.MapGet("/api/video/{videoId}/captions/{language}",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,

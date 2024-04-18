@@ -1,7 +1,6 @@
 ﻿@page "/Creator/UploadMyVideo"
 @implements IDisposable
 
-@using Blazored.Toast.Services
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.FairPlayTube.Enums
 @using FairPlayCombined.Interfaces
@@ -12,49 +11,55 @@
 @using Google.Apis.YouTube.v3.Data
 @attribute [Authorize]
 @rendermode RenderMode.InteractiveServer
-<h3>UploadMyVideo</h3>
+
 @inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject VideoInfoService videoInfoService
 @inject IToastService toastService
 @inject IUserProviderService userProviderService
 @inject YouTubeClientService youTubeClientService
+@inject ILogger<UploadMyVideo> logger
+@inject NavigationManager navigationManager
 
+<FluentLabel Typo="Typography.H3">
+    UploadMyVideo
+</FluentLabel>
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<EditForm FormName="frmCreateVideoInfo" Model="this.createVideoInfoModel"
-          OnValidSubmit="OnValidSubmitAsync" @ref="frmCreateVideoInfo">
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
+<FluentEditForm FormName="frmCreateVideoInfo" Model="this.createVideoInfoModel"
+                OnValidSubmit="OnValidSubmitAsync" @ref="frmCreateVideoInfo">
+    <div>
         <DataAnnotationsValidator></DataAnnotationsValidator>
-        <ValidationSummary></ValidationSummary>
+        <FluentValidationSummary></FluentValidationSummary>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <label class="@ThemeConfiguration.Labels.DefaultCss">Description</label>
-        <InputTextArea class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.Description"></InputTextArea>
+    <div>
+        <FluentLabel Typo="Typography.Body">Description</FluentLabel>
+        <FluentTextArea @bind-Value="this.createVideoInfoModel.Description" style="width:100%;"></FluentTextArea>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <label class="@ThemeConfiguration.Labels.DefaultCss">Name</label>
-        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.Name"></InputText>
+    <div>
+        <FluentLabel Typo="Typography.Body">Name</FluentLabel>
+        <FluentTextField @bind-Value="this.createVideoInfoModel.Name" style="width:100%;"></FluentTextField>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <label class="@ThemeConfiguration.Labels.DefaultCss">Video Url</label>
-        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl"></InputText>
-        <button class="@ThemeConfiguration.Buttons.SecondaryButtonCss" type="button" @onclick="OnProcessFileButtonClickedAsync">Process File</button>
-        <button class="@ThemeConfiguration.Buttons.SecondaryButtonCss" type="button" @onclick="UploadToYouTubeAsync">Upload To YouTube</button>
-        <label class="@ThemeConfiguration.Labels.DefaultCss">Bytes Sent: @bytesSent</label>
+    <div>
+        <FluentLabel Typo="Typography.Body">Video Url</FluentLabel>
+        <FluentTextField @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl" style="width:100%;"></FluentTextField>
+        <FluentButton Type="ButtonType.Button" OnClick="OnProcessFileButtonClickedAsync">Process File</FluentButton>
+        <FluentButton Type="ButtonType.Button" OnClick="UploadToYouTubeAsync">Upload To YouTube</FluentButton>
+        <FluentLabel Typo="Typography.Body">Bytes Sent: @bytesSent</FluentLabel>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <label class="@ThemeConfiguration.Divisions.DefaultCss">Video Id (Azure Video Indexer)</label>
-        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.VideoId"></InputText>
+    <div>
+        <FluentLabel Typo="Typography.Body">Video Id (Azure Video Indexer)</FluentLabel>
+        <FluentTextField @bind-Value="this.createVideoInfoModel.VideoId" style="width:100%;"></FluentTextField>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <label class="@ThemeConfiguration.Labels.DefaultCss">Video Id (YouTube)</label>
-        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss" @bind-Value="this.createVideoInfoModel.YouTubeVideoId"></InputText>
+    <div>
+        <FluentLabel Typo="Typography.Subject">Video Id (YouTube)</FluentLabel>
+        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss"
+                   @bind-Value="this.createVideoInfoModel.YouTubeVideoId" style="width:100%;"></InputText>
     </div>
-    <div class="@ThemeConfiguration.Divisions.DefaultCss">
-        <button class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Save</button>
+    <div>
+        <FluentButton Type="ButtonType.Submit">Save</FluentButton>
     </div>
-</EditForm>
+</FluentEditForm>
 
 @code {
     [SupplyParameterFromForm]
@@ -78,6 +83,7 @@
     {
         try
         {
+            logger.LogInformation(message: "Processing video from url: {url}", this.createVideoInfoModel.ExternalVideoSourceUrl);
             this.IsBusy = true;
             StateHasChanged();
             this.frmCreateVideoInfo!.EditContext!.Validate();
@@ -106,9 +112,11 @@
             this.createVideoInfoModel.VideoId = indexVideoResult!.id;
             this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
             this.frmCreateVideoInfo.EditContext.Validate();
+            this.toastService.ShowInfo("Your has been sent to be processed.");
         }
         catch (Exception ex)
         {
+            logger.LogError(exception: ex, message: "Failed to process video. {message}", ex.Message);
             this.toastService.ShowError(ex.Message);
         }
         this.IsBusy = false;
@@ -169,10 +177,12 @@
             this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
             await this.videoInfoService.CreateVideoInfoAsync(this.createVideoInfoModel,
             this.cancellationTokenSource.Token);
-            this.toastService.ShowSuccess("Your video has been save. You'll be notified when indexing is ready");
+            this.toastService.ShowSuccess("Your video has been saved. You'll be notified when indexing is ready. It will take a while for your video to become visible.");
+            this.navigationManager.NavigateTo("/");
         }
         catch (Exception ex)
         {
+            logger.LogError(exception:ex, message:"Error: {errorMessage}", ex.Message);
             this.toastService.ShowError(ex.Message);
         }
         this.IsBusy = false;

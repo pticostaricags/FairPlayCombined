@@ -25,8 +25,8 @@
     <link rel="stylesheet" href="custom.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="//amp.azure.net/libs/amp/2.1.5/skins/amp-default/azuremediaplayer.min.css">
-    <script src="//amp.azure.net/libs/amp/2.1.5/azuremediaplayer.min.js"></script>
+    <link rel="stylesheet" href="//amp.azure.net/libs/amp/2.3.11/skins/amp-default/azuremediaplayer.min.css">
+    <script src="//amp.azure.net/libs/amp/2.3.11/azuremediaplayer.min.js"></script>
 
     <script src="scripts/azure-media-player.js"></script>
 
@@ -34,12 +34,21 @@
     <script src="@payPalScriptSrc" data-sdk-integration-source="button-factory"></script>
     <script src="scripts/paypal/paypal.js"></script>
     <!--Paypal-->
+    <script src="_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js" type="module" async></script>
+    <link href="_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css" rel="stylesheet" />
+
+    <!--VideoJS-->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+
+
     <HeadOutlet />
 </head>
 
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script src="scripts/videojs.js"></script>
 </body>
 
 </html>

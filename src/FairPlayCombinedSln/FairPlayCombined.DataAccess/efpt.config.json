@@ -71,6 +71,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Prompt]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PromptVariable]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Resource]",
          "ObjectType": 0
       },
@@ -206,6 +214,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[UserMessage]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoCaptions]",
          "ObjectType": 0
       },
@@ -215,6 +227,10 @@
       },
       {
          "Name": "[FairPlayTube].[VideoDigitalMarketingPlan]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoIndexerSupportedLanguage]",
          "ObjectType": 0
       },
       {
@@ -254,6 +270,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoPlan]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoPlanThumbnail]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoTopic]",
          "ObjectType": 0
       },
@@ -262,11 +286,15 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoWatchTime]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayBudget].[vwBalance]",
          "ObjectType": 3
       }
    ],
-   "UiHint": "..\\FairPlayCombinedDb\\FairPlayCombinedDb.sqlproj",
+   "UiHint": null,
    "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,

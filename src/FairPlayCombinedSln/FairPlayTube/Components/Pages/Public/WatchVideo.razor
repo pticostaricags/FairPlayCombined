@@ -1,32 +1,53 @@
 ﻿@page "/Public/WatchVideo/{VideoId}"
 @implements IAsyncDisposable
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.AzureVideoIndexer
 @using FairPlayCombined.Services.Common
+@using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
 
 @rendermode NoPreRender
 
-@inject AzureVideoIndexerService azureVideoIndexerService
 @inject IJSRuntime jsRuntime
+@inject VideoWatchTimeService videoWatchTimeService
+@inject ILogger<WatchVideo> logger;
+@inject IUserProviderService userProviderService
+@inject SupportedLanguageService supportedLanguageService
+@inject VideoInfoService videoInfoService
+@inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
 
-
-<h3>WatchVideo</h3>
+<FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-
-<div id="container" data-permanent>
-    <video id="video"
-           class="azuremediaplayer amp-default-skin amp-stream-skin"
-           autoplay
-           controls
-           width="200"
-           height="200">
-        <p class="amp-no-js">
-            To view this video please enable JavaScript, and consider upgrading to
-            a web browser that supports HTML5 video
-        </p>
-    </video>
-    <div class="inline"></div>
-</div>
+@if (!this.UseFallbackMode && !String.IsNullOrWhiteSpace(this.VideoUrl))
+{
+    <div id="container" data-permanent>
+        <!-- HTML -->
+        <video id="my_video_1" class="video-js vjs-default-skin" controls preload="auto" width="640" height="268"
+               data-setup='{}'>
+            <source src="@this.VideoUrl" type="application/x-mpegURL">
+            @if (this.SupportedLanguages?.Length > 0)
+            {
+                foreach (var singleSupportedLanguage in this.SupportedLanguages)
+                {
+                    <track kind="captions" src="@($"/api/video/{this.VideoId}/captions/{singleSupportedLanguage.languageCode}")"
+                           srclang="@singleSupportedLanguage.languageCode" label="@singleSupportedLanguage.name" />
+                }
+            }
+        </video>
+    </div>
+    <div>
+        <FluentButton Type="ButtonType.Button"
+                      Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
+                      OnClick="OnUseFallbackMode">Can't see the video? Click here!</FluentButton>
+    </div>
+}
+else
+{
+    <div>
+        <iframe src="@this.FallbackModeUrl" width="600" allowfullscreen></iframe>
+    </div>
+}
 
 @code {
     [Parameter]
@@ -34,6 +55,16 @@
     private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
     private CancellationTokenSource cancellationTokenSource = new();
+    private bool UseFallbackMode { get; set; }
+    private string? FallbackModeUrl { get; set; }
+    private string? VideoUrl { get; set; }
+    private SupportedLanguageModel[]? SupportedLanguages { get; set; }
+    private DotNetObjectReference<WatchVideo>? dotNetObjectReference;
+    private bool IsSessionCreated { get; set; } = false;
+    protected override void OnInitialized()
+    {
+        this.dotNetObjectReference = DotNetObjectReference.Create<WatchVideo>(this);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -41,33 +72,62 @@
         {
             this.IsBusy = true;
             StateHasChanged();
-            var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
-            var viAccessTokenResponse = await azureVideoIndexerService
-            .GetAccessTokenForArmAccountAsync(armAccessToken, this.cancellationTokenSource.Token);
-            var videoIndex = await azureVideoIndexerService
-            .GetVideoIndexAsync(this.VideoId!, viAccessTokenResponse!.AccessToken!,
-            this.cancellationTokenSource.Token);
-            var supportedLanguages = await azureVideoIndexerService
-            .GetSupportedLanguagesAsync(viAccessTokenResponse!.AccessToken!,
-            this.cancellationTokenSource.Token);
-            var singleVideoIndex = videoIndex!.videos!.Single();
-            await jsRuntime.InvokeVoidAsync(
-                identifier: "initSource", 
-                cancellationToken:this.cancellationTokenSource.Token,
-            "video",
-            singleVideoIndex.publishedUrl,
-            singleVideoIndex.viewToken,
-            this.VideoId,
-            supportedLanguages!.Select(p => new
-            {
-                src = $"/api/video/{this.VideoId}/captions/{p.languageCode}",
-                srclang = p.languageCode,
-                kind = "subtitles",
-                label = p.name
-            }).OrderBy(p => p.label).ToArray());
+            var videoInfo = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
+                this.VideoId!,
+                this.cancellationTokenSource.Token
+            );
+            this.VideoUrl = videoInfo!.PublishedUrl;
+            this.SupportedLanguages = await supportedLanguageService
+            .GetAllSupportedLanguageAsync(this.cancellationTokenSource.Token);
+            StateHasChanged();
+            await jsRuntime.InvokeVoidAsync("initializeVideoJsPlayer", "my_video_1", Guid.NewGuid().ToString(), this.dotNetObjectReference);
             this.IsBusy = false;
             StateHasChanged();
         }
+    }
+
+    [JSInvokable]
+    public async void UpdateWatchTime(double watchTime, string currentSessionGuid)
+    {
+        try
+        {
+            var currentUserId = this.userProviderService.GetCurrentUserId();
+            System.Diagnostics.Debug.WriteLine($"Watch Time (s): {watchTime}. Session: {currentSessionGuid}");
+            if (!IsSessionCreated)
+            {
+                await this.videoWatchTimeService.CreateVideoWatchTimeAsync(
+                    this.VideoId!,
+                    new FairPlayCombined.Models.FairPlayTube.VideoWatchTime.VideoWatchTimeModel()
+                    {
+                        WatchedByApplicationUserId = currentUserId,
+                        SessionId = Guid.Parse(currentSessionGuid),
+                        WatchTime = watchTime
+                    }, cancellationToken: cancellationTokenSource.Token);
+                this.IsSessionCreated = true;
+            }
+            else
+            {
+                await this.videoWatchTimeService.UpdateVideoWatchTimeAsync(
+                    this.VideoId!,
+                    new FairPlayCombined.Models.FairPlayTube.VideoWatchTime.VideoWatchTimeModel()
+                        {
+                            WatchedByApplicationUserId = currentUserId,
+                            SessionId = Guid.Parse(currentSessionGuid),
+                            WatchTime = watchTime
+                        }, cancellationToken: cancellationTokenSource.Token);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(exception: ex, "Error: {message}", ex.Message);
+        }
+    }
+
+    private void OnUseFallbackMode()
+    {
+        this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.azureVideoIndexerServiceConfiguration.AccountId}/{this.VideoId}/?locale=en&location={azureVideoIndexerServiceConfiguration.Location}";
+        this.UseFallbackMode = true;
+        StateHasChanged();
     }
 
     public ValueTask DisposeAsync()

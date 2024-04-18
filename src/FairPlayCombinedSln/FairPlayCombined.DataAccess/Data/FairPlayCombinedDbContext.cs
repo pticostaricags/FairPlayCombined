@@ -86,6 +86,10 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<ProductStatus> ProductStatus { get; set; }
 
+    public virtual DbSet<Prompt> Prompt { get; set; }
+
+    public virtual DbSet<PromptVariable> PromptVariable { get; set; }
+
     public virtual DbSet<Religion> Religion { get; set; }
 
     public virtual DbSet<Resource> Resource { get; set; }
@@ -110,6 +114,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<UserMessage> UserMessage { get; set; }
 
+    public virtual DbSet<UserMessage1> UserMessage1 { get; set; }
+
     public virtual DbSet<UserProfile> UserProfile { get; set; }
 
     public virtual DbSet<VideoCaptions> VideoCaptions { get; set; }
@@ -119,6 +125,8 @@ public partial class FairPlayCombinedDbContext : DbContext
     public virtual DbSet<VideoDigitalMarketingPlan> VideoDigitalMarketingPlan { get; set; }
 
     public virtual DbSet<VideoIndexStatus> VideoIndexStatus { get; set; }
+
+    public virtual DbSet<VideoIndexerSupportedLanguage> VideoIndexerSupportedLanguage { get; set; }
 
     public virtual DbSet<VideoIndexingCost> VideoIndexingCost { get; set; }
 
@@ -136,9 +144,15 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<VideoKeyword> VideoKeyword { get; set; }
 
+    public virtual DbSet<VideoPlan> VideoPlan { get; set; }
+
+    public virtual DbSet<VideoPlanThumbnail> VideoPlanThumbnail { get; set; }
+
     public virtual DbSet<VideoTopic> VideoTopic { get; set; }
 
     public virtual DbSet<VideoVisibility> VideoVisibility { get; set; }
+
+    public virtual DbSet<VideoWatchTime> VideoWatchTime { get; set; }
 
     public virtual DbSet<VwBalance> VwBalance { get; set; }
 
@@ -309,6 +323,13 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_Product_Photo");
         });
 
+        modelBuilder.Entity<PromptVariable>(entity =>
+        {
+            entity.HasOne(d => d.Prompt).WithMany(p => p.PromptVariable)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PromptVariable_Prompt");
+        });
+
         modelBuilder.Entity<Resource>(entity =>
         {
             entity.HasOne(d => d.Culture).WithMany(p => p.Resource)
@@ -384,6 +405,17 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.ToApplicationUser).WithMany(p => p.UserMessageToApplicationUser)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ToApplicationUserId_ApplicationUser");
+        });
+
+        modelBuilder.Entity<UserMessage1>(entity =>
+        {
+            entity.HasOne(d => d.FromApplicationUser).WithMany(p => p.UserMessage1FromApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FromApplicationUserId_AspNetUsers");
+
+            entity.HasOne(d => d.ToApplicationUser).WithMany(p => p.UserMessage1ToApplicationUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ToApplicationUserId_AspNetUsers");
         });
 
         modelBuilder.Entity<UserProfile>(entity =>
@@ -480,10 +512,15 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<VideoInfo>(entity =>
         {
+            entity.HasIndex(e => e.YouTubeVideoId, "UI_VideoInfo_YouTubeVideoId")
+                .IsUnique()
+                .HasFilter("YouTubeVideoId IS NOT NULL");
+
             entity.Property(e => e.ApplicationUserId).HasComment("Video Owner Id");
             entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
             entity.Property(e => e.RowCreationUser).HasDefaultValueSql("'Unknown'");
             entity.Property(e => e.SourceApplication).HasDefaultValueSql("'Unknown'");
+            entity.Property(e => e.VideoIndexingProcessingPercentage).HasDefaultValueSql("0");
             entity.Property(e => e.VideoVisibilityId).HasDefaultValueSql("1");
 
             entity.HasOne(d => d.ApplicationUser).WithMany(p => p.VideoInfo)
@@ -493,6 +530,8 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.VideoIndexStatus).WithMany(p => p.VideoInfo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoInfo_VideoIndexStatus");
+
+            entity.HasOne(d => d.VideoThumbnailPhoto).WithMany(p => p.VideoInfo).HasConstraintName("FK_VideoInfo_Photo_Thumbnail");
 
             entity.HasOne(d => d.VideoVisibility).WithMany(p => p.VideoInfo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -528,6 +567,20 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_VideoKeyword_VideoInfo");
         });
 
+        modelBuilder.Entity<VideoPlan>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.VideoPlan)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoPlan_ApplicationUser");
+        });
+
+        modelBuilder.Entity<VideoPlanThumbnail>(entity =>
+        {
+            entity.HasOne(d => d.VideoPlan).WithMany(p => p.VideoPlanThumbnail)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoPlanThumbnail_VideoPlan");
+        });
+
         modelBuilder.Entity<VideoTopic>(entity =>
         {
             entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoTopic)
@@ -538,6 +591,15 @@ public partial class FairPlayCombinedDbContext : DbContext
         modelBuilder.Entity<VideoVisibility>(entity =>
         {
             entity.Property(e => e.VideoVisibilityId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<VideoWatchTime>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoWatchTime)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoWatchTime_VideoInfo");
+
+            entity.HasOne(d => d.WatchedByApplicationUser).WithMany(p => p.VideoWatchTime).HasConstraintName("FK_VideoWatchTime_AspNetUsers");
         });
 
         modelBuilder.Entity<VwBalance>(entity =>

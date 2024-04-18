@@ -23,5 +23,12 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
         public int VideoVisibilityId { get; set; }
         public string? ThumbnailUrl { get; set; }
         public string? YouTubeVideoId { get; set; }
+        public string[]? VideoKeywords { get; set; }
+        public string[]? VideoTopics { get; set; }
+        public string? EnglishCaptions { get; set; }
+        public int LifetimeSessions { get; set; }
+        public int LifetimeViewers { get; set; }
+        public TimeSpan LifetimeWatchTime { get; set; }
+        public string? PublishedUrl { get; set; }
     }
 }

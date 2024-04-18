@@ -25,8 +25,12 @@
     CONSTRAINT [FK_VideoInfo_ApplicationUser] FOREIGN KEY ([ApplicationUserId]) REFERENCES [dbo].[AspNetUsers]([Id]), 
     [YouTubeVideoId] NVARCHAR(11) NULL, 
     [VideoIndexJSON] NVARCHAR(MAX) NULL, 
+    [VideoThumbnailPhotoId] BIGINT NULL, 
+    [VideoIndexingProcessingPercentage] INT NULL DEFAULT 0, 
+    [PublishedUrl] NVARCHAR(1000) NULL, 
     CONSTRAINT [FK_VideoInfo_VideoIndexStatus] FOREIGN KEY ([VideoIndexStatusId]) REFERENCES [FairPlayTube].[VideoIndexStatus]([VideoIndexStatusId]), 
-    CONSTRAINT [FK_VideoInfo_VideoVisibility] FOREIGN KEY ([VideoVisibilityId]) REFERENCES [FairPlayTube].[VideoVisibility]([VideoVisibilityId])
+    CONSTRAINT [FK_VideoInfo_VideoVisibility] FOREIGN KEY ([VideoVisibilityId]) REFERENCES [FairPlayTube].[VideoVisibility]([VideoVisibilityId]), 
+    CONSTRAINT [FK_VideoInfo_Photo_Thumbnail] FOREIGN KEY ([VideoThumbnailPhotoId]) REFERENCES [dbo].[Photo]([PhotoId])
 )
 
 GO
@@ -44,4 +48,4 @@ CREATE UNIQUE INDEX [UI_VideoInfo_VideoId] ON [FairPlayTube].[VideoInfo] ([Video
 
 GO
 
-CREATE UNIQUE INDEX [UI_VideoInfo_YouTubeVideoId] ON [FairPlayTube].[VideoInfo] ([YouTubeVideoId])
+CREATE UNIQUE INDEX [UI_VideoInfo_YouTubeVideoId] ON [FairPlayTube].[VideoInfo] ([YouTubeVideoId]) WHERE YouTubeVideoId IS NOT NULL

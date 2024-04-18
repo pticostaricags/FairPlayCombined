@@ -110,7 +110,8 @@ namespace FairPlayCombined.Services.Common
                 $"&language={indexVideoFromUriParameters.Language}" +
                 $"&videoUrl={HttpUtility.UrlEncode(indexVideoFromUriParameters.VideoUri!.ToString())}" +
                 $"&fileName={HttpUtility.UrlEncode(indexVideoFromUriParameters.FileName)}" +
-                $"&indexingPreset={indexVideoFromUriParameters.IndexingPreset}";
+                $"&indexingPreset={indexVideoFromUriParameters.IndexingPreset}" +
+                $"&Privacy=Public";
                 requestUrl +=
                 $"&sendSuccessEmail={true}";
                 httpClient.DefaultRequestHeaders.Authorization =
@@ -211,13 +212,80 @@ namespace FairPlayCombined.Services.Common
             string requestUrl = $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +
                 $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
                 $"/Videos/{videoId}" +
-                $"/Index";
+                $"/Index?" +
+                $"includeStreamingUrls=true";
             try
             {
                 httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
                 var result = await httpClient.GetFromJsonAsync<GetVideoIndexResponseModel>(requestUrl, cancellationToken: cancellationToken);
                 return result;
+            }
+            catch (Exception ex)
+            {
+                throw new AzureVideoIndexerException(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Gets the streaming url for the specified video
+        /// </summary>
+        /// <param name="videoId"></param>
+        /// <param name="language"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<string> GetVideoStreamingUrlAsync(string videoId,string viAccessToken,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+
+                string requestUrl = $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +
+                    $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
+                    $"/Videos/{videoId}" +
+                    $"/streaming-url";
+                try
+                {
+                    httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
+                    var result = await httpClient.GetStringAsync(requestUrl, cancellationToken: cancellationToken);
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    throw new AzureVideoIndexerException(ex.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Gets the thumnail for the specified video
+        /// </summary>
+        /// <param name="videoId"></param>
+        /// <param name="thumbnailId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<byte[]?> GetVideoThumbnailAsync(string videoId, string thumbnailId, 
+            string viAccessToken,
+            CancellationToken cancellationToken = default)
+        {
+            string format = "Jpeg"; // Jpeg or Base64
+            string requestUrl = $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +
+                $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
+                $"/Videos/{videoId}" +
+                $"/Thumbnails/{thumbnailId}" +
+                $"?format={format}";
+            try
+            {
+                httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
+                var imageBytes = await httpClient.GetByteArrayAsync(requestUrl, cancellationToken: cancellationToken);
+                return imageBytes;
             }
             catch (Exception ex)
             {

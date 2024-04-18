@@ -17,7 +17,6 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 [Table("VideoInfo", Schema = "FairPlayTube")]
 [Index("VideoId", Name = "UI_VideoInfo_VideoId", IsUnique = true)]
-[Index("YouTubeVideoId", Name = "UI_VideoInfo_YouTubeVideoId", IsUnique = true)]
 public partial class VideoInfo
 {
     [Key]
@@ -98,6 +97,13 @@ public partial class VideoInfo
     [Column("VideoIndexJSON")]
     public string VideoIndexJson { get; set; }
 
+    public long? VideoThumbnailPhotoId { get; set; }
+
+    public int? VideoIndexingProcessingPercentage { get; set; }
+
+    [StringLength(1000)]
+    public string PublishedUrl { get; set; }
+
     [ForeignKey("ApplicationUserId")]
     [InverseProperty("VideoInfo")]
     public virtual AspNetUsers ApplicationUser { get; set; }
@@ -127,10 +133,17 @@ public partial class VideoInfo
     [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoKeyword> VideoKeyword { get; set; } = new List<VideoKeyword>();
 
+    [ForeignKey("VideoThumbnailPhotoId")]
+    [InverseProperty("VideoInfo")]
+    public virtual Photo VideoThumbnailPhoto { get; set; }
+
     [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoTopic> VideoTopic { get; set; } = new List<VideoTopic>();
 
     [ForeignKey("VideoVisibilityId")]
     [InverseProperty("VideoInfo")]
     public virtual VideoVisibility VideoVisibility { get; set; }
+
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoWatchTime> VideoWatchTime { get; set; } = new List<VideoWatchTime>();
 }

@@ -1,0 +1,156 @@
+﻿@page "/User/MyConversations"
+@using FairPlayCombined.Models.FairPlayTube.Conversation
+@using FairPlayCombined.Models.FairPlayTube.UserMessage
+@using FairPlayCombined.Services.FairPlayTube
+@using FairPlayTube.Components.Spinners
+
+@attribute [Authorize]
+@attribute [StreamRendering(enabled: true)]
+
+@rendermode RenderMode.InteractiveServer
+
+@inject UserMessageService userMessageService
+@inject IToastService toastService
+
+<PageTitle>MyConversations</PageTitle>
+
+<FluentLabel Typo="Typography.H3">
+    MyConversations
+</FluentLabel>
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+@if (this.AllMyConversationsUsers?.Length > 0)
+{
+     <div class="container">
+        <div class="row" style="max-height:250px;">
+            <div class="col">
+                <div class="list-group" style="max-height:250px; overflow:auto;">
+                    @foreach (var singleUser in this.AllMyConversationsUsers)
+                    {
+                        <button type="button" onclick="@( async () => await SelectUserAsync(singleUser))" 
+                        class="list-group-item list-group-item-action @(singleUser == this.SelectedUser?"active":string.Empty)" 
+                        aria-current="true">
+                            @singleUser.FullName
+                        </button>
+                    }
+                </div>
+            </div>
+            <div class="col" style="max-height: 250px; overflow:auto;">
+                @if (this.AllMyConversationsWithSelectedUser != null)
+                {
+                    @foreach (var singleConversation in this.AllMyConversationsWithSelectedUser)
+                    {
+                        <div class="row">
+                            <div class="col">
+                                <FluentCard>
+                                    <FluentHeader>
+                                        <strong>
+                                            @singleConversation.FromApplicationUserFullName
+                                        </strong>
+                                    </FluentHeader>
+                                    <FluentBodyContent>
+                                        @singleConversation.Message
+                                    </FluentBodyContent>
+                                    <FluentFooter>
+                                        @singleConversation.RowCreationDateTime
+                                    </FluentFooter>
+                                </FluentCard>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <EditForm Model="MessageToSend" OnValidSubmit="SendMessageAsync">
+                    <div class="mb-3">
+                        <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <ValidationSummary></ValidationSummary>
+                    </div>
+                    <div class="mb-3">
+                        <InputText class="form-control" @bind-Value="MessageToSend!.Message">
+                        </InputText>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private ConversationsUserModel[]? AllMyConversationsUsers;
+    private bool IsBusy { get; set; }
+    public ConversationsUserModel? SelectedUser { get; private set; }
+    private UserMessageModel[]? AllMyConversationsWithSelectedUser { get; set; }
+    private UserMessageModel? MessageToSend { get; set; } = new UserMessageModel();
+    private CancellationTokenSource cancellationTokenSource = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            IsBusy = true;
+            this.AllMyConversationsUsers =
+                await this.userMessageService
+                .GetMyConversationsUsersAsync(this.cancellationTokenSource.Token);
+            if (this.AllMyConversationsUsers?.Length > 0)
+            {
+                this.SelectedUser = this.AllMyConversationsUsers[0];
+                this.AllMyConversationsWithSelectedUser = await
+                    this.userMessageService
+                    .GetMyConversationsWithUserAsync(this.SelectedUser.ApplicationUserId,
+                    this.cancellationTokenSource.Token);
+                this.MessageToSend!.ToApplicationUserId = this.SelectedUser.ApplicationUserId;
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task SendMessageAsync()
+    {
+        try
+        {
+            IsBusy = true;
+
+            this.MessageToSend!.ToApplicationUserId = this.SelectedUser!.ApplicationUserId;
+            await this.userMessageService.SendMessageAsync(this.MessageToSend,
+            this.cancellationTokenSource.Token);
+            await LoadMyConversationsWithSelectedUser();
+            this.MessageToSend.Message = String.Empty;
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task LoadMyConversationsWithSelectedUser()
+    {
+        this.AllMyConversationsWithSelectedUser = 
+        await this.userMessageService
+        .GetMyConversationsWithUserAsync(this.SelectedUser!.ApplicationUserId,
+        this.cancellationTokenSource.Token);
+    }
+
+    private async Task SelectUserAsync(ConversationsUserModel conversationsUserModel)
+    {
+        this.SelectedUser = conversationsUserModel;
+        await LoadMyConversationsWithSelectedUser();
+        StateHasChanged();
+    }
+}

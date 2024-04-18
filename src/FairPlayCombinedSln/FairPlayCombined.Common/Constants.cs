@@ -9,6 +9,7 @@
                 public static class CreatorRoutes
                 {
                     public const string MyVideos = $"/Creator/{nameof(MyVideos)}";
+                    public const string MyVideoViewers = $"/Creator/{nameof(MyVideoViewers)}";
                 }
             }
         }
@@ -28,6 +29,7 @@
             public const string AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY = "AzureVideoIndexerSubscriptionId";
             public const string AZURE_CONTENT_MODERATOR_ENDPOINT_KEY = "AzureContentModeratorEndpoint";
             public const string AZURE_CONTENT_MODERATOR_KEY_KEY = "AzureContentModeratorKey";
+            public const string GOOGLE_GEMINI_KEY_KEY = "GoogleGeminiKey";
         }
         public static class GeoCoordinates
         {

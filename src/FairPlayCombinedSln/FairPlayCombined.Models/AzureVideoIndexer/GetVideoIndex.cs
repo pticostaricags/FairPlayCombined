@@ -234,7 +234,7 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public Speaker[]? speakers { get; set; }
         public Textualcontentmoderation? textualContentModeration { get; set; }
         public Statistics1? statistics { get; set; }
-        public int sourceLanguageConfidence { get; set; }
+        public decimal sourceLanguageConfidence { get; set; }
     }
 
     public class Textualcontentmoderation

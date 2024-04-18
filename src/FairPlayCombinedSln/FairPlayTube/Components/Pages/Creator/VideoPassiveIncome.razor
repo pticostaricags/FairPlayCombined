@@ -6,7 +6,7 @@
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
-@using Microsoft.AspNetCore.Components.QuickGrid
+
 @rendermode NoPreRenderServerMode
 @inject IJSRuntime jsRuntime
 @inject VideoInfoService videoInfoService
@@ -19,14 +19,14 @@
     Video Passive Income
 </PageTitle>
 
-<h3>
+<FluentLabel Typo="Typography.H3">
     Video Passive Income
-</h3>
+</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
+<div>
     @if (!String.IsNullOrWhiteSpace(this.PassiveIncomeIdeas))
     {
         <p>
@@ -38,7 +38,7 @@
 @code
 {
     [Parameter]
-    public long? VideoInfoId {get;set;}
+    public long? VideoInfoId { get; set; }
     private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
     private CancellationTokenSource cancellationTokenSource = new();

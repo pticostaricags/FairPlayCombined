@@ -7,7 +7,7 @@
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
-@using Microsoft.AspNetCore.Components.QuickGrid
+
 @rendermode RenderMode.InteractiveServer
 @inject IJSRuntime jsRuntime
 @inject AzureVideoIndexerService azureVideoIndexerService
@@ -22,97 +22,60 @@
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
-    <QuickGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-        <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+    <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+        <PropertyColumn Class="multiline-text" Property="@(p=>p.Name)"></PropertyColumn>
         <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
-        <TemplateColumn>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
-                    @onclick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
+        <TemplateColumn Class="multiline-text">
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
+                    OnClick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
                 <i class="bi bi-image-fill"></i>
-            </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
-                    @onclick="@( ()=> OnCreateInfographicClicked(context))">
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
+                    OnClick="@( ()=> OnCreateInfographicClicked(context))">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
-            </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
-                    @onclick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
+                    OnClick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
                 <i class="bi bi-list-task"></i>
-            </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
-                    @onclick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
+                    OnClick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
                 <i class="bi bi-linkedin"></i>
-            </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
-                    @onclick="@( ()=> OnGetPassiveIncomeIdeas(context))">
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
+                    OnClick="@( ()=> OnGetPassiveIncomeIdeas(context))">
                 <i class="bi bi-currency-dollar"></i>
-            </button>
-            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
-                    @onclick="@( ()=> OnCreateLinkedInArticleClicked(context))">
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
+                    OnClick="@( ()=> OnCreateLinkedInArticleClicked(context))">
                 <i class="bi bi-file-richtext-fill"></i>
-            </button>
+            </FluentButton>
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="View My Video Viewers"
+                              OnClick="@( () => OnViewMyVideoViewersClicked(context))">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
+                </FluentButton>
             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
             {
-                <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
-                        @onclick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
+                <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
+                        OnClick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
                     <i class="bi bi-badge-cc-fill"></i>
-                </button>
-                <a data-enhance-nav="false"
+                </FluentButton>
+                <FluentAnchor data-enhance-nav="false"
                    data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
-                   href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">
+                   Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
                     <i class="bi bi-youtube"></i>
-                </a>
+                </FluentAnchor>
+                <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Chapters"
+                              OnClick="@( () => OnCreateYouTubeChaptersClicked(context))">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.Timeline())"></FluentIcon>
+                </FluentButton>
             }
         </TemplateColumn>
-    </QuickGrid>
+    </FluentDataGrid>
 </div>
-<Paginator State="this.paginationState"></Paginator>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
-    {
-        <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
-            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
-        </a>
-        <p>
-            @this.RevisedPrompt
-        </p>
-    }
-</div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.GeneratedinfographicUri))
-    {
-        <a data-enhance-nav="false" href="@this.GeneratedinfographicUri" target="_blank">
-            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedinfographicUri" />
-        </a>
-        <p>
-            @this.RevisedPrompt
-        </p>
-    }
-</div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.LinkedInDailyPostsIdeas))
-    {
-        <p>
-            @((MarkupString)this.LinkedInDailyPostsIdeas)
-        </p>
-    }
-</div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingDailyPostsIdeas))
-    {
-        <p>
-            @((MarkupString)this.DigitalMarketingDailyPostsIdeas)
-        </p>
-    }
-</div>
-<div class="@ThemeConfiguration.Divisions.DefaultCss">
-    @if (!String.IsNullOrWhiteSpace(this.PassiveIncomeIdeas))
-    {
-        <p>
-            @((MarkupString)this.PassiveIncomeIdeas)
-        </p>
-    }
-</div>
+<FluentPaginator State="this.paginationState"></FluentPaginator>
+
 @code
 {
     private bool IsBusy { get; set; }
@@ -122,13 +85,6 @@
             ItemsPerPage = Constants.Pagination.PageSize
         };
     private CancellationTokenSource cancellationTokenSource = new();
-    private string? GeneratedYouTubeThumbnailUri { get; set; }
-    private string? GeneratedinfographicUri { get; set; }
-    private string? RevisedPrompt { get; set; }
-    private string? DigitalMarketingIdeas { get; set; }
-    private string? LinkedInDailyPostsIdeas { get; set; }
-    private string? DigitalMarketingDailyPostsIdeas { get; set; }
-    private string? PassiveIncomeIdeas { get; set; }
 
     protected override void OnInitialized()
     {
@@ -180,6 +136,11 @@
         StateHasChanged();
     }
 
+    private void OnViewMyVideoViewersClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideoViewers}/{videoInfoModel.VideoId}");
+    }
+
     private void OnManageYouTubeCaptionsButtonClicked(VideoInfoModel videoInfoModel)
     {
         this.navigationManager.NavigateTo($"/Creator/VideoCaptions/VideoInfo{videoInfoModel.VideoInfoId}/YouTube/{videoInfoModel.YouTubeVideoId}");
@@ -213,5 +174,10 @@
     private void OnCreateLinkedInArticleClicked(VideoInfoModel videoInfoModel)
     {
         this.navigationManager.NavigateTo($"/Creator/VideoLinkedInArticle/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnCreateYouTubeChaptersClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoChapters/{videoInfoModel.VideoInfoId}");
     }
 }

@@ -11,6 +11,78 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
     {
 
         [TestMethod]
+        public async Task Test_GetVideoStreamingUrlAsync()
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
+            var configuration = configurationBuilder.Build();
+            var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"]!;
+            var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"]!;
+            var azureVideoIndexerResourceGroup = configuration["AzureVideoIndexerResourceGroup"]!;
+            var azureVideoIndexerResourceName = configuration["AzureVideoIndexerResourceName"]!;
+            var azureVideoIndexerSubscriptionId = configuration["AzureVideoIndexerSubscriptionId"]!;
+            var testVideoId = configuration["TestVideoId"]!;
+            AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration =
+                new()
+                {
+                    AccountId = azureVideoIndexerAccountId,
+                    IsArmAccount = true,
+                    Location = azureVideoIndexerLocation,
+                    ResourceGroup = azureVideoIndexerResourceGroup,
+                    ResourceName = azureVideoIndexerResourceName,
+                    SubscriptionId = azureVideoIndexerSubscriptionId,
+                };
+            AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
+                new HttpClient());
+            string bearerToken = await this.AuthenticatedToAzureArmAsync();
+            var getAccessToken = await azureVideoIndexerService
+                .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
+            Assert.IsNotNull(getAccessToken);
+            var result = await azureVideoIndexerService.GetVideoStreamingUrlAsync(testVideoId,
+                viAccessToken:getAccessToken.AccessToken!,
+                CancellationToken.None);
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public async Task Test_GetVideoThumbnailAsync()
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
+            var configuration = configurationBuilder.Build();
+            var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"]!;
+            var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"]!;
+            var azureVideoIndexerResourceGroup = configuration["AzureVideoIndexerResourceGroup"]!;
+            var azureVideoIndexerResourceName = configuration["AzureVideoIndexerResourceName"]!;
+            var azureVideoIndexerSubscriptionId = configuration["AzureVideoIndexerSubscriptionId"]!;
+            var testVideoId = configuration["TestVideoId"]!;
+            AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration =
+                new()
+                {
+                    AccountId = azureVideoIndexerAccountId,
+                    IsArmAccount = true,
+                    Location = azureVideoIndexerLocation,
+                    ResourceGroup = azureVideoIndexerResourceGroup,
+                    ResourceName = azureVideoIndexerResourceName,
+                    SubscriptionId = azureVideoIndexerSubscriptionId,
+                };
+            AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
+                new HttpClient());
+            string bearerToken = await this.AuthenticatedToAzureArmAsync();
+            var getAccessToken = await azureVideoIndexerService
+                .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
+            Assert.IsNotNull(getAccessToken);
+            var indexResponse = await azureVideoIndexerService.GetVideoIndexAsync(
+                testVideoId!, getAccessToken.AccessToken!,
+                CancellationToken.None);
+            Assert.IsNotNull(indexResponse);
+            var result = await azureVideoIndexerService.GetVideoThumbnailAsync(testVideoId,
+                indexResponse.videos![0].thumbnailId!,
+                getAccessToken.AccessToken!, CancellationToken.None);
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
         public async Task Test_GetSupportedLanguagesAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();
