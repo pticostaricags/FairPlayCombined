@@ -2,6 +2,7 @@
 @implements IAsyncDisposable
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.AzureVideoIndexer
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
@@ -14,7 +15,6 @@
 @inject IUserProviderService userProviderService
 @inject SupportedLanguageService supportedLanguageService
 @inject VideoInfoService videoInfoService
-@inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
 
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
 
@@ -57,6 +57,7 @@ else
     private CancellationTokenSource cancellationTokenSource = new();
     private bool UseFallbackMode { get; set; }
     private string? FallbackModeUrl { get; set; }
+    private VideoInfoModel? videoInfoModel { get; set; }
     private string? VideoUrl { get; set; }
     private SupportedLanguageModel[]? SupportedLanguages { get; set; }
     private DotNetObjectReference<WatchVideo>? dotNetObjectReference;
@@ -72,11 +73,11 @@ else
         {
             this.IsBusy = true;
             StateHasChanged();
-            var videoInfo = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
+            this.videoInfoModel = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
                 this.VideoId!,
                 this.cancellationTokenSource.Token
             );
-            this.VideoUrl = videoInfo!.PublishedUrl;
+            this.VideoUrl = videoInfoModel!.PublishedUrl;
             this.SupportedLanguages = await supportedLanguageService
             .GetAllSupportedLanguageAsync(this.cancellationTokenSource.Token);
             StateHasChanged();
@@ -125,7 +126,7 @@ else
 
     private void OnUseFallbackMode()
     {
-        this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.azureVideoIndexerServiceConfiguration.AccountId}/{this.VideoId}/?locale=en&location={azureVideoIndexerServiceConfiguration.Location}";
+        this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.videoInfoModel!.AccountId}/{this.VideoId}/?locale=en&location={this.videoInfoModel.Location}";
         this.UseFallbackMode = true;
         StateHasChanged();
     }

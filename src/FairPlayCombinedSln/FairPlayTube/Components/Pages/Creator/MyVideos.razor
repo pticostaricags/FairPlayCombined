@@ -10,7 +10,6 @@
 
 @rendermode RenderMode.InteractiveServer
 @inject IJSRuntime jsRuntime
-@inject AzureVideoIndexerService azureVideoIndexerService
 @inject VideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
 @inject NavigationManager navigationManager
@@ -105,35 +104,6 @@
             return result;
         };
         this.IsBusy = false;
-    }
-
-    private async Task OnPlayVideoClickedAsync(string videoId)
-    {
-        this.IsBusy = true;
-        StateHasChanged();
-        var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
-        var viAccessTokenResponse = await azureVideoIndexerService
-        .GetAccessTokenForArmAccountAsync(armAccessToken, CancellationToken.None);
-        var videoIndex = await azureVideoIndexerService
-        .GetVideoIndexAsync(videoId, viAccessTokenResponse!.AccessToken!,
-        CancellationToken.None);
-        var supportedLanguages = await azureVideoIndexerService
-        .GetSupportedLanguagesAsync(viAccessTokenResponse!.AccessToken!,
-        this.cancellationTokenSource.Token);
-        var singleVideoIndex = videoIndex!.videos!.Single();
-        await jsRuntime.InvokeVoidAsync("initSource", $"vid-{videoId}",
-        singleVideoIndex.publishedUrl,
-        singleVideoIndex.viewToken,
-        videoId,
-        supportedLanguages!.Select(p => new
-        {
-            src = $"/api/video/{videoId}/captions/{p.languageCode}",
-            srclang = p.languageCode,
-            kind = "subtitles",
-            label = p.name
-        }).OrderBy(p => p.label).ToArray());
-        this.IsBusy = false;
-        StateHasChanged();
     }
 
     private void OnViewMyVideoViewersClicked(VideoInfoModel videoInfoModel)
