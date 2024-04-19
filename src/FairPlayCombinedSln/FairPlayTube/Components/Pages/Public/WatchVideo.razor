@@ -109,7 +109,6 @@ else
             else
             {
                 await this.videoWatchTimeService.UpdateVideoWatchTimeAsync(
-                    this.VideoId!,
                     new FairPlayCombined.Models.FairPlayTube.VideoWatchTime.VideoWatchTimeModel()
                         {
                             WatchedByApplicationUserId = currentUserId,

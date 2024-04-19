@@ -160,7 +160,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                     }
                 };
             }
-            geoDataCollection.Add(randomGeoLocation);
+            geoDataCollection.Add(randomGeoLocation!);
         }
     }
 

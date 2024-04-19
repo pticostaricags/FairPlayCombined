@@ -87,7 +87,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
                     {
                         logger.LogError(exception: retryException,
                             "Retry exception getting captions: {exceptions}", retryException.Message);
-                        throw;
+                        return;
                     }
                 }
             }

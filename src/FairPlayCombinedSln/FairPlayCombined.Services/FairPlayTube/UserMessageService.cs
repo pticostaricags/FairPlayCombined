@@ -28,12 +28,12 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .Include(p => p.FromApplicationUser)
                 .Where(p => p.ToApplicationUserId == currentUser.Id)
                 .Select(p => p.FromApplicationUser)
-                .Distinct().ToListAsync();
+                .Distinct().ToListAsync(cancellationToken);
             var sentMessagesUsers = await dbContext.UserMessage1
                 .Include(p => p.ToApplicationUser)
                 .Where(p => p.FromApplicationUserId == currentUser.Id)
                 .Select(p => p.ToApplicationUser)
-                .Distinct().ToListAsync();
+                .Distinct().ToListAsync(cancellationToken);
             var result = receivedMessagesUsers
                 .Union(sentMessagesUsers)
                 .Distinct()
