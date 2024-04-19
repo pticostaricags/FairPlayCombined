@@ -29,7 +29,7 @@
     private ICultureService? CultureService { get; set; }
     [Inject]
     private IStringLocalizer<CultureSelector>? Localizer { get; set; }
-    private CancellationTokenSource CancellationTokenSource = new();
+    private readonly CancellationTokenSource CancellationTokenSource = new();
     private CultureInfo[]? supportedCultures { get; set; }
     private bool IsBusy { get; set; }
     protected override async Task OnInitializedAsync()

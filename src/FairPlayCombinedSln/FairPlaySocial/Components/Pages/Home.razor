@@ -83,11 +83,11 @@
     private HubConnection? HubConnection { get; set; }
     private Queue<PostNotificationModel> NotificationsQueue { get; set; } = new();
     private GridItemsProvider<PostModel>? ItemsProvider;
-    PaginationState paginationState = new()
+    private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = FairPlayCombined.Common.Constants.Pagination.PageSize
         };
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationStateTask { get; set; }

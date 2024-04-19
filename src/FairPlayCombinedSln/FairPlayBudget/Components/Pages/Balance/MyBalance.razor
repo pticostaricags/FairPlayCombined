@@ -90,7 +90,7 @@
     private decimal TotalIncome { get; set; } = 0;
     private decimal NetIncome { get; set; } = 0;
 
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override async Task OnInitializedAsync()
     {

@@ -26,7 +26,7 @@
     [Parameter]
     [EditorRequired]
     public int MaxHeightForPreview { get; set; }
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     private async Task OnFileSelectionChangedAsync(InputFileChangeEventArgs inputFileChangeEventArgs)
     {

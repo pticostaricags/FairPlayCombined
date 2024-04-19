@@ -53,11 +53,11 @@
     public string? VideoId { get; set; }
     private bool IsBusy { get; set; }
     private GridItemsProvider<VideoViewerModel>? ItemsProvider;
-    PaginationState paginationState = new()
+    private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override void OnInitialized()
     {

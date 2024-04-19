@@ -271,7 +271,7 @@
             CurrentLatitude = 10,
             CurrentLongitude = 10
         };
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private GenderModel[]? genders;
     private DateObjectiveModel[]? dateObjectives;
     private EyesColorModel[]? eyesColors;

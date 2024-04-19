@@ -106,12 +106,12 @@
 }
 @code {
     private GridItemsProvider<UserProfileModel>? ItemsProvider;
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool showDetailsDialog = false;
     private UserProfileModel? selectedUserProfileModel;
     private bool IsBusy { get; set; }
     private bool HasUserProfile { get; set; }
-    PaginationState paginationState = new()
+    private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = 1
         };

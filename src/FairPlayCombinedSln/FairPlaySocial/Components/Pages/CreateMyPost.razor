@@ -60,7 +60,7 @@
     private CreatePostModel createPostModel { get; set; } = new();
 
     private bool IsBusy { get; set; }
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override void OnInitialized()
     {

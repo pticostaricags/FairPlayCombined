@@ -46,7 +46,7 @@
 {
     private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private string? NewVideoRecommendationIdea { get; set; }
     private string? RevisedPrompt { get; set; }
 
