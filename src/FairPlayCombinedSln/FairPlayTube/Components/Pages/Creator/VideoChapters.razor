@@ -1,4 +1,6 @@
 ﻿@page "/Creator/VideoChapters/{VideoInfoId:long}"
+@implements IDisposable
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
@@ -84,5 +86,10 @@
         {
             this.YouTubeChapters = result!.choices![0]!.message!.content!;
         }
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

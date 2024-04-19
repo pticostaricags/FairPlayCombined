@@ -1,4 +1,6 @@
 ﻿@page "/Creator/YouTubeThumbnail/{VideoInfoId:long}"
+@implements IDisposable
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
@@ -72,5 +74,10 @@
         }
         this.IsBusy = false;
         StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

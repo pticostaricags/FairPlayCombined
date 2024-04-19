@@ -1,4 +1,5 @@
 ﻿@attribute [Route(Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos)]
+@implements IDisposable
 
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
@@ -149,5 +150,10 @@
     private void OnCreateYouTubeChaptersClicked(VideoInfoModel videoInfoModel)
     {
         this.navigationManager.NavigateTo($"/Creator/VideoChapters/{videoInfoModel.VideoInfoId}");
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

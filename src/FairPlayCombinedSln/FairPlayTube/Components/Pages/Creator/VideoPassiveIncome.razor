@@ -1,4 +1,6 @@
 ﻿@page "/Creator/VideoPassiveIncome/{VideoInfoId:long}"
+@implements IDisposable
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
@@ -60,5 +62,10 @@
         this.PassiveIncomeIdeas = result!.choices![0]!.message!.content!;
         this.IsBusy = false;
         StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }
