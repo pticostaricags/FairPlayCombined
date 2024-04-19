@@ -120,7 +120,7 @@ Import From File:
             Transactions = new List<CreateTransactionModel>()
         };
     private CurrencyModel[]? allCurrencies;
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private int? SelectedCurrencyIdForOverride { get; set; }
     private bool IsBusy { get; set; }
     private IQueryable<CreateTransactionModel> Transactions => this.createMonthlyBudgetInfoModel.Transactions!.AsQueryable();

@@ -54,7 +54,7 @@ else
     public string? VideoId { get; set; }
     private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool UseFallbackMode { get; set; }
     private string? FallbackModeUrl { get; set; }
     private VideoInfoModel? videoInfoModel { get; set; }
@@ -88,7 +88,7 @@ else
     }
 
     [JSInvokable]
-    public async void UpdateWatchTime(double watchTime, string currentSessionGuid)
+    public async Task UpdateWatchTime(double watchTime, string currentSessionGuid)
     {
         try
         {

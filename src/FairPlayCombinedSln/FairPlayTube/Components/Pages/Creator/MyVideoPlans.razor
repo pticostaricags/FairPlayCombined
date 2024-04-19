@@ -42,7 +42,7 @@
 @code {
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
-    private PaginationState paginationState = new()
+    private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };

@@ -1,4 +1,6 @@
 ﻿@page "/User/MyConversations"
+@implements IDisposable
+
 @using FairPlayCombined.Models.FairPlayTube.Conversation
 @using FairPlayCombined.Models.FairPlayTube.UserMessage
 @using FairPlayCombined.Services.FairPlayTube
@@ -86,7 +88,7 @@
     public ConversationsUserModel? SelectedUser { get; private set; }
     private UserMessageModel[]? AllMyConversationsWithSelectedUser { get; set; }
     private UserMessageModel? MessageToSend { get; set; } = new UserMessageModel();
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -152,5 +154,10 @@
         this.SelectedUser = conversationsUserModel;
         await LoadMyConversationsWithSelectedUser();
         StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

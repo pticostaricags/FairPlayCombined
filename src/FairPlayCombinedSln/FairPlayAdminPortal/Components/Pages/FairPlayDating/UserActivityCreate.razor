@@ -34,7 +34,7 @@
 @code {
     [SupplyParameterFromForm]
     private CreateApplicationUserVouchModel createApplicationUserVouchModel { get; set; } = new();
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private async Task OnValidSubmitAsync()
     {
         await this.applicationUserVouchService

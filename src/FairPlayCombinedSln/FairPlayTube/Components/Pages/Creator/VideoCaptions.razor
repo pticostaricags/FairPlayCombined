@@ -41,7 +41,7 @@
     [Parameter]
     public string? YouTubeVideoId { get; set; }
     private VideoCaptionsModel[]? Items { get; set; }
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     protected override async Task OnInitializedAsync()
     {
         this.Items = await this.videoCaptionsService

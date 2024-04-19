@@ -37,11 +37,11 @@
 
 @code {
     private GridItemsProvider<MonthlyBudgetInfoModel>? ItemsProvider;
-    private PaginationState paginationState = new PaginationState()
+    private readonly PaginationState paginationState = new PaginationState()
         {
             ItemsPerPage = FairPlayCombined.Common.Constants.Pagination.PageSize
         };
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; }
 
     protected override void OnInitialized()
