@@ -1,4 +1,6 @@
 ﻿@page "/Creator/NewVideoRecommendation"
+@implements IDisposable
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
@@ -92,5 +94,10 @@
         {
             this.NewVideoRecommendationIdea = result!.choices![0]!.message!.content!;
         }
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

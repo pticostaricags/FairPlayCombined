@@ -34,7 +34,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             await dbContext.VideoWatchTime.AddAsync(entity, cancellationToken: cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
         }
-        public async Task UpdateVideoWatchTimeAsync(string videoId,
+        public async Task UpdateVideoWatchTimeAsync(
             VideoWatchTimeModel videoWatchTimeModel,
             CancellationToken cancellationToken)
         {

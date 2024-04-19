@@ -1,4 +1,6 @@
 ﻿@page "/Creator/VideoDigitalMarketing/{VideoInfoId:long}"
+@implements IDisposable
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
@@ -97,5 +99,10 @@
                 replaceExistent: true,
                 cancellationToken: this.cancellationTokenSource.Token);
         }
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

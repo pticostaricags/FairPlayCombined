@@ -38,7 +38,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .GroupBy(p=>new 
                 { 
                     Username=p.WatchedByApplicationUser.UserName,
-                    VideoId = p.VideoInfo.VideoId,
+                    p.VideoInfo.VideoId,
                     VideoName = p.VideoInfo.Name
                 })
                 .OrderByDescending(p=>p.Sum(x=>x.WatchTime))

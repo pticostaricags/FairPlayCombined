@@ -1,4 +1,5 @@
 ﻿@attribute [Route($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideoViewers}/{{VideoId}}")]
+@implements IDisposable
 
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
@@ -79,5 +80,10 @@
             return result;
         };
         this.IsBusy = false;
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

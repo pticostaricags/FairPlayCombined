@@ -1,4 +1,5 @@
 ﻿@page "/Creator/VideoCaptions/VideoInfo{VideoInfoId:long}/YouTube/{YouTubeVideoId}"
+@implements IDisposable
 
 @using FairPlayCombined.Models.FairPlaySocial.VideoCaptions
 @using FairPlayCombined.Services.Common
@@ -72,5 +73,10 @@
         },
         this.cancellationTokenSource.Token
         );
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

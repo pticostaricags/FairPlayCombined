@@ -5,7 +5,7 @@ namespace FairPlayCombined.Services.Common
 {
     public class GeoNamesService(HttpClient httpClient, ILogger<GeoNamesService> logger)
     {
-        public async Task<geodata> GeoRandomLocationAsync(CancellationToken cancellationToken)
+        public async Task<geodata?> GeoRandomLocationAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -27,8 +27,8 @@ namespace FairPlayCombined.Services.Common
             catch (Exception ex)
             {
                 logger.LogError(exception: ex, "{Message}", ex.Message);
-                throw;
             }
+            return null;
         }
     }
 }
