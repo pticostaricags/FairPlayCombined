@@ -117,6 +117,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 
 builder.Services.AddTransient<IUserProviderService, UserProviderService>();
+builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
 {
     IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
@@ -132,7 +133,6 @@ builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
         });
     return optionsBuilder.Options;
 });
-builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 
 builder.Services.AddTransient<OpenAIService>(sp =>
