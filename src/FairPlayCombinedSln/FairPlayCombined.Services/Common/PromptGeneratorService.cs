@@ -18,7 +18,7 @@ namespace FairPlayCombined.Services.Common
         public async Task<PromptModel?> GetPromptCompleteInfoAsync(string promptName,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {methodName}", nameof(GetPromptCompleteInfoAsync));
+            logger.LogInformation(message: "Start of method: {MethodName}", nameof(GetPromptCompleteInfoAsync));
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             var result = await dbContext.Prompt.Include(p=>p.PromptVariable)
                 .Where(p=>p.PromptName == promptName)

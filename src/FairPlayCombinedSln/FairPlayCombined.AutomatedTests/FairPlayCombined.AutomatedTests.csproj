@@ -32,7 +32,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Testcontainers.MsSql" Version="3.8.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0-preview.2.24128.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0-preview.4.24219.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FairPlayCombined.Services.AI\FairPlayCombined.Services.AI.csproj" />

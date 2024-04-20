@@ -16,12 +16,12 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.12.0.78982">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.2.88755">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.0-preview.2.24128.4" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.0-preview.2.24128.4" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.0-preview.4.24219.8" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.0-preview.4.24219.8" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

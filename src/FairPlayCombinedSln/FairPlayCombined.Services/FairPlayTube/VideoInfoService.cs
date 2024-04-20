@@ -25,7 +25,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             string userId,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {methodName}", nameof(GetPaginatedCompletedVideoInfobyUserIdAsync));
+            logger.LogInformation(message: "Start of method: {MethodName}", nameof(GetPaginatedCompletedVideoInfobyUserIdAsync));
             PaginationOfT<VideoInfoModel> result = new();
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             string orderByString = string.Empty;
