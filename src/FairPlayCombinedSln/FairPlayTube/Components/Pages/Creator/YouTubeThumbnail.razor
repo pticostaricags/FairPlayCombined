@@ -74,9 +74,9 @@
 
     protected override void OnInitialized()
     {
-        this.IsBusy = true;
         ItemsProvider = async req =>
         {
+            this.IsBusy = true;
             StateHasChanged();
             PaginationRequest paginationRequest = new()
                 {
@@ -85,11 +85,11 @@
                 };
             var items = await videoThumbnailService.GetPaginatedVideoThumbnailByVideoInfoIdAsync(
                 this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
-            StateHasChanged();
             var result = GridItemsProviderResult.From<VideoThumbnailModel>(items!.Items!, items.TotalItems);
+            this.IsBusy = false;
+            StateHasChanged();
             return result;
         };
-        this.IsBusy = false;
     }
 
     private async Task OnCreateNewThumbnailClickedAsync()
@@ -129,6 +129,7 @@
                         VideoInfoId = this.VideoInfoId.Value
                     }, this.cancellationTokenSource.Token
             );
+            await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
         }
         catch (Exception ex)
         {
