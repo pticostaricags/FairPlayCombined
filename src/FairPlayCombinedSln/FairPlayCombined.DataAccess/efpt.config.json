@@ -278,6 +278,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoThumbnail]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoTopic]",
          "ObjectType": 0
       },

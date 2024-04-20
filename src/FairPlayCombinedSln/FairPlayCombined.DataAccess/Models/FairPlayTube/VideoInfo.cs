@@ -133,6 +133,9 @@ public partial class VideoInfo
     [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoKeyword> VideoKeyword { get; set; } = new List<VideoKeyword>();
 
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoThumbnail> VideoThumbnail { get; set; } = new List<VideoThumbnail>();
+
     [ForeignKey("VideoThumbnailPhotoId")]
     [InverseProperty("VideoInfo")]
     public virtual Photo VideoThumbnailPhoto { get; set; }

@@ -16,7 +16,10 @@
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
 @inject PromptGeneratorService promptGeneratorService
-
+@inject VideoThumbnailService videoThumbnailService
+@inject IToastService toastService
+@inject PhotoService photoService
+@inject HttpClient httpClient
 <PageTitle>
     Video Thumbnail
 </PageTitle>
@@ -45,7 +48,7 @@
 @code
 {
     [Parameter]
-    public long? VideoInfoId {get;set;}
+    public long? VideoInfoId { get; set; }
     private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
@@ -54,26 +57,51 @@
 
     protected override async Task OnInitializedAsync()
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
-        "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
-        var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        var englishCaptions = await this.videoCaptionsService
-        .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-        language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        string prompt = $"{promptInfo!.BaseText}. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        if (prompt.Length > 4000)
-            prompt = prompt.Substring(0, 4000);
-        var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
-        if (result != null)
+        try
         {
-            this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
-            this.RevisedPrompt = result!.data[0]!.revised_prompt;
+            this.IsBusy = true;
+            StateHasChanged();
+            var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
+            "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
+            var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
+            cancellationToken: this.cancellationTokenSource.Token);
+            var englishCaptions = await this.videoCaptionsService
+            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
+            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
+            string prompt = $"{promptInfo!.BaseText}. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+            if (prompt.Length > 4000)
+                prompt = prompt.Substring(0, 4000);
+            var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
+            if (result != null)
+            {
+                this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
+                this.RevisedPrompt = result!.data[0]!.revised_prompt;
+            }
+            var photoId = await photoService.CreatePhotoAsync(
+            new FairPlayCombined.Models.Common.Photo.CreatePhotoModel()
+                {
+                    Filename = $"Video-{this.VideoInfoId}-thumbnail.jpg",
+                    Name = $"Video-{this.VideoInfoId}-thumbnail",
+                    PhotoBytes = await this.httpClient.GetByteArrayAsync(this.GeneratedYouTubeThumbnailUri,
+                                        this.cancellationTokenSource.Token)
+                }, this.cancellationTokenSource.Token);
+            await this.videoThumbnailService.CreateVideoThumbnailAsync(
+                new FairPlayCombined.Models.FairPlayTube.VideoThumbnail.CreateVideoThumbnailModel()
+                    {
+                        PhotoId = photoId,
+                        VideoInfoId = this.VideoInfoId.Value
+                    }, this.cancellationTokenSource.Token
+            );
         }
-        this.IsBusy = false;
-        StateHasChanged();
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
     }
 
     void IDisposable.Dispose()

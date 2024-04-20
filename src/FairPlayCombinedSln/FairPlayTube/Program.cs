@@ -240,6 +240,8 @@ builder.Services.AddTransient<VideoWatchTimeService>();
 builder.Services.AddTransient<SupportedLanguageService>();
 builder.Services.AddTransient<VideoViewerService>();
 builder.Services.AddTransient<UserMessageService>();
+builder.Services.AddTransient<VideoThumbnailService>();
+builder.Services.AddTransient<PhotoService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

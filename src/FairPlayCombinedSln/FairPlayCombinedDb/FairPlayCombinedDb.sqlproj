@@ -161,6 +161,7 @@
     <Build Include="FairPlayTube\Tables\VideoWatchTime.sql" />
     <Build Include="FairPlayTube\Tables\VideoIndexerSupportedLanguage.sql" />
     <Build Include="FairPlayTube\Tables\UserMessage.sql" />
+    <Build Include="FairPlayTube\Tables\VideoThumbnail.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />

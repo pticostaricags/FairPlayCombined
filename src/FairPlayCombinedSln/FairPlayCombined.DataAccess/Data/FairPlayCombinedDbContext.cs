@@ -148,6 +148,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<VideoPlanThumbnail> VideoPlanThumbnail { get; set; }
 
+    public virtual DbSet<VideoThumbnail> VideoThumbnail { get; set; }
+
     public virtual DbSet<VideoTopic> VideoTopic { get; set; }
 
     public virtual DbSet<VideoVisibility> VideoVisibility { get; set; }
@@ -579,6 +581,17 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.VideoPlan).WithMany(p => p.VideoPlanThumbnail)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoPlanThumbnail_VideoPlan");
+        });
+
+        modelBuilder.Entity<VideoThumbnail>(entity =>
+        {
+            entity.HasOne(d => d.Photo).WithMany(p => p.VideoThumbnail)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoThumbnail_Photo");
+
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoThumbnail)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoThumbnail_VideoInfo");
         });
 
         modelBuilder.Entity<VideoTopic>(entity =>
