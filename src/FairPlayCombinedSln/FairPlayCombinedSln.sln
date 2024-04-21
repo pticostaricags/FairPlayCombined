@@ -63,6 +63,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{123F2EE1-42C9-418B-89DE-1B1809B3CC8A}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		global.json = global.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Services.AI", "FairPlayCombined.Services.AI\FairPlayCombined.Services.AI.csproj", "{3BC719E3-8407-4B97-96AC-C61FE2DC0BF3}"
