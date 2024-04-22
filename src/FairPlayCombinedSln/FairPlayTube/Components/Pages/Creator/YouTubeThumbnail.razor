@@ -2,6 +2,7 @@
 @implements IDisposable
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.FairPlayTube.VideoThumbnail
@@ -43,6 +44,7 @@
     </FluentDataGrid>
     <FluentPaginator State="this.paginationState"></FluentPaginator>
 </div>
+<FluentDivider Role="DividerRole.Separator"></FluentDivider>
 <div>
     @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
     {
@@ -81,7 +83,15 @@
             PaginationRequest paginationRequest = new()
                 {
                     PageSize = paginationState.ItemsPerPage,
-                    StartIndex = req.StartIndex
+                    StartIndex = req.StartIndex,
+                    SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName = nameof(VideoThumbnailModel.PhotoId),
+                            SortType = SortType.Descending
+                        }
+                    }
                 };
             var items = await videoThumbnailService.GetPaginatedVideoThumbnailByVideoInfoIdAsync(
                 this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
@@ -120,7 +130,7 @@
                     Filename = $"Video-{this.VideoInfoId}-thumbnail.jpg",
                     Name = $"Video-{this.VideoInfoId}-thumbnail",
                     PhotoBytes = await this.httpClient.GetByteArrayAsync(this.GeneratedYouTubeThumbnailUri,
-                                                this.cancellationTokenSource.Token)
+                                                        this.cancellationTokenSource.Token)
                 }, this.cancellationTokenSource.Token);
             await this.videoThumbnailService.CreateVideoThumbnailAsync(
                 new FairPlayCombined.Models.FairPlayTube.VideoThumbnail.CreateVideoThumbnailModel()
