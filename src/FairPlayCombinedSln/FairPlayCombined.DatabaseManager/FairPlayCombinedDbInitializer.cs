@@ -9,7 +9,7 @@ public class FairPlayCombinedDbInitializer(ILogger<FairPlayCombinedDbInitializer
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("Start of method: {methodName}", nameof(ExecuteAsync));
+        logger.LogInformation("Start of method: {MethodName}", nameof(ExecuteAsync));
         var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
         var strategy = dbContext.Database.CreateExecutionStrategy();

@@ -17,6 +17,7 @@ var connectionString = builder.Configuration.GetConnectionString("FairPlayCombin
 Extensions.EnhanceConnectionString(nameof(FairPlayTube.VideoIndexing), ref connectionString);
 
 builder.Services.AddTransient<IUserProviderService, VideoIndexingUserProviderService>();
+builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
 {
     IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
@@ -32,7 +33,6 @@ builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
         });
     return optionsBuilder.Options;
 });
-builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 builder.Services.AddTransient(sp =>
 {

@@ -17,7 +17,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         public async Task<SupportedLanguageModel[]?> GetAllSupportedLanguageAsync(
             CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {methodName}", nameof(GetAllSupportedLanguageAsync));
+            logger.LogInformation(message: "Start of method: {MethodName}", nameof(GetAllSupportedLanguageAsync));
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var result = await dbContext.VideoIndexerSupportedLanguage
                 .Select(p => new SupportedLanguageModel 

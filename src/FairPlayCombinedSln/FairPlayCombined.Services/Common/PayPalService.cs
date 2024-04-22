@@ -7,7 +7,7 @@ namespace FairPlayCombined.Services.Common
 {
     public class PayPalService(PayPalHttpClient httpClient, ILogger<PayPalService> logger) : IPayPalService
     {
-        public async Task<CreatePayoutResponse> CreatePayoutAsync(
+        public async Task<CreatePayoutResponse?> CreatePayoutAsync(
             string emailMessage,
             string emailSubject,
             string receiverEmailAddress,
@@ -42,9 +42,9 @@ namespace FairPlayCombined.Services.Common
             }
             catch (Exception ex)
             {
-                logger.LogError(exception: ex, message: "Exception occurred in {methodName}. " +
-                    "Message: {message}", nameof(CreatePayoutAsync), ex.Message);
-                throw;
+                logger.LogError(exception: ex, message: "Exception occurred in {MethodName}. " +
+                    "Message: {Message}", nameof(CreatePayoutAsync), ex.Message);
+                return null;
             }
         }
     }

@@ -19,7 +19,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             VideoWatchTimeModel videoWatchTimeModel,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {methodName}", nameof(CreateVideoWatchTimeAsync));
+            logger.LogInformation(message: "Start of method: {MethodName}", nameof(CreateVideoWatchTimeAsync));
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             var videoInfoEntity = await dbContext.VideoInfo.SingleAsync(p => p.VideoId == videoId,
                 cancellationToken: cancellationToken);
@@ -38,7 +38,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             VideoWatchTimeModel videoWatchTimeModel,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {methodName}", nameof(UpdateVideoWatchTimeAsync));
+            logger.LogInformation(message: "Start of method: {MethodName}", nameof(UpdateVideoWatchTimeAsync));
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             VideoWatchTime? entity = null;
             entity = await dbContext.VideoWatchTime
