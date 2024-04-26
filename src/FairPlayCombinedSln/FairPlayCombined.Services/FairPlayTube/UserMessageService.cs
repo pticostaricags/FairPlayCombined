@@ -43,6 +43,15 @@ namespace FairPlayCombined.Services.FairPlayTube
                     FullName = p.UserName
                 })
                 .ToArray();
+            if (result.Length == 0 )
+            {
+                result = await dbContext.AspNetUsers.Where(p => p.Id != currentUser.Id)
+                    .Select(p=> new ConversationsUserModel()
+                    {
+                        ApplicationUserId = p.Id,
+                        FullName = p.UserName
+                    }).ToArrayAsync(cancellationToken);
+            }
             return result;
         }
 
