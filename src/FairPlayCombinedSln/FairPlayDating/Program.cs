@@ -16,7 +16,6 @@ using FairPlayDating.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.CognitiveServices.ContentModerator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.Net.Mime;
@@ -84,21 +83,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAzureOpenAIService();
 
-builder.Services.AddTransient<ContentModeratorClient>(sp =>
-{
-    var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
-    var azureContentModeratorEndpointEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_CONTENT_MODERATOR_ENDPOINT_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_MODERATOR_ENDPOINT_KEY} in database");
-    var azureContentModeratorKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_CONTENT_MODERATOR_KEY_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_MODERATOR_KEY_KEY} in database");
-    ContentModeratorClient contentModeratorClient =
-                new(new ApiKeyServiceClientCredentials(azureContentModeratorKeyEntity.Value))
-                {
-                    Endpoint = azureContentModeratorEndpointEntity.Value
-                };
-    return contentModeratorClient;
-});
-builder.Services.AddTransient<AzureContentModeratorService>();
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();

@@ -7,7 +7,7 @@ namespace FairPlayCombined.Services.FairPlaySocial.Notificatios.Post
     {
         public async Task SendMessage(PostNotificationModel model)
         {
-            await Clients.Group(model.GroupName).ReceiveMessage(model);
+            await Clients.Group(model.GroupName!).ReceiveMessage(model);
         }
 
         public Task SendMessageToCaller(PostNotificationModel model)

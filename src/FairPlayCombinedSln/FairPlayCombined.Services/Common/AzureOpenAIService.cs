@@ -29,8 +29,8 @@ namespace FairPlayCombined.Services.Common
                 DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
-                    new ChatMessage(ChatRole.System, systemMessage),
-                    new ChatMessage(ChatRole.User, $"Video Title: {videoTitle}." +
+                    new ChatRequestSystemMessage(systemMessage),
+                    new ChatRequestUserMessage($"Video Title: {videoTitle}." +
                     $"Video Captions: {videoCaptions}")
                 }
             };
@@ -64,13 +64,13 @@ namespace FairPlayCombined.Services.Common
                 DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
-                    new ChatMessage(ChatRole.System, "You are an expert content moderator. " +
+                    new ChatRequestSystemMessage("You are an expert content moderator. " +
                     "Your jobs is to restrict text containing personal inormaton and any kind of gross content." +
                     "My requests will be in json format with the following properties:" +
                     $"{jsonRequest}" +
                     "Your responses must be in json format with the following properties:" +
                     $"{JsonSerializer.Serialize(textModerationResponseSkeleton)}"),
-                    new ChatMessage(ChatRole.User, jsonRequest)
+                    new ChatRequestUserMessage(jsonRequest)
                 }
             };
             try
@@ -126,12 +126,12 @@ namespace FairPlayCombined.Services.Common
                 DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
-                    new ChatMessage(ChatRole.System, "You are an expert translator. Your jobs is to translate the text I give you." +
+                    new ChatRequestSystemMessage("You are an expert translator. Your jobs is to translate the text I give you." +
                     "My requests will be in json format with the following properties:" +
                     $"{nameof(TranslationRequest.OriginalText)}, {nameof(TranslationRequest.SourceLocale)}, {nameof(TranslationRequest.DestLocale)}" +
                     "Your responses must be in json format with the following properties:" +
                     $"{nameof(TranslationResponse.SourceLocale)}, {nameof(TranslationResponse.DestLocale)}, {nameof(TranslationResponse.TranslatedText)}"),
-                    new ChatMessage(ChatRole.User, JsonSerializer.Serialize(translationRequest))
+                    new ChatRequestUserMessage(JsonSerializer.Serialize(translationRequest))
                 }
             };
             var response = await openAIClient.GetChatCompletionsAsync(
@@ -151,12 +151,12 @@ namespace FairPlayCombined.Services.Common
                 DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
                 Messages =
                 {
-                    new ChatMessage(ChatRole.System, "You are an expert translator. Your jobs is to translate the text I give you." +
+                    new ChatRequestSystemMessage("You are an expert translator. Your jobs is to translate the text I give you." +
                     "My requests will be in json format with the following properties:" +
                     $"{nameof(TranslationRequest.OriginalText)}, {nameof(TranslationRequest.SourceLocale)}, {nameof(TranslationRequest.DestLocale)}" +
                     "Your responses must be in json format with the following properties:" +
                     $"{nameof(TranslationResponse.OriginalText)}, {nameof(TranslationResponse.SourceLocale)}, {nameof(TranslationResponse.DestLocale)}, {nameof(TranslationResponse.TranslatedText)}"),
-                    new ChatMessage(ChatRole.User, JsonSerializer.Serialize(textsToTranslate))
+                    new ChatRequestUserMessage(JsonSerializer.Serialize(textsToTranslate))
                 }
             };
             var response = await openAIClient.GetChatCompletionsAsync(
