@@ -18,7 +18,10 @@ namespace FairPlayTube.MetricsConfiguration
                 observeValue: () => 
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
-                    var result = dbContext.VideoWatchTime.Count();
+                    var result = dbContext.VideoWatchTime
+                    .Where(p=>p.LastUpdateDatetime >= 
+                    DateTimeOffset.UtcNow.AddSeconds(-10))
+                    .Count();
                     return result;
                 });
         }

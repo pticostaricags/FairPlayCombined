@@ -23,10 +23,12 @@ namespace FairPlayCombined.Services.FairPlayTube
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             var videoInfoEntity = await dbContext.VideoInfo.SingleAsync(p => p.VideoId == videoId,
                 cancellationToken: cancellationToken);
+            DateTimeOffset sessionStartDatetime = DateTimeOffset.UtcNow;
             VideoWatchTime? entity = new()
             {
                 SessionId = videoWatchTimeModel.SessionId!.Value,
-                SessionStartDatetime = DateTimeOffset.UtcNow,
+                SessionStartDatetime = sessionStartDatetime,
+                LastUpdateDatetime = sessionStartDatetime,
                 VideoInfoId = videoInfoEntity.VideoInfoId,
                 WatchedByApplicationUserId = videoWatchTimeModel.WatchedByApplicationUserId,
                 WatchTime = videoWatchTimeModel.WatchTime
@@ -45,6 +47,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .SingleOrDefaultAsync(p => p.SessionId == videoWatchTimeModel.SessionId,
                 cancellationToken: cancellationToken);
             entity!.WatchTime = videoWatchTimeModel.WatchTime;
+            entity.LastUpdateDatetime = DateTimeOffset.UtcNow;
             await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
         }
     }

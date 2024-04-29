@@ -6,6 +6,7 @@
     [SessionStartDatetime] DATETIMEOFFSET NOT NULL, 
     [WatchTime] FLOAT NOT NULL, 
     [WatchedByApplicationUserId] NVARCHAR(450) NULL, 
+    [LastUpdateDatetime] DATETIMEOFFSET NOT NULL, 
     CONSTRAINT [FK_VideoWatchTime_VideoInfo] FOREIGN KEY ([VideoInfoId]) REFERENCES [FairPlayTube].[VideoInfo]([VideoInfoId]), 
     CONSTRAINT [FK_VideoWatchTime_AspNetUsers] FOREIGN KEY ([WatchedByApplicationUserId]) REFERENCES [dbo].[AspNetUsers]([Id])
 )

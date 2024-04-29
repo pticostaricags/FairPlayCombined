@@ -34,6 +34,8 @@ public partial class VideoWatchTime
     [StringLength(450)]
     public string WatchedByApplicationUserId { get; set; }
 
+    public DateTimeOffset LastUpdateDatetime { get; set; }
+
     [ForeignKey("VideoInfoId")]
     [InverseProperty("VideoWatchTime")]
     public virtual VideoInfo VideoInfo { get; set; }
