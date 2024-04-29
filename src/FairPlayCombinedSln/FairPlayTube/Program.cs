@@ -32,7 +32,7 @@ builder.Services.ConfigureOpenTelemetryMeterProvider((sp, meterBuilder) =>
 {
     meterBuilder.AddMeter(MetricsSetup.SESSION_METER_NAME);
 });
-MetricsSetup.Initialize();
+builder.Services.AddTransient<MetricsSetup>();
 builder.Services.AddFluentUIComponents();
 
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
@@ -330,20 +330,3 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.Run();
-
-
-namespace FairPlayTube.MetricsConfiguration
-{
-    internal static class MetricsSetup
-    {
-        internal const string SESSION_METER_NAME = $"{nameof(FairPlayTube)}.Videos";
-        private static Meter? sessionsMeter { get; set; }
-        internal static Counter<int>? videoSessions { get; private set; }
-
-        internal static void Initialize()
-        {
-            sessionsMeter = new(SESSION_METER_NAME);
-            videoSessions = sessionsMeter!.CreateCounter<int>($"{sessionsMeter!.Name}.VideoSessions");
-        }
-    }
-}

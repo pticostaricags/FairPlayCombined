@@ -6,9 +6,11 @@
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
+@using MetricsConfiguration
 
 @rendermode NoPreRender
 
+@inject MetricsSetup metricsSetup
 @inject IJSRuntime jsRuntime
 @inject VideoWatchTimeService videoWatchTimeService
 @inject ILogger<WatchVideo> logger;
@@ -71,7 +73,7 @@ else
     {
         if (firstRender)
         {
-            MetricsConfiguration.MetricsSetup.videoSessions!.Add(1);
+            metricsSetup.AddSession();
             this.IsBusy = true;
             StateHasChanged();
             this.videoInfoModel = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
