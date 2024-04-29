@@ -1,23 +1,26 @@
-﻿using System.Diagnostics.Metrics;
+﻿using FairPlayCombined.DataAccess.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 
 namespace FairPlayTube.MetricsConfiguration
 {
-    public class MetricsSetup
+    public class MetricsSetup(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
     {
         internal const string SESSION_METER_NAME = $"{nameof(FairPlayTube)}.Videos";
         private Meter? sessionsMeter { get; set; }
-        private Counter<int>? videoSessions { get; set; }
+        private ObservableGauge<int>? videoSessions { get; set; }
 
-        public MetricsSetup()
+        public void Initialize()
         {
             sessionsMeter = new(SESSION_METER_NAME);
-            videoSessions = sessionsMeter!.CreateCounter<int>($"{sessionsMeter!.Name}.VideoSessions");
-        }
-
-        public void AddSession()
-        {
-            this.videoSessions!.Add(1);
+            videoSessions = sessionsMeter!.CreateObservableGauge<int>($"{sessionsMeter!.Name}.VideoSessions",
+                observeValue: () => 
+                {
+                    var dbContext = dbContextFactory.CreateDbContext();
+                    var result = dbContext.VideoWatchTime.Count();
+                    return result;
+                });
         }
     }
 }
