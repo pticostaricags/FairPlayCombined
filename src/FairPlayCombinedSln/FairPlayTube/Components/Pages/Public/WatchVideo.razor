@@ -71,6 +71,7 @@ else
     {
         if (firstRender)
         {
+            MetricsConfiguration.MetricsSetup.videoSessions!.Add(1);
             this.IsBusy = true;
             StateHasChanged();
             this.videoInfoModel = await this.videoInfoService.GetVideoInfoByVideoIdAsync(

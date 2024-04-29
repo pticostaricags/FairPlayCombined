@@ -13,6 +13,7 @@ using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayTube.Components;
 using FairPlayTube.Components.Account;
 using FairPlayTube.Data;
+using FairPlayTube.MetricsConfiguration;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.YouTube.v3;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -21,10 +22,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
+using OpenTelemetry.Metrics;
+using System.Diagnostics.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.ConfigureOpenTelemetryMeterProvider((sp, meterBuilder) =>
+{
+    meterBuilder.AddMeter(MetricsSetup.SESSION_METER_NAME);
+});
+MetricsSetup.Initialize();
 builder.Services.AddFluentUIComponents();
 
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
@@ -322,3 +330,20 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.Run();
+
+
+namespace FairPlayTube.MetricsConfiguration
+{
+    internal static class MetricsSetup
+    {
+        internal const string SESSION_METER_NAME = $"{nameof(FairPlayTube)}.Videos";
+        private static Meter? sessionsMeter { get; set; }
+        internal static Counter<int>? videoSessions { get; private set; }
+
+        internal static void Initialize()
+        {
+            sessionsMeter = new(SESSION_METER_NAME);
+            videoSessions = sessionsMeter!.CreateCounter<int>($"{sessionsMeter!.Name}.VideoSessions");
+        }
+    }
+}
