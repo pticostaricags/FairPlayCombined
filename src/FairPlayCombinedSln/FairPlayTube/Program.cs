@@ -30,9 +30,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.ConfigureOpenTelemetryMeterProvider((sp, meterBuilder) =>
 {
-    meterBuilder.AddMeter(MetricsSetup.SESSION_METER_NAME);
+    meterBuilder.AddMeter(FairPlayTubeMetrics.SESSION_METER_NAME);
 });
-builder.Services.AddTransient<MetricsSetup>();
+builder.Services.AddTransient<FairPlayTubeMetrics>();
 builder.Services.AddFluentUIComponents();
 
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
