@@ -33,7 +33,7 @@ namespace FairPlayTube.MetricsConfiguration
                     var result = dbContext.VideoWatchTime
                     .Where(p => p.LastUpdateDatetime >=
                     DateTimeOffset.UtcNow.AddSeconds(-10) && 
-                    p.WatchedByApplicationUserId == null)
+                    p.WatchedByApplicationUserId != null)
                     .Count();
                     return result;
                 });
