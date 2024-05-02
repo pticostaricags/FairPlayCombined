@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FairPlayCombined.Models.FairPlayTube.UserMessage
+namespace FairPlayCombined.Models.Common.UserMessage
 {
 
     /// <summary>

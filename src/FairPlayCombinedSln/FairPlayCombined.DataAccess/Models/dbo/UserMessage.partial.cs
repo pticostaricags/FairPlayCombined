@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
-public partial class UserMessage1 : IOriginatorInfo
+namespace FairPlayCombined.DataAccess.Models.dboSchema
 {
+    public partial class UserMessage : IOriginatorInfo
+    {
+    }
 }

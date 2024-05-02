@@ -1,7 +1,8 @@
 ﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Models.Common.UserMessage;
 using FairPlayCombined.Models.FairPlayTube.Conversation;
-using FairPlayCombined.Models.FairPlayTube.UserMessage;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,12 @@ namespace FairPlayCombined.Services.FairPlayTube
                              dbContext.AspNetUsers
                              .SingleAsync(p => p.Id ==
                              userProviderService.GetCurrentUserId(), cancellationToken: cancellationToken);
-            var receivedMessagesUsers = await dbContext.UserMessage1
+            var receivedMessagesUsers = await dbContext.UserMessage
                 .Include(p => p.FromApplicationUser)
                 .Where(p => p.ToApplicationUserId == currentUser.Id)
                 .Select(p => p.FromApplicationUser)
                 .Distinct().ToListAsync(cancellationToken);
-            var sentMessagesUsers = await dbContext.UserMessage1
+            var sentMessagesUsers = await dbContext.UserMessage
                 .Include(p => p.ToApplicationUser)
                 .Where(p => p.FromApplicationUserId == currentUser.Id)
                 .Select(p => p.ToApplicationUser)
@@ -62,7 +63,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 dbContext.AspNetUsers
                 .SingleAsync(p => p.Id ==
                 userProviderService.GetCurrentUserId(), cancellationToken: cancellationToken);
-            return await dbContext.UserMessage1
+            return await dbContext.UserMessage
                 .Include(p => p.ToApplicationUser)
                 .Include(p => p.FromApplicationUser)
                 .Where(p =>
@@ -88,8 +89,8 @@ namespace FairPlayCombined.Services.FairPlayTube
             CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-            await dbContext.UserMessage1.AddAsync(
-                new DataAccess.Models.FairPlayTubeSchema.UserMessage1()
+            await dbContext.UserMessage.AddAsync(
+                new UserMessage()
                 {
                     FromApplicationUserId = userProviderService.GetCurrentUserId(),
                     ToApplicationUserId = userMessageModel!.ToApplicationUserId,

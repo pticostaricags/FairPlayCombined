@@ -91,6 +91,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[UserMessage]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayBudget].[Currency]",
          "ObjectType": 0
       },
@@ -159,10 +163,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[FairPlayDating].[UserMessage]",
-         "ObjectType": 0
-      },
-      {
          "ExcludedColumns": [
             "CurrentGeoLocation"
          ],
@@ -211,10 +211,6 @@
       },
       {
          "Name": "[FairPlaySocial].[PostVisibility]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[FairPlayTube].[UserMessage]",
          "ObjectType": 0
       },
       {
