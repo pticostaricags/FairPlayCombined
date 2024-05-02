@@ -3,6 +3,8 @@ using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.Common.UserMessage;
 using FairPlayCombined.Models.FairPlayTube.Conversation;
+using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,8 @@ namespace FairPlayCombined.Services.FairPlayTube
 {
     public partial class UserMessageService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IUserProviderService userProviderService) : BaseService
+        IUserProviderService userProviderService,
+        IHubContext<UserMessageNotificationHub, IUserMessageNotificationHub> hubContext) : BaseService
     {
         public async Task<ConversationsUserModel[]?> GetMyConversationsUsersAsync(
             CancellationToken cancellationToken)
@@ -97,6 +100,12 @@ namespace FairPlayCombined.Services.FairPlayTube
                     Message = userMessageModel.Message,
                 }, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
+            //TODO: This nees to be changed to .User when SignalR Authorization is implemented
+            await hubContext.Clients.User(userMessageModel.ToApplicationUserId!)
+                .ReceiveMessage(new Models.FairPlaySocial.Notification.UserMessageNotificationModel()
+                {
+                    Message = "You have a new message. Check your inbox to see it"
+                });
         }
     }
 }

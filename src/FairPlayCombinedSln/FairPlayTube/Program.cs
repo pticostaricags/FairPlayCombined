@@ -8,6 +8,7 @@ using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Models.GoogleGemini;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.Common;
+using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using FairPlayCombined.Services.FairPlayTube;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayTube.Components;
@@ -34,7 +35,7 @@ builder.Services.ConfigureOpenTelemetryMeterProvider((sp, meterBuilder) =>
 });
 builder.Services.AddTransient<FairPlayTubeMetrics>();
 builder.Services.AddFluentUIComponents();
-
+builder.Services.AddSignalR();
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
 builder.Services.AddLocalization();
@@ -295,7 +296,7 @@ app.MapControllers();
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
-
+app.MapHub<UserMessageNotificationHub>(Constants.Routes.SignalRHubs.UserMessageHub);
 app.MapGet("/api/video/{videoId}/thumbnail",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,

@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.0-preview.4.24219.8" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.0-preview.4.24219.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0-preview.4.24219.8" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0-preview.3.24172.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0-preview.4.24217.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0-preview.4.24217.1">
       <PrivateAssets>all</PrivateAssets>

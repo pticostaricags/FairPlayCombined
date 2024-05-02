@@ -1,0 +1,50 @@
+﻿@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlaySocial.Notification
+@using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Net
+@inject IToastService toastService
+@inject IUserProviderService userProviderService
+@inject NavigationManager navigationManager
+@attribute [Authorize]
+@inject IHttpContextAccessor httpContextAccesor
+@code
+{
+    private HubConnection? hubConnection;
+    private CancellationTokenSource cancellationTokenSource = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var uri = new UriBuilder(this.navigationManager.Uri);
+            this.hubConnection = new HubConnectionBuilder()
+            //TODO: This needs to send the AccessToken
+            .WithUrl(this.navigationManager.ToAbsoluteUri($"{Constants.Routes.SignalRHubs.UserMessageHub}"),
+            configureHttpConnection:(options)=>
+            {
+                //Check https://stackoverflow.com/questions/72538054/adding-cookies-to-signalr-core-requests
+                var allCookies = this.httpContextAccesor.HttpContext!.Request.Cookies;
+                foreach (var singleCookie in allCookies)
+                {
+                    Cookie cookie = new Cookie(singleCookie.Key, singleCookie.Value)
+                    {
+                        Domain = uri.Host,
+                        Path = uri.Path
+                    };
+                    options.Cookies.Add(cookie);
+                }
+            })
+            .Build();
+            hubConnection.On<UserMessageNotificationModel>($"{nameof(IUserMessageNotificationHub.ReceiveMessage)}", (model) =>
+            {
+                toastService.ShowInfo(model.Message!);
+            });
+            await this.hubConnection.StartAsync(this.cancellationTokenSource.Token);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+    }
+}

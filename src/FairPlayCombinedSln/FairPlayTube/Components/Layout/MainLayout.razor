@@ -13,6 +13,12 @@
         </FluentLabel>
     </SubHeader>
     <Body>
+        <AuthorizeView>
+            <Authorized>
+                <FairPlayTube.Components.SignalR.UserMessageNotification 
+                @rendermode="RenderMode.InteractiveServer"></FairPlayTube.Components.SignalR.UserMessageNotification>
+            </Authorized>
+        </AuthorizeView>
         @Body
     </Body>
     <NavMenuContent>

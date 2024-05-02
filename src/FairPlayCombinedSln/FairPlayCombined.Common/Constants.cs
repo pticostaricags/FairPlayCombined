@@ -4,6 +4,10 @@
     {
         public static class Routes
         {
+            public static class SignalRHubs
+            {
+                public const string UserMessageHub = $"/{nameof(UserMessageHub)}";
+            }
             public static class FairPlayTubeRoutes
             {
                 public static class CreatorRoutes
