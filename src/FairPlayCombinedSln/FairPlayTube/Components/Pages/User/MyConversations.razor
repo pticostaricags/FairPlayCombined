@@ -48,15 +48,14 @@
                                 <FluentCard>
                                     <FluentHeader>
                                         <strong>
+                                            [@singleConversation.RowCreationDateTime!.Value.LocalDateTime]
+                                            <br />
                                             @singleConversation.FromApplicationUserFullName
                                         </strong>
                                     </FluentHeader>
                                     <FluentBodyContent>
                                         @singleConversation.Message
                                     </FluentBodyContent>
-                                    <FluentFooter>
-                                        @singleConversation.RowCreationDateTime
-                                    </FluentFooter>
                                 </FluentCard>
                             </div>
                         </div>

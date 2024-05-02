@@ -24,7 +24,7 @@ namespace FairPlayCombined.DataAccess.Interceptors
                     var applicationName = sqlConnectionStringBuilder.ApplicationName ?? "Unknown App";
                     var userName = userProviderService.GetCurrentUserId() ?? "Unauthenticated User";
                     entity.SourceApplication = applicationName;
-                    entity.RowCreationDateTime = DateTime.UtcNow;
+                    entity.RowCreationDateTime = DateTimeOffset.UtcNow;
                     entity.RowCreationUser = userName!;
                     entity.OriginatorIpaddress = String.Join(",", await IpAddressProvider.GetCurrentHostIPv4AddressesAsync());
                 }
