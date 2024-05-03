@@ -10,6 +10,7 @@ using FairPlayCombined.Services.FairPlayDating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
 {
@@ -54,6 +55,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             ServiceCollection services = new();
             RegisterDbContext(services);
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<UserActivityService>();
+            services.AddTransient<ILogger<UserActivityService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<UserActivityService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -130,6 +137,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             ServiceCollection services = new();
             RegisterDbContext(services);
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<UserActivityService>();
+            services.AddTransient<ILogger<UserActivityService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<UserActivityService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -161,6 +174,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             ServiceCollection services = new();
             RegisterDbContext(services);
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<UserActivityService>();
+            services.AddTransient<ILogger<UserActivityService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<UserActivityService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -205,6 +224,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             ServiceCollection services = new();
             RegisterDbContext(services);
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<UserActivityService>();
+            services.AddTransient<ILogger<UserActivityService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<UserActivityService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();

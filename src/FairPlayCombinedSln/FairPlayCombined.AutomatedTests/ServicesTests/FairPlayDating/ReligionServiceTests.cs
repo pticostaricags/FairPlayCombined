@@ -3,8 +3,10 @@ using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.FairPlayDating.Religion;
 using FairPlayCombined.Models.Pagination;
 using FairPlayCombined.Services.FairPlayDating;
+using FairPlayCombined.Services.FairPlaySocial;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
 {
@@ -41,6 +43,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<ReligionService>();
+            services.AddTransient<ILogger<ReligionService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<ReligionService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -66,6 +74,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<ReligionService>();
+            services.AddTransient<ILogger<ReligionService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<ReligionService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -93,6 +107,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<ReligionService>();
+            services.AddTransient<ILogger<ReligionService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<ReligionService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -133,6 +153,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<ReligionService>();
+            services.AddTransient<ILogger<ReligionService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<ReligionService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
