@@ -22,6 +22,7 @@ using Google.Apis.YouTube.v3;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -37,6 +38,11 @@ builder.Services.ConfigureOpenTelemetryMeterProvider((sp, meterBuilder) =>
 });
 builder.Services.AddTransient<FairPlayTubeMetrics>();
 builder.Services.AddFluentUIComponents();
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+          new[] { "application/octet-stream" });
+});
 builder.Services.AddSignalR();
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
@@ -281,7 +287,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+//Check https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/signalr?view=aspnetcore-9.0#disable-response-compression-for-hot-reload
+if (!app.Environment.IsDevelopment())
+{
+    app.UseResponseCompression();
+}
 app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
