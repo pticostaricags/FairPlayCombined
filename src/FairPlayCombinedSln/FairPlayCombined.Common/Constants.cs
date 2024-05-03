@@ -32,6 +32,8 @@
             public const string AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY = "AzureVideoIndexerResourceName";
             public const string AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY = "AzureVideoIndexerSubscriptionId";
             public const string GOOGLE_GEMINI_KEY_KEY = "GoogleGeminiKey";
+            public const string AZURE_CONTENT_SAFETY_ENDPOINT_KEY = "AzureContentSafetyEndpoint";
+            public const string AZURE_CONTENT_SAFETY_KEY_KEY = "AzureContentSafetyKey";
         }
         public static class GeoCoordinates
         {

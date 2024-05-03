@@ -1,4 +1,6 @@
-﻿@using FairPlayCombined.Interfaces
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlaySocial.Notification
 @using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage
 @using Microsoft.AspNetCore.SignalR.Client
@@ -21,17 +23,17 @@
             this.hubConnection = new HubConnectionBuilder()
             //TODO: This needs to send the AccessToken
             .WithUrl(this.navigationManager.ToAbsoluteUri($"{Constants.Routes.SignalRHubs.UserMessageHub}"),
-            configureHttpConnection:(options)=>
+            configureHttpConnection: (options) =>
             {
                 //Check https://stackoverflow.com/questions/72538054/adding-cookies-to-signalr-core-requests
                 var allCookies = this.httpContextAccesor.HttpContext!.Request.Cookies;
                 foreach (var singleCookie in allCookies)
                 {
                     Cookie cookie = new Cookie(singleCookie.Key, singleCookie.Value)
-                    {
-                        Domain = uri.Host,
-                        Path = uri.Path
-                    };
+                        {
+                            Domain = uri.Host,
+                            Path = uri.Path
+                        };
                     options.Cookies.Add(cookie);
                 }
             })
@@ -46,5 +48,14 @@
         {
             this.toastService.ShowError(ex.Message);
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (this.hubConnection != null)
+        {
+            await this.hubConnection.StopAsync(this.cancellationTokenSource.Token);
+        }
+        await this.cancellationTokenSource.CancelAsync();
     }
 }

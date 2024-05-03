@@ -1,3 +1,5 @@
+using Azure;
+using Azure.AI.ContentSafety;
 using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
@@ -184,6 +186,28 @@ builder.Services.AddSingleton<GoogleGeminiConfiguration>(sp =>
     {
         Key = googleGeminiKeyEntity.Value
     };
+});
+
+builder.Services.AddTransient<ContentSafetyClient>(sp => 
+{
+    var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+    
+    var azureContentSafetyEndpoint = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_ENDPOINT_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_ENDPOINT_KEY} in database");
+
+    var azureContentSafetyKey = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_KEY_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_KEY_KEY} in database");
+
+
+    ContentSafetyClient contentSafetyClient = new(new Uri(azureContentSafetyEndpoint.Value),
+                new AzureKeyCredential(azureContentSafetyKey.Value));
+    return contentSafetyClient;
+});
+builder.Services.AddTransient<AzureContentSafetyService>(sp => 
+{
+    ContentSafetyClient contentSafetyClient = sp.GetRequiredService<ContentSafetyClient>();
+    AzureContentSafetyService azureContentSafetyService = new(contentSafetyClient);
+    return azureContentSafetyService;
 });
 
 builder.Services.AddTransient<GoogleGeminiService>(sp => 
