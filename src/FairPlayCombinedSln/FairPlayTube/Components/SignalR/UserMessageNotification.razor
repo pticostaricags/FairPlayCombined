@@ -32,7 +32,8 @@
                     Cookie cookie = new Cookie(singleCookie.Key, singleCookie.Value)
                         {
                             Domain = uri.Host,
-                            Path = uri.Path
+                            //Setting Path to "/" fixes the "unauthorized" issue, which was also causing performance degradation
+                            Path = "/"
                         };
                     options.Cookies.Add(cookie);
                 }
