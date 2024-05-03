@@ -218,6 +218,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoComment]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoDigitalMarketingDailyPosts]",
          "ObjectType": 0
       },

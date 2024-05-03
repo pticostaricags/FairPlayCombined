@@ -118,6 +118,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<VideoCaptions> VideoCaptions { get; set; }
 
+    public virtual DbSet<VideoComment> VideoComment { get; set; }
+
     public virtual DbSet<VideoDigitalMarketingDailyPosts> VideoDigitalMarketingDailyPosts { get; set; }
 
     public virtual DbSet<VideoDigitalMarketingPlan> VideoDigitalMarketingPlan { get; set; }
@@ -471,6 +473,17 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoCaptions)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoCaptions_VideoInfo");
+        });
+
+        modelBuilder.Entity<VideoComment>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.VideoComment)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ApplicationUserId_VideoComment");
+
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoComment)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoInfo_VideoComment");
         });
 
         modelBuilder.Entity<VideoDigitalMarketingDailyPosts>(entity =>

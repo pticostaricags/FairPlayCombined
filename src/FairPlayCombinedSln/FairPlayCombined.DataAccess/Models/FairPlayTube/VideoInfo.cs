@@ -112,6 +112,9 @@ public partial class VideoInfo
     public virtual ICollection<VideoCaptions> VideoCaptions { get; set; } = new List<VideoCaptions>();
 
     [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoComment> VideoComment { get; set; } = new List<VideoComment>();
+
+    [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoDigitalMarketingDailyPosts> VideoDigitalMarketingDailyPosts { get; set; } = new List<VideoDigitalMarketingDailyPosts>();
 
     [InverseProperty("VideoInfo")]

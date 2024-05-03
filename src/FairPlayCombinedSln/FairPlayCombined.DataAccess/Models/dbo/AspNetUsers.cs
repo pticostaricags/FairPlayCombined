@@ -114,6 +114,9 @@ public partial class AspNetUsers
     public virtual UserProfile UserProfile { get; set; }
 
     [InverseProperty("ApplicationUser")]
+    public virtual ICollection<VideoComment> VideoComment { get; set; } = new List<VideoComment>();
+
+    [InverseProperty("ApplicationUser")]
     public virtual ICollection<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
 
     [InverseProperty("ApplicationUser")]
