@@ -6,7 +6,7 @@
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
 
-@rendermode RenderMode.InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject VideoInfoService videoInfoService
 @inject NavigationManager navigationManager

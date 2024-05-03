@@ -10,7 +10,7 @@
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
 
-@rendermode RenderMode.InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject VideoViewerService videoViewerService
 @inject IUserProviderService userProviderService
 <PageTitle>My Video Viewers</PageTitle>

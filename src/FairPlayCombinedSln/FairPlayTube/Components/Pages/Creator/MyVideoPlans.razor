@@ -12,7 +12,7 @@
 @using Google.Apis.YouTube.v3.Data
 
 @attribute [Authorize]
-@rendermode RenderMode.InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 @inject VideoPlanService videoPlanService
 @inject IToastService toastService

@@ -11,7 +11,7 @@
 @using FairPlayTube.Components.Spinners
 @using MetricsConfiguration
 
-@rendermode NoPreRender
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 @inject FairPlayTubeMetrics metricsSetup
 @inject IJSRuntime jsRuntime
@@ -96,7 +96,6 @@ else
 @code {
     [Parameter]
     public string? VideoId { get; set; }
-    private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool UseFallbackMode { get; set; }

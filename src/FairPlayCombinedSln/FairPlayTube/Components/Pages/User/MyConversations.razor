@@ -7,9 +7,8 @@
 @using FairPlayTube.Components.Spinners
 
 @attribute [Authorize]
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @attribute [StreamRendering(enabled: true)]
-
-@rendermode RenderMode.InteractiveServer
 
 @inject UserMessageService userMessageService
 @inject IToastService toastService
