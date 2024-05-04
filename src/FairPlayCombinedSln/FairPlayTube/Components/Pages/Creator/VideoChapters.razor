@@ -17,18 +17,18 @@
 @inject VideoCaptionsService videoCaptionsService
 
 <PageTitle>
-    Video Chapters @(videosInfoModel != null ? $"- {videosInfoModel.Name}" : String.Empty)
+    Video Chapters @(videoInfoModel != null ? $"- {videoInfoModel.Name}" : String.Empty)
 </PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    Video Chapters @(videosInfoModel != null ? $"- {videosInfoModel.Name}" : String.Empty)
+    Video Chapters @(videoInfoModel != null ? $"- {videoInfoModel.Name}" : String.Empty)
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <div>
     <FluentButton Type="ButtonType.Button" OnClick="OnRecreatePlanButtonclickedAsync">
-        Re-Create Plan
+        Re-Create Chapters
     </FluentButton>
 </div>
 <div>
@@ -44,7 +44,7 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
-    private VideoInfoModel? videosInfoModel { get; set; }
+    private VideoInfoModel? videoInfoModel { get; set; }
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private string? YouTubeChapters { get; set; }
@@ -54,10 +54,10 @@
     {
         this.IsBusy = true;
         StateHasChanged();
-        this.videosInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
+        this.videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
         cancellationToken: this.cancellationTokenSource.Token);
         StateHasChanged();
-        await this.GenerateYouTubeChaptersAsync(videosInfoModel);
+        await this.GenerateYouTubeChaptersAsync(videoInfoModel);
         this.IsBusy = false;
         StateHasChanged();
     }
@@ -66,20 +66,18 @@
     {
         this.IsBusy = true;
         StateHasChanged();
-        var videosInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        await this.GenerateYouTubeChaptersAsync(videosInfoModel);
+        await this.GenerateYouTubeChaptersAsync(this.videoInfoModel!);
         this.IsBusy = false;
         StateHasChanged();
     }
 
-    private async Task GenerateYouTubeChaptersAsync(VideoInfoModel videosInfoModel)
+    private async Task GenerateYouTubeChaptersAsync(VideoInfoModel videoInfoModel)
     {
         var englishCaptions = await this.videoCaptionsService
-            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videosInfoModel.VideoInfoId,
+            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
             language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
         var systemMessage = "You will take the role of an expert in YouTube SEO. I will give you the information for one of my videos. Your job is to generate the repective YouTube Chapters, timestamp must be in format: hh:mm:ss, do not add milliseconds, always start with 00:00:00. Return them as an HTML 5 bullet list.";
-        var userMessage = $"Video Title: {videosInfoModel.Description}. Video Captions: {englishCaptions}";
+        var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
         var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
         if (result != null)
         {
