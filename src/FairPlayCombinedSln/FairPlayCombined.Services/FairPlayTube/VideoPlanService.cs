@@ -22,7 +22,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         public async Task UpdateVideoPlanAsync(UpdateVideoPlanModel createModel,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {methodName}", nameof(UpdateVideoPlanAsync));
+            logger.LogInformation(message: "Start of method: {MethodName}", nameof(UpdateVideoPlanAsync));
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             VideoPlan entity = await dbContext.VideoPlan
                 .SingleAsync(p=>p.VideoPlanId == createModel.VideoPlanId,

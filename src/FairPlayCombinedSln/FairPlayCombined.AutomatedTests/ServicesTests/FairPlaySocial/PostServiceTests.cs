@@ -5,9 +5,11 @@ using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.Models.FairPlaySocial.Post;
 using FairPlayCombined.Models.Pagination;
+using FairPlayCombined.Services.FairPlayDating;
 using FairPlayCombined.Services.FairPlaySocial;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
 {
@@ -60,6 +62,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                         );
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<PostService>();
+            services.AddTransient<ILogger<PostService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<PostService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -114,6 +122,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                         );
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<PostService>();
+            services.AddTransient<ILogger<PostService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<PostService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -170,6 +184,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                         );
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<PostService>();
+            services.AddTransient<ILogger<PostService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<PostService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -239,6 +259,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                         );
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<PostService>();
+            services.AddTransient<ILogger<PostService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<PostService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();

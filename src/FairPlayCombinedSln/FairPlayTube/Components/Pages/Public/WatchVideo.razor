@@ -1,21 +1,27 @@
 ﻿@page "/Public/WatchVideo/{VideoId}"
 @implements IAsyncDisposable
+@using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.AzureVideoIndexer
+@using FairPlayCombined.Models.FairPlayTube.VideoComment
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
+@using MetricsConfiguration
 
-@rendermode NoPreRender
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 
+@inject FairPlayTubeMetrics metricsSetup
 @inject IJSRuntime jsRuntime
 @inject VideoWatchTimeService videoWatchTimeService
 @inject ILogger<WatchVideo> logger;
 @inject IUserProviderService userProviderService
 @inject SupportedLanguageService supportedLanguageService
 @inject VideoInfoService videoInfoService
-
+@inject VideoCommentService videoCommentService
+@inject IToastService toastService
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -49,10 +55,47 @@ else
     </div>
 }
 
+<FluentLabel Typo="Typography.H3">Comments</FluentLabel>
+<AuthorizeView>
+    <Authorized>
+        @if (this.createVideoCommentModel != null)
+        {
+            <FluentEditForm Context="formContext" Model="this.createVideoCommentModel" OnValidSubmit="OnCreateCommentClickedAsync">
+                <div>
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <FluentValidationSummary></FluentValidationSummary>
+                </div>
+                <div>
+                    <FluentTextField Required="true" Placeholder="Add a comment..." @bind-Value="this.createVideoCommentModel.Comment"></FluentTextField>
+                </div>
+                <div>
+                    <FluentButton Type="ButtonType.Submit" style="display:none;">Add Comment</FluentButton>
+                </div>
+            </FluentEditForm>
+        }
+    </Authorized>
+</AuthorizeView>
+<FluentPaginator State="this.paginationState"></FluentPaginator>
+<div class="@ThemeConfiguration.Grids.GridContainerCss">
+    <FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
+        <TemplateColumn>
+            <FluentCard>
+                <FluentHeader>
+                    <strong>
+                        @context.RowCreationUser
+                    </strong> @context.RowCreationDateTime.LocalDateTime
+                </FluentHeader>
+                <FluentBodyContent>
+                    @context.Comment
+                </FluentBodyContent>
+            </FluentCard>
+        </TemplateColumn>
+    </FluentDataGrid>
+</div>
+
 @code {
     [Parameter]
     public string? VideoId { get; set; }
-    private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool UseFallbackMode { get; set; }
@@ -62,21 +105,63 @@ else
     private SupportedLanguageModel[]? SupportedLanguages { get; set; }
     private DotNetObjectReference<WatchVideo>? dotNetObjectReference;
     private bool IsSessionCreated { get; set; } = false;
+    private GridItemsProvider<VideoCommentModel>? ItemsProvider;
+    private readonly PaginationState paginationState = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
+    [SupplyParameterFromForm]
+    public CreateVideoCommentModel? createVideoCommentModel { get; set; }
+
     protected override void OnInitialized()
     {
         this.dotNetObjectReference = DotNetObjectReference.Create<WatchVideo>(this);
+        this.IsBusy = true;
+        ItemsProvider = async req =>
+        {
+            StateHasChanged();
+            PaginationRequest paginationRequest = new()
+                {
+                    SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName = nameof(VideoCommentModel.RowCreationDateTime),
+                            SortType = SortType.Descending
+                        }
+                    },
+                    PageSize = paginationState.ItemsPerPage,
+                    StartIndex = req.StartIndex
+                };
+            var items = await videoCommentService.GetPaginatedCommentsByVideonIdAsync(paginationRequest,
+                this.VideoId!, this.cancellationTokenSource.Token);
+            StateHasChanged();
+            var result = GridItemsProviderResult.From<VideoCommentModel>(items!.Items!, items.TotalItems);
+            return result;
+        };
+        this.IsBusy = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            metricsSetup.Initialize();
             this.IsBusy = true;
             StateHasChanged();
             this.videoInfoModel = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
                 this.VideoId!,
                 this.cancellationTokenSource.Token
             );
+            var currentUserId = this.userProviderService.GetCurrentUserId();
+            if (!String.IsNullOrWhiteSpace(currentUserId))
+            {
+                this.createVideoCommentModel ??= new CreateVideoCommentModel()
+                    {
+                        VideoInfoId = this.videoInfoModel!.VideoInfoId,
+                        ApplicationUserId = currentUserId
+                    };
+            }
             this.VideoUrl = videoInfoModel!.PublishedUrl;
             this.SupportedLanguages = await supportedLanguageService
             .GetAllSupportedLanguageAsync(this.cancellationTokenSource.Token);
@@ -99,11 +184,11 @@ else
                 await this.videoWatchTimeService.CreateVideoWatchTimeAsync(
                     this.VideoId!,
                     new FairPlayCombined.Models.FairPlayTube.VideoWatchTime.VideoWatchTimeModel()
-                    {
-                        WatchedByApplicationUserId = currentUserId,
-                        SessionId = Guid.Parse(currentSessionGuid),
-                        WatchTime = watchTime
-                    }, cancellationToken: cancellationTokenSource.Token);
+                        {
+                            WatchedByApplicationUserId = currentUserId,
+                            SessionId = Guid.Parse(currentSessionGuid),
+                            WatchTime = watchTime
+                        }, cancellationToken: cancellationTokenSource.Token);
                 this.IsSessionCreated = true;
             }
             else
@@ -128,6 +213,30 @@ else
         this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.videoInfoModel!.AccountId}/{this.VideoId}/?locale=en&location={this.videoInfoModel.Location}";
         this.UseFallbackMode = true;
         StateHasChanged();
+    }
+
+    private async Task OnCreateCommentClickedAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            await this.videoCommentService.CreateVideoCommentAsync(this.createVideoCommentModel!,
+            this.cancellationTokenSource.Token);
+            await this.paginationState.SetCurrentPageIndexAsync(
+                this.paginationState.CurrentPageIndex
+            );
+            this.createVideoCommentModel!.Comment = null;
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
     }
 
     public ValueTask DisposeAsync()

@@ -10,7 +10,7 @@
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
 
-@rendermode RenderMode.InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject VideoViewerService videoViewerService
 @inject IUserProviderService userProviderService
 <PageTitle>My Video Viewers</PageTitle>
@@ -27,16 +27,6 @@
             else
             {
                 <FluentLabel>@context.Username</FluentLabel>
-            }
-        </TemplateColumn>
-        <TemplateColumn Title="Actions">
-            @if (!String.IsNullOrWhiteSpace(context.Username))
-            {
-                <FluentAnchor data-enhance-nav="false"
-                              data-bs-toggle="tooltip" data-bs-placement="top" title="Send Email"
-                              Href="@($"mailto://{context.Username}")" Target="_blank">
-                    <FluentIcon Value="@(new Icons.Regular.Size20.MailAdd())"></FluentIcon>
-                </FluentAnchor>
             }
         </TemplateColumn>
         <TemplateColumn Title="@nameof(VideoViewerModel.TotalTimeWatched)">

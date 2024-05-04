@@ -10,6 +10,7 @@ using FairPlayCombined.Services.FairPlayDating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
 {
@@ -46,6 +47,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             ServiceCollection services = new();
             RegisterDbContext(services);
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<LikedUserProfileService>();
+            services.AddTransient<ILogger<LikedUserProfileService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<LikedUserProfileService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -109,6 +116,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             ServiceCollection services = new();
             RegisterDbContext(services);
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<LikedUserProfileService>();
+            services.AddTransient<ILogger<LikedUserProfileService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<LikedUserProfileService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -133,6 +146,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             ServiceCollection services = new();
             RegisterDbContext(services);
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<LikedUserProfileService>();
+            services.AddTransient<ILogger<LikedUserProfileService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<LikedUserProfileService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -170,6 +189,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
         {
             ServiceCollection services = new();
             RegisterDbContext(services);
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<LikedUserProfileService>();
+            services.AddTransient<ILogger<LikedUserProfileService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<LikedUserProfileService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();

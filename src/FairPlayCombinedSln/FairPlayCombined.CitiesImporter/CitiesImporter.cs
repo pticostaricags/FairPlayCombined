@@ -8,10 +8,10 @@ public class CitiesImporter(ILogger<CitiesImporter> _logger) : BackgroundService
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker running at: {Time}", DateTimeOffset.Now);
             }
             await Task.Delay(1000, stoppingToken);
         }
-        _logger.LogInformation("Worker finished at: {time}", DateTimeOffset.Now);
+        _logger.LogInformation("Worker finished at: {Time}", DateTimeOffset.Now);
     }
 }

@@ -11,7 +11,7 @@
 @using FairPlayTube.Components.Spinners
 @using Google.Apis.YouTube.v3.Data
 @attribute [Authorize]
-@rendermode RenderMode.InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 @inject PromptGeneratorService promptGeneratorService
 @inject OpenAIService openAIService

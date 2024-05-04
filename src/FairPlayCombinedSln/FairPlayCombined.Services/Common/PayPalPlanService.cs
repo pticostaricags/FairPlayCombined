@@ -51,7 +51,7 @@ namespace FairPlayCombined.Services.Common
             planCreateRequest.RequestBody(plan);
             var response = await httpClient!.Execute(planCreateRequest);
             var planResult = response.Result<Plan>();
-            logger.LogInformation(message: "Plan created: {planInfo}", planResult!.ToString());
+            logger.LogInformation(message: "Plan created: {PlanInfo}", planResult!.ToString());
             return planResult;
         }
     }

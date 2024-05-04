@@ -32,7 +32,8 @@
 @inject PhotoService photoService
 @inject IGeoLocationService geolocationService
 @inject AzureOpenAIService azureOpenAIService
-@inject AzureContentModeratorService azureContentModeratorService
+@inject AzureContentSafetyService azureContentSafetyService
+
 <h3>MyUserProfile</h3>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -360,9 +361,13 @@
             if (inputFileChangeEventArgs.FileCount == 1)
             {
                 var stream = inputFileChangeEventArgs.File.OpenReadStream();
-                var photoModerationResult = await this.azureContentModeratorService
-                .ModerateImageAsync(stream, this.cancellationTokenSource.Token);
-                if (photoModerationResult.IsRacy || photoModerationResult.IsAdult)
+                var fileBytes = new byte[inputFileChangeEventArgs.File.Size];
+                MemoryStream memoryStream0 = new MemoryStream();
+                stream.CopyTo(memoryStream0);
+                var photoModerationResult = await this.azureContentSafetyService
+                .AnalyzeImageAsync(memoryStream0.ToArray(), this.cancellationTokenSource.Token);
+                if (photoModerationResult.IsViolence || photoModerationResult.IsAdult || 
+                    photoModerationResult.IsHate || photoModerationResult.IsSelfHarm)
                 {
                     this.toastService.ShowWarning("You are not allowed to use that image, please use another one");
                 }

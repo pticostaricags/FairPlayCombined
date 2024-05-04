@@ -1,13 +1,15 @@
 ﻿using FairPlayCombined.Models.FairPlaySocial.Notification;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage
 {
+    [Authorize]
     public class UserMessageNotificationHub : Hub<IUserMessageNotificationHub>
     {
         public async Task SendMessage(UserMessageNotificationModel model)
         {
-            await Clients.Group(model.GroupName).ReceiveMessage(model);
+            await Clients.Group(model.GroupName!).ReceiveMessage(model);
         }
 
         public Task SendMessageToCaller(UserMessageNotificationModel model)

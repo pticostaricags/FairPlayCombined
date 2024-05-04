@@ -1,7 +1,10 @@
 ﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Models.Common.UserMessage;
 using FairPlayCombined.Models.FairPlayTube.Conversation;
-using FairPlayCombined.Models.FairPlayTube.UserMessage;
+using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,7 +17,8 @@ namespace FairPlayCombined.Services.FairPlayTube
 {
     public partial class UserMessageService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IUserProviderService userProviderService) : BaseService
+        IUserProviderService userProviderService,
+        IHubContext<UserMessageNotificationHub, IUserMessageNotificationHub> hubContext) : BaseService
     {
         public async Task<ConversationsUserModel[]?> GetMyConversationsUsersAsync(
             CancellationToken cancellationToken)
@@ -24,12 +28,12 @@ namespace FairPlayCombined.Services.FairPlayTube
                              dbContext.AspNetUsers
                              .SingleAsync(p => p.Id ==
                              userProviderService.GetCurrentUserId(), cancellationToken: cancellationToken);
-            var receivedMessagesUsers = await dbContext.UserMessage1
+            var receivedMessagesUsers = await dbContext.UserMessage
                 .Include(p => p.FromApplicationUser)
                 .Where(p => p.ToApplicationUserId == currentUser.Id)
                 .Select(p => p.FromApplicationUser)
                 .Distinct().ToListAsync(cancellationToken);
-            var sentMessagesUsers = await dbContext.UserMessage1
+            var sentMessagesUsers = await dbContext.UserMessage
                 .Include(p => p.ToApplicationUser)
                 .Where(p => p.FromApplicationUserId == currentUser.Id)
                 .Select(p => p.ToApplicationUser)
@@ -43,6 +47,15 @@ namespace FairPlayCombined.Services.FairPlayTube
                     FullName = p.UserName
                 })
                 .ToArray();
+            if (result.Length == 0 )
+            {
+                result = await dbContext.AspNetUsers.Where(p => p.Id != currentUser.Id)
+                    .Select(p=> new ConversationsUserModel()
+                    {
+                        ApplicationUserId = p.Id,
+                        FullName = p.UserName
+                    }).ToArrayAsync(cancellationToken);
+            }
             return result;
         }
 
@@ -53,7 +66,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 dbContext.AspNetUsers
                 .SingleAsync(p => p.Id ==
                 userProviderService.GetCurrentUserId(), cancellationToken: cancellationToken);
-            return await dbContext.UserMessage1
+            return await dbContext.UserMessage
                 .Include(p => p.ToApplicationUser)
                 .Include(p => p.FromApplicationUser)
                 .Where(p =>
@@ -79,14 +92,20 @@ namespace FairPlayCombined.Services.FairPlayTube
             CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-            await dbContext.UserMessage1.AddAsync(
-                new DataAccess.Models.FairPlayTubeSchema.UserMessage1()
+            await dbContext.UserMessage.AddAsync(
+                new UserMessage()
                 {
                     FromApplicationUserId = userProviderService.GetCurrentUserId(),
                     ToApplicationUserId = userMessageModel!.ToApplicationUserId,
                     Message = userMessageModel.Message,
                 }, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
+            //TODO: This nees to be changed to .User when SignalR Authorization is implemented
+            await hubContext.Clients.User(userMessageModel.ToApplicationUserId!)
+                .ReceiveMessage(new Models.FairPlaySocial.Notification.UserMessageNotificationModel()
+                {
+                    Message = "You have a new message. Check your inbox to see it"
+                });
         }
     }
 }

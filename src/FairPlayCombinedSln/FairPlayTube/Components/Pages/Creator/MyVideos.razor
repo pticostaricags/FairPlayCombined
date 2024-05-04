@@ -9,7 +9,7 @@
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
 
-@rendermode RenderMode.InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject IJSRuntime jsRuntime
 @inject VideoInfoService videoInfoService
 @inject IUserProviderService userProviderService

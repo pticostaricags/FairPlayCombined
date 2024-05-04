@@ -30,7 +30,7 @@ namespace FairPlayCombined.Services.Common
 
         public async Task<YouTubeService> AuthorizeAsync()
         {
-            var userName = httpContextAccessor.HttpContext.User.Identity!.Name;
+            var userName = httpContextAccessor!.HttpContext!.User.Identity!.Name;
             UserCredential credential;
             var json = JsonSerializer.Serialize(youTubeClientServiceConfiguration!.GoogleAuthClientSecretInfo!);
             var bytes = Encoding.UTF8.GetBytes(json);

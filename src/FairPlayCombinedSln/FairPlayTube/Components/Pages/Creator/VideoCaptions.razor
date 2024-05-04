@@ -7,8 +7,9 @@
 @using Google.Apis.YouTube.v3
 @using System.Text
 
-@rendermode RenderMode.InteractiveServer
+
 @attribute [Authorize]
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @attribute [StreamRendering(enabled: true)]
 
 @inject VideoCaptionsService videoCaptionsService

@@ -19,14 +19,16 @@ namespace FairPlayCombined.Services.FairPlayTube
             VideoWatchTimeModel videoWatchTimeModel,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {methodName}", nameof(CreateVideoWatchTimeAsync));
+            logger.LogInformation(message: "Start of method: {MethodName}", nameof(CreateVideoWatchTimeAsync));
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             var videoInfoEntity = await dbContext.VideoInfo.SingleAsync(p => p.VideoId == videoId,
                 cancellationToken: cancellationToken);
+            DateTimeOffset sessionStartDatetime = DateTimeOffset.UtcNow;
             VideoWatchTime? entity = new()
             {
                 SessionId = videoWatchTimeModel.SessionId!.Value,
-                SessionStartDatetime = DateTimeOffset.UtcNow,
+                SessionStartDatetime = sessionStartDatetime,
+                LastUpdateDatetime = sessionStartDatetime,
                 VideoInfoId = videoInfoEntity.VideoInfoId,
                 WatchedByApplicationUserId = videoWatchTimeModel.WatchedByApplicationUserId,
                 WatchTime = videoWatchTimeModel.WatchTime
@@ -38,13 +40,14 @@ namespace FairPlayCombined.Services.FairPlayTube
             VideoWatchTimeModel videoWatchTimeModel,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {methodName}", nameof(UpdateVideoWatchTimeAsync));
+            logger.LogInformation(message: "Start of method: {MethodName}", nameof(UpdateVideoWatchTimeAsync));
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             VideoWatchTime? entity = null;
             entity = await dbContext.VideoWatchTime
                 .SingleOrDefaultAsync(p => p.SessionId == videoWatchTimeModel.SessionId,
                 cancellationToken: cancellationToken);
             entity!.WatchTime = videoWatchTimeModel.WatchTime;
+            entity.LastUpdateDatetime = DateTimeOffset.UtcNow;
             await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
         }
     }

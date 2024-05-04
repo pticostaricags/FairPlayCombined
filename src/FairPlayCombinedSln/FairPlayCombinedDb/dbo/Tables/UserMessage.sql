@@ -1,4 +1,4 @@
-﻿CREATE TABLE [FairPlayTube].[UserMessage]
+﻿CREATE TABLE [dbo].[UserMessage]
 (
 	[UserMessageId] BIGINT NOT NULL CONSTRAINT PK_UserMessage PRIMARY KEY IDENTITY,
 	[FromApplicationUserId] NVARCHAR(450) NOT NULL CONSTRAINT FK_FromApplicationUserId_AspNetUsers FOREIGN KEY REFERENCES [dbo].[AspNetUsers]([Id]),

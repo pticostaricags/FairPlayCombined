@@ -1,18 +1,21 @@
 ﻿@page "/User/MyConversations"
 @implements IDisposable
 
+@using FairPlayCombined.Models.Common.AspNetUsers
 @using FairPlayCombined.Models.FairPlayTube.Conversation
-@using FairPlayCombined.Models.FairPlayTube.UserMessage
+@using FairPlayCombined.Models.Common.UserMessage
+@using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
 
 @attribute [Authorize]
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @attribute [StreamRendering(enabled: true)]
-
-@rendermode RenderMode.InteractiveServer
 
 @inject UserMessageService userMessageService
 @inject IToastService toastService
+@inject AspNetUsersService aspNetUsersService
 
 <PageTitle>MyConversations</PageTitle>
 
@@ -22,101 +25,116 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-@if (this.AllMyConversationsUsers?.Length > 0)
-{
-     <div class="container">
-        <div class="row" style="max-height:250px;">
-            <div class="col">
-                <div class="list-group" style="max-height:250px; overflow:auto;">
-                    @foreach (var singleUser in this.AllMyConversationsUsers)
-                    {
-                        <button type="button" onclick="@( async () => await SelectUserAsync(singleUser))" 
-                        class="list-group-item list-group-item-action @(singleUser == this.SelectedUser?"active":string.Empty)" 
-                        aria-current="true">
-                            @singleUser.FullName
-                        </button>
-                    }
-                </div>
+<div class="container">
+    <div class="row" style="max-height:250px;">
+        <div class="col">
+            <div class="@ThemeConfiguration.Grids.GridContainerCss">
+                <FluentDataGrid ItemsProvider="AspNetUsersItemsProvider" Pagination="this.paginationState">
+                    <TemplateColumn>
+                        <FluentButton Appearance="Appearance.Lightweight" Type="ButtonType.Button" OnClick="@( async () => await SelectUserAsync(context))"
+                                      aria-current="true">
+                            @if (context == this.SelectedUser)
+                            {
+                                <strong>
+                                    @context.UserName
+                                </strong>
+                            }
+                            else
+                            {
+                                @context.UserName
+                            }
+                        </FluentButton>
+                    </TemplateColumn>
+                </FluentDataGrid>
+                <FluentPaginator State="this.paginationState"></FluentPaginator>
             </div>
-            <div class="col" style="max-height: 250px; overflow:auto;">
-                @if (this.AllMyConversationsWithSelectedUser != null)
+        </div>
+        <div class="col" style="max-height: 250px; overflow:auto;">
+            @if (this.SelectedUser != null)
+            {
+                if (this.AllMyConversationsWithSelectedUser?.Length > 0)
                 {
-                    @foreach (var singleConversation in this.AllMyConversationsWithSelectedUser)
+                    foreach (var singleConversation in this.AllMyConversationsWithSelectedUser)
                     {
                         <div class="row">
                             <div class="col">
                                 <FluentCard>
                                     <FluentHeader>
                                         <strong>
+                                            [@singleConversation.RowCreationDateTime!.Value.LocalDateTime]
+                                            <br />
                                             @singleConversation.FromApplicationUserFullName
                                         </strong>
                                     </FluentHeader>
                                     <FluentBodyContent>
                                         @singleConversation.Message
                                     </FluentBodyContent>
-                                    <FluentFooter>
-                                        @singleConversation.RowCreationDateTime
-                                    </FluentFooter>
                                 </FluentCard>
                             </div>
                         </div>
                     }
                 }
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <EditForm Model="MessageToSend" OnValidSubmit="SendMessageAsync">
-                    <div class="mb-3">
-                        <DataAnnotationsValidator></DataAnnotationsValidator>
-                    <ValidationSummary></ValidationSummary>
-                    </div>
-                    <div class="mb-3">
-                        <InputText class="form-control" @bind-Value="MessageToSend!.Message">
-                        </InputText>
-                        <button type="submit" class="btn btn-primary">Send</button>
-                    </div>
-                </EditForm>
-            </div>
+                else
+                {
+                    <p>You have no conversations with this user</p>
+                }
+            }
+            else
+            {
+                <p>Please select a user</p>
+            }
         </div>
     </div>
-}
+    <div class="row">
+        <div class="col">
+            @if (this.SelectedUser != null)
+            {
+                <FluentEditForm Model="MessageToSend" OnValidSubmit="SendMessageAsync">
+                    <div class="mb-3">
+                        <DataAnnotationsValidator></DataAnnotationsValidator>
+                        <FluentValidationSummary></FluentValidationSummary>
+                    </div>
+                    <div class="mb-3">
+                        <FluentTextField style="width:100%;" @bind-Value="MessageToSend!.Message">
+                        </FluentTextField>
+                        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Send</FluentButton>
+                    </div>
+                </FluentEditForm>
+            }
+        </div>
+    </div>
+</div>
 
 @code {
-    private ConversationsUserModel[]? AllMyConversationsUsers;
+    private GridItemsProvider<AspNetUsersModel>? AspNetUsersItemsProvider;
+    private readonly PaginationState paginationState = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
     private bool IsBusy { get; set; }
-    public ConversationsUserModel? SelectedUser { get; private set; }
+    public AspNetUsersModel? SelectedUser { get; private set; }
     private UserMessageModel[]? AllMyConversationsWithSelectedUser { get; set; }
     private UserMessageModel? MessageToSend { get; set; } = new UserMessageModel();
     private readonly CancellationTokenSource cancellationTokenSource = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-
-        try
+        this.IsBusy = true;
+        AspNetUsersItemsProvider = async req =>
         {
-            IsBusy = true;
-            this.AllMyConversationsUsers =
-                await this.userMessageService
-                .GetMyConversationsUsersAsync(this.cancellationTokenSource.Token);
-            if (this.AllMyConversationsUsers?.Length > 0)
-            {
-                this.SelectedUser = this.AllMyConversationsUsers[0];
-                this.AllMyConversationsWithSelectedUser = await
-                    this.userMessageService
-                    .GetMyConversationsWithUserAsync(this.SelectedUser.ApplicationUserId,
-                    this.cancellationTokenSource.Token);
-                this.MessageToSend!.ToApplicationUserId = this.SelectedUser.ApplicationUserId;
-            }
-        }
-        catch (Exception ex)
-        {
-            toastService.ShowError(ex.Message);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+            StateHasChanged();
+            PaginationRequest paginationRequest = new()
+                {
+                    PageSize = paginationState.ItemsPerPage,
+                    StartIndex = req.StartIndex
+                };
+            var items = await aspNetUsersService.GetPaginatedAspNetUsersAsync(paginationRequest,
+            this.cancellationTokenSource.Token);
+            StateHasChanged();
+            var result = GridItemsProviderResult.From<AspNetUsersModel>(items!.Items!, items.TotalItems);
+            return result;
+        };
+        this.IsBusy = false;
     }
 
     private async Task SendMessageAsync()
@@ -125,7 +143,7 @@
         {
             IsBusy = true;
 
-            this.MessageToSend!.ToApplicationUserId = this.SelectedUser!.ApplicationUserId;
+            this.MessageToSend!.ToApplicationUserId = this.SelectedUser!.Id;
             await this.userMessageService.SendMessageAsync(this.MessageToSend,
             this.cancellationTokenSource.Token);
             await LoadMyConversationsWithSelectedUser();
@@ -143,15 +161,15 @@
 
     private async Task LoadMyConversationsWithSelectedUser()
     {
-        this.AllMyConversationsWithSelectedUser = 
+        this.AllMyConversationsWithSelectedUser =
         await this.userMessageService
-        .GetMyConversationsWithUserAsync(this.SelectedUser!.ApplicationUserId,
+        .GetMyConversationsWithUserAsync(this.SelectedUser!.Id,
         this.cancellationTokenSource.Token);
     }
 
-    private async Task SelectUserAsync(ConversationsUserModel conversationsUserModel)
+    private async Task SelectUserAsync(AspNetUsersModel aspNetUsersModel)
     {
-        this.SelectedUser = conversationsUserModel;
+        this.SelectedUser = aspNetUsersModel;
         await LoadMyConversationsWithSelectedUser();
         StateHasChanged();
     }

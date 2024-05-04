@@ -10,7 +10,7 @@
 @using FairPlayTube.Components.Spinners
 
 @using System.Text
-@rendermode NoPreRenderServerMode
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject IJSRuntime jsRuntime
 @inject VideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
@@ -41,7 +41,6 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
-    private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private string? DigitalMarketingDailyPostsIdeas { get; set; }

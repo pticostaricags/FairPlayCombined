@@ -11,8 +11,9 @@
 @using FairPlayTube.Components.Spinners
 @using Google.Apis.YouTube.v3.Data
 @attribute [Authorize]
-@rendermode RenderMode.InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 
+@inject AzureContentSafetyService azureContentSafetyService
 @inject PromptGeneratorService promptGeneratorService
 @inject OpenAIService openAIService
 @inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
@@ -99,26 +100,62 @@
         {
             this.IsBusy = true;
             StateHasChanged();
-            await this.videoPlanService.CreateVideoPlanAsync(
-                this.createVideoPlanModel, this.cancellationTokenSource.Token);
-            this.toastService.ShowSuccess("Your Plan has been created");
-            StateHasChanged();
-            this.IsPlanCreated = true;
-            var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
-                    "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
-            string prompt = $"{promptInfo!.BaseText}. Video Title: {this.createVideoPlanModel.VideoName}. Video Description: {this.createVideoPlanModel.VideoDescription}. Video Script: {this.createVideoPlanModel.VideoScript}";
-            if (prompt.Length > 4000)
-                prompt = prompt.Substring(0, 4000);
-            var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
-            if (result != null)
+            bool hasProhibitedContent = false;
+            var videoNameModerationResult =
+            await this.azureContentSafetyService.AnalyzeTextAsync(
+                this.createVideoPlanModel.VideoName!, this.cancellationTokenSource.Token
+            );
+            if (videoNameModerationResult.IsOffensive || videoNameModerationResult.IsSexuallySuggestive ||
+            videoNameModerationResult.IsSexuallyExplicity)
             {
-                this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
-                this.RevisedPrompt = result!.data[0]!.revised_prompt;
-                this.toastService.ShowSuccess("Your thumbnail has been created");
+                hasProhibitedContent = true;
+                this.toastService.ShowError("You are not allowed to use that title, please use something more appropiate");
             }
-            else
+
+            var videoDescriptionModerationResult =
+            await this.azureContentSafetyService.AnalyzeTextAsync(
+                this.createVideoPlanModel.VideoDescription!, this.cancellationTokenSource.Token
+            );
+            if (videoDescriptionModerationResult.IsOffensive || videoDescriptionModerationResult.IsSexuallySuggestive ||
+            videoDescriptionModerationResult.IsSexuallyExplicity)
             {
-                this.toastService.ShowError("Your thumbnail could not be created");
+                hasProhibitedContent = true;
+                this.toastService.ShowError("You are not allowed to use that description, please use something more appropiate");
+            }
+
+            var videoScriptModerationResult =
+            await this.azureContentSafetyService.AnalyzeTextAsync(
+                this.createVideoPlanModel.VideoScript!, this.cancellationTokenSource.Token
+            );
+            if (videoScriptModerationResult.IsOffensive || videoScriptModerationResult.IsSexuallySuggestive ||
+            videoScriptModerationResult.IsSexuallyExplicity)
+            {
+                hasProhibitedContent = true;
+                this.toastService.ShowError("You are not allowed to use that script, please use something more appropiate");
+            }
+            if (!hasProhibitedContent)
+            {
+                await this.videoPlanService.CreateVideoPlanAsync(
+                    this.createVideoPlanModel, this.cancellationTokenSource.Token);
+                this.toastService.ShowSuccess("Your Plan has been created");
+                StateHasChanged();
+                this.IsPlanCreated = true;
+                var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
+                        "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
+                string prompt = $"{promptInfo!.BaseText}. Video Title: {this.createVideoPlanModel.VideoName}. Video Description: {this.createVideoPlanModel.VideoDescription}. Video Script: {this.createVideoPlanModel.VideoScript}";
+                if (prompt.Length > 4000)
+                    prompt = prompt.Substring(0, 4000);
+                var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
+                if (result != null)
+                {
+                    this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
+                    this.RevisedPrompt = result!.data[0]!.revised_prompt;
+                    this.toastService.ShowSuccess("Your thumbnail has been created");
+                }
+                else
+                {
+                    this.toastService.ShowError("Your thumbnail could not be created");
+                }
             }
         }
         catch (Exception ex)

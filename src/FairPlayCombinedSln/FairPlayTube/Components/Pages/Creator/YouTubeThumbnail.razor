@@ -2,21 +2,26 @@
 @implements IDisposable
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.FairPlayTube.VideoThumbnail
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
 
-@rendermode NoPreRenderServerMode
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject IJSRuntime jsRuntime
 @inject VideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
 @inject PromptGeneratorService promptGeneratorService
-
+@inject VideoThumbnailService videoThumbnailService
+@inject IToastService toastService
+@inject PhotoService photoService
+@inject HttpClient httpClient
 <PageTitle>
     Video Thumbnail
 </PageTitle>
@@ -27,12 +32,24 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-
+<div>
+    <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
+                  OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
+</div>
+<div>
+    <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+        <TemplateColumn>
+            <img width="400" src="@($"data:image/png;base64, {Convert.ToBase64String(context.PhotoBytes!)}")" />
+        </TemplateColumn>
+    </FluentDataGrid>
+    <FluentPaginator State="this.paginationState"></FluentPaginator>
+</div>
+<FluentDivider Role="DividerRole.Separator"></FluentDivider>
 <div>
     @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
     {
         <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
-            <img class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
+            <img width="400" class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
         </a>
         <p>
             <FluentLabel Typo="Typography.Body">
@@ -45,35 +62,93 @@
 @code
 {
     [Parameter]
-    public long? VideoInfoId {get;set;}
-    private static IComponentRenderMode NoPreRenderServerMode = new InteractiveServerRenderMode(prerender: false);
+    public long? VideoInfoId { get; set; }
     private bool IsBusy { get; set; }
+    private GridItemsProvider<VideoThumbnailModel>? ItemsProvider;
+    private readonly PaginationState paginationState = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private string? GeneratedYouTubeThumbnailUri { get; set; }
     private string? RevisedPrompt { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
-        "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
-        var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        var englishCaptions = await this.videoCaptionsService
-        .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-        language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        string prompt = $"{promptInfo!.BaseText}. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        if (prompt.Length > 4000)
-            prompt = prompt.Substring(0, 4000);
-        var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
-        if (result != null)
+        ItemsProvider = async req =>
         {
-            this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
-            this.RevisedPrompt = result!.data[0]!.revised_prompt;
+            this.IsBusy = true;
+            StateHasChanged();
+            PaginationRequest paginationRequest = new()
+                {
+                    PageSize = paginationState.ItemsPerPage,
+                    StartIndex = req.StartIndex,
+                    SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName = nameof(VideoThumbnailModel.PhotoId),
+                            SortType = SortType.Descending
+                        }
+                    }
+                };
+            var items = await videoThumbnailService.GetPaginatedVideoThumbnailByVideoInfoIdAsync(
+                this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
+            var result = GridItemsProviderResult.From<VideoThumbnailModel>(items!.Items!, items.TotalItems);
+            this.IsBusy = false;
+            StateHasChanged();
+            return result;
+        };
+    }
+
+    private async Task OnCreateNewThumbnailClickedAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
+            "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
+            var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
+            cancellationToken: this.cancellationTokenSource.Token);
+            var englishCaptions = await this.videoCaptionsService
+            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
+            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
+            string prompt = $"{promptInfo!.BaseText}. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+            if (prompt.Length > 4000)
+                prompt = prompt.Substring(0, 4000);
+            var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
+            if (result != null)
+            {
+                this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
+                this.RevisedPrompt = result!.data[0]!.revised_prompt;
+            }
+            var photoId = await photoService.CreatePhotoAsync(
+            new FairPlayCombined.Models.Common.Photo.CreatePhotoModel()
+                {
+                    Filename = $"Video-{this.VideoInfoId}-thumbnail.jpg",
+                    Name = $"Video-{this.VideoInfoId}-thumbnail",
+                    PhotoBytes = await this.httpClient.GetByteArrayAsync(this.GeneratedYouTubeThumbnailUri,
+                                                        this.cancellationTokenSource.Token)
+                }, this.cancellationTokenSource.Token);
+            await this.videoThumbnailService.CreateVideoThumbnailAsync(
+                new FairPlayCombined.Models.FairPlayTube.VideoThumbnail.CreateVideoThumbnailModel()
+                    {
+                        PhotoId = photoId,
+                        VideoInfoId = this.VideoInfoId.Value
+                    }, this.cancellationTokenSource.Token
+            );
+            await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
         }
-        this.IsBusy = false;
-        StateHasChanged();
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
     }
 
     void IDisposable.Dispose()

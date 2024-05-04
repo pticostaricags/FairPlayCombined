@@ -17,12 +17,11 @@ var connectionString = builder.Configuration.GetConnectionString("FairPlayCombin
 Extensions.EnhanceConnectionString(nameof(FairPlayTube.VideoIndexing), ref connectionString);
 
 builder.Services.AddTransient<IUserProviderService, VideoIndexingUserProviderService>();
-builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
+builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp,builder) =>
 {
     IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
-    DbContextOptionsBuilder<FairPlayCombinedDbContext> optionsBuilder = new();
-    optionsBuilder.AddInterceptors(new SaveChangesInterceptor(userProviderService));
-    optionsBuilder.UseSqlServer(connectionString,
+    builder.AddInterceptors(new SaveChangesInterceptor(userProviderService));
+    builder.UseSqlServer(connectionString,
         sqlServerOptionsAction =>
         {
             sqlServerOptionsAction.UseNetTopologySuite();
@@ -30,10 +29,9 @@ builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
                 maxRetryDelay: TimeSpan.FromSeconds(30),
                 errorNumbersToAdd: null);
         });
-    return optionsBuilder.Options;
-});
-builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
+}, contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Transient);
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
+builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 builder.Services.AddTransient(sp =>
 {
     var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();

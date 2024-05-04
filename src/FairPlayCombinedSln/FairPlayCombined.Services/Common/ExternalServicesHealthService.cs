@@ -1,5 +1,4 @@
 ﻿using Azure.AI.OpenAI;
-using Microsoft.Azure.CognitiveServices.ContentModerator;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -17,7 +16,7 @@ namespace FairPlayCombined.Services.Common
                     DeploymentName = externalServicesConfigurationModel.AzureOpenDeploymentName,
                     Messages =
                 {
-                    new ChatMessage(ChatRole.System, systemMessage)
+                    new ChatRequestSystemMessage(systemMessage)
                 }
                 };
                 var response = await externalServicesConfigurationModel.OpenAIClient!.GetChatCompletionsAsync(
@@ -40,10 +39,6 @@ namespace FairPlayCombined.Services.Common
     {
         public string? AzureOpenDeploymentName { get; set; }
         public Azure.AI.OpenAI.OpenAIClient? OpenAIClient { get; set; }
-        public ContentModeratorClient? ContentModeratorClient
-        {
-            get; set;
-        }
     }
 
     public class ExternalServicesHealthModel

@@ -1,3 +1,5 @@
+using Azure;
+using Azure.AI.ContentSafety;
 using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
@@ -8,25 +10,40 @@ using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Models.GoogleGemini;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.Common;
+using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using FairPlayCombined.Services.FairPlayTube;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayTube.Components;
 using FairPlayTube.Components.Account;
 using FairPlayTube.Data;
+using FairPlayTube.MetricsConfiguration;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.YouTube.v3;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
+using OpenTelemetry.Metrics;
+using System.Diagnostics.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.ConfigureOpenTelemetryMeterProvider((sp, meterBuilder) =>
+{
+    meterBuilder.AddMeter(FairPlayTubeMetrics.SESSION_METER_NAME);
+});
+builder.Services.AddTransient<FairPlayTubeMetrics>();
 builder.Services.AddFluentUIComponents();
-
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+          new[] { "application/octet-stream" });
+});
+builder.Services.AddSignalR();
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
 builder.Services.AddLocalization();
@@ -117,12 +134,12 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 
 builder.Services.AddTransient<IUserProviderService, UserProviderService>();
-builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
+builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp, builder) => 
 {
     IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
-    DbContextOptionsBuilder<FairPlayCombinedDbContext> optionsBuilder = new();
-    optionsBuilder.AddInterceptors(new SaveChangesInterceptor(userProviderService));
-    optionsBuilder.UseSqlServer(connectionString,
+    
+    builder.AddInterceptors(new SaveChangesInterceptor(userProviderService));
+    builder.UseSqlServer(connectionString,
         sqlServerOptionsAction =>
         {
             sqlServerOptionsAction.UseNetTopologySuite();
@@ -130,10 +147,11 @@ builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
                 maxRetryDelay: TimeSpan.FromSeconds(30),
                 errorNumbersToAdd: null);
         });
-    return optionsBuilder.Options;
-});
-builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
+}, contextLifetime: ServiceLifetime.Transient, 
+optionsLifetime: ServiceLifetime.Transient);
+
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
+builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 
 builder.Services.AddTransient<OpenAIService>(sp =>
 {
@@ -174,6 +192,28 @@ builder.Services.AddSingleton<GoogleGeminiConfiguration>(sp =>
     {
         Key = googleGeminiKeyEntity.Value
     };
+});
+
+builder.Services.AddTransient<ContentSafetyClient>(sp => 
+{
+    var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+    
+    var azureContentSafetyEndpoint = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_ENDPOINT_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_ENDPOINT_KEY} in database");
+
+    var azureContentSafetyKey = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+    Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_KEY_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_KEY_KEY} in database");
+
+
+    ContentSafetyClient contentSafetyClient = new(new Uri(azureContentSafetyEndpoint.Value),
+                new AzureKeyCredential(azureContentSafetyKey.Value));
+    return contentSafetyClient;
+});
+builder.Services.AddTransient<AzureContentSafetyService>(sp => 
+{
+    ContentSafetyClient contentSafetyClient = sp.GetRequiredService<ContentSafetyClient>();
+    AzureContentSafetyService azureContentSafetyService = new(contentSafetyClient);
+    return azureContentSafetyService;
 });
 
 builder.Services.AddTransient<GoogleGeminiService>(sp => 
@@ -240,11 +280,19 @@ builder.Services.AddTransient<VideoWatchTimeService>();
 builder.Services.AddTransient<SupportedLanguageService>();
 builder.Services.AddTransient<VideoViewerService>();
 builder.Services.AddTransient<UserMessageService>();
+builder.Services.AddTransient<VideoThumbnailService>();
+builder.Services.AddTransient<PhotoService>();
+builder.Services.AddTransient<VideoCommentService>();
+builder.Services.AddTransient<AspNetUsersService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+//Check https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/signalr?view=aspnetcore-9.0#disable-response-compression-for-hot-reload
+if (!app.Environment.IsDevelopment())
+{
+    app.UseResponseCompression();
+}
 app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
@@ -284,7 +332,7 @@ app.MapControllers();
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
-
+app.MapHub<UserMessageNotificationHub>(Constants.Routes.SignalRHubs.UserMessageHub);
 app.MapGet("/api/video/{videoId}/thumbnail",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,

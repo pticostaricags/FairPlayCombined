@@ -1,7 +1,7 @@
 ﻿@page "/User/MyFunds"
 @using FairPlayTube.Components.PayPal
 @attribute [Authorize]
-@rendermode RenderMode.InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 <PayPalCheckout OnFundsAdded="OnFundsAdded"></PayPalCheckout>
 @code

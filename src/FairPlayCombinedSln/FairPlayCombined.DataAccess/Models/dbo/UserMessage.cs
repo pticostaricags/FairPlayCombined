@@ -13,10 +13,9 @@ using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
-namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
+namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
-[Table("UserMessage", Schema = "FairPlayTube")]
-public partial class UserMessage1
+public partial class UserMessage
 {
     [Key]
     public long UserMessageId { get; set; }
@@ -49,10 +48,10 @@ public partial class UserMessage1
     public bool ReadByDestinatary { get; set; }
 
     [ForeignKey("FromApplicationUserId")]
-    [InverseProperty("UserMessage1FromApplicationUser")]
+    [InverseProperty("UserMessageFromApplicationUser")]
     public virtual AspNetUsers FromApplicationUser { get; set; }
 
     [ForeignKey("ToApplicationUserId")]
-    [InverseProperty("UserMessage1ToApplicationUser")]
+    [InverseProperty("UserMessageToApplicationUser")]
     public virtual AspNetUsers ToApplicationUser { get; set; }
 }

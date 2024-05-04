@@ -4,6 +4,10 @@
     {
         public static class Routes
         {
+            public static class SignalRHubs
+            {
+                public const string UserMessageHub = $"/{nameof(UserMessageHub)}";
+            }
             public static class FairPlayTubeRoutes
             {
                 public static class CreatorRoutes
@@ -27,9 +31,9 @@
             public const string AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY = "AzureVideoIndexerResourceGroup";
             public const string AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY = "AzureVideoIndexerResourceName";
             public const string AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY = "AzureVideoIndexerSubscriptionId";
-            public const string AZURE_CONTENT_MODERATOR_ENDPOINT_KEY = "AzureContentModeratorEndpoint";
-            public const string AZURE_CONTENT_MODERATOR_KEY_KEY = "AzureContentModeratorKey";
             public const string GOOGLE_GEMINI_KEY_KEY = "GoogleGeminiKey";
+            public const string AZURE_CONTENT_SAFETY_ENDPOINT_KEY = "AzureContentSafetyEndpoint";
+            public const string AZURE_CONTENT_SAFETY_KEY_KEY = "AzureContentSafetyKey";
         }
         public static class GeoCoordinates
         {

@@ -154,4 +154,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="VideoIndexerSupportedLanguageId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="9060c0ea-f6c9-4534-a23c-cc5b700cd5b9" ChangeDateTime="04/20/2024 10:37:31">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoThumbnail].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoThumbnail]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoThumbnailId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f5685224-2199-42b3-bfc2-fdeb0452a038" ChangeDateTime="04/29/2024 13:59:09">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoWatchTime].[LastUpdLastUpdateDatetime]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoWatchTime]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LastUpdateDatetime" />
+  </Operation>
 </Operations>

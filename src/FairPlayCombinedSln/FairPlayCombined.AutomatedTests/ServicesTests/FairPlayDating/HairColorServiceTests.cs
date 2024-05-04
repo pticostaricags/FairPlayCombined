@@ -3,8 +3,10 @@ using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.FairPlayDating.HairColor;
 using FairPlayCombined.Models.Pagination;
 using FairPlayCombined.Services.FairPlayDating;
+using FairPlayCombined.Services.FairPlaySocial;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
 {
@@ -42,6 +44,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<HairColorService>();
+            services.AddTransient<ILogger<HairColorService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<HairColorService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -67,6 +75,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<HairColorService>();
+            services.AddTransient<ILogger<HairColorService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<HairColorService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -94,6 +108,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<HairColorService>();
+            services.AddTransient<ILogger<HairColorService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<HairColorService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
@@ -134,6 +154,12 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 {
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<HairColorService>();
+            services.AddTransient<ILogger<HairColorService>>(p =>
+            {
+                return logger;
+            });
             services.AddTransient<HairColorService>();
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
