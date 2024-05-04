@@ -361,7 +361,6 @@
             if (inputFileChangeEventArgs.FileCount == 1)
             {
                 var stream = inputFileChangeEventArgs.File.OpenReadStream();
-                var fileBytes = new byte[inputFileChangeEventArgs.File.Size];
                 MemoryStream memoryStream0 = new MemoryStream();
                 stream.CopyTo(memoryStream0);
                 var photoModerationResult = await this.azureContentSafetyService
