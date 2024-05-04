@@ -283,6 +283,7 @@ builder.Services.AddTransient<UserMessageService>();
 builder.Services.AddTransient<VideoThumbnailService>();
 builder.Services.AddTransient<PhotoService>();
 builder.Services.AddTransient<VideoCommentService>();
+builder.Services.AddTransient<AspNetUsersService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
