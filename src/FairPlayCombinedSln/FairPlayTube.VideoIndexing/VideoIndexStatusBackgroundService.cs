@@ -110,12 +110,12 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
 
     private static async Task UpdateProcessingPercentageAsync(ILogger<VideoIndexStatusBackgroundService> logger, FairPlayCombinedDbContext dbContext, AzureVideoIndexerService azureVideoIndexerService, GetAccessTokenResponseModel? getviTokenResult, IEnumerable<Result>? processingVideos, CancellationToken stoppingToken)
     {
-        foreach (var singleProcessingVideo in processingVideos!)
+        foreach (var singleProcessingVideoId in processingVideos!.Select(p=>p.id!))
         {
             var singleVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
-                singleProcessingVideo.id!, getviTokenResult!.AccessToken!,
+                singleProcessingVideoId, getviTokenResult!.AccessToken!,
                 cancellationToken: stoppingToken);
-            var videoEntity = await dbContext.VideoInfo.SingleAsync(p => p.VideoId == singleProcessingVideo.id,
+            var videoEntity = await dbContext.VideoInfo.SingleAsync(p => p.VideoId == singleProcessingVideoId,
                 cancellationToken: stoppingToken);
             if (!String.IsNullOrWhiteSpace(singleVideoIndex!.videos![0].processingProgress))
             {
