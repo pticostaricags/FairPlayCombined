@@ -100,7 +100,6 @@ namespace FairPlayCombined.Services.FairPlayTube
                     Message = userMessageModel.Message,
                 }, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
-            //TODO: This nees to be changed to .User when SignalR Authorization is implemented
             await hubContext.Clients.User(userMessageModel.ToApplicationUserId!)
                 .ReceiveMessage(new Models.FairPlaySocial.Notification.UserMessageNotificationModel()
                 {

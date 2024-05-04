@@ -28,7 +28,7 @@
 
 <div>
     <FluentButton Type="ButtonType.Button" OnClick="OnRecreatePlanButtonclickedAsync">
-        Re-Create Plan
+        Re-Create Chapters
     </FluentButton>
 </div>
 <div>
@@ -66,9 +66,7 @@
     {
         this.IsBusy = true;
         StateHasChanged();
-        var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        await this.GenerateYouTubeChaptersAsync(videoInfoModel);
+        await this.GenerateYouTubeChaptersAsync(this.videoInfoModel!);
         this.IsBusy = false;
         StateHasChanged();
     }
