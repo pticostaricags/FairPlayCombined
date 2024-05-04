@@ -13,7 +13,7 @@
 @code
 {
     private HubConnection? hubConnection;
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -21,7 +21,6 @@
         {
             var uri = new UriBuilder(this.navigationManager.Uri);
             this.hubConnection = new HubConnectionBuilder()
-            //TODO: This needs to send the AccessToken
             .WithUrl(this.navigationManager.ToAbsoluteUri($"{Constants.Routes.SignalRHubs.UserMessageHub}"),
             configureHttpConnection: (options) =>
             {
@@ -58,5 +57,6 @@
             await this.hubConnection.StopAsync(this.cancellationTokenSource.Token);
         }
         await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
     }
 }

@@ -137,7 +137,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
     {
         var viSupportedLanguages = await azureVideoIndexerService
                             .GetSupportedLanguagesAsync(getviTokenResult!.AccessToken!, stoppingToken);
-        if (viSupportedLanguages != null && viSupportedLanguages?.Length > 0)
+        if (viSupportedLanguages?.Length > 0)
         {
             foreach (var singleViSupportedLanguage in viSupportedLanguages!)
             {
