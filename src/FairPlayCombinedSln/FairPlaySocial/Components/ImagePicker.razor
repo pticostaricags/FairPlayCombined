@@ -1,4 +1,6 @@
-﻿@using FairPlayCombined.Common
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Common
 @using FairPlayCombined.Models.Common.Photo
 
 <EditForm Model="@this.Model">
@@ -36,7 +38,7 @@
             //TODO: Invoke Face/Computer Vision APIs to reject images without a face
             int allowedMegaBytes = 10;
             int allowedBytes = allowedMegaBytes * 1024 * 1024;
-            using var fileStream = inputFileChangeEventArgs.File.OpenReadStream(maxAllowedSize: allowedBytes, 
+            using var fileStream = inputFileChangeEventArgs.File.OpenReadStream(maxAllowedSize: allowedBytes,
                 this.cancellationTokenSource.Token);
             using MemoryStream memoryStream = new();
             await fileStream.CopyToAsync(memoryStream);
@@ -47,4 +49,10 @@
             await this.OnFileSelected.InvokeAsync();
         };
     }
-               }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}

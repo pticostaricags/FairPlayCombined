@@ -1,4 +1,6 @@
 ﻿@page "/MonthlyBudgetInfo/ListMonthlyBudgetInfo"
+@implements IAsyncDisposable
+
 @using Blazored.Toast.Services
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayBudget.MonthlyBudgetInfo
@@ -76,5 +78,11 @@
         await this.monthlyBudgetInfoService.DeleteMonthlyBudgetInfoByIdAsync(monthlyBudgetInfoId,
         this.cancellationTokenSource.Token);
         await this.paginationState.SetCurrentPageIndexAsync(0);
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 }

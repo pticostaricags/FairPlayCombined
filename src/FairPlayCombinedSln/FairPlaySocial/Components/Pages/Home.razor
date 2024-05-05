@@ -1,4 +1,6 @@
 ﻿@page "/"
+@implements IAsyncDisposable
+
 @using Blazored.Toast.Services
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.FairPlaySocial
@@ -198,6 +200,12 @@
         {
             this.toastService.ShowError(ex.Message);
         }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     [ResourceKey(defaultValue: "Home")]

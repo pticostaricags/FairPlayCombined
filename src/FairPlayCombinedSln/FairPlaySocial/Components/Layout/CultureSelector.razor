@@ -62,9 +62,10 @@
         }
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        await this.CancellationTokenSource.CancelAsync();
+        this.CancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     [ResourceKey(defaultValue: "Select your locale")]

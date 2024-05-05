@@ -1,4 +1,6 @@
 ﻿@page "/CreateMyPost"
+@implements IAsyncDisposable
+
 @using Blazored.Toast.Services
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.FairPlaySocial.Enums
@@ -96,5 +98,11 @@
     {
         //This should invoke a Content Moderation Service, similar to what FairPlayDating is doing
         return Task.CompletedTask;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 }
