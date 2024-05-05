@@ -44,7 +44,7 @@
             this.Model!.Filename = inputFileChangeEventArgs.File.Name;
             this.Model!.PhotoBytes = fileBytes;
             await this.OnFileSelected.InvokeAsync();
-        };
+        }
     }
 
     public ValueTask DisposeAsync()

@@ -68,16 +68,16 @@
     private ApiClient? anonymousApiClient { get; set; }
     private bool IsBusy { get; set; }
     private GridItemsProvider<PostModel>? ItemsProvider;
-    private PaginationState paginationState = new()
+    private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = FairPlayCombined.Common.Constants.Pagination.PageSize
         };
-    private CreatePostModel createPostModel = new()
+    private readonly CreatePostModel createPostModel = new()
         {
             PostTypeId = (int)PostType.Post,
             PostVisibilityId = (int)PostVisibility.Public
         };
-    private CreatePhotoModel createPhotoModel = new();
+    private readonly CreatePhotoModel createPhotoModel = new();
 
 
     protected override void OnInitialized()

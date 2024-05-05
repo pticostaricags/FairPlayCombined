@@ -28,7 +28,7 @@
     private ApiClient? apiClient { get; set; }
     [Inject]
     private NavigationManager? navingationManager { get; set; }
-    FairPlaySocial.ClientServices.Models.LoginRequest loginRequest = new();
+    private readonly FairPlaySocial.ClientServices.Models.LoginRequest loginRequest = new();
 
     private async Task OnValidSubmitAsync()
     {
