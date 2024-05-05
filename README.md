@@ -2,6 +2,10 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pticostaricags_FairPlayCombined&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined)
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined)
 
+Click the links to help improve quality
+
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=pticostaricags_FairPlayCombined&metric=bugs)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined) [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=pticostaricags_FairPlayCombined&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=pticostaricags_FairPlayCombined&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=pticostaricags_FairPlayCombined&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined) [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=pticostaricags_FairPlayCombined&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=pticostaricags_FairPlayCombined&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=pticostaricags_FairPlayCombined&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined)
+
 ## The combined FairPlay stack using .NET Aspire
 
 ### Repository Objective
