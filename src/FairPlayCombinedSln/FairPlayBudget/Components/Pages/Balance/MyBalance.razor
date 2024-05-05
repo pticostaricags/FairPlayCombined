@@ -1,4 +1,5 @@
 ﻿@page "/Balance/MyBalance"
+@implements IAsyncDisposable
 
 @using FairPlayCombined.Models.FairPlayBudget.Balance
 @using FairPlayCombined.Models.FairPlayBudget.Currency
@@ -125,5 +126,11 @@
         this.SelectedCurrencyId = selectedValue;
         if (this.SelectableBudgetNames != null)
             await LoadDataAsync();
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 }

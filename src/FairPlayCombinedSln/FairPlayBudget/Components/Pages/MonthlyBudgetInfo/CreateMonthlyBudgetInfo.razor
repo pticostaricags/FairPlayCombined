@@ -1,5 +1,7 @@
 ﻿@page "/MonthlyBudgetInfo/CreateMonthlyBudgetInfo"
 @page "/MonthlyBudgetInfo/CreateMonthlyBudgetInfo/{MonthlyBudgetInfoId:long}"
+@implements IAsyncDisposable
+
 
 @using Blazored.Toast.Services
 @using FairPlayBudget.Components.Spinners
@@ -217,5 +219,11 @@ Import From File:
             this.createMonthlyBudgetInfoModel = tmpCreateMonthlyBudgetInfoModel;
         }
         IsBusy = false;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 }

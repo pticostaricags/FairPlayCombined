@@ -1,4 +1,6 @@
-﻿@using FairPlayCombined.Common
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Common
 @using FairPlayCombined.Models.Common.Photo
 
 <EditForm Model="@this.Model">
@@ -32,19 +34,22 @@
     {
         if (inputFileChangeEventArgs.FileCount == 1)
         {
-            //TODO: Invoke Content Moderation endpoints to reject prohibited images
-            //TODO: Invoke Face/Computer Vision APIs to reject images without a face
             int allowedMegaBytes = 10;
             int allowedBytes = allowedMegaBytes * 1024 * 1024;
-            using var fileStream = inputFileChangeEventArgs.File.OpenReadStream(maxAllowedSize: allowedBytes, 
+            using var fileStream = inputFileChangeEventArgs.File.OpenReadStream(maxAllowedSize: allowedBytes,
                 this.cancellationTokenSource.Token);
             using MemoryStream memoryStream = new();
             await fileStream.CopyToAsync(memoryStream);
             var fileBytes = memoryStream.ToArray();
             this.Model!.Filename = inputFileChangeEventArgs.File.Name;
             this.Model!.PhotoBytes = fileBytes;
-            //this.Model!.ImageType = inputFileChangeEventArgs.File.ContentType;
             await this.OnFileSelected.InvokeAsync();
         };
     }
-               }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}

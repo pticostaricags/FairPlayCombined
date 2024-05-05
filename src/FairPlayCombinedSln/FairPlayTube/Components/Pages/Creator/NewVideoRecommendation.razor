@@ -51,14 +51,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        await this.GenerateNewVideoRecommendationIdeaAsync();
-        this.IsBusy = false;
-        StateHasChanged();
+        await LoadDataAsync();
     }
 
     private async Task OnRecreateNewVideoRecommendationButtonclickedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
     {
         this.IsBusy = true;
         StateHasChanged();

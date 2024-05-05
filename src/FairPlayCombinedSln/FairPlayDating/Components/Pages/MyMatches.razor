@@ -1,4 +1,6 @@
 ﻿@page "/MyMatches"
+@implements IAsyncDisposable
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.GeneratorsAttributes
@@ -9,6 +11,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Microsoft.Extensions.Localization
+
 @attribute [Authorize]
 @rendermode RenderMode.InteractiveServer
 @attribute [StreamRendering(enabled: true)]
@@ -161,6 +164,12 @@
     {
         this.showDetailsDialog = false;
         this.selectedUserProfileModel = null;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     [ResourceKey(defaultValue: "My Matches")]
