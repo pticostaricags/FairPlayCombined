@@ -34,8 +34,6 @@
     {
         if (inputFileChangeEventArgs.FileCount == 1)
         {
-            //TODO: Invoke Content Moderation endpoints to reject prohibited images
-            //TODO: Invoke Face/Computer Vision APIs to reject images without a face
             int allowedMegaBytes = 10;
             int allowedBytes = allowedMegaBytes * 1024 * 1024;
             using var fileStream = inputFileChangeEventArgs.File.OpenReadStream(maxAllowedSize: allowedBytes,
@@ -45,7 +43,6 @@
             var fileBytes = memoryStream.ToArray();
             this.Model!.Filename = inputFileChangeEventArgs.File.Name;
             this.Model!.PhotoBytes = fileBytes;
-            //this.Model!.ImageType = inputFileChangeEventArgs.File.ContentType;
             await this.OnFileSelected.InvokeAsync();
         };
     }

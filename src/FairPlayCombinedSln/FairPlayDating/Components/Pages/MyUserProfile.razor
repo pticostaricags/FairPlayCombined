@@ -387,15 +387,6 @@
                         this.createUserProfileModel.ProfilePhotoId =
                         await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
                     }
-                    else
-                    {
-                        UpdatePhotoModel updatePhotoModel = new();
-                        updatePhotoModel.PhotoId = this.createUserProfileModel.ProfilePhotoId;
-                        updatePhotoModel.Name = fileName;
-                        updatePhotoModel.Filename = fileName;
-                        updatePhotoModel.PhotoBytes = memoryStream.ToArray();
-                        //await photoService.UpdatePhotoAsync(updatePhotoModel, cancellationTokenSource.Token);
-                    }
                 }
             }
         }
