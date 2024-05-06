@@ -79,7 +79,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     .GetVideoThumbnailAsync(singleVideoEntity.VideoId,
                     indexCompleteVideos.Single(p => p.id == singleVideoEntity.VideoId)
                     .thumbnailId!,
-                    getviTokenResult.AccessToken!, stoppingToken);
+                    getviTokenResult!.AccessToken!, stoppingToken);
                 singleVideoEntity.VideoThumbnailPhoto = new()
                 {
                     Filename = $"Thumbnail-{singleVideoEntity.VideoId}.jpg",

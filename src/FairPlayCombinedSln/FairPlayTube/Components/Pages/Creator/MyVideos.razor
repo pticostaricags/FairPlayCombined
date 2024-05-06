@@ -28,49 +28,49 @@
         <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
         <TemplateColumn Class="multiline-text">
             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
-                    OnClick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
+                          OnClick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
                 <i class="bi bi-image-fill"></i>
             </FluentButton>
             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
-                    OnClick="@( ()=> OnCreateInfographicClicked(context))">
+                          OnClick="@( ()=> OnCreateInfographicClicked(context))">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
             </FluentButton>
             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
-                    OnClick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
+                          OnClick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
                 <i class="bi bi-list-task"></i>
             </FluentButton>
             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
-                    OnClick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
+                          OnClick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
                 <i class="bi bi-linkedin"></i>
             </FluentButton>
             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
-                    OnClick="@( ()=> OnGetPassiveIncomeIdeas(context))">
+                          OnClick="@( ()=> OnGetPassiveIncomeIdeas(context))">
                 <i class="bi bi-currency-dollar"></i>
             </FluentButton>
             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
-                    OnClick="@( ()=> OnCreateLinkedInArticleClicked(context))">
+                          OnClick="@( ()=> OnCreateLinkedInArticleClicked(context))">
                 <i class="bi bi-file-richtext-fill"></i>
             </FluentButton>
             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="View My Video Viewers"
-                              OnClick="@( () => OnViewMyVideoViewersClicked(context))">
-                    <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
-                </FluentButton>
+                          OnClick="@( () => OnViewMyVideoViewersClicked(context))">
+                <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
+            </FluentButton>
             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
             {
                 <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
-                        OnClick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
+                              OnClick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
                     <i class="bi bi-badge-cc-fill"></i>
                 </FluentButton>
                 <FluentAnchor data-enhance-nav="false"
-                   data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
-                   Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
+                              data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
+                              Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
                     <i class="bi bi-youtube"></i>
                 </FluentAnchor>
-                <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Chapters"
-                              OnClick="@( () => OnCreateYouTubeChaptersClicked(context))">
-                    <FluentIcon Value="@(new Icons.Regular.Size20.Timeline())"></FluentIcon>
-                </FluentButton>
             }
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Chapters"
+                          OnClick="@( () => OnCreateYouTubeChaptersClicked(context))">
+                <FluentIcon Value="@(new Icons.Regular.Size20.Timeline())"></FluentIcon>
+            </FluentButton>
         </TemplateColumn>
     </FluentDataGrid>
 </div>

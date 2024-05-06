@@ -1,0 +1,80 @@
+﻿@implements IAsyncDisposable
+
+@using System.ComponentModel.DataAnnotations
+@using FairPlayCombined.Services.Common
+@using FairPlayTube.Components.Spinners
+@using Google.Apis.YouTube.v3.Data
+@inject YouTubeClientService youTubeClientService
+@inject IToastService toastService
+
+<h3>SearchYouTubeVideo</h3>
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+<div class="@ThemeConfiguration.Grids.GridContainerCss">
+    <FluentEditForm Model="this.searchYoutubeVideoModel" OnValidSubmit="OnValidSubmitAsync">
+        <div>
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <FluentValidationSummary></FluentValidationSummary>
+        </div>
+        <div>
+            <FluentLabel Typo="Typography.Body"></FluentLabel>
+            <FluentTextField Placeholder="Video Title" @bind-Value="this.searchYoutubeVideoModel!.VideoTitle"></FluentTextField>
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Search</FluentButton>
+        </div>
+    </FluentEditForm>
+</div>
+
+@if (this.searchListResponse?.Items?.Count > 0)
+{
+    <FluentDataGrid Items="this.searchListResponse.Items.AsQueryable()">
+        <TemplateColumn>
+            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" OnClick="@(async () => await this.OnYouTubeVideoSelected.InvokeAsync(context.Id.VideoId))">Select Video</FluentButton>
+        </TemplateColumn>
+        <TemplateColumn>
+            <img src="@context.Snippet.Thumbnails.Default__.Url" />
+        </TemplateColumn>
+        <PropertyColumn Property="@(p=>p.Snippet.Title)" Class="multiline-text"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.Snippet.PublishedAtDateTimeOffset)" Class="multiline-text"></PropertyColumn>
+    </FluentDataGrid>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<string> OnYouTubeVideoSelected { get; set; }
+    [SupplyParameterFromForm]
+    private SearchYoutubeVideoModel? searchYoutubeVideoModel { get; set; } = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private SearchListResponse? searchListResponse;
+    private bool IsBusy { get; set; }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            this.searchListResponse =
+            await this.youTubeClientService.SearchMyVideosAsync(this.searchYoutubeVideoModel!.VideoTitle!, this.cancellationTokenSource.Token);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    internal class SearchYoutubeVideoModel
+    {
+        [Required]
+        public string? VideoTitle { get; set; }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}

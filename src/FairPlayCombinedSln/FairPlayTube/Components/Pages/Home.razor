@@ -11,6 +11,7 @@
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject VideoInfoService videoInfoService
 @inject NavigationManager navigationManager
+
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -26,9 +27,10 @@
                 </div>
                 <div>
                     <FluentLabel Typo="Typography.Body">@singleItem.Name</FluentLabel>
-                    <FluentLabel Typo="Typography.Body">Lifetime Sessions: @singleItem.LifetimeSessions</FluentLabel>
-                    <FluentLabel Typo="Typography.Body">Lifetime Viewers: @singleItem.LifetimeViewers</FluentLabel>
-                    <FluentLabel Typo="Typography.Body">Watch Time(hh:mm:ss): @singleItem.LifetimeWatchTime</FluentLabel>
+                    <FluentLabel Typo="Typography.Body"><strong>Lifetime Sessions:</strong> @singleItem.LifetimeSessions</FluentLabel>
+                    <FluentLabel Typo="Typography.Body"><strong>Lifetime Viewers:</strong> @singleItem.LifetimeViewers</FluentLabel>
+                    <FluentLabel Typo="Typography.Body"><strong>Watch Time(hh:mm:ss):</strong> @singleItem.LifetimeWatchTime</FluentLabel>
+                    <FluentLabel Typo="Typography.Body"><strong>Published:</strong> @singleItem.PublishedOnString</FluentLabel>
                 </div>
                 <div>
                     <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
@@ -39,8 +41,8 @@
         }
     </FluentStack>
 }
-
 <FluentPaginator State="this.paginationState"></FluentPaginator>
+
 @code
 {
     private bool IsBusy { get; set; }

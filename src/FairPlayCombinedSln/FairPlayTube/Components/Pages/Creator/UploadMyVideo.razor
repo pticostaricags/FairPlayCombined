@@ -8,6 +8,7 @@
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.Components.Spinners
+@using FairPlayTube.Components.YouTube
 @using Google.Apis.YouTube.v3.Data
 @attribute [Authorize]
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
@@ -55,11 +56,21 @@
         <FluentLabel Typo="Typography.Subject">Video Id (YouTube)</FluentLabel>
         <InputText class="@ThemeConfiguration.GenericControls.DefaultCss"
                    @bind-Value="this.createVideoInfoModel.YouTubeVideoId" style="width:100%;"></InputText>
+        <FluentButton Type="ButtonType.Button" OnClick="this.OpenSearchYouTubeVideoDialog">Search My YouTube Videos</FluentButton>
     </div>
     <div>
         <FluentButton Type="ButtonType.Submit">Save</FluentButton>
     </div>
 </FluentEditForm>
+
+<FluentDialog @ref="searchYoutubeVideosDialog"
+              @bind-Hidden="@showSearchYoutubeVideosDialog"
+              Modal="true" TrapFocus="true"
+              PreventScroll="false">
+    <FluentDialogHeader Visible="false"></FluentDialogHeader>
+    <SearchYouTubeVideo OnYouTubeVideoSelected="OnYouTubeVideoSelected"></SearchYouTubeVideo>
+    <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" OnClick="CloseSearchYouTubeVideoDialog">Close</FluentButton>
+</FluentDialog>
 
 @code {
     [SupplyParameterFromForm]
@@ -68,6 +79,8 @@
     private bool IsBusy { get; set; }
     private EditForm? frmCreateVideoInfo;
     private long bytesSent { get; set; }
+    private bool showSearchYoutubeVideosDialog { get; set; } = false;
+    private FluentDialog? searchYoutubeVideosDialog { get; set; }
 
     protected override void OnInitialized()
     {
@@ -77,6 +90,14 @@
         this.createVideoInfoModel.FileName = "Test";
         this.createVideoInfoModel.VideoVisibilityId = (short)VideoVisibility.Public;
         this.createVideoInfoModel.ApplicationUserId = this.userProviderService.GetCurrentUserId();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.searchYoutubeVideosDialog!.Hide();
+        }
     }
 
     private async Task OnProcessFileButtonClickedAsync()
@@ -182,11 +203,27 @@
         }
         catch (Exception ex)
         {
-            logger.LogError(exception:ex, message:"Error: {errorMessage}", ex.Message);
+            logger.LogError(exception: ex, message: "Error: {errorMessage}", ex.Message);
             this.toastService.ShowError(ex.Message);
         }
         this.IsBusy = false;
         StateHasChanged();
+    }
+
+    private void OpenSearchYouTubeVideoDialog()
+    {
+        this.searchYoutubeVideosDialog!.Show();
+    }
+
+    private void CloseSearchYouTubeVideoDialog()
+    {
+        this.searchYoutubeVideosDialog!.Hide();
+    }
+
+    private void OnYouTubeVideoSelected(string youTubeVideoId)
+    {
+        this.createVideoInfoModel!.YouTubeVideoId = youTubeVideoId;
+        CloseSearchYouTubeVideoDialog();
     }
 
     void IDisposable.Dispose()
