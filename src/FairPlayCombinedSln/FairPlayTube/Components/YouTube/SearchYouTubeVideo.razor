@@ -1,4 +1,6 @@
-﻿@using System.ComponentModel.DataAnnotations
+﻿@implements IAsyncDisposable
+
+@using System.ComponentModel.DataAnnotations
 @using FairPlayCombined.Services.Common
 @using FairPlayTube.Components.Spinners
 @using Google.Apis.YouTube.v3.Data
@@ -40,7 +42,7 @@
     public EventCallback<string> OnYouTubeVideoSelected { get; set; }
     [SupplyParameterFromForm]
     private SearchYoutubeVideoModel? searchYoutubeVideoModel { get; set; } = new();
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private SearchListResponse? searchListResponse;
     private bool IsBusy { get; set; }
 
@@ -68,5 +70,11 @@
     {
         [Required]
         public string? VideoTitle { get; set; }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 }
