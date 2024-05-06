@@ -30,8 +30,8 @@
         <TemplateColumn>
             <img src="@context.Snippet.Thumbnails.Default__.Url" />
         </TemplateColumn>
-        <PropertyColumn Property="@(p=>p.Snippet.Title)"></PropertyColumn>
-        <PropertyColumn Property="@(p=>p.Snippet.PublishedAtDateTimeOffset)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.Snippet.Title)" Class="multiline-text"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.Snippet.PublishedAtDateTimeOffset)" Class="multiline-text"></PropertyColumn>
     </FluentDataGrid>
 }
 
