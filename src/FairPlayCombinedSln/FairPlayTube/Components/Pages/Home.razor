@@ -11,6 +11,7 @@
 @inject AzureVideoIndexerService azureVideoIndexerService
 @inject VideoInfoService videoInfoService
 @inject NavigationManager navigationManager
+
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -39,8 +40,8 @@
         }
     </FluentStack>
 }
-
 <FluentPaginator State="this.paginationState"></FluentPaginator>
+
 @code
 {
     private bool IsBusy { get; set; }

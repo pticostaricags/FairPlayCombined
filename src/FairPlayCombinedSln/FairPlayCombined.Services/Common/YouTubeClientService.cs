@@ -15,6 +15,18 @@ namespace FairPlayCombined.Services.Common
         YouTubeClientServiceConfiguration youTubeClientServiceConfiguration,
         IHttpContextAccessor httpContextAccessor)
     {
+        public async Task<SearchListResponse> SearchMyVideosAsync(string searchTerm,CancellationToken cancellationToken)
+        {
+            var youtubeService = await AuthorizeAsync();
+            var searchVideosRequest =
+            youtubeService.Search.List(part: new(["snippet"]));
+            searchVideosRequest.ForMine = true;
+            searchVideosRequest.Type = "video";
+            searchVideosRequest.Q = searchTerm;
+            searchVideosRequest.Order = SearchResource.ListRequest.OrderEnum.Relevance;
+            var result = await searchVideosRequest.ExecuteAsync(cancellationToken);
+            return result;
+        }
         public async Task UploadVideoAsync(Video video, Stream fileStream,
             Action<IUploadProgress> progressChanged,
             Action<Video> responseReceived)
