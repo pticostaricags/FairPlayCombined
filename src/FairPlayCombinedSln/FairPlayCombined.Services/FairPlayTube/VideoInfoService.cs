@@ -34,9 +34,9 @@ namespace FairPlayCombined.Services.FairPlayTube
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.VideoInfo
-                .Include(p=>p.VideoKeyword)
-                .Include(p=>p.VideoTopic)
-                .Include(p=>p.VideoCaptions)
+                .Include(p => p.VideoKeyword)
+                .Include(p => p.VideoTopic)
+                .Include(p => p.VideoCaptions)
                 .Where(p => p.VideoIndexStatusId == (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed
                 && p.ApplicationUserId == userId)
                 .Select(p => new VideoInfoModel
@@ -60,10 +60,10 @@ namespace FairPlayCombined.Services.FairPlayTube
                     VideoVisibilityId = p.VideoVisibilityId,
                     ThumbnailUrl = p.ThumbnailUrl,
                     YouTubeVideoId = p.YouTubeVideoId,
-                    VideoKeywords = p.VideoKeyword.Select(p=>p.Keyword).ToArray(),
-                    VideoTopics = p.VideoTopic.Select(p=>p.Topic).ToArray(),
-                    EnglishCaptions = p.VideoCaptions.Where(p=>p.Language== "en-US")
-                    .Select(p=>p.Content).SingleOrDefault()
+                    VideoKeywords = p.VideoKeyword.Select(p => p.Keyword).ToArray(),
+                    VideoTopics = p.VideoTopic.Select(p => p.Topic).ToArray(),
+                    EnglishCaptions = p.VideoCaptions.Where(p => p.Language == "en-US")
+                    .Select(p => p.Content).SingleOrDefault()
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);
@@ -112,9 +112,10 @@ namespace FairPlayCombined.Services.FairPlayTube
                     VideoVisibilityId = p.VideoVisibilityId,
                     ThumbnailUrl = p.ThumbnailUrl,
                     YouTubeVideoId = p.YouTubeVideoId,
-                    LifetimeViewers = p.VideoWatchTime.Select(p=>p.WatchedByApplicationUserId).Distinct().Count(),
+                    LifetimeViewers = p.VideoWatchTime.Select(p => p.WatchedByApplicationUserId).Distinct().Count(),
                     LifetimeSessions = p.VideoWatchTime.Count,
-                    LifetimeWatchTime = TimeSpan.FromSeconds(p.VideoWatchTime.Sum(p=>p.WatchTime))
+                    LifetimeWatchTime = TimeSpan.FromSeconds(p.VideoWatchTime.Sum(p => p.WatchTime)),
+                    PublishedOnString = (DateTimeOffset.UtcNow.Subtract(p.RowCreationDateTime).TotalDays < 1 ? "Today" : $"{DateTimeOffset.UtcNow.Subtract(p.RowCreationDateTime).Days} Day(s) ago")
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);
@@ -128,7 +129,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             return result;
         }
 
-        public async Task<VideoInfoModel?> GetVideoInfoByVideoIdAsync(string videoId, 
+        public async Task<VideoInfoModel?> GetVideoInfoByVideoIdAsync(string videoId,
             CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);

@@ -30,5 +30,6 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
         public int LifetimeViewers { get; set; }
         public TimeSpan LifetimeWatchTime { get; set; }
         public string? PublishedUrl { get; set; }
+        public string? PublishedOnString { get; set; }
     }
 }
