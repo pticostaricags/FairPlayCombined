@@ -68,7 +68,7 @@
               Modal="true" TrapFocus="true"
               PreventScroll="false">
     <FluentDialogHeader Visible="false"></FluentDialogHeader>
-    <SearchYouTubeVideo></SearchYouTubeVideo>
+    <SearchYouTubeVideo OnYouTubeVideoSelected="@((string youTubeVideoId) => this.createVideoInfoModel!.YouTubeVideoId = youTubeVideoId)"></SearchYouTubeVideo>
     <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" OnClick="CloseSearchYouTubeVideoDialog">Close</FluentButton>
 </FluentDialog>
 

@@ -25,6 +25,9 @@
 {
     <FluentDataGrid Items="this.searchListResponse.Items.AsQueryable()">
         <TemplateColumn>
+            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" OnClick="@(async () => await this.OnYouTubeVideoSelected.InvokeAsync(context.Id.VideoId))">Select Video</FluentButton>
+        </TemplateColumn>
+        <TemplateColumn>
             <img src="@context.Snippet.Thumbnails.Default__.Url" />
         </TemplateColumn>
         <PropertyColumn Property="@(p=>p.Snippet.Title)"></PropertyColumn>
@@ -33,6 +36,8 @@
 }
 
 @code {
+    [Parameter]
+    public EventCallback<string> OnYouTubeVideoSelected { get; set; }
     [SupplyParameterFromForm]
     private SearchYoutubeVideoModel? searchYoutubeVideoModel { get; set; } = new();
     private CancellationTokenSource cancellationTokenSource = new();
@@ -46,7 +51,7 @@
             this.IsBusy = true;
             StateHasChanged();
             this.searchListResponse =
-            await this.youTubeClientService.SearchMyVideosAsync("Blazor", this.cancellationTokenSource.Token);
+            await this.youTubeClientService.SearchMyVideosAsync(this.searchYoutubeVideoModel!.VideoTitle!, this.cancellationTokenSource.Token);
         }
         catch (Exception ex)
         {

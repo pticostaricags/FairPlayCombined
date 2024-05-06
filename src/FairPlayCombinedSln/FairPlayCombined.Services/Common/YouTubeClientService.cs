@@ -24,6 +24,7 @@ namespace FairPlayCombined.Services.Common
             searchVideosRequest.Type = "video";
             searchVideosRequest.Q = searchTerm;
             searchVideosRequest.Order = SearchResource.ListRequest.OrderEnum.Relevance;
+            searchVideosRequest.MaxResults = 100;
             var result = await searchVideosRequest.ExecuteAsync(cancellationToken);
             return result;
         }
