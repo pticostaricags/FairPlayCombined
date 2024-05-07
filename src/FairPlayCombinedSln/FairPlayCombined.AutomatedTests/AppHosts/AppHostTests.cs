@@ -1,4 +1,5 @@
 ﻿using Aspire.Hosting.Testing;
+using FairPlayCombinedSln.AppHost;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace FairPlayCombined.AutomatedTests.AppHosts
             await app.StartAsync();
 
             // Act
-            var httpClient = app.CreateHttpClient("fairplaytube");
+            var httpClient = app.CreateHttpClient(ResourcesNames.FairPlayTube);
             var response = await httpClient.GetAsync("/");
 
             // Assert
@@ -29,7 +30,7 @@ namespace FairPlayCombined.AutomatedTests.AppHosts
         }
 
         [TestMethod]
-        public async Task Test_RunFairPlatAdminPortalAsync()
+        public async Task Test_RunFairPlayAdminPortalAsync()
         {
             // Arrange
             var appHost = await DistributedApplicationTestingBuilder
@@ -38,7 +39,7 @@ namespace FairPlayCombined.AutomatedTests.AppHosts
             await app.StartAsync();
 
             // Act
-            var httpClient = app.CreateHttpClient("fairplayadminportal");
+            var httpClient = app.CreateHttpClient(ResourcesNames.FairPlayAdminPortal);
             var response = await httpClient.GetAsync("/");
 
             // Assert

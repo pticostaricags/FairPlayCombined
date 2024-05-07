@@ -1,3 +1,4 @@
+using FairPlayCombinedSln.AppHost;
 using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -37,7 +38,7 @@ IResourceBuilder<IResourceWithConnectionString> sqlResourceWithConnectionString 
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
 if (addFairPlayDating)
 {
-    builder.AddProject<Projects.FairPlayDating>(nameof(Projects.FairPlayDating).ToLower())
+    builder.AddProject<Projects.FairPlayDating>(ResourcesNames.FairPlayDating)
         .WithReference(sqlResourceWithConnectionString);
     if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
     {
@@ -48,7 +49,7 @@ if (addFairPlayDating)
 bool addFairPlayTube = Convert.ToBoolean(builder.Configuration["AddFairPlayTube"]);
 if (addFairPlayTube)
 {
-    builder.AddProject<Projects.FairPlayTube>(nameof(Projects.FairPlayTube).ToLower())
+    builder.AddProject<Projects.FairPlayTube>(ResourcesNames.FairPlayTube)
     .WithEnvironment(callback =>
     {
         callback.EnvironmentVariables.Add("GoogleAuthClientId", googleAuthClientId);
@@ -63,39 +64,39 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("PayPal:ClientSecret", paypalClientSecret);
     })
     .WithReference(sqlResourceWithConnectionString);
-    builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")
+    builder.AddProject<Projects.FairPlayTube_VideoIndexing>(ResourcesNames.FairPlayTubeVideoIndexing)
         .WithReference(sqlResourceWithConnectionString);
 }
 
 bool addFairPlayShop = Convert.ToBoolean(builder.Configuration["AddFairPlayShop"]);
 if (addFairPlayShop)
 {
-    builder.AddProject<Projects.FairPlayShop>(nameof(Projects.FairPlayShop).ToLower())
+    builder.AddProject<Projects.FairPlayShop>(ResourcesNames.FairPlayShop)
     .WithReference(sqlResourceWithConnectionString);
 }
 
 bool addCitiesImporter = Convert.ToBoolean(builder.Configuration["AddCitiesImporter"]);
 if (addCitiesImporter)
 {
-    builder.AddProject<Projects.FairPlayCombined_CitiesImporter>("citiesimporter")
+    builder.AddProject<Projects.FairPlayCombined_CitiesImporter>(ResourcesNames.CitiesImporter)
         .WithReference(sqlResourceWithConnectionString);
 }
 
 bool addFairPlatAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPlatAdminPortal"]);
 if (addFairPlatAdminPortal)
 {
-    builder.AddProject<Projects.FairPlayAdminPortal>(nameof(Projects.FairPlayAdminPortal).ToLower())
+    builder.AddProject<Projects.FairPlayAdminPortal>(ResourcesNames.FairPlayAdminPortal)
         .WithReference(sqlResourceWithConnectionString);
 }
 
 bool addFairPlaySocial = Convert.ToBoolean(builder.Configuration["AddFairPlaySocial"]);
 if (addFairPlaySocial)
 {
-    builder.AddProject<Projects.FairPlaySocial>(nameof(Projects.FairPlaySocial).ToLower())
+    builder.AddProject<Projects.FairPlaySocial>(ResourcesNames.FairPlaySocial)
         .WithReference(sqlResourceWithConnectionString);
     if (Convert.ToBoolean(builder.Configuration["AddFairPlaySocialTestDataGenerator"]))
     {
-        builder.AddProject<Projects.FairPlaySocial_TestDataGenerator>("fairplaysocialtestdatagenerator")
+        builder.AddProject<Projects.FairPlaySocial_TestDataGenerator>(ResourcesNames.FairPlaySocialTestDataGenerator)
             .WithReference(sqlResourceWithConnectionString);
     }
 }
@@ -104,13 +105,13 @@ if (addFairPlaySocial)
 bool addLocalizationGenerator = Convert.ToBoolean(builder.Configuration["AddLocalizationGenerator"]);
 if (addLocalizationGenerator)
 {
-    builder.AddProject<Projects.FairPlayCombined_LocalizationGenerator>("fairplaycombinedlocalizationgenerator")
+    builder.AddProject<Projects.FairPlayCombined_LocalizationGenerator>(ResourcesNames.FairPlayCombinedLocalizationGenerator)
         .WithReference(sqlResourceWithConnectionString);
 }
 bool addFairPlayBudget = Convert.ToBoolean(builder.Configuration["AddFairPlayBudget"]);
 if (addFairPlayBudget)
 {
-    builder.AddProject<Projects.FairPlayBudget>("fairplaybudget")
+    builder.AddProject<Projects.FairPlayBudget>(ResourcesNames.FairPlayBudget)
         .WithReference(sqlResourceWithConnectionString);
 }
 
@@ -120,7 +121,7 @@ static void AddTestDataGenerator(IDistributedApplicationBuilder builder,
     IResourceBuilder<IResourceWithConnectionString> sqlServerResource)
 {
     var humansPhotosDirectory = builder.Configuration["HumansPhotosDirectory"];
-    builder.AddProject<Projects.FairPlayDating_TestDataGenerator>("fairplaydatingtestdatagenerator")
+    builder.AddProject<Projects.FairPlayDating_TestDataGenerator>(ResourcesNames.FairPlayDatingTestDataGenerator)
         .WithEnvironment(callback =>
         {
             if (!String.IsNullOrWhiteSpace(humansPhotosDirectory))
