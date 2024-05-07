@@ -54,7 +54,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 cancelUrl: "https://example.com/returnUrl",
                 PayPalOrderService.CreateOrderIntent.Authorize);
             Assert.IsNotNull(createdOrder);
-            var result = await payPalOrderService.GetOrderDetailsAsync(createdOrder.Id);
+            var result = await payPalOrderService.GetOrderDetailsAsync(createdOrder.Id, CancellationToken.None);
             Assert.IsNotNull(result);
         }
     }

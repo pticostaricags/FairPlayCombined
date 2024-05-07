@@ -10,6 +10,7 @@ using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Models.GoogleGemini;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.Common;
+using FairPlayCombined.Services.FairPlayDating;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using FairPlayCombined.Services.FairPlayTube;
 using FairPlayCombined.Shared.CustomLocalization.EF;
@@ -41,7 +42,7 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddResponseCompression(opts =>
 {
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-          new[] { "application/octet-stream" });
+          ["application/octet-stream"]);
 });
 builder.Services.AddSignalR();
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
@@ -77,6 +78,36 @@ var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??
 
 var googleAuthRedirectUri = builder.Configuration["GoogleAuthRedirectUri"] ??
         throw new InvalidOperationException("'GoogleAuthRedirectUri' not found");
+
+var paypalClientId = builder.Configuration["PayPal:ClientId"] ??
+    throw new InvalidOperationException("'PayPal:ClientId' not found");
+
+var paypalClientSecret = builder.Configuration["PayPal:ClientSecret"] ??
+    throw new InvalidOperationException("'PayPal:ClientSecret' not found");
+
+builder.Services.AddTransient<PayPal.Core.PayPalHttpClient>(sp => 
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        PayPal.Core.SandboxEnvironment sandboxEnvironment = new(paypalClientId, paypalClientSecret);
+        PayPal.Core.PayPalHttpClient payPalHttpClient = new(sandboxEnvironment);
+        return payPalHttpClient;
+    }
+    else
+    {
+        PayPal.Core.PayPalEnvironment payPalEnvironment = new(paypalClientId, paypalClientSecret,
+            "/", "/");
+        PayPal.Core.PayPalHttpClient payPalHttpClient = new(payPalEnvironment);
+        return payPalHttpClient;
+    }
+});
+builder.Services.AddTransient<PayPalOrderService>(sp =>
+{
+    var payPalHttpClient = sp.GetRequiredService<PayPal.Core.PayPalHttpClient>();
+    var logger = sp.GetRequiredService<ILogger<PayPalOrderService>>();
+    PayPalOrderService payPalOrderService = new(payPalHttpClient, logger);
+    return payPalOrderService;
+});
 
 GoogleAuthClientSecretInfo googleAuthClientSecretInfo = new()
 {
@@ -134,10 +165,10 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 
 builder.Services.AddTransient<IUserProviderService, UserProviderService>();
-builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp, builder) => 
+builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp, builder) =>
 {
     IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
-    
+
     builder.AddInterceptors(new SaveChangesInterceptor(userProviderService));
     builder.UseSqlServer(connectionString,
         sqlServerOptionsAction =>
@@ -147,7 +178,7 @@ builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp, builder) =>
                 maxRetryDelay: TimeSpan.FromSeconds(30),
                 errorNumbersToAdd: null);
         });
-}, contextLifetime: ServiceLifetime.Transient, 
+}, contextLifetime: ServiceLifetime.Transient,
 optionsLifetime: ServiceLifetime.Transient);
 
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
@@ -194,10 +225,10 @@ builder.Services.AddSingleton<GoogleGeminiConfiguration>(sp =>
     };
 });
 
-builder.Services.AddTransient<ContentSafetyClient>(sp => 
+builder.Services.AddTransient<ContentSafetyClient>(sp =>
 {
     var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
-    
+
     var azureContentSafetyEndpoint = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
     Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_ENDPOINT_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_ENDPOINT_KEY} in database");
 
@@ -209,14 +240,14 @@ builder.Services.AddTransient<ContentSafetyClient>(sp =>
                 new AzureKeyCredential(azureContentSafetyKey.Value));
     return contentSafetyClient;
 });
-builder.Services.AddTransient<AzureContentSafetyService>(sp => 
+builder.Services.AddTransient<AzureContentSafetyService>(sp =>
 {
     ContentSafetyClient contentSafetyClient = sp.GetRequiredService<ContentSafetyClient>();
     AzureContentSafetyService azureContentSafetyService = new(contentSafetyClient);
     return azureContentSafetyService;
 });
 
-builder.Services.AddTransient<GoogleGeminiService>(sp => 
+builder.Services.AddTransient<GoogleGeminiService>(sp =>
 {
     GoogleGeminiConfiguration googleGeminiConfiguration = sp.GetRequiredService<GoogleGeminiConfiguration>();
     HttpClient httpClient = new()
@@ -233,57 +264,7 @@ builder.Services.AddSignalR(hubOptions =>
 
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-builder.Services.AddTransient<ICultureService, CultureService>();
-builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp =>
-{
-    var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
-    var azureVideoIndexerAccountIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY} in database");
-    var azureVideoIndexerLocationEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY} in database");
-    var azureVideoIndexerResourceGroupEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY} in database");
-    var azureVideoIndexerResourceNameEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY} in database");
-    var azureVideoIndexerSubscriptionIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY} in database");
-    AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = new()
-    {
-        AccountId = azureVideoIndexerAccountIdEntity.Value,
-        IsArmAccount = true,
-        Location = azureVideoIndexerLocationEntity.Value,
-        ResourceGroup = azureVideoIndexerResourceGroupEntity.Value,
-        ResourceName = azureVideoIndexerResourceNameEntity.Value,
-        SubscriptionId = azureVideoIndexerSubscriptionIdEntity.Value
-    };
-    return azureVideoIndexerServiceConfiguration;
-});
-builder.Services.AddTransient(sp =>
-{
-    var azureVideoIndexerServiceConfiguration = sp.GetRequiredService<AzureVideoIndexerServiceConfiguration>();
-    return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
-        new HttpClient());
-});
-builder.Services.AddTransient<VideoInfoService>();
-builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
-{
-    ClientId = googleAuthClientSecretInfo.installed!.client_id,
-    ClientSecret = googleAuthClientSecretInfo.installed.client_secret
-});
-builder.Services.AddTransient<YouTubeClientService>();
-builder.Services.AddTransient<VideoCaptionsService>();
-builder.Services.AddTransient<VideoDigitalMarketingPlanService>();
-builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
-builder.Services.AddTransient<VideoPlanService>();
-builder.Services.AddTransient<PromptGeneratorService>();
-builder.Services.AddTransient<VideoWatchTimeService>();
-builder.Services.AddTransient<SupportedLanguageService>();
-builder.Services.AddTransient<VideoViewerService>();
-builder.Services.AddTransient<UserMessageService>();
-builder.Services.AddTransient<VideoThumbnailService>();
-builder.Services.AddTransient<PhotoService>();
-builder.Services.AddTransient<VideoCommentService>();
-builder.Services.AddTransient<AspNetUsersService>();
+AddPlatformServices(builder, googleAuthClientSecretInfo);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -367,3 +348,61 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.Run();
+
+static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientSecretInfo googleAuthClientSecretInfo)
+{
+    builder.Services.AddTransient<ICultureService, CultureService>();
+    builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp =>
+    {
+        var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
+        var azureVideoIndexerAccountIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+        Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY} in database");
+        var azureVideoIndexerLocationEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+        Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY} in database");
+        var azureVideoIndexerResourceGroupEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+        Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY} in database");
+        var azureVideoIndexerResourceNameEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+        Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY} in database");
+        var azureVideoIndexerSubscriptionIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
+        Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY} in database");
+        AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = new()
+        {
+            AccountId = azureVideoIndexerAccountIdEntity.Value,
+            IsArmAccount = true,
+            Location = azureVideoIndexerLocationEntity.Value,
+            ResourceGroup = azureVideoIndexerResourceGroupEntity.Value,
+            ResourceName = azureVideoIndexerResourceNameEntity.Value,
+            SubscriptionId = azureVideoIndexerSubscriptionIdEntity.Value
+        };
+        return azureVideoIndexerServiceConfiguration;
+    });
+    builder.Services.AddTransient(sp =>
+    {
+        var azureVideoIndexerServiceConfiguration = sp.GetRequiredService<AzureVideoIndexerServiceConfiguration>();
+        return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
+            new HttpClient());
+    });
+    builder.Services.AddTransient<VideoInfoService>();
+    builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
+    {
+        ClientId = googleAuthClientSecretInfo.installed!.client_id,
+        ClientSecret = googleAuthClientSecretInfo.installed.client_secret
+    });
+    builder.Services.AddTransient<YouTubeClientService>();
+    builder.Services.AddTransient<VideoCaptionsService>();
+    builder.Services.AddTransient<VideoDigitalMarketingPlanService>();
+    builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
+    builder.Services.AddTransient<VideoPlanService>();
+    builder.Services.AddTransient<PromptGeneratorService>();
+    builder.Services.AddTransient<VideoWatchTimeService>();
+    builder.Services.AddTransient<SupportedLanguageService>();
+    builder.Services.AddTransient<VideoViewerService>();
+    builder.Services.AddTransient<UserMessageService>();
+    builder.Services.AddTransient<VideoThumbnailService>();
+    builder.Services.AddTransient<PhotoService>();
+    builder.Services.AddTransient<VideoCommentService>();
+    builder.Services.AddTransient<AspNetUsersService>();
+    builder.Services.AddTransient<PayPalOrderService>();
+    builder.Services.AddTransient<UserProfileService>();
+    builder.Services.AddTransient<UserFundService>();
+}

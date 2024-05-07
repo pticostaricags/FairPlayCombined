@@ -40,10 +40,10 @@ namespace FairPlayCombined.Services.Common
                         BrandName = brandName,
                         Locale = "en-US",
                     },
-                    RedirectUrls=new()
+                    RedirectUrls = new()
                     {
-                        ReturnUrl= returnUrl,
-                        CancelUrl= cancelUrl
+                        ReturnUrl = returnUrl,
+                        CancelUrl = cancelUrl
                     }
                 };
                 ordersCreateRequest.RequestBody(order);
@@ -51,7 +51,7 @@ namespace FairPlayCombined.Services.Common
                 var result = response.Result<PayPal.v1.Orders.Order>();
                 return result;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 logger.LogError(exception: ex, message: "Exception occurred in {MethodName}. " +
                     "Message: {Message}", nameof(CreateOrderAsync), ex.Message);
@@ -59,12 +59,21 @@ namespace FairPlayCombined.Services.Common
             }
         }
 
-        public async Task<PayPal.v1.Payments.Order> GetOrderDetailsAsync(string orderId)
+        public async Task<PayPal.v1.Payments.Order?> GetOrderDetailsAsync(string orderId, CancellationToken cancellationToken)
         {
-            OrderGetRequest orderGetRequest=new(orderId);
-            var response = await payPalHttpClient.Execute(orderGetRequest);
-            var result = response.Result<PayPal.v1.Payments.Order>();
-            return result;
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                OrderGetRequest orderGetRequest = new(orderId);
+                var response = await payPalHttpClient.Execute(orderGetRequest);
+                var result = response.Result<PayPal.v1.Payments.Order>();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(exception: ex, message: "Error: {ErrorMessage}", ex.Message);
+                return null;
+            }
         }
     }
 }
