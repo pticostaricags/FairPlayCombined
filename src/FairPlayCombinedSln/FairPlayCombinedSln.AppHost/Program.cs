@@ -24,6 +24,13 @@ var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??
 var googleAuthRedirectUri = builder.Configuration["GoogleAuthRedirectUri"] ??
         throw new InvalidOperationException("'GoogleAuthRedirectUri' not found");
 
+var paypalClientId = builder.Configuration["PayPal:ClientId"] ??
+    throw new InvalidOperationException("'PayPal:ClientId' not found");
+
+var paypalClientSecret = builder.Configuration["PayPal:ClientSecret"] ??
+    throw new InvalidOperationException("'PayPal:ClientSecret' not found");
+
+
 IResourceBuilder<IResourceWithConnectionString> sqlResourceWithConnectionString =
     builder.AddConnectionString("FairPlayCombinedDb");
 
@@ -51,6 +58,9 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("GoogleAuthProviderCertUri", googleAuthProviderCertUri);
         callback.EnvironmentVariables.Add("GoogleAuthClientSecret", googleAuthClientSecret);
         callback.EnvironmentVariables.Add("GoogleAuthRedirectUri", googleAuthRedirectUri);
+
+        callback.EnvironmentVariables.Add("PayPal:ClientId", paypalClientId);
+        callback.EnvironmentVariables.Add("PayPal:ClientSecret", paypalClientSecret);
     })
     .WithReference(sqlResourceWithConnectionString);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>("fairplaytubevideoindexing")

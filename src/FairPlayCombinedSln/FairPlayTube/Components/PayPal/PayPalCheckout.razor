@@ -1,10 +1,16 @@
-﻿
+﻿@implements IAsyncDisposable
+
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Models.PayPal
+@using FairPlayCombined.Services.Common
 @using Microsoft.Extensions.Localization
+
 @inject IStringLocalizer<PayPalCheckout> Localizer
 @inject IJSRuntime JSRuntime
 @inject IToastService toastService
+@inject UserFundService userFundService
+@inject PayPalOrderService payPalOrderService
+
 
 <div>
     <div id="smart-button-container">
@@ -24,10 +30,11 @@
     </div>
 </div>
 
-@code{
+@code {
     [Parameter]
     public EventCallback OnFundsAdded { get; set; }
     private DotNetObjectReference<PayPalCheckout>? objRef;
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override void OnInitialized()
     {
@@ -44,12 +51,12 @@
     }
 
     [JSInvokable]
-    public async void OnApprove(PaypalCheckoutApprovedDataModel data,
+    public async Task OnApprove(PaypalCheckoutApprovedDataModel data,
         PaypalCheckoutApprovedDetailsModel details)
     {
         try
         {
-            //await this.UserProfileClientService.AddFundsAsync(data.orderID);
+            await this.userFundService.AddMyFundsAsync(data.orderID!, this.cancellationTokenSource.Token);
             this.toastService.ShowSuccess($"Fundas have been added to your Wallet");
             await OnFundsAdded.InvokeAsync();
         }
@@ -57,6 +64,12 @@
         {
             toastService.ShowError(ex.Message);
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
     }
 
     #region Resource Keys
