@@ -1,22 +1,28 @@
 ﻿using Microsoft.Extensions.Logging;
 using PayPal.Core;
 using PayPal.v1.Orders;
+using PayPal.v1.Payments;
 
 namespace FairPlayCombined.Services.Common
 {
     public class PayPalOrderService(PayPalHttpClient payPalHttpClient,
         ILogger<PayPalOrderService> logger)
     {
-        public async Task<Order?> CreateOrderAsync(string referenceId,
+        public enum CreateOrderIntent
+        {
+            Capture,
+            Authorize
+        }
+        public async Task<PayPal.v1.Orders.Order?> CreateOrderAsync(string referenceId,
             decimal amount, string brandName,
-            string returnUrl, string cancelUrl)
+            string returnUrl, string cancelUrl, CreateOrderIntent createOrderIntent)
         {
             try
             {
                 OrdersCreateRequest ordersCreateRequest = new();
-                Order order = new()
+                PayPal.v1.Orders.Order order = new()
                 {
-                    Intent = "CAPTURE",
+                    Intent = createOrderIntent.ToString().ToUpper(),
                     PurchaseUnits =
                     [
                         new PurchaseUnit()
@@ -34,7 +40,7 @@ namespace FairPlayCombined.Services.Common
                         BrandName = brandName,
                         Locale = "en-US",
                     },
-                    RedirectUrls=new RedirectUrls()
+                    RedirectUrls=new()
                     {
                         ReturnUrl= returnUrl,
                         CancelUrl= cancelUrl
@@ -42,7 +48,7 @@ namespace FairPlayCombined.Services.Common
                 };
                 ordersCreateRequest.RequestBody(order);
                 var response = await payPalHttpClient.Execute(ordersCreateRequest);
-                var result = response.Result<Order>();
+                var result = response.Result<PayPal.v1.Orders.Order>();
                 return result;
             }
             catch (Exception ex) 
@@ -51,6 +57,14 @@ namespace FairPlayCombined.Services.Common
                     "Message: {Message}", nameof(CreateOrderAsync), ex.Message);
                 return null;
             }
+        }
+
+        public async Task<PayPal.v1.Payments.Order> GetOrderDetailsAsync(string orderId)
+        {
+            OrderGetRequest orderGetRequest=new(orderId);
+            var response = await payPalHttpClient.Execute(orderGetRequest);
+            var result = response.Result<PayPal.v1.Payments.Order>();
+            return result;
         }
     }
 }
