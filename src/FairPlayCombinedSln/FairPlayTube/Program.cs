@@ -61,41 +61,12 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 
 GoogleAuthClientSecretInfo googleAuthClientSecretInfo = builder.GetGoogleAuthClientSecretInfo();
 
-var paypalClientId = builder.Configuration["PayPal:ClientId"] ??
-    throw new InvalidOperationException("'PayPal:ClientId' not found");
-
-var paypalClientSecret = builder.Configuration["PayPal:ClientSecret"] ??
-    throw new InvalidOperationException("'PayPal:ClientSecret' not found");
-
-builder.Services.AddTransient<PayPal.Core.PayPalHttpClient>(sp => 
-{
-    if (builder.Environment.IsDevelopment())
-    {
-        PayPal.Core.SandboxEnvironment sandboxEnvironment = new(paypalClientId, paypalClientSecret);
-        PayPal.Core.PayPalHttpClient payPalHttpClient = new(sandboxEnvironment);
-        return payPalHttpClient;
-    }
-    else
-    {
-        PayPal.Core.PayPalEnvironment payPalEnvironment = new(paypalClientId, paypalClientSecret,
-            "/", "/");
-        PayPal.Core.PayPalHttpClient payPalHttpClient = new(payPalEnvironment);
-        return payPalHttpClient;
-    }
-});
-builder.Services.AddTransient<PayPalOrderService>(sp =>
-{
-    var payPalHttpClient = sp.GetRequiredService<PayPal.Core.PayPalHttpClient>();
-    var logger = sp.GetRequiredService<ILogger<PayPalOrderService>>();
-    PayPalOrderService payPalOrderService = new(payPalHttpClient, logger);
-    return payPalOrderService;
-});
-
-
 builder.Services.AddSingleton<YouTubeClientServiceConfiguration>(new YouTubeClientServiceConfiguration()
 {
     GoogleAuthClientSecretInfo = googleAuthClientSecretInfo
 });
+
+builder.AddPayPalCore();
 
 builder.Services.AddAuthentication(configureOptions =>
 {
@@ -154,78 +125,9 @@ optionsLifetime: ServiceLifetime.Transient);
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 
-builder.Services.AddTransient<OpenAIService>(sp =>
-{
-    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
-    sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
-    var dbContext = dbContextFactory.CreateDbContext();
-    var openAIKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.OPENAI_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_KEY} in database");
-    var generateDall3ImageUrlEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY} in database");
-    var openAIChatCompletionEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY} in database");
-    var timeoutMinutes = 3;
-    HttpClient openAIAuthorizedHttpClient = new()
-    {
-        Timeout = TimeSpan.FromMinutes(timeoutMinutes)
-    };
-    openAIAuthorizedHttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
-        "Bearer", openAIKeyEntity.Value);
-    HttpClient genericHttpClient = new()
-    {
-        Timeout = TimeSpan.FromMinutes(timeoutMinutes)
-    };
-    return new OpenAIService(openAIAuthorizedHttpClient,
-        genericHttpClient: genericHttpClient, new OpenAIServiceConfiguration()
-        {
-            Key = openAIKeyEntity.Value,
-            GenerateDall3ImageUrl = generateDall3ImageUrlEntity.Value,
-            ChatCompletionsUrl = openAIChatCompletionEntity.Value
-        },
-    dbContextFactory: dbContextFactory);
-});
-
-builder.Services.AddSingleton<GoogleGeminiConfiguration>(sp =>
-{
-    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
-    sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
-    var dbContext = dbContextFactory.CreateDbContext();
-    var googleGeminiKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.GOOGLE_GEMINI_KEY_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.GOOGLE_GEMINI_KEY_KEY} in database");
-    return new GoogleGeminiConfiguration()
-    {
-        Key = googleGeminiKeyEntity.Value
-    };
-});
-
-builder.Services.AddTransient<ContentSafetyClient>(sp =>
-{
-    var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
-
-    var azureContentSafetyEndpoint = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_ENDPOINT_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_ENDPOINT_KEY} in database");
-
-    var azureContentSafetyKey = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-    Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_KEY_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_CONTENT_SAFETY_KEY_KEY} in database");
-
-
-    ContentSafetyClient contentSafetyClient = new(new Uri(azureContentSafetyEndpoint.Value),
-                new AzureKeyCredential(azureContentSafetyKey.Value));
-    return contentSafetyClient;
-});
-builder.Services.AddTransient<AzureContentSafetyService>(sp =>
-{
-    ContentSafetyClient contentSafetyClient = sp.GetRequiredService<ContentSafetyClient>();
-    AzureContentSafetyService azureContentSafetyService = new(contentSafetyClient);
-    return azureContentSafetyService;
-});
-
-builder.Services.AddTransient<GoogleGeminiService>(sp =>
-{
-    GoogleGeminiConfiguration googleGeminiConfiguration = sp.GetRequiredService<GoogleGeminiConfiguration>();
-    HttpClient httpClient = new()
-    {
-        Timeout = TimeSpan.FromMinutes(3)
-    };
-    return new GoogleGeminiService(googleGeminiConfiguration, httpClient);
-});
+builder.AddOpenAI();
+builder.AddGoogleGemini();
+builder.AddAzureAIContentSafety();
 
 builder.Services.AddSignalR(hubOptions =>
 {
