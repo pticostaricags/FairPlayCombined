@@ -1,4 +1,6 @@
-﻿@page "/User/MyFunds"
+﻿@implements IAsyncDisposable
+
+@page "/User/MyFunds"
 @using FairPlayCombined.Services.Common
 @using FairPlayTube.Components.PayPal
 @attribute [Authorize]
@@ -29,5 +31,11 @@
     private async Task OnFundsAdded()
     {
         await LoadDataAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
     }
 }
