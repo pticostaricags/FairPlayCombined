@@ -1,5 +1,6 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,18 @@ namespace FairPlayCombined.Services.Common
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
         IUserProviderService userProviderService)
     {
+        public async Task<decimal> GetMyAvailableFundsAsync(CancellationToken cancellationToken)
+        {
+            decimal result = 0;
+            var currentUserId = userProviderService.GetCurrentUserId();
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var userFundsEntity = await dbContext.UserFunds
+                .SingleOrDefaultAsync(p => p.ApplicationUserId == currentUserId,
+                cancellationToken);
+            if (userFundsEntity != null)
+                result = userFundsEntity.AvailableFunds;
+            return result;
+        }
         public async Task AddMyFundsAsync(string orderId, CancellationToken cancellationToken)
         {
             var accessToken = await payPalOrderService.GetAccessTokenAsync(cancellationToken);

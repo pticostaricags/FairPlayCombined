@@ -1,13 +1,33 @@
 ﻿@page "/User/MyFunds"
+@using FairPlayCombined.Services.Common
 @using FairPlayTube.Components.PayPal
 @attribute [Authorize]
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
+@inject UserFundService userFundService
 
+@if (this.AvailableFunds != null)
+{
+    <FluentLabel Typo="Typography.Header">Available Funds: @this.AvailableFunds</FluentLabel>
+}
 <PayPalCheckout OnFundsAdded="OnFundsAdded"></PayPalCheckout>
 @code
 {
+    private decimal? AvailableFunds { get; set; }
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        this.AvailableFunds = await this.userFundService
+        .GetMyAvailableFundsAsync(this.cancellationTokenSource.Token);
+        StateHasChanged();
+    }
+
     private async Task OnFundsAdded()
     {
-        await Task.Yield();
+        await LoadDataAsync();
     }
 }

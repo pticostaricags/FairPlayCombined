@@ -11,7 +11,6 @@
 @inject UserFundService userFundService
 @inject PayPalOrderService payPalOrderService
 
-
 <div>
     <div id="smart-button-container">
         <div style="text-align: center;">
@@ -35,7 +34,7 @@
     public EventCallback OnFundsAdded { get; set; }
     private DotNetObjectReference<PayPalCheckout>? objRef;
     private readonly CancellationTokenSource cancellationTokenSource = new();
-
+    
     protected override void OnInitialized()
     {
         this.objRef = DotNetObjectReference.Create(this);
