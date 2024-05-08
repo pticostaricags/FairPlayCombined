@@ -10,7 +10,8 @@ namespace FairPlayCombined.Services.Common
     {
         public async Task AddMyFundsAsync(string orderId, CancellationToken cancellationToken)
         {
-            await payPalOrderService.GetOrderDetailsAsync(orderId, cancellationToken);
+            var accessToken = await payPalOrderService.GetAccessTokenAsync(cancellationToken);
+            await payPalOrderService.GetOrderDetailsAsync(orderId, accessToken.access_token!, cancellationToken);
         }
     }
 }

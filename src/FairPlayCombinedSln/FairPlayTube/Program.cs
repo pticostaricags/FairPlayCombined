@@ -6,6 +6,7 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Models.Common.PayPal;
 using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Models.GoogleGemini;
 using FairPlayCombined.Models.OpenAI;
@@ -274,7 +275,6 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
     builder.Services.AddTransient<PhotoService>();
     builder.Services.AddTransient<VideoCommentService>();
     builder.Services.AddTransient<AspNetUsersService>();
-    builder.Services.AddTransient<PayPalOrderService>();
     builder.Services.AddTransient<UserProfileService>();
     builder.Services.AddTransient<UserFundService>();
 }

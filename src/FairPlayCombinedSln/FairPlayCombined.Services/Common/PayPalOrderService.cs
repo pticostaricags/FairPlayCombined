@@ -1,17 +1,50 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using FairPlayCombined.Models.Common.PayPal;
+using Microsoft.Extensions.Logging;
 using PayPal.Core;
 using PayPal.v1.Orders;
 using PayPal.v1.Payments;
+using System.Net.Http.Json;
+using System.Text;
 
 namespace FairPlayCombined.Services.Common
 {
     public class PayPalOrderService(PayPalHttpClient payPalHttpClient,
-        ILogger<PayPalOrderService> logger)
+        ILogger<PayPalOrderService> logger, HttpClient basicHttpClient,
+        PayPalConfiguration payPalConfiguration)
     {
         public enum CreateOrderIntent
         {
             Capture,
             Authorize
+        }
+
+        public async Task<GetAccessTokenResponse> GetAccessTokenAsync(CancellationToken cancellationToken)
+        {
+            string requestUrl = $"{payPalConfiguration.Endpoint}/v1/oauth2/token";
+            var credentials = Encoding.ASCII.GetBytes($"{payPalConfiguration.ClientId}:{payPalConfiguration.Secret}");
+            basicHttpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("basic", Convert.ToBase64String(credentials));
+            List<KeyValuePair<string, string>> data = new()
+                    {
+                        new ("grant_type","client_credentials")
+                    };
+            System.Net.Http.FormUrlEncodedContent formUrlEncodedContent = new(data);
+            HttpRequestMessage httpRequestMessage = new(HttpMethod.Post, requestUrl)
+            {
+                Content = formUrlEncodedContent
+            };
+            var response = await basicHttpClient.SendAsync(httpRequestMessage, completionOption: HttpCompletionOption.ResponseContentRead, cancellationToken: cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<GetAccessTokenResponse>();
+                return result!;
+            }
+            else
+            {
+                string reason = response.ReasonPhrase!;
+                string detailedError = await response.Content.ReadAsStringAsync();
+                throw new FairPlayCombined.Common.CustomExceptions.RuleException($"Reason: {reason}. Details: {detailedError}");
+            }
         }
         public async Task<PayPal.v1.Orders.Order?> CreateOrderAsync(string referenceId,
             decimal amount, string brandName,
@@ -59,19 +92,19 @@ namespace FairPlayCombined.Services.Common
             }
         }
 
-        public async Task<PayPal.v1.Payments.Order?> GetOrderDetailsAsync(string orderId, CancellationToken cancellationToken)
+        public async Task<GetOrderDetailsResponse?> GetOrderDetailsAsync(string orderId, string accessToken, CancellationToken cancellationToken = default)
         {
             try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                OrderGetRequest orderGetRequest = new(orderId);
-                var response = await payPalHttpClient.Execute(orderGetRequest);
-                var result = response.Result<PayPal.v1.Payments.Order>();
-                return result;
+                string requestUrl = $"{payPalConfiguration.Endpoint}/v1/checkout/orders/{orderId}";
+                basicHttpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                var result = await basicHttpClient.GetFromJsonAsync<GetOrderDetailsResponse>(requestUrl, cancellationToken: cancellationToken);
+                return result!;
             }
             catch (Exception ex)
             {
-                logger.LogError(exception: ex, message: "Error: {ErrorMessage}", ex.Message);
+                logger.LogError(ex, "Error: {ErrorMessage}", ex.Message);
                 return null;
             }
         }

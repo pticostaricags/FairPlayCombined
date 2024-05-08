@@ -57,7 +57,7 @@
         try
         {
             await this.userFundService.AddMyFundsAsync(data.orderID!, this.cancellationTokenSource.Token);
-            this.toastService.ShowSuccess($"Fundas have been added to your Wallet");
+            this.toastService.ShowSuccess($"Funds have been added to your Wallet");
             await OnFundsAdded.InvokeAsync();
         }
         catch (Exception ex)
