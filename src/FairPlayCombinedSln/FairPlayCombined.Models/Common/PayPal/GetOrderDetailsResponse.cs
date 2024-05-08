@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Models.Common.PayPal
 {
-
+#pragma warning disable S101 // Types should be named in PascalCase
+#pragma warning disable S2094 // Classes should not be empty
+#pragma warning disable IDE1006 // Naming Styles
     public class GetOrderDetailsResponse
     {
         public string? id { get; set; }
@@ -18,6 +20,7 @@ namespace FairPlayCombined.Models.Common.PayPal
         public Link[]? links { get; set; }
         public DateTime create_time { get; set; }
     }
+
 
     public class Gross_Total_Amount
     {
@@ -114,4 +117,7 @@ namespace FairPlayCombined.Models.Common.PayPal
         public string? rel { get; set; }
         public string? method { get; set; }
     }
+#pragma warning restore S101 // Types should be named in PascalCase
+#pragma warning restore S2094 // Classes should not be empty
+#pragma warning restore IDE1006 // Naming Styles
 }

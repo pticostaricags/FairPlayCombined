@@ -20,7 +20,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             }
             var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
-            var (allGenders, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions,
+            var (_, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions,
                 allTattooStatuses) =
             await GetAllEntitiesListsAsync(dbContext, stoppingToken);
             var (allMalesPhotosPaths, allFemalesPhotosPaths) = PreparaHumansPhotosPaths();
@@ -43,14 +43,14 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 if ( i % 2 == 0)
                 {
                     photo = InitilizePhoto(allMalesPhotosPaths);
-                    await AddUserAsync(logger, dbContext, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions, allTattooStatuses, itemsCount, i, randomGeoLocation, currentGeoLocation, photo, stoppingToken,
-                        biologicalGenderId:1);
+                    await AddUserAsync(logger, dbContext, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions, allTattooStatuses, itemsCount, i, randomGeoLocation, currentGeoLocation, photo,
+                        biologicalGenderId:1, stoppingToken);
                 }
                 else
                 {
                     photo = InitilizePhoto(allFemalesPhotosPaths);
-                    await AddUserAsync(logger, dbContext, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions, allTattooStatuses, itemsCount, i, randomGeoLocation, currentGeoLocation, photo, stoppingToken,
-                        biologicalGenderId:2);
+                    await AddUserAsync(logger, dbContext, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions, allTattooStatuses, itemsCount, i, randomGeoLocation, currentGeoLocation, photo,
+                        biologicalGenderId:2, stoppingToken);
                 }
             }
             await dbContext.SaveChangesAsync(stoppingToken);
@@ -59,8 +59,8 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
     }
 
 #pragma warning disable S107 // Methods should not have too many parameters
-    private static async Task AddUserAsync(ILogger<TestDataGenerator> logger, FairPlayCombinedDbContext dbContext, EyesColor[] allEyesColors, DateObjective[] allDateObjectives, HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions, TattooStatus[] allTattooStatuses, int itemsCount, int i, geodata randomGeoLocation, Point currentGeoLocation, Photo photo, CancellationToken stoppingToken,
-        int biologicalGenderId)
+    private static async Task AddUserAsync(ILogger<TestDataGenerator> logger, FairPlayCombinedDbContext dbContext, EyesColor[] allEyesColors, DateObjective[] allDateObjectives, HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions, TattooStatus[] allTattooStatuses, int itemsCount, int i, geodata randomGeoLocation, Point currentGeoLocation, Photo photo,
+        int biologicalGenderId, CancellationToken stoppingToken)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         string email = $"GTEST-{Random.Shared.Next(1000000)}-{Faker.Internet.Email()}";
@@ -161,9 +161,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             try
             {
                 randomGeoLocation = await geoNamesService.GeoRandomLocationAsync(CancellationToken.None);
-                if (randomGeoLocation is null)
-                {
-                    randomGeoLocation = new geodata()
+                randomGeoLocation ??= new geodata()
                     {
                         nearest = new geodataNearest()
                         {
@@ -171,7 +169,6 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                             longt = -74.37231M
                         }
                     };
-                }
             }
             catch (Exception)
             {

@@ -24,10 +24,10 @@ namespace FairPlayCombined.Services.Common
             var credentials = Encoding.ASCII.GetBytes($"{payPalConfiguration.ClientId}:{payPalConfiguration.Secret}");
             basicHttpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("basic", Convert.ToBase64String(credentials));
-            List<KeyValuePair<string, string>> data = new()
-                    {
+            List<KeyValuePair<string, string>> data =
+                    [
                         new ("grant_type","client_credentials")
-                    };
+                    ];
             System.Net.Http.FormUrlEncodedContent formUrlEncodedContent = new(data);
             HttpRequestMessage httpRequestMessage = new(HttpMethod.Post, requestUrl)
             {
@@ -36,13 +36,13 @@ namespace FairPlayCombined.Services.Common
             var response = await basicHttpClient.SendAsync(httpRequestMessage, completionOption: HttpCompletionOption.ResponseContentRead, cancellationToken: cancellationToken);
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<GetAccessTokenResponse>();
+                var result = await response.Content.ReadFromJsonAsync<GetAccessTokenResponse>(cancellationToken);
                 return result!;
             }
             else
             {
                 string reason = response.ReasonPhrase!;
-                string detailedError = await response.Content.ReadAsStringAsync();
+                string detailedError = await response.Content.ReadAsStringAsync(cancellationToken);
                 throw new FairPlayCombined.Common.CustomExceptions.RuleException($"Reason: {reason}. Details: {detailedError}");
             }
         }

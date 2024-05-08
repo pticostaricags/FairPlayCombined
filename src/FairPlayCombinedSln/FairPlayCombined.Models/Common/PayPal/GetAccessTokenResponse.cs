@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Models.Common.PayPal
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable IDE1006 // Naming Styles
     public class GetAccessTokenResponse
     {
         public string? scope { get; set; }
@@ -16,6 +16,5 @@ namespace FairPlayCombined.Models.Common.PayPal
         public int expires_in { get; set; }
         public string? nonce { get; set; }
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-
+#pragma warning restore IDE1006 // Naming Styles
 }
