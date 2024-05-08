@@ -17,8 +17,7 @@
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
-@attribute [StreamRendering(enabled: true)]
-@rendermode RenderMode.InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 @inject GenderService genderService
 @inject DateObjectiveService dateObjectiveService
@@ -33,238 +32,256 @@
 @inject PhotoService photoService
 @inject IGeoLocationService geolocationService
 @inject AzureContentSafetyService azureContentSafetyService
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
 
 <h3>MyUserProfile</h3>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<EditForm FormName="frmCreateMyUserProfile" Model="this.createUserProfileModel"
-          OnValidSubmit="OnValidSubmitAsync">
-    <div class="mb-3">
+<FluentEditForm FormName="frmCreateMyUserProfile" Model="this.createUserProfileModel"
+                OnValidSubmit="OnValidSubmitAsync">
+    <div>
         <DataAnnotationsValidator></DataAnnotationsValidator>
-        <ValidationSummary></ValidationSummary>
+        <FluentValidationSummary></FluentValidationSummary>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Photo</label>
-        <InputFile accept="image/*" OnChange="OnPhotoSelectionChangedAsync"></InputFile>
+    <div>
+        <FluentLabel Typo="Typography.Body">Photo</FluentLabel>
+        <FluentInputFile Id="my-file-uploader"
+                         Mode="InputFileMode.Stream"
+                         Multiple="false"
+                         MaximumFileCount="1"
+                         MaximumFileSize="@(10*1024*1024)"
+                         Accept="image/*"
+                         OnCompleted="@OnFileUploadCompleted"
+                         Style="height: 100px; border: 1px dashed var(--accent-fill-rest);">
+            <ChildContent>
+                <label for="my-file-uploader">
+                    <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
+                </label>
+
+                <div>
+                    Drag file here you wish to upload,
+                    or <label for="my-file-uploader">browse</label>
+                    for them<span style="color: red;">*</span>.
+                    <br />
+                    <em>Maximum of 1 file allowed.</em>
+                </div>
+
+                <div>
+                    <br />
+                    <strong>Selecting a photo will save it immediately</strong>
+                </div>
+            </ChildContent>
+        </FluentInputFile>
     </div>
-    @if (this.createUserProfileModel.ProfilePhotoId != default(long))
+    @if (!String.IsNullOrWhiteSpace(this.ProfileImageBase64))
     {
-        <div class="mb-3">
-            <img src="@($"api/photoimage/{this.createUserProfileModel.ProfilePhotoId}")" />
+        <div>
+            <img src="@ProfileImageBase64" @ref="ProfileImagePhotoElement" />
         </div>
     }
-    <div class="mb-3">
-        <label class="form-label">Gender</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.BiologicalGenderId">
-            <option value="0">Select Gender</option>
+    <div>
+        <FluentLabel Typo="Typography.Body" class="form-label">Gender</FluentLabel>
+        <FluentSelect @bind-SelectedOption="@this.createUserProfileModel.BiologicalGenderId">
+            <FluentOption Value="0">Select Gender</FluentOption>
             @if (this.genders != null)
             {
                 foreach (var singleGender in this.genders)
                 {
-                    <option value="@singleGender.GenderId">@singleGender.Name</option>
+                    <FluentOption Value="@singleGender.GenderId.ToString()">@singleGender.Name</FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">About</label>
-        <InputTextArea class="form-control" @bind-Value="this.createUserProfileModel.About"></InputTextArea>
+    <div>
+        <FluentLabel Typo="Typography.Body">About</FluentLabel>
+        <FluentTextArea @bind-Value="this.createUserProfileModel.About"></FluentTextArea>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Birth Date</label>
+    <div>
+        <FluentLabel Typo="Typography.Body">Birth Date</FluentLabel>
         <InputDate class="form-control" @bind-Value="this.createUserProfileModel.BirthDate"></InputDate>
     </div>
     <div class="mb-3">
-        <label class="form-label">Date Objective</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.CurrentDateObjectiveId">
-            <option value="0">Select Date Objective</option>
+        <FluentLabel Typo="Typography.Body">Date Objective</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.CurrentDateObjectiveId">
+            <FluentOption Value="0">Select Date Objective</FluentOption>
             @if (this.dateObjectives != null)
             {
                 foreach (var singleDateObjective in this.dateObjectives)
                 {
-                    <option value="@singleDateObjective.DateObjectiveId">
+                    <FluentOption Value="@singleDateObjective.DateObjectiveId.ToString()">
                         @singleDateObjective.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Eyes Color</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.EyesColorId">
-            <option value="0">Select Eyes Color</option>
+    <div>
+        <FluentLabel Typo="Typography.Body">Eyes Color</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.EyesColorId">
+            <FluentOption Value="0">Select Eyes Color</FluentOption>
             @if (this.eyesColors != null)
             {
                 foreach (var singleEyesColor in this.eyesColors)
                 {
-                    <option value="@singleEyesColor.EyesColorId">
+                    <FluentOption Value="@singleEyesColor.EyesColorId.ToString()">
                         @singleEyesColor.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Hair Color</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.HairColorId">
-            <option value="0">Select Hair Color</option>
+    <div>
+        <FluentLabel Typo="Typography.Body">Hair Color</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.HairColorId">
+            <FluentOption value="0">Select Hair Color</FluentOption>
             @if (this.hairColors != null)
             {
                 foreach (var singleHairColor in this.hairColors)
                 {
-                    <option value="@singleHairColor.HairColorId">
+                    <FluentOption Value="@singleHairColor.HairColorId.ToString()">
                         @singleHairColor.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Kid Status</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.KidStatusId">
-            <option value="0">Select Kid Status</option>
+    <div>
+        <FluentLabel Typo="Typography.Body">Kid Status</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.KidStatusId">
+            <FluentOption Value="0">Select Kid Status</FluentOption>
             @if (this.kidStatuses != null)
             {
                 foreach (var singleKidStatus in this.kidStatuses)
                 {
-                    <option value="@singleKidStatus.KidStatusId">
+                    <FluentOption Value="@singleKidStatus.KidStatusId.ToString()">
                         @singleKidStatus.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Preferred Eyes Color</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.PreferredEyesColorId">
-            <option value="0">Select Preferred Eyes Color</option>
+    <div>
+        <FluentLabel>Preferred Eyes Color</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.PreferredEyesColorId">
+            <FluentOption Value="0">Select Preferred Eyes Color</FluentOption>
             @if (this.eyesColors != null)
             {
                 foreach (var singleEyesColor in this.eyesColors)
                 {
-                    <option value="@singleEyesColor.EyesColorId">
+                    <FluentOption Value="@singleEyesColor.EyesColorId.ToString()">
                         @singleEyesColor.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Preferred Hair Color</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.PreferredHairColorId">
-            <option value="0">Select Preferred Hair Color</option>
+    <div>
+        <FluentLabel>Preferred Hair Color</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.PreferredHairColorId">
+            <FluentOption Value="0">Select Preferred Hair Color</FluentOption>
             @if (this.hairColors != null)
             {
                 foreach (var singleHairColor in this.hairColors)
                 {
-                    <option value="@singleHairColor.HairColorId">
+                    <FluentOption Value="@singleHairColor.HairColorId.ToString()">
                         @singleHairColor.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Preferred Kid Status</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.PreferredKidStatusId">
-            <option value="0">Select Preferred Kid Status</option>
+    <div>
+        <FluentLabel Typo="Typography.Body">Preferred Kid Status</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.PreferredKidStatusId">
+            <FluentOption Value="0">Select Preferred Kid Status</FluentOption>
             @if (this.kidStatuses != null)
             {
                 foreach (var singleKidStatus in this.kidStatuses)
                 {
-                    <option value="@singleKidStatus.KidStatusId">
+                    <FluentOption Value="@singleKidStatus.KidStatusId.ToString()">
                         @singleKidStatus.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Preferred Religion</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.PreferredReligionId">
-            <option value="0">Select Preferred Religion</option>
+    <div>
+        <FluentLabel Typo="Typography.Body">Preferred Religion</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.PreferredReligionId">
+            <FluentOption Value="0">Select Preferred Religion</FluentOption>
             @if (this.religions != null)
             {
                 foreach (var singleReligion in this.religions)
                 {
-                    <option value="@singleReligion.ReligionId">
+                    <FluentOption Value="@singleReligion.ReligionId.ToString()">
                         @singleReligion.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Preferred Tattoo Status</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.PreferredTattooStatusId">
-            <option value="0">Select Preferred Tattoo Status</option>
+    <div>
+        <FluentLabel Typo="Typography.Body">Preferred Tattoo Status</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.PreferredTattooStatusId">
+            <FluentOption Value="0">Select Preferred Tattoo Status</FluentOption>
             @if (this.tattooStatuses != null)
             {
                 foreach (var singletattooStatus in this.tattooStatuses)
                 {
-                    <option value="@singletattooStatus.TattooStatusId">
+                    <FluentOption Value="@singletattooStatus.TattooStatusId.ToString()">
                         @singletattooStatus.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Religion</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.ReligionId">
-            <option value="0">Select Religion</option>
+    <div>
+        <FluentLabel Typo="Typography.Body">Religion</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.ReligionId">
+            <FluentOption Value="0">Select Religion</FluentOption>
             @if (this.religions != null)
             {
                 foreach (var singleReligion in this.religions)
                 {
-                    <option value="@singleReligion.ReligionId">
+                    <FluentOption Value="@singleReligion.ReligionId.ToString()">
                         @singleReligion.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Tattoo Status</label>
-        <InputSelect class="form-control"
-                     @bind-Value="this.createUserProfileModel.TattooStatusId">
-            <option value="0">Select Tattoo Status</option>
+    <div>
+        <FluentLabel Typo="Typography.Body">Tattoo Status</FluentLabel>
+        <FluentSelect @bind-SelectedOption="this.createUserProfileModel.TattooStatusId">
+            <FluentOption Value="0">Select Tattoo Status</FluentOption>
             @if (this.tattooStatuses != null)
             {
                 foreach (var singletattooStatus in this.tattooStatuses)
                 {
-                    <option value="@singletattooStatus.TattooStatusId">
+                    <FluentOption Value="@singletattooStatus.TattooStatusId.ToString()">
                         @singletattooStatus.Name
-                    </option>
+                    </FluentOption>
                 }
             }
-        </InputSelect>
+        </FluentSelect>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Current Latitude: @this.createUserProfileModel.CurrentLatitude</label>
-        <label class="form-label">Current Longitude: @this.createUserProfileModel.CurrentLongitude</label>
+    <div>
+        <FluentLabel Typo="Typography.Body">Current Latitude: @this.createUserProfileModel.CurrentLatitude</FluentLabel>
+        <FluentLabel Typo="Typography.Body">Current Longitude: @this.createUserProfileModel.CurrentLongitude</FluentLabel>
     </div>
     @if (this.IsAllDataLoad)
     {
-        <div class="mb-3">
-            <button class="btn btn-primary">Save</button>
+        <div>
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Save</FluentButton>
         </div>
     }
-</EditForm>
+</FluentEditForm>
 
 @code {
+    private ElementReference ProfileImagePhotoElement { get; set; }
+    private string? ProfileImageBase64 { get; set; }
     [SupplyParameterFromForm]
     private CreateUserProfileModel createUserProfileModel { get; set; } = new()
         {
@@ -324,6 +341,7 @@
         this.religions = await this.religionService.GetAllReligionAsync(cancellationTokenSource.Token);
         this.tattooStatuses = await this.tattooStatusService.GetAllTattooStatusAsync(cancellationTokenSource.Token);
         this.IsAllDataLoad = true;
+        this.ProfileImageBase64 = GetProfileImageBase64();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -352,40 +370,49 @@
         }
     }
 
-    private async Task OnPhotoSelectionChangedAsync(InputFileChangeEventArgs inputFileChangeEventArgs)
+    private async Task OnFileUploadCompleted(IEnumerable<FluentInputFileEventArgs> files)
     {
         try
         {
             this.IsBusy = true;
             StateHasChanged();
-            if (inputFileChangeEventArgs.FileCount == 1)
+            var file = files.Single();
+            var stream = file.Stream;
+            MemoryStream memoryStream = new MemoryStream();
+            await stream!.CopyToAsync(memoryStream);
+            var photoBytes = memoryStream.ToArray();
+            var photoModerationResult = await this.azureContentSafetyService
+            .AnalyzeImageAsync(photoBytes, this.cancellationTokenSource.Token);
+            if (photoModerationResult.IsViolence || photoModerationResult.IsAdult ||
+                photoModerationResult.IsHate || photoModerationResult.IsSelfHarm)
             {
-                var stream = inputFileChangeEventArgs.File.OpenReadStream();
-                MemoryStream memoryStream0 = new MemoryStream();
-                await stream.CopyToAsync(memoryStream0);
-                var photoModerationResult = await this.azureContentSafetyService
-                .AnalyzeImageAsync(memoryStream0.ToArray(), this.cancellationTokenSource.Token);
-                if (photoModerationResult.IsViolence || photoModerationResult.IsAdult ||
-                    photoModerationResult.IsHate || photoModerationResult.IsSelfHarm)
+                this.toastService.ShowWarning("You are not allowed to use that image, please use another one");
+            }
+            else
+            {
+                var fileName = "test";
+                if (this.createUserProfileModel.ProfilePhotoId == default)
                 {
-                    this.toastService.ShowWarning("You are not allowed to use that image, please use another one");
+                    CreatePhotoModel createPhotoModel = new();
+                    createPhotoModel.Name = fileName;
+                    createPhotoModel.Filename = fileName;
+                    createPhotoModel.PhotoBytes = photoBytes;
+                    this.createUserProfileModel.ProfilePhotoId =
+                    await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
                 }
                 else
                 {
-                    stream = inputFileChangeEventArgs.File.OpenReadStream();
-                    MemoryStream memoryStream = new MemoryStream();
-                    await stream.CopyToAsync(memoryStream);
-                    var fileName = "test";
-                    if (this.createUserProfileModel.ProfilePhotoId == default)
-                    {
-                        CreatePhotoModel createPhotoModel = new();
-                        createPhotoModel.Name = fileName;
-                        createPhotoModel.Filename = fileName;
-                        createPhotoModel.PhotoBytes = memoryStream.ToArray();
-                        this.createUserProfileModel.ProfilePhotoId =
-                        await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
-                    }
+                    UpdatePhotoModel updatePhotoModel = new()
+                        {
+                            Filename = fileName,
+                            Name = fileName,
+                            PhotoBytes = photoBytes,
+                            PhotoId = createUserProfileModel.ProfilePhotoId
+                        };
+                    await photoService.UpdatePhotoAsync(updatePhotoModel, cancellationTokenSource.Token);
+                    this.ProfileImageBase64 = GetProfileImageBase64();
                 }
+                this.toastService.ShowSuccess("Your photo has been saved");
             }
         }
         catch (Exception ex)
@@ -404,7 +431,6 @@
     {
         try
         {
-
             var moderateAboutTextResult = await this.azureContentSafetyService
             .AnalyzeTextAsync(this.createUserProfileModel!.About!, this.cancellationTokenSource.Token);
             if (moderateAboutTextResult!.IsOffensive || moderateAboutTextResult.IsSexuallySuggestive ||
@@ -425,11 +451,29 @@
             }
             await this.userProfileService.CreateUserProfileAsync(this.createUserProfileModel,
             cancellationTokenSource.Token);
+            this.toastService.ShowSuccess("Your profile has been saved");
         }
         catch (Exception ex)
         {
             toastService.ShowError(ex.Message);
         }
+    }
+
+    private string GetProfileImageBase64()
+    {
+        try
+        {
+            string baseUrl = this.navigationManager.BaseUri;
+            string requestUrl = $"{baseUrl}api/photoimage/{this.createUserProfileModel.ProfilePhotoId}";
+            var bytes = httpClient.GetByteArrayAsync(requestUrl).Result;
+            string result = $"data:image/png;base64, {Convert.ToBase64String(bytes)}";
+            return result;
+        }
+        catch(Exception ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
+        return String.Empty;
     }
 
     public ValueTask DisposeAsync()

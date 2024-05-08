@@ -6,6 +6,7 @@ namespace FairPlayDating.Controllers
     [Route("[controller]/[action]")]
     public class CultureController : Controller
     {
+        [HttpGet]
         public IActionResult Set(string culture, string redirectUri)
         {
             if (culture != null)
