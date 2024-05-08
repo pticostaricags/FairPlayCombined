@@ -91,6 +91,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[UserFunds]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[UserMessage]",
          "ObjectType": 0
       },
