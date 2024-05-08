@@ -104,7 +104,7 @@
     {
         try
         {
-            logger.LogInformation(message: "Processing video from url: {url}", this.createVideoInfoModel.ExternalVideoSourceUrl);
+            logger.LogInformation(message: "Processing video from url: {Url}", this.createVideoInfoModel.ExternalVideoSourceUrl);
             this.IsBusy = true;
             StateHasChanged();
             this.frmCreateVideoInfo!.EditContext!.Validate();
@@ -137,7 +137,7 @@
         }
         catch (Exception ex)
         {
-            logger.LogError(exception: ex, message: "Failed to process video. {message}", ex.Message);
+            logger.LogError(exception: ex, message: "Failed to process video. {Message}", ex.Message);
             this.toastService.ShowError(ex.Message);
         }
         this.IsBusy = false;

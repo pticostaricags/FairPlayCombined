@@ -21,7 +21,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
         {
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                logger.LogInformation("Worker running at: {Time}", DateTimeOffset.Now);
             }
             var armToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
             var getViTokenResponse = await azureVideoIndexerService
@@ -36,7 +36,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
                     singleSupportedLanguage!.languageCode!,
                     stoppingToken);
             }
-            logger.LogInformation("Current Iteration finished at: {time}. Next Iteration at {time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
+            logger.LogInformation("Current Iteration finished at: {Time}. Next Iteration at {Time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
             await Task.Delay(timeToWait, stoppingToken);
         }
     }
@@ -56,7 +56,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
                         .ToArrayAsync(stoppingToken);
         foreach (var singleVideoWithNoLanguageCaptions in allProcessedVideosWithNoLanguageCaptions)
         {
-            logger.LogInformation("Retrieving captions for videoId: {videoId}. Language: {language}",
+            logger.LogInformation("Retrieving captions for videoId: {VideoId}. Language: {Language}",
                 singleVideoWithNoLanguageCaptions.VideoId,
                 language);
             string? videoCaptions = default;
@@ -70,7 +70,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
             }
             catch (Exception ex)
             {
-                logger.LogWarning(exception: ex, "Exception when retrieving captions: {exception}", ex.Message);
+                logger.LogWarning(exception: ex, "Exception when retrieving captions: {Exception}", ex.Message);
                 if (ex.Message.Contains("Too Many Requests"))
                 {
                     logger.LogInformation("Retrying getting captions in 1 minute");
@@ -86,7 +86,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
                     catch (Exception retryException)
                     {
                         logger.LogError(exception: retryException,
-                            "Retry exception getting captions: {exceptions}", retryException.Message);
+                            "Retry exception getting captions: {Exceptions}", retryException.Message);
                         return;
                     }
                 }

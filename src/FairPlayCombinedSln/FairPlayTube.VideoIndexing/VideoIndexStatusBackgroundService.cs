@@ -31,7 +31,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
             {
                 if (logger.IsEnabled(LogLevel.Information))
                 {
-                    logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                    logger.LogInformation("Worker running at: {Time}", DateTimeOffset.Now);
                 }
                 string[] allVideosInProcessingStatus =
                     await GetAllVideosInProcessingStatusAsync(dbContext, stoppingToken);
@@ -50,13 +50,13 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed.ToString());
                     await UpdateVideoIndexingTransactionAsync(dbContext, azureVideoIndexerService, getviTokenResult, videosIndex, indexCompleteVideos, stoppingToken);
                 }
-                logger.LogInformation("Current Iteration finished at: {time}. Next Iteration at {time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
+                logger.LogInformation("Current Iteration finished at: {Time}. Next Iteration at {Time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
                 await Task.Delay(timeToWait, stoppingToken);
             }
         }
         catch (Exception ex)
         {
-            logger.LogCritical(exception: ex, "Error: {errorMessage}", ex.Message);
+            logger.LogCritical(exception: ex, "Error: {ErrorMessage}", ex.Message);
         }
     }
 
@@ -121,7 +121,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
             {
                 int processingProgress = Convert.ToInt32(singleVideoIndex!.videos![0].processingProgress!.Trim('%'));
                 logger.LogInformation("Updating processingProgress for " +
-                    "video:{videoId}. processingProgress:{processingProgress}",
+                    "video:{VideoId}. processingProgress:{ProcessingProgress}",
                     singleVideoIndex.id, singleVideoIndex!.videos![0].processingProgress);
                 //avoid doing a database call if processingProgress value has not changed
                 if (processingProgress != videoEntity.VideoIndexingProcessingPercentage)
@@ -189,9 +189,9 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
         {
             foreach (var singleVideoIndex in videosIndex.results)
             {
-                logger.LogInformation("VideoId: {videoId}. " +
-                    "Status in VI: {statusInVI}. " +
-                    "Progress: {progress}", singleVideoIndex.id,
+                logger.LogInformation("VideoId: {VideoId}. " +
+                    "Status in VI: {StatusInVI}. " +
+                    "Progress: {Progress}", singleVideoIndex.id,
                     singleVideoIndex.state,
                     singleVideoIndex.processingProgress);
             }

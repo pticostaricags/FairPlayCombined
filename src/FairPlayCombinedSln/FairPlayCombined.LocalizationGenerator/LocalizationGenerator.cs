@@ -48,7 +48,7 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         {
             logger.LogError(ex, "{Message}", ex.Message);
         }
-        logger.LogInformation("Process {processName} completed", nameof(LocalizationGenerator));
+        logger.LogInformation("Process {ProcessName} completed", nameof(LocalizationGenerator));
     }
 
     private static async Task InsertTranslations(ILogger<LocalizationGenerator> logger, FairPlayCombinedDbContext fairPlayCombinedDbContext, IAzureOpenAIService azureOpenAIService, Resource? resource, Culture? singleCulture, CancellationToken stoppingToken)
