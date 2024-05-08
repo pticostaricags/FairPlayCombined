@@ -20,11 +20,10 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             }
             var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
-            await ResetDataAsync(dbContext, stoppingToken);
             var (allGenders, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions,
                 allTattooStatuses) =
             await GetAllEntitiesListsAsync(dbContext, stoppingToken);
-            string[]? allHumansPhotosPaths = PreparaHumansPhotosPaths();
+            var (allMalesPhotosPaths, allFemalesPhotosPaths) = PreparaHumansPhotosPaths();
             HttpClient httpClient = new();
             var loggerFactory =
             LoggerFactory.Create(configure =>
@@ -40,8 +39,19 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             for (int i = 0; i < itemsCount; i++)
             {
                 SetGeoLocation(geoDataArray, out geodata randomGeoLocation, out Point currentGeoLocation);
-                Photo photo = InitilizePhoto(allHumansPhotosPaths);
-                await AddUserAsync(logger, dbContext, allGenders, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions, allTattooStatuses, itemsCount, i, randomGeoLocation, currentGeoLocation, photo, stoppingToken);
+                Photo? photo = null;
+                if ( i % 2 == 0)
+                {
+                    photo = InitilizePhoto(allMalesPhotosPaths);
+                    await AddUserAsync(logger, dbContext, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions, allTattooStatuses, itemsCount, i, randomGeoLocation, currentGeoLocation, photo, stoppingToken,
+                        biologicalGenderId:1);
+                }
+                else
+                {
+                    photo = InitilizePhoto(allFemalesPhotosPaths);
+                    await AddUserAsync(logger, dbContext, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions, allTattooStatuses, itemsCount, i, randomGeoLocation, currentGeoLocation, photo, stoppingToken,
+                        biologicalGenderId:2);
+                }
             }
             await dbContext.SaveChangesAsync(stoppingToken);
             await Task.Delay(1000, stoppingToken);
@@ -49,7 +59,8 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
     }
 
 #pragma warning disable S107 // Methods should not have too many parameters
-    private static async Task AddUserAsync(ILogger<TestDataGenerator> logger, FairPlayCombinedDbContext dbContext, Gender[] allGenders, EyesColor[] allEyesColors, DateObjective[] allDateObjectives, HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions, TattooStatus[] allTattooStatuses, int itemsCount, int i, geodata randomGeoLocation, Point currentGeoLocation, Photo photo, CancellationToken stoppingToken)
+    private static async Task AddUserAsync(ILogger<TestDataGenerator> logger, FairPlayCombinedDbContext dbContext, EyesColor[] allEyesColors, DateObjective[] allDateObjectives, HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions, TattooStatus[] allTattooStatuses, int itemsCount, int i, geodata randomGeoLocation, Point currentGeoLocation, Photo photo, CancellationToken stoppingToken,
+        int biologicalGenderId)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         string email = $"GTEST-{Random.Shared.Next(1000000)}-{Faker.Internet.Email()}";
@@ -71,7 +82,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             LockoutEnabled = true,
             UserProfile = new UserProfile()
             {
-                BiologicalGenderId = Random.Shared.GetItems<Gender>(allGenders, 1)[0].GenderId,
+                BiologicalGenderId = biologicalGenderId,
                 About = "Photos from https://generated.photos",
                 BirthDate = new DateTime(dateOfBirthTicks, DateTimeKind.Utc),
                 CurrentDateObjectiveId = Random.Shared.GetItems<DateObjective>(allDateObjectives, 1)[0].DateObjectiveId,
@@ -127,16 +138,18 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         };
     }
 
-    private static string[]? PreparaHumansPhotosPaths()
+    private static (string[]? males, string[]? females) PreparaHumansPhotosPaths()
     {
         var humansPhotosDirectory = Environment.GetEnvironmentVariable("HumansPhotosDirectory");
-        string[]? allHumansPhotosPaths = null;
+        string[]? allMalesPhotosPaths = null;
+        string[]? allFemalesPhotosPaths = null;
         if (!String.IsNullOrWhiteSpace(humansPhotosDirectory))
         {
-            allHumansPhotosPaths = Directory.GetFiles(humansPhotosDirectory, "*.jpg", SearchOption.AllDirectories);
+            allMalesPhotosPaths = Directory.GetFiles(Path.Combine(humansPhotosDirectory,"Male"),"*.jpg", SearchOption.AllDirectories);
+            allFemalesPhotosPaths = Directory.GetFiles(Path.Combine(humansPhotosDirectory, "Female"), "*.jpg", SearchOption.AllDirectories);
         }
 
-        return allHumansPhotosPaths;
+        return (allMalesPhotosPaths, allFemalesPhotosPaths);
     }
 
     private static async Task PreparerandomLocations(ILogger<TestDataGenerator> logger, GeoNamesService geoNamesService, List<geodata> geoDataCollection)
@@ -148,6 +161,17 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             try
             {
                 randomGeoLocation = await geoNamesService.GeoRandomLocationAsync(CancellationToken.None);
+                if (randomGeoLocation is null)
+                {
+                    randomGeoLocation = new geodata()
+                    {
+                        nearest = new geodataNearest()
+                        {
+                            latt = 3.5158M,
+                            longt = -74.37231M
+                        }
+                    };
+                }
             }
             catch (Exception)
             {
@@ -179,15 +203,6 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         var allTattooStatuses = await dbContext.TattooStatus.ToArrayAsync(stoppingToken);
         return (allGenders, allEyesColors, allDateObjectives,
         allHairColor, allKidStatus, allReligions, allTattooStatuses);
-    }
-
-    private static async Task ResetDataAsync(FairPlayCombinedDbContext dbContext, CancellationToken stoppingToken)
-    {
-        await dbContext.UserProfile.ExecuteDeleteAsync(stoppingToken);
-        await dbContext.Post.ExecuteDeleteAsync(stoppingToken);
-        await dbContext.Photo.ExecuteDeleteAsync(stoppingToken);
-        await dbContext.AspNetUsers.ExecuteDeleteAsync(stoppingToken);
-        await dbContext.SaveChangesAsync(stoppingToken);
     }
 }
 #pragma warning restore S6678 // Use PascalCase for named placeholders

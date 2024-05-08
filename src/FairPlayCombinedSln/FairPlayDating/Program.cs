@@ -20,6 +20,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.Net.Mime;
 using FairPlayCombined.Services.Extensions;
+using Microsoft.Extensions.Azure;
+using FairPlayDating.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,9 +74,8 @@ builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
         });
     return optionsBuilder.Options;
 });
-builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
-
+builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 builder.Services.AddProblemDetails();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -98,6 +99,7 @@ builder.Services.AddTransient<UserProfileService>();
 builder.Services.AddTransient<PhotoService>();
 builder.Services.AddTransient<MyMatchesService>();
 builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();
+builder.AddAzureAIContentSafety();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

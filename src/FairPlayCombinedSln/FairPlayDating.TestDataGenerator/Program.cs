@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.AddServiceDefaults();
-var connectionString = Environment.GetEnvironmentVariable("FairPlayCombinedDb") ??
+var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
     throw new InvalidOperationException("Connection string 'FairPlayCombinedDb' not found.");
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(optionsAction =>
     {
@@ -19,7 +19,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(optionsAction =>
                     errorNumbersToAdd: null);
             });
     });
-
+builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 builder.Services.AddHostedService<TestDataGenerator>();
 
 var host = builder.Build();

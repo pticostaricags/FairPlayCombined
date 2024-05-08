@@ -33,7 +33,6 @@
 @inject IToastService toastService
 @inject PhotoService photoService
 @inject IGeoLocationService geolocationService
-@inject AzureOpenAIService azureOpenAIService
 @inject AzureContentSafetyService azureContentSafetyService
 
 <h3>MyUserProfile</h3>
@@ -364,10 +363,10 @@
             {
                 var stream = inputFileChangeEventArgs.File.OpenReadStream();
                 MemoryStream memoryStream0 = new MemoryStream();
-                stream.CopyTo(memoryStream0);
+                await stream.CopyToAsync(memoryStream0);
                 var photoModerationResult = await this.azureContentSafetyService
                 .AnalyzeImageAsync(memoryStream0.ToArray(), this.cancellationTokenSource.Token);
-                if (photoModerationResult.IsViolence || photoModerationResult.IsAdult || 
+                if (photoModerationResult.IsViolence || photoModerationResult.IsAdult ||
                     photoModerationResult.IsHate || photoModerationResult.IsSelfHarm)
                 {
                     this.toastService.ShowWarning("You are not allowed to use that image, please use another one");
@@ -406,10 +405,12 @@
     {
         try
         {
-            var moderateAboutTextResult = await this.azureOpenAIService
-            .ModerateTextContentAsync(this.createUserProfileModel!.About!, this.cancellationTokenSource.Token);
-            if (moderateAboutTextResult!.IsOffensive || moderateAboutTextResult.IsSexuallySuggestive || 
-            moderateAboutTextResult.IsSexuallyExplicit || moderateAboutTextResult.HasPersonalIdentifiableInformation)
+
+            var moderateAboutTextResult = await this.azureContentSafetyService
+            .AnalyzeTextAsync(this.createUserProfileModel!.About!, this.cancellationTokenSource.Token);
+            if (moderateAboutTextResult!.IsOffensive || moderateAboutTextResult.IsSexuallySuggestive ||
+            moderateAboutTextResult.IsOffensive || moderateAboutTextResult.IsSexuallySuggestive ||
+            moderateAboutTextResult.IsSexuallyExplicity)
             {
                 this.toastService.ShowError("You cannot use the given text for the About section, please modify it and try again");
                 return;

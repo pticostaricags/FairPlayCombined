@@ -40,10 +40,11 @@ if (addFairPlayDating)
 {
     builder.AddProject<Projects.FairPlayDating>(ResourcesNames.FairPlayDating)
         .WithReference(sqlResourceWithConnectionString);
-    if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
-    {
-        AddTestDataGenerator(builder, sqlResourceWithConnectionString);
-    }
+}
+
+if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
+{
+    AddTestDataGenerator(builder, sqlResourceWithConnectionString);
 }
 
 bool addFairPlayTube = Convert.ToBoolean(builder.Configuration["AddFairPlayTube"]);
