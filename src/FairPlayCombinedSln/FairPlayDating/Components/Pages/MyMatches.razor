@@ -9,7 +9,6 @@
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using Microsoft.Extensions.Localization
 
 @attribute [Authorize]
@@ -33,7 +32,7 @@
     </p>
 }
 <div class="grid-container">
-    <QuickGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
+    <FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
         <TemplateColumn>
             <div class="row">
                 <div class="col">
@@ -66,13 +65,13 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <Paginator State="this.paginationState"></Paginator>
+                            <FluentPaginator State="this.paginationState"></FluentPaginator>
                         </div>
                     </div>
                 </div>
             </div>
         </TemplateColumn>
-    </QuickGrid>
+    </FluentDataGrid>
 </div>
 @if (this.showDetailsDialog && this.selectedUserProfileModel != null)
 {

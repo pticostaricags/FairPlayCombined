@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -9,7 +9,14 @@
     <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+
+  <PropertyGroup>
+    <EnableMSTestRunner>true</EnableMSTestRunner>
+	<OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Enable_Paid_Tests|AnyCPU'">
@@ -20,6 +27,7 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Testing" Version="8.0.0-preview.7.24251.11" />
     <PackageReference Include="Azure.AI.ContentSafety" Version="1.0.0" />
     <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.16" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0-release-24177-07" />
@@ -36,6 +44,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FairPlayCombined.Services.AI\FairPlayCombined.Services.AI.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
+    <ProjectReference Include="..\FairPlayCombinedSln.AppHost\FairPlayCombinedSln.AppHost.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -25,7 +25,13 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             PayPalHttpClient payPalHttpClient = new(sandboxEnvironment);
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<PayPalOrderService>();
-            PayPalOrderService payPalOrderService = new(payPalHttpClient, logger);
+            PayPalOrderService payPalOrderService = new(payPalHttpClient, logger,
+                new HttpClient(),
+                new Models.Common.PayPal.PayPalConfiguration()
+                {
+                    ClientId = clientId,
+                    Secret = clientSecret
+                });
             var result = await payPalOrderService.CreateOrderAsync(
                 "1234", 1.2M, "Automated Tests",
                 returnUrl: "https://example.com/returnUrl",
@@ -37,7 +43,6 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         [TestMethod]
         public async Task Test_GetOrderDetailsAsync()
         {
-            Assert.Inconclusive();
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddUserSecrets<ServicesBase>();
             var configuration = configurationBuilder.Build();
@@ -47,14 +52,22 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             PayPalHttpClient payPalHttpClient = new(sandboxEnvironment);
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<PayPalOrderService>();
-            PayPalOrderService payPalOrderService = new(payPalHttpClient, logger);
+            PayPalOrderService payPalOrderService = new(payPalHttpClient, logger,
+                new HttpClient(),
+                new Models.Common.PayPal.PayPalConfiguration()
+                {
+                    ClientId= clientId,
+                    Secret= clientSecret
+                });
             var createdOrder = await payPalOrderService.CreateOrderAsync(
                 "1234", 1.2M, "Automated Tests",
                 returnUrl: "https://example.com/returnUrl",
                 cancelUrl: "https://example.com/returnUrl",
                 PayPalOrderService.CreateOrderIntent.Authorize);
             Assert.IsNotNull(createdOrder);
-            var result = await payPalOrderService.GetOrderDetailsAsync(createdOrder.Id, CancellationToken.None);
+            var accessToken = await payPalOrderService.GetAccessTokenAsync(CancellationToken.None);
+            var result = await payPalOrderService
+                .GetOrderDetailsAsync(createdOrder.Id, accessToken.access_token!, CancellationToken.None);
             Assert.IsNotNull(result);
         }
     }

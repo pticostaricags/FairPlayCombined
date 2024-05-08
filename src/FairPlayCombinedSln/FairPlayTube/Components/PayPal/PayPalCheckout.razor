@@ -11,7 +11,6 @@
 @inject UserFundService userFundService
 @inject PayPalOrderService payPalOrderService
 
-
 <div>
     <div id="smart-button-container">
         <div style="text-align: center;">
@@ -35,7 +34,7 @@
     public EventCallback OnFundsAdded { get; set; }
     private DotNetObjectReference<PayPalCheckout>? objRef;
     private readonly CancellationTokenSource cancellationTokenSource = new();
-
+    
     protected override void OnInitialized()
     {
         this.objRef = DotNetObjectReference.Create(this);
@@ -57,7 +56,7 @@
         try
         {
             await this.userFundService.AddMyFundsAsync(data.orderID!, this.cancellationTokenSource.Token);
-            this.toastService.ShowSuccess($"Fundas have been added to your Wallet");
+            this.toastService.ShowSuccess($"Funds have been added to your Wallet");
             await OnFundsAdded.InvokeAsync();
         }
         catch (Exception ex)

@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Services.Common;
+﻿using FairPlayCombined.Models.Common.PayPal;
+using FairPlayCombined.Services.Common;
 
 namespace FairPlayTube.Extensions
 {
@@ -11,7 +12,11 @@ namespace FairPlayTube.Extensions
 
             var paypalClientSecret = builder.Configuration["PayPal:ClientSecret"] ??
                 throw new InvalidOperationException("'PayPal:ClientSecret' not found");
-
+            builder.Services.AddSingleton<PayPalConfiguration>(new PayPalConfiguration()
+            {
+                ClientId = paypalClientId,
+                Secret = paypalClientSecret
+            });
             builder.Services.AddTransient<PayPal.Core.PayPalHttpClient>(sp =>
             {
                 if (builder.Environment.IsDevelopment())
@@ -32,7 +37,11 @@ namespace FairPlayTube.Extensions
             {
                 var payPalHttpClient = sp.GetRequiredService<PayPal.Core.PayPalHttpClient>();
                 var logger = sp.GetRequiredService<ILogger<PayPalOrderService>>();
-                PayPalOrderService payPalOrderService = new(payPalHttpClient, logger);
+                var basicHttpClient = sp.GetRequiredService<HttpClient>();
+                var payPalConfiguration = sp.GetRequiredService<PayPalConfiguration>();
+                PayPalOrderService payPalOrderService = new(payPalHttpClient, logger,
+                    basicHttpClient, payPalConfiguration
+                    );
                 return payPalOrderService;
             });
         }

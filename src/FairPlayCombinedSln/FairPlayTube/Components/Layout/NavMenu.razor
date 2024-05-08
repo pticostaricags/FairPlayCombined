@@ -5,18 +5,20 @@
 <FluentNavLink Href="/">Home</FluentNavLink>
 <AuthorizeView>
     <Authorized>
-        <FluentNavGroup Title="Accounts">
-            <FluentNavLink Href="Account/Manage">Manage Account</FluentNavLink>
-            <FluentNavLink Href="/User/MyConversations">My Conversations</FluentNavLink>
+        <FluentNavGroup Title="Accounts" Expanded="@ShouldExpandAccountsGroup">
+            <FluentNavLink Href="/Account/Manage">Manage Account</FluentNavLink>
         </FluentNavGroup>
-        <FluentNavGroup Title="Creators">
+        <FluentNavGroup Title="Users" Expanded="@ShouldExpandUsersGroup">
+            <FluentNavLink Href="/User/MyConversations">My Conversations</FluentNavLink>
+            <FluentNavLink Href="/User/MyFunds">My Funds</FluentNavLink>
+        </FluentNavGroup>
+        <FluentNavGroup Title="Creators" Expanded="@ShouldExpandCreatorsGroup">
             <FluentNavLink Href="/Creator/UploadMyVideo">Upload My Video</FluentNavLink>
             <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos">My Videos</FluentNavLink>
             <FluentNavLink Href="/Creator/NewVideoRecommendation">Recommendations</FluentNavLink>
             <FluentNavLink Href="/Creator/NewVideoScript">New Video Script</FluentNavLink>
             <FluentNavLink Href="/Creator/CreateVideoPlan">Create Video Plan</FluentNavLink>
             <FluentNavLink Href="/Creator/MyVideoPlans">My Video Plans</FluentNavLink>
-            <FluentNavLink Href="/User/MyFunds">My Funds</FluentNavLink>
         </FluentNavGroup>
         <div class="nav-item px-3">
             <form action="Account/Logout" method="post">
@@ -37,6 +39,9 @@
 
 @code {
     private string? currentUrl;
+    private bool ShouldExpandAccountsGroup => this.NavigationManager.Uri.IndexOf("/Account") >= 0;
+    private bool ShouldExpandUsersGroup => this.NavigationManager.Uri.IndexOf("/User") >= 0;
+    private bool ShouldExpandCreatorsGroup => this.NavigationManager.Uri.IndexOf("/Creator") >= 0;
 
     protected override void OnInitialized()
     {

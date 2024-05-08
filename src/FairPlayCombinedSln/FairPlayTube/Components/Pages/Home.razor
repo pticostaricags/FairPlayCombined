@@ -41,7 +41,7 @@
         }
     </FluentStack>
 }
-<FluentPaginator State="this.paginationState"></FluentPaginator>
+<FluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged"></FluentPaginator>
 
 @code
 {
@@ -78,12 +78,13 @@
             this.IsBusy = false;
             StateHasChanged();
             var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
+            await this.paginationState.SetTotalItemCountAsync(result.TotalItemCount);
             return result;
         };
         this.PageItems = await this.ItemsProvider(new GridItemsProviderRequest<VideoInfoModel>()
             {
                 CancellationToken = this.cancellationTokenSource.Token,
-                StartIndex = 0,
+                StartIndex = 0
 
             });
         StateHasChanged();
@@ -92,6 +93,16 @@
     private void OnPlayVideoClicked(string videoId)
     {
         this.navigationManager.NavigateTo($"/Public/WatchVideo/{videoId}");
+    }
+
+    private async Task CurrentPageIndexChanged(int page)
+    {
+        this.PageItems = await this.ItemsProvider!(new GridItemsProviderRequest<VideoInfoModel>()
+            {
+                CancellationToken = this.cancellationTokenSource.Token,
+                StartIndex = page
+
+            });
     }
 
     public ValueTask DisposeAsync()
