@@ -1,11 +1,7 @@
-using Blazored.Toast;
-using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
-using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
-using FairPlayCombined.Models.AzureOpenAI;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayDating;
 using FairPlayCombined.Shared.CustomLocalization.EF;
@@ -20,12 +16,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.Net.Mime;
 using FairPlayCombined.Services.Extensions;
-using Microsoft.Extensions.Azure;
 using FairPlayDating.Extensions;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddFluentUIComponents();
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
 builder.Services.AddLocalization();
@@ -87,7 +84,6 @@ builder.Services.AddAzureOpenAIService();
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
-builder.Services.AddBlazoredToast();
 builder.Services.AddTransient<GenderService>();
 builder.Services.AddTransient<DateObjectiveService>();
 builder.Services.AddTransient<EyesColorService>();
