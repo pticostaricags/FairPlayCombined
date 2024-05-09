@@ -14,7 +14,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         {
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                logger.LogInformation("Worker running at: {Time}", DateTimeOffset.Now);
                 var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
                 await dbContext.UserProfile.ExecuteDeleteAsync(stoppingToken);
                 await dbContext.Post.ExecuteDeleteAsync(stoppingToken);
@@ -33,7 +33,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                     var minDateOfBirthDallowed = DateTimeOffset.UtcNow.AddYears(-40);
                     _ =
                     Random.Shared.NextInt64(minDateOfBirthDallowed.Ticks, maxDateOfBirthAllowed.Ticks);
-                    logger.LogInformation("Adding item {x} of {y}", i, itemsCount);
+                    logger.LogInformation("Adding item {X} of {Y}", i, itemsCount);
                     string testImageFileName = "TestImage.png";
                     string testImageName = "TestImage";
                     await dbContext.AspNetUsers.AddAsync(new AspNetUsers()
