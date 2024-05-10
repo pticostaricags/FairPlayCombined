@@ -54,6 +54,8 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 }
             }
             await dbContext.SaveChangesAsync(stoppingToken);
+
+            logger.LogInformation("Iteration data saved.");
             await Task.Delay(1000, stoppingToken);
         }
     }
