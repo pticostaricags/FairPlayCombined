@@ -18,10 +18,13 @@ using System.Net.Mime;
 using FairPlayCombined.Services.Extensions;
 using FairPlayDating.Extensions;
 using Microsoft.FluentUI.AspNetCore.Components;
+using FairPlayDating.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddHealthChecks().AddCheck<RequiredDataHealthCheck>(nameof(RequiredDataHealthCheck),
+    failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy);
 builder.Services.AddFluentUIComponents();
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
