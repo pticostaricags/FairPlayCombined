@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Collections.ObjectModel;
 
 namespace FairPlayDating.HealthChecks
 {
@@ -15,42 +16,70 @@ namespace FairPlayDating.HealthChecks
                 logger.LogInformation("Running health checks for: {HealthCheckName}",
                     nameof(RequiredDataHealthCheck));
                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-                var hasRoles = await dbContext.AspNetRoles.AnyAsync(cancellationToken);
-                if (!hasRoles)
+                var roles = await dbContext.AspNetRoles.ToArrayAsync(cancellationToken);
+                if (roles?.Length == 0)
                 {
                     return HealthCheckResult.Unhealthy(description: "No roles found in the application");
                 }
-                var hasRequiredGenders = await dbContext.Gender.CountAsync(cancellationToken) == 2;
-                if (!hasRequiredGenders)
+                var activities = await dbContext.Activity.ToArrayAsync(cancellationToken);
+                if (activities?.Length == 0)
+                {
+                    return HealthCheckResult.Unhealthy(description: "Activities missing");
+                }
+                var frequencies = await dbContext.Frequency.ToArrayAsync(cancellationToken);
+                if (frequencies?.Length == 0)
+                {
+                    return HealthCheckResult.Unhealthy(description: "Frequencies missing");
+                }
+                var requiredGenders = await dbContext.Gender.ToArrayAsync(cancellationToken);
+                if (requiredGenders?.Length < 2)
                 {
                     return HealthCheckResult.Unhealthy(description: "Required genders missing");
                 }
-                var hasDateObjectives = await dbContext.DateObjective.AnyAsync(cancellationToken);
-                if (!hasDateObjectives)
+                var dateObjectives = await dbContext.DateObjective.ToArrayAsync(cancellationToken);
+                if (dateObjectives?.Length == 0)
                 {
                     return HealthCheckResult.Unhealthy(description: "Date objectives missing");
                 }
-                var hasEyesColors = await dbContext.EyesColor.AnyAsync(cancellationToken);
-                if (!hasEyesColors)
+                var eyesColors = await dbContext.EyesColor.ToArrayAsync(cancellationToken);
+                if (eyesColors?.Length == 0)
                 {
                     return HealthCheckResult.Unhealthy(description: "Eyes colors missing");
                 }
-                var hasHairColors = await dbContext.HairColor.AnyAsync(cancellationToken);
-                if (!hasHairColors)
+                var hairColors = await dbContext.HairColor.ToArrayAsync(cancellationToken);
+                if (hairColors?.Length == 0)
                 {
                     return HealthCheckResult.Unhealthy(description: "Hair colors missing");
                 }
-                var hasKidsStatuses = await dbContext.KidStatus.AnyAsync(cancellationToken);
-                if (!hasKidsStatuses)
+                var kidsStatuses = await dbContext.KidStatus.ToArrayAsync(cancellationToken);
+                if (kidsStatuses?.Length == 0)
                 {
                     return HealthCheckResult.Unhealthy(description: "Kids statuses missing");
                 }
-                var hasReligions = await dbContext.Religion.AnyAsync(cancellationToken);
-                if (!hasReligions)
+                var religions = await dbContext.Religion.ToArrayAsync(cancellationToken);
+                if (religions?.Length == 0)
                 {
                     return HealthCheckResult.Unhealthy(description: "Religions missing");
                 }
-                return HealthCheckResult.Healthy();
+                var tatooStatuses = await dbContext.TattooStatus.ToArrayAsync(cancellationToken);
+                if (tatooStatuses?.Length == 0)
+                {
+                    return HealthCheckResult.Unhealthy(description: "Tattoo statuses missing");
+                }
+                Dictionary<string, object> data = new()
+                {
+                    {nameof(roles), roles! },
+                    {nameof(activities), activities! },
+                    {nameof(frequencies), frequencies! },
+                    {nameof(requiredGenders), requiredGenders! },
+                    {nameof(dateObjectives), dateObjectives! },
+                    {nameof(eyesColors), eyesColors! },
+                    {nameof(hairColors), hairColors! },
+                    {nameof(kidsStatuses), kidsStatuses! },
+                    {nameof(religions), religions! },
+                    {nameof(tatooStatuses), tatooStatuses! }
+                };
+                return HealthCheckResult.Healthy(data: data.AsReadOnly());
             }
             catch (Exception ex)
             {
