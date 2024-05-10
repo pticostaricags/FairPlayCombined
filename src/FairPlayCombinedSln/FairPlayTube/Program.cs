@@ -1,15 +1,10 @@
-using Azure;
-using Azure.AI.ContentSafety;
 using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
-using FairPlayCombined.Models.Common.PayPal;
 using FairPlayCombined.Models.GoogleAuth;
-using FairPlayCombined.Models.GoogleGemini;
-using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayDating;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
@@ -19,6 +14,7 @@ using FairPlayTube.Components;
 using FairPlayTube.Components.Account;
 using FairPlayTube.Data;
 using FairPlayTube.Extensions;
+using FairPlayTube.HealthChecks;
 using FairPlayTube.MetricsConfiguration;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.YouTube.v3;
@@ -27,14 +23,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
-using System.Diagnostics.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddHealthChecks().AddCheck<FairPlayTubeHealthCheck>(nameof(FairPlayTubeHealthCheck),
+    failureStatus: HealthStatus.Unhealthy,
+    tags: ["live"]);
 builder.Services.ConfigureOpenTelemetryMeterProvider((sp, meterBuilder) =>
 {
     meterBuilder.AddMeter(FairPlayTubeMetrics.SESSION_METER_NAME);
@@ -142,6 +141,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
 //Check https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/signalr?view=aspnetcore-9.0#disable-response-compression-for-hot-reload
 if (!app.Environment.IsDevelopment())
 {
