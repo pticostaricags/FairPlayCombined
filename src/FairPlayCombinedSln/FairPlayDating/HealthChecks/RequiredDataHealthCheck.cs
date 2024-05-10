@@ -12,7 +12,7 @@ namespace FairPlayDating.HealthChecks
         {
             try
             {
-                logger.LogInformation("Running health checks for: {HealthCheckName}", 
+                logger.LogInformation("Running health checks for: {HealthCheckName}",
                     nameof(RequiredDataHealthCheck));
                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
                 var hasRoles = await dbContext.AspNetRoles.AnyAsync(cancellationToken);
@@ -24,6 +24,31 @@ namespace FairPlayDating.HealthChecks
                 if (!hasRequiredGenders)
                 {
                     return HealthCheckResult.Unhealthy(description: "Required genders missing");
+                }
+                var hasDateObjectives = await dbContext.DateObjective.AnyAsync(cancellationToken);
+                if (!hasDateObjectives)
+                {
+                    return HealthCheckResult.Unhealthy(description: "Date objectives missing");
+                }
+                var hasEyesColors = await dbContext.EyesColor.AnyAsync(cancellationToken);
+                if (!hasEyesColors)
+                {
+                    return HealthCheckResult.Unhealthy(description: "Eyes colors missing");
+                }
+                var hasHairColors = await dbContext.HairColor.AnyAsync(cancellationToken);
+                if (!hasHairColors)
+                {
+                    return HealthCheckResult.Unhealthy(description: "Hair colors missing");
+                }
+                var hasKidsStatuses = await dbContext.KidStatus.AnyAsync(cancellationToken);
+                if (!hasKidsStatuses)
+                {
+                    return HealthCheckResult.Unhealthy(description: "Kids statuses missing");
+                }
+                var hasReligions = await dbContext.Religion.AnyAsync(cancellationToken);
+                if (!hasReligions)
+                {
+                    return HealthCheckResult.Unhealthy(description: "Religions missing");
                 }
                 return HealthCheckResult.Healthy();
             }
