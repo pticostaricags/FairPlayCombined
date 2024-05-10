@@ -475,8 +475,8 @@
                             PhotoId = createUserProfileModel.ProfilePhotoId
                         };
                     await photoService.UpdatePhotoAsync(updatePhotoModel, cancellationTokenSource.Token);
-                    this.ProfileImageBase64 = GetProfileImageBase64();
                 }
+                this.ProfileImageBase64 = GetProfileImageBase64();
                 this.toastService.ShowSuccess("Your photo has been saved");
             }
         }
