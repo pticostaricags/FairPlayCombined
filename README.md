@@ -28,3 +28,11 @@ You can also help by sharing this wiki with other people and encouraging to beco
 <img width="950" alt="FairPlayCombined - NET Aspire - Dashboard" src="https://github.com/pticostaricags/FairPlayCombined/assets/3481899/679af430-7d1e-49ef-b56d-147140b272e9">
 <img width="940" alt="FairPlayCombined - NET Aspire - Admin Portal - Roles" src="https://github.com/pticostaricags/FairPlayCombined/assets/3481899/b55c8f46-1823-4050-a527-9da0c79e21c5">
 <img width="272" alt="FairPlayCombined - NET Aspire - Solution Explorer" src="https://github.com/pticostaricags/FairPlayCombined/assets/3481899/6f5861ff-c549-4faa-ab52-8da0a733a1ec">
+
+### Disclaimer
+FairPlayCombined is a project evaluating technologies in preview, for that reason it is not currently suited for production scenarios.
+
+**Technologies in preview(or using experimental functionality):**
+* .NET Aspire
+* .NET 9
+* Semantic Kernel
