@@ -65,7 +65,8 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <FluentPaginator State="this.paginationState"></FluentPaginator>
+                            <FluentPaginator State="this.paginationState"
+                                             CurrentPageIndexChanged="@(()=>CurrentPageIndexChanged())"></FluentPaginator>
                         </div>
                     </div>
                 </div>
@@ -127,8 +128,6 @@
         {
             ItemsProvider = async req =>
             {
-                this.showDetailsDialog = false;
-                this.selectedUserProfileModel = null;
                 this.IsBusy = true;
                 StateHasChanged();
                 PaginationRequest paginationRequest = new PaginationRequest()
@@ -165,6 +164,12 @@
         this.selectedUserProfileModel = null;
     }
 
+    private void CurrentPageIndexChanged()
+    {
+        this.showDetailsDialog = false;
+        this.selectedUserProfileModel = null;
+    }
+
     public ValueTask DisposeAsync()
     {
         this.cancellationTokenSource.Dispose();
@@ -175,7 +180,7 @@
     public const string MyMatchesTextKey = "MyMatchesText";
     [ResourceKey(defaultValue: "Please complete your User Profile first")]
     public const string CompletProfileTextKey = "CompletProfileText";
-    [ResourceKey(defaultValue:"Age")]
+    [ResourceKey(defaultValue: "Age")]
     public const string AgeTextKey = "AgeText";
     [ResourceKey(defaultValue: "Distance")]
     public const string DistanceTextKey = "DistanceText";
