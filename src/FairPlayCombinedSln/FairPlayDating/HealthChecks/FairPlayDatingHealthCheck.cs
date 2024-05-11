@@ -5,16 +5,16 @@ using System.Collections.ObjectModel;
 
 namespace FairPlayDating.HealthChecks
 {
-    public class RequiredDataHealthCheck(
+    public class FairPlayDatingHealthCheck(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        ILogger<RequiredDataHealthCheck> logger) : IHealthCheck
+        ILogger<FairPlayDatingHealthCheck> logger) : IHealthCheck
     {
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             try
             {
                 logger.LogInformation("Running health checks for: {HealthCheckName}",
-                    nameof(RequiredDataHealthCheck));
+                    nameof(FairPlayDatingHealthCheck));
                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
                 var roles = await dbContext.AspNetRoles.ToArrayAsync(cancellationToken);
                 if (roles?.Length == 0)

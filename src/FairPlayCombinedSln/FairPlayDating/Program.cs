@@ -19,12 +19,14 @@ using FairPlayCombined.Services.Extensions;
 using FairPlayDating.Extensions;
 using Microsoft.FluentUI.AspNetCore.Components;
 using FairPlayDating.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.Services.AddHealthChecks().AddCheck<RequiredDataHealthCheck>(nameof(RequiredDataHealthCheck),
-    failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy);
+builder.Services.AddHealthChecks().AddCheck<FairPlayDatingHealthCheck>(nameof(FairPlayDatingHealthCheck),
+    failureStatus: HealthStatus.Unhealthy,
+    tags: ["live"]);
 builder.Services.AddFluentUIComponents();
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
