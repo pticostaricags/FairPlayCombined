@@ -1,8 +1,14 @@
 ﻿using Azure.AI.ContentSafety;
+using FairPlayCombined.Models.AzureContentSafety;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace FairPlayCombined.Services.Common
 {
-    public class AzureContentSafetyService(ContentSafetyClient contentSafetyClient)
+    public class AzureContentSafetyService(ContentSafetyClient contentSafetyClient,
+        HttpClient authorizedHttpClient,
+        AzureContentSafetyConfiguration azureContentSafetyConfiguration)
     {
         public async Task<ImageModerationResultModel> AnalyzeImageAsync(byte[] imageBytes,
             CancellationToken cancellationToken)
@@ -38,6 +44,17 @@ namespace FairPlayCombined.Services.Common
                 TextCategory.Violence)?.Severity > 0,
             };
             return result;
+        }
+
+        public async Task<PromptShieldResponseModel> DetectJailbreakAttackAsync(PromptShieldRequestModel promptShieldRequestModel, CancellationToken cancellationToken)
+        {
+            var requestUrl = $"/contentsafety/text:shieldPrompt" +
+                $"?api-version={azureContentSafetyConfiguration.ApiVersion}";
+            var response = await authorizedHttpClient
+                .PostAsJsonAsync(requestUrl, promptShieldRequestModel, cancellationToken: cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadFromJsonAsync<PromptShieldResponseModel>(cancellationToken);
+            return result!;
         }
     }
 }
