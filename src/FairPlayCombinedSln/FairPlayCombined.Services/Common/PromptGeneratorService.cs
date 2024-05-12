@@ -15,6 +15,17 @@ namespace FairPlayCombined.Services.Common
     public class PromptGeneratorService(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
         ILogger<PromptGeneratorService> logger)
     {
+        public async Task<PromptModel[]> GetAllPromptsAsync(CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var result = await dbContext.Prompt.Select(p => new PromptModel()
+            {
+                BaseText = p.BaseText,
+                PromptId = p.PromptId,
+                PromptName = p.PromptName
+            }).ToArrayAsync(cancellationToken);
+            return result;
+        }
         public async Task<PromptModel?> GetPromptCompleteInfoAsync(string promptName,
             CancellationToken cancellationToken)
         {

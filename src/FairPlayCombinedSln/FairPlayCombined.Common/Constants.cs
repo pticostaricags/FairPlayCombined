@@ -2,6 +2,11 @@
 {
     public static class Constants
     {
+        public static class PromptsNames
+        {
+            public const string CreateYouTubeThumbnail = "YouTubeThumbnail";
+            public const string CreateVideoPassiveIncomeStrategy = nameof(CreateVideoPassiveIncomeStrategy);
+        }
         public static class Routes
         {
             public static class SignalRHubs

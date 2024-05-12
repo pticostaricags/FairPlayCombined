@@ -1,0 +1,89 @@
+﻿@page "/PromptsEditor"
+@implements IAsyncDisposable
+
+@using FairPlayCombined.Common
+@using FairPlayCombined.Models.Common.ConfigurationSecret
+@using FairPlayCombined.Models.Common.Promp
+@using FairPlayCombined.Services.Common
+
+@inject IToastService toastService
+@inject PromptGeneratorService promptGeneratorService
+
+@rendermode RenderMode.InteractiveServer
+@attribute [StreamRendering(enabled: true)]
+
+<h3>Prompts Editor</h3>
+
+<FluentEditForm FormName="frmPromptsEditor" Model="this.allPrompts">
+    <div>
+        <ObjectGraphDataAnnotationsValidator></ObjectGraphDataAnnotationsValidator>
+        <FluentValidationSummary></FluentValidationSummary>
+    </div>
+    @if (this.CreateYouTubeThumbnailPrompt != null)
+    {
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                @CreateYouTubeThumbnailPrompt.PromptName
+            </FluentLabel>
+            <FluentTextArea Rows="10" style="width:100%;" @bind-Value="this.CreateYouTubeThumbnailPrompt.BaseText"></FluentTextArea>
+            <FluentValidationMessage For="@( () => CreateYouTubeThumbnailPrompt.BaseText)"></FluentValidationMessage>
+        </div>
+    }
+    @if (this.CreateVideoPassiveIncomeStrategyPrompt != null)
+    {
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                @CreateVideoPassiveIncomeStrategyPrompt.PromptName
+            </FluentLabel>
+            <FluentTextArea Rows="10" style="width:100%;" @bind-Value="this.CreateVideoPassiveIncomeStrategyPrompt.BaseText"></FluentTextArea>
+            <FluentValidationMessage For="@( () => CreateVideoPassiveIncomeStrategyPrompt.BaseText)"></FluentValidationMessage>
+        </div>
+    }
+    <div>
+        <FluentButton Type="ButtonType.Submit"
+                      IconStart="@(new Icons.Regular.Size16.ArrowClockwise())"
+                      Appearance="Appearance.Accent"
+                      Loading="@this.IsBusy">
+            Save
+        </FluentButton>
+    </div>
+</FluentEditForm>
+@code
+{
+    [SupplyParameterFromForm]
+    private List<PromptModel> allPrompts { get; set; } = new();
+
+    private PromptModel? CreateYouTubeThumbnailPrompt =>
+    allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateYouTubeThumbnail);
+
+    private PromptModel? CreateVideoPassiveIncomeStrategyPrompt =>
+    allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateVideoPassiveIncomeStrategy);
+
+    private bool IsBusy { get; set; }
+    private CancellationTokenSource cancellationTokenSource = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.allPrompts = (await this.promptGeneratorService.GetAllPromptsAsync(this.cancellationTokenSource.Token)).ToList();
+        if (this.CreateYouTubeThumbnailPrompt is null)
+        {
+            this.allPrompts.Add(new PromptModel()
+                {
+                    PromptName = Constants.PromptsNames.CreateYouTubeThumbnail
+                });
+        }
+        if (this.CreateVideoPassiveIncomeStrategyPrompt is null)
+        {
+            this.allPrompts.Add(new PromptModel()
+                {
+                    PromptName = Constants.PromptsNames.CreateVideoPassiveIncomeStrategy
+                });
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}
