@@ -7,6 +7,7 @@
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
 @using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
@@ -17,6 +18,7 @@
 @inject UserProfileService userProfileService
 @inject IUserProviderService userProviderService
 @inject IStringLocalizer<MyMatches> localizer
+@inject GeoNamesService geoNamesService
 
 <h3>
     @localizer[MyMatchesTextKey]
@@ -155,6 +157,14 @@
                 </FluentLabel>
                 <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.TattooStatusText</FluentLabel>
             </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Location:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserLocationText</FluentLabel>
+            </p>
         </div>
         <div>
             <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
@@ -175,6 +185,7 @@
         {
             ItemsPerPage = 1
         };
+    private string? selectedUserLocationText { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -217,10 +228,15 @@
         }
     }
 
-    private void OnViewDetailsClicked(UserProfileModel userProfileModel)
+    private async Task OnViewDetailsClicked(UserProfileModel userProfileModel)
     {
         this.selectedUserProfileModel = userProfileModel;
         this.detailsDialog!.Show();
+        var geoData = await this.geoNamesService
+        .GetGeoLocationDataAsync(userProfileModel.CurrentLatitude, userProfileModel.CurrentLongitude,
+        this.cancellationTokenSource.Token);
+        this.selectedUserLocationText = 
+        $"{geoData!.nearest!.region}, {geoData.nearest.city}, {geoData.nearest.state}";
     }
 
     private void OnCloseSelectedProfile()
