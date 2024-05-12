@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.Services.Common
 {
+#pragma warning disable S1075 // URIs should not be hardcoded
     public class GeoNamesService(HttpClient httpClient, ILogger<GeoNamesService> logger)
     {
         public async Task<geodata?> GetGeoLocationDataAsync(
@@ -12,9 +13,7 @@ namespace FairPlayCombined.Services.Common
         {
             try
             {
-#pragma warning disable S1075 // URIs should not be hardcoded
                 var requestUrl = $"https://api.3geonames.org/{latitude},{longitude}";
-#pragma warning restore S1075 // URIs should not be hardcoded
                 string responseString = await httpClient.GetStringAsync(requestUrl, cancellationToken);
                 if (responseString[0] != '<')
                 {
@@ -37,9 +36,7 @@ namespace FairPlayCombined.Services.Common
         {
             try
             {
-#pragma warning disable S1075 // URIs should not be hardcoded
                 var requestUrl = "https://api.3geonames.org/?randomland=yes";
-#pragma warning restore S1075 // URIs should not be hardcoded
                 string responseString = await httpClient.GetStringAsync(requestUrl, cancellationToken);
                 if (responseString[0] != '<')
                 {
@@ -59,4 +56,5 @@ namespace FairPlayCombined.Services.Common
             return null;
         }
     }
+#pragma warning restore S1075 // URIs should not be hardcoded
 }
