@@ -26,6 +26,24 @@ namespace FairPlayCombined.Services.Common
             }).ToArrayAsync(cancellationToken);
             return result;
         }
+
+        public async Task<bool> UpdateAllPromptsAsync(List<PromptModel> prompts, 
+            CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            await dbContext.Prompt.ExecuteDeleteAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+            foreach (var singlePrompt in prompts)
+            {
+                await dbContext.Prompt.AddAsync(new()
+                {
+                    BaseText = singlePrompt.BaseText,
+                    PromptName = singlePrompt.PromptName
+                }, cancellationToken);
+            }
+            await dbContext.SaveChangesAsync(cancellationToken);
+            return true;
+        }
         public async Task<PromptModel?> GetPromptCompleteInfoAsync(string promptName,
             CancellationToken cancellationToken)
         {
@@ -37,13 +55,7 @@ namespace FairPlayCombined.Services.Common
                 {
                     PromptName = promptName,
                     BaseText = p.BaseText,
-                    PromptId = p.PromptId,
-                    PromptVariables = p.PromptVariable
-                    .Select(v=> new PromptVariableModel()
-                    {
-                        PromptId=v.PromptId,
-                        VariableName = v.VariableName
-                    }).ToArray()
+                    PromptId = p.PromptId
                 })
                 .SingleOrDefaultAsync(cancellationToken:cancellationToken);
             return result;

@@ -9,12 +9,11 @@
 @inject IToastService toastService
 @inject PromptGeneratorService promptGeneratorService
 
-@rendermode RenderMode.InteractiveServer
-@attribute [StreamRendering(enabled: true)]
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 <h3>Prompts Editor</h3>
 
-<FluentEditForm FormName="frmPromptsEditor" Model="this.allPrompts">
+<FluentEditForm FormName="frmPromptsEditor" Model="this.allPrompts" OnValidSubmit="OnValidSubmitAsync">
     <div>
         <ObjectGraphDataAnnotationsValidator></ObjectGraphDataAnnotationsValidator>
         <FluentValidationSummary></FluentValidationSummary>
@@ -64,20 +63,55 @@
 
     protected override async Task OnInitializedAsync()
     {
-        this.allPrompts = (await this.promptGeneratorService.GetAllPromptsAsync(this.cancellationTokenSource.Token)).ToList();
-        if (this.CreateYouTubeThumbnailPrompt is null)
+        try
         {
-            this.allPrompts.Add(new PromptModel()
-                {
-                    PromptName = Constants.PromptsNames.CreateYouTubeThumbnail
-                });
+            this.IsBusy = true;
+            StateHasChanged();
+            this.allPrompts = (await this.promptGeneratorService.GetAllPromptsAsync(this.cancellationTokenSource.Token)).ToList();
+            if (this.CreateYouTubeThumbnailPrompt is null)
+            {
+                this.allPrompts.Add(new PromptModel()
+                    {
+                        PromptName = Constants.PromptsNames.CreateYouTubeThumbnail
+                    });
+            }
+            if (this.CreateVideoPassiveIncomeStrategyPrompt is null)
+            {
+                this.allPrompts.Add(new PromptModel()
+                    {
+                        PromptName = Constants.PromptsNames.CreateVideoPassiveIncomeStrategy
+                    });
+            }
         }
-        if (this.CreateVideoPassiveIncomeStrategyPrompt is null)
+        catch (Exception ex)
         {
-            this.allPrompts.Add(new PromptModel()
-                {
-                    PromptName = Constants.PromptsNames.CreateVideoPassiveIncomeStrategy
-                });
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            await this.promptGeneratorService.UpdateAllPromptsAsync(this.allPrompts,
+                this.cancellationTokenSource.Token);
+            this.toastService.ShowSuccess("Prompts have been saved");
+        }
+        catch (Exception ex)
+        {
+            this.toastService!.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
         }
     }
 
