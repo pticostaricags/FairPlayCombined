@@ -30,6 +30,7 @@ namespace FairPlayTube.Extensions
                 {
                     Timeout = TimeSpan.FromMinutes(timeoutMinutes)
                 };
+                var logger = sp.GetRequiredService<ILogger<OpenAIService>>();
                 return new OpenAIService(openAIAuthorizedHttpClient,
                     genericHttpClient: genericHttpClient, new OpenAIServiceConfiguration()
                     {
@@ -37,7 +38,7 @@ namespace FairPlayTube.Extensions
                         GenerateDall3ImageUrl = generateDall3ImageUrlEntity.Value,
                         ChatCompletionsUrl = openAIChatCompletionEntity.Value
                     },
-                dbContextFactory: dbContextFactory);
+                dbContextFactory: dbContextFactory, logger);
             });
         }
     }
