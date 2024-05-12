@@ -25,7 +25,7 @@ namespace FairPlayTube.Extensions
                 {
                     Endpoint = azureContentSafetyEndpoint.Value,
                     Key = azureContentSafetyKey.Value,
-                    ApiVersion = "2023-10-15-preview"
+                    ApiVersion = "2024-02-15-preview"
                 };
             });
             builder.Services.AddTransient<ContentSafetyClient>(sp =>
@@ -47,14 +47,9 @@ namespace FairPlayTube.Extensions
                     BaseAddress = new Uri(azureContentSafetyConfiguration!.Endpoint!)
                 };
                 authorizedHttpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", azureContentSafetyConfiguration.Key);
-                AzureContentSafetyService azureContentSafetyService = 
+                AzureContentSafetyService azureContentSafetyService =
                 new(contentSafetyClient,
-                authorizedHttpClient,new AzureContentSafetyConfiguration()
-                {
-                    Endpoint = azureContentSafetyConfiguration.Endpoint,
-                    Key=azureContentSafetyConfiguration.Key,
-                    ApiVersion= "2023-10-15-preview"
-                });
+                authorizedHttpClient, azureContentSafetyConfiguration);
                 return azureContentSafetyService;
             });
         }
