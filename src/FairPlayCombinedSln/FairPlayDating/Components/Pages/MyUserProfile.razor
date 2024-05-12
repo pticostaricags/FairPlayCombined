@@ -31,6 +31,7 @@
 @inject IToastService toastService
 @inject PhotoService photoService
 @inject IGeoLocationService geolocationService
+@inject GeoNamesService geoNamesService
 @inject AzureContentSafetyService azureContentSafetyService
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
@@ -215,8 +216,8 @@
                 <FluentWizardStep Label="Preferred Religion">
                     <div>
                         <FluentLabel Typo="Typography.Body">Preferred Religion</FluentLabel>
-                        <FluentSelect TOption="string" 
-                            Value="@this.createUserProfileModel.PreferredReligionId.ToString()"
+                        <FluentSelect TOption="string"
+                                      Value="@this.createUserProfileModel.PreferredReligionId.ToString()"
                                       ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredReligionId = Convert.ToInt32(selectedValue))">
                             <FluentOption Value="0">Select Preferred Religion</FluentOption>
                             @if (this.religions != null)
@@ -234,8 +235,8 @@
                 <FluentWizardStep Label="Preferred Tatoo Status">
                     <div>
                         <FluentLabel Typo="Typography.Body">Preferred Tattoo Status</FluentLabel>
-                        <FluentSelect TOption="string" 
-                            Value="@this.createUserProfileModel.PreferredTattooStatusId.ToString()"
+                        <FluentSelect TOption="string"
+                                      Value="@this.createUserProfileModel.PreferredTattooStatusId.ToString()"
                                       ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredTattooStatusId = Convert.ToInt32(selectedValue))">
                             <FluentOption Value="0">Select Preferred Tattoo Status</FluentOption>
                             @if (this.tattooStatuses != null)
@@ -253,8 +254,8 @@
                 <FluentWizardStep Label="Religion">
                     <div>
                         <FluentLabel Typo="Typography.Body">Religion</FluentLabel>
-                        <FluentSelect TOption="string" 
-                            Value="@this.createUserProfileModel.ReligionId.ToString()"
+                        <FluentSelect TOption="string"
+                                      Value="@this.createUserProfileModel.ReligionId.ToString()"
                                       ValueChanged="@((string selectedValue) => this.createUserProfileModel.ReligionId = Convert.ToInt32(selectedValue))">
                             <FluentOption Value="0">Select Religion</FluentOption>
                             @if (this.religions != null)
@@ -272,8 +273,8 @@
                 <FluentWizardStep Label="Tatoo Status">
                     <div>
                         <FluentLabel Typo="Typography.Body">Tattoo Status</FluentLabel>
-                        <FluentSelect TOption="string" 
-                            Value="@this.createUserProfileModel.TattooStatusId.ToString()"
+                        <FluentSelect TOption="string"
+                                      Value="@this.createUserProfileModel.TattooStatusId.ToString()"
                                       ValueChanged="@((string selectedValue) => this.createUserProfileModel.TattooStatusId = Convert.ToInt32(selectedValue))">
                             <FluentOption Value="0">Select Tattoo Status</FluentOption>
                             @if (this.tattooStatuses != null)
@@ -326,6 +327,7 @@
     <div>
         <FluentLabel Typo="Typography.Body">Current Latitude: @this.createUserProfileModel.CurrentLatitude</FluentLabel>
         <FluentLabel Typo="Typography.Body">Current Longitude: @this.createUserProfileModel.CurrentLongitude</FluentLabel>
+        <FluentLabel Typo="Typography.Body">Location: @this.GeoLocationInfoText</FluentLabel>
     </div>
     <div>
         @if (!String.IsNullOrWhiteSpace(this.ProfileImageBase64))
@@ -364,6 +366,7 @@
     private bool IsBusy { get; set; }
     private bool IsAllDataLoad { get; set; }
     private FluentEditForm? EditFormInstance { get; set; }
+    private string? GeoLocationInfoText { get; set; }
 
     protected override void OnInitialized()
     {
@@ -373,40 +376,47 @@
 
     private async Task LoadDataAsync()
     {
-        var existentUserProfile = await this.userProfileService
-        .GetUserProfileByUserIdAsync(this.createUserProfileModel!.ApplicationUserId!,
-            this.cancellationTokenSource.Token);
-        if (existentUserProfile != null)
+        try
         {
-            this.createUserProfileModel = new()
-                {
-                    About = existentUserProfile.About,
-                    ApplicationUserId = existentUserProfile.ApplicationUserId,
-                    BiologicalGenderId = existentUserProfile.BiologicalGenderId,
-                    BirthDate = existentUserProfile.BirthDate,
-                    CurrentDateObjectiveId = existentUserProfile.CurrentDateObjectiveId,
-                    EyesColorId = existentUserProfile.EyesColorId,
-                    HairColorId = existentUserProfile.HairColorId,
-                    KidStatusId = existentUserProfile.KidStatusId,
-                    PreferredEyesColorId = existentUserProfile.PreferredEyesColorId,
-                    PreferredHairColorId = existentUserProfile.PreferredHairColorId,
-                    PreferredKidStatusId = existentUserProfile.PreferredKidStatusId,
-                    PreferredReligionId = existentUserProfile.PreferredReligionId,
-                    PreferredTattooStatusId = existentUserProfile.PreferredTattooStatusId,
-                    ProfilePhotoId = existentUserProfile.ProfilePhotoId,
-                    ReligionId = existentUserProfile.ReligionId,
-                    TattooStatusId = existentUserProfile.TattooStatusId
-                };
-            this.ProfileImageBase64 = GetProfileImageBase64();
+            var existentUserProfile = await this.userProfileService
+            .GetUserProfileByUserIdAsync(this.createUserProfileModel!.ApplicationUserId!,
+                this.cancellationTokenSource.Token);
+            if (existentUserProfile != null)
+            {
+                this.createUserProfileModel = new()
+                    {
+                        About = existentUserProfile.About,
+                        ApplicationUserId = existentUserProfile.ApplicationUserId,
+                        BiologicalGenderId = existentUserProfile.BiologicalGenderId,
+                        BirthDate = existentUserProfile.BirthDate,
+                        CurrentDateObjectiveId = existentUserProfile.CurrentDateObjectiveId,
+                        EyesColorId = existentUserProfile.EyesColorId,
+                        HairColorId = existentUserProfile.HairColorId,
+                        KidStatusId = existentUserProfile.KidStatusId,
+                        PreferredEyesColorId = existentUserProfile.PreferredEyesColorId,
+                        PreferredHairColorId = existentUserProfile.PreferredHairColorId,
+                        PreferredKidStatusId = existentUserProfile.PreferredKidStatusId,
+                        PreferredReligionId = existentUserProfile.PreferredReligionId,
+                        PreferredTattooStatusId = existentUserProfile.PreferredTattooStatusId,
+                        ProfilePhotoId = existentUserProfile.ProfilePhotoId,
+                        ReligionId = existentUserProfile.ReligionId,
+                        TattooStatusId = existentUserProfile.TattooStatusId
+                    };
+                this.ProfileImageBase64 = GetProfileImageBase64();
+            }
+            this.genders = await this.genderService.GetAllGenderAsync(cancellationTokenSource.Token);
+            this.dateObjectives = await this.dateObjectiveService.GetAllDateObjectiveAsync(cancellationTokenSource.Token);
+            this.eyesColors = await this.eyesColorService.GetAllEyesColorAsync(cancellationTokenSource.Token);
+            this.hairColors = await this.hairColorService.GetAllHairColorAsync(cancellationTokenSource.Token);
+            this.kidStatuses = await this.kidStatusService.GetAllKidStatusAsync(cancellationTokenSource.Token);
+            this.religions = await this.religionService.GetAllReligionAsync(cancellationTokenSource.Token);
+            this.tattooStatuses = await this.tattooStatusService.GetAllTattooStatusAsync(cancellationTokenSource.Token);
+            this.IsAllDataLoad = true;
         }
-        this.genders = await this.genderService.GetAllGenderAsync(cancellationTokenSource.Token);
-        this.dateObjectives = await this.dateObjectiveService.GetAllDateObjectiveAsync(cancellationTokenSource.Token);
-        this.eyesColors = await this.eyesColorService.GetAllEyesColorAsync(cancellationTokenSource.Token);
-        this.hairColors = await this.hairColorService.GetAllHairColorAsync(cancellationTokenSource.Token);
-        this.kidStatuses = await this.kidStatusService.GetAllKidStatusAsync(cancellationTokenSource.Token);
-        this.religions = await this.religionService.GetAllReligionAsync(cancellationTokenSource.Token);
-        this.tattooStatuses = await this.tattooStatusService.GetAllTattooStatusAsync(cancellationTokenSource.Token);
-        this.IsAllDataLoad = true;
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -416,19 +426,31 @@
             this.IsBusy = true;
             await LoadDataAsync();
             StateHasChanged();
-            var geoLocation = await
-            this.geolocationService.GetCurrentPositionAsync();
-            if (geoLocation != null)
+            try
             {
-                this.createUserProfileModel.CurrentLatitude = geoLocation.Latitude;
-                this.createUserProfileModel.CurrentLongitude = geoLocation.Longitude;
-                this.createUserProfileModel.CurrentGeoLocation =
-                new NetTopologySuite.Geometries.Point(
-                        x: geoLocation.Longitude,
-                        y: geoLocation.Latitude)
-                    {
-                        SRID = Constants.GeoCoordinates.SRID
-                    };
+                var geoLocation = await
+                this.geolocationService.GetCurrentPositionAsync();
+                if (geoLocation != null)
+                {
+                    this.createUserProfileModel.CurrentLatitude = geoLocation.Latitude;
+                    this.createUserProfileModel.CurrentLongitude = geoLocation.Longitude;
+                    this.createUserProfileModel.CurrentGeoLocation =
+                    new NetTopologySuite.Geometries.Point(
+                            x: geoLocation.Longitude,
+                            y: geoLocation.Latitude)
+                        {
+                            SRID = Constants.GeoCoordinates.SRID
+                        };
+                    var geoData = await this.geoNamesService.GetGeoLocationDataAsync(
+                        geoLocation.Latitude, geoLocation.Longitude, this.cancellationTokenSource.Token
+                    );
+                    this.GeoLocationInfoText = 
+                    $"{geoData!.nearest!.region}, {geoData.nearest.city}, {geoData.nearest.state}";
+                }
+            }
+            catch (Exception ex)
+            {
+                this.toastService.ShowError(ex.Message);
             }
             this.IsBusy = false;
             StateHasChanged();

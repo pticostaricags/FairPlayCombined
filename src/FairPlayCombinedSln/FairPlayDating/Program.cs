@@ -101,6 +101,7 @@ builder.Services.AddTransient<TattooStatusService>();
 builder.Services.AddTransient<UserProfileService>();
 builder.Services.AddTransient<PhotoService>();
 builder.Services.AddTransient<MyMatchesService>();
+builder.Services.AddTransient<GeoNamesService>();
 builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();
 builder.AddAzureAIContentSafety();
 var app = builder.Build();
