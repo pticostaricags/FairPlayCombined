@@ -21,7 +21,9 @@ namespace FairPlayCombined.Services.FairPlayTube
         {
             logger.LogInformation(message: "Start of method: {MethodName}", nameof(CreateVideoWatchTimeAsync));
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
-            var videoInfoEntity = await dbContext.VideoInfo.SingleAsync(p => p.VideoId == videoId,
+            var videoInfoEntity = await dbContext.VideoInfo
+                .TagWith($"TAG: {nameof(CreateVideoWatchTimeAsync)}")
+                .SingleAsync(p => p.VideoId == videoId,
                 cancellationToken: cancellationToken);
             DateTimeOffset sessionStartDatetime = DateTimeOffset.UtcNow;
             VideoWatchTime? entity = new()
@@ -44,6 +46,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             VideoWatchTime? entity = null;
             entity = await dbContext.VideoWatchTime
+                .TagWith($"TAG: {nameof(UpdateVideoWatchTimeAsync)}")
                 .SingleOrDefaultAsync(p => p.SessionId == videoWatchTimeModel.SessionId,
                 cancellationToken: cancellationToken);
             entity!.WatchTime = videoWatchTimeModel.WatchTime;

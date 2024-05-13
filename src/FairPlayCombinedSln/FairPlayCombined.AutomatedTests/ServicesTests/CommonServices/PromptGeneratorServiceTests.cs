@@ -62,8 +62,6 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 promptName,CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual(expected: promptName, result.PromptName);
-            Assert.IsNotNull(result.PromptVariables);
-            Assert.AreEqual(expected: 2, actual: result.PromptVariables.Length);
         }
     }
 }

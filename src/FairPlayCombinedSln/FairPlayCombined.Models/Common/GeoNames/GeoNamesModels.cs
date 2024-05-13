@@ -139,7 +139,7 @@
 
         private string? provField;
 
-        private object? regionField;
+        private string? regionField;
 
         private string? stateField;
 
@@ -230,7 +230,7 @@
         }
 
         /// <remarks/>
-        public object? region
+        public string? region
         {
             get
             {

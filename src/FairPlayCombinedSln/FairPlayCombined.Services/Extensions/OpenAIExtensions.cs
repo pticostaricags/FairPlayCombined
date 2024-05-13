@@ -3,9 +3,12 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.Common;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-namespace FairPlayTube.Extensions
+namespace FairPlayCombined.Services.Extensions
 {
     public static class OpenAIExtensions
     {
@@ -30,6 +33,7 @@ namespace FairPlayTube.Extensions
                 {
                     Timeout = TimeSpan.FromMinutes(timeoutMinutes)
                 };
+                var logger = sp.GetRequiredService<ILogger<OpenAIService>>();
                 return new OpenAIService(openAIAuthorizedHttpClient,
                     genericHttpClient: genericHttpClient, new OpenAIServiceConfiguration()
                     {
@@ -37,7 +41,7 @@ namespace FairPlayTube.Extensions
                         GenerateDall3ImageUrl = generateDall3ImageUrlEntity.Value,
                         ChatCompletionsUrl = openAIChatCompletionEntity.Value
                     },
-                dbContextFactory: dbContextFactory);
+                dbContextFactory: dbContextFactory, logger);
             });
         }
     }

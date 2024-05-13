@@ -7,17 +7,18 @@
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
 @using FairPlayCombined.Models.Pagination
+@using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
 
 @attribute [Authorize]
-@rendermode RenderMode.InteractiveServer
-@attribute [StreamRendering(enabled: true)]
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject MyMatchesService myMatchesService
 @inject UserProfileService userProfileService
 @inject IUserProviderService userProviderService
 @inject IStringLocalizer<MyMatches> localizer
+@inject GeoNamesService geoNamesService
 
 <h3>
     @localizer[MyMatchesTextKey]
@@ -74,50 +75,117 @@
         </TemplateColumn>
     </FluentDataGrid>
 </div>
-@if (this.showDetailsDialog && this.selectedUserProfileModel != null)
-{
-    <div class="modal fade show" tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">Selection Info</h1>
-                    <button @onclick="OnCloseSelectedProfile"
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        Age: @selectedUserProfileModel.Age
-                    </p>
-                    <p>
+
+
+<FluentDialog @ref="detailsDialog"
+              @bind-Hidden="@showDetailsDialog"
+              Modal="true" TrapFocus="true"
+              PreventScroll="false">
+    <FluentDialogHeader Visible="false"></FluentDialogHeader>
+    @if (this.selectedUserProfileModel != null)
+    {
+        <div>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Age:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.Age</FluentLabel>
+            </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
                         About me:
-                        @selectedUserProfileModel.About
-                    </p>
-                    <p>Kids Status: @selectedUserProfileModel.KidStatusText</p>
-                    <p>Gender: @selectedUserProfileModel.BiologicalGenderText</p>
-                    <p>Date Objective: @selectedUserProfileModel.CurrentDateObjectiveText</p>
-                    <p>Eyes Color: @selectedUserProfileModel.EyesColorText</p>
-                    <p>Hair Color: @selectedUserProfileModel.HairColorText</p>
-                    <p>Religion: @selectedUserProfileModel.ReligionText</p>
-                    <p>Tattoo Status : @selectedUserProfileModel.TattooStatusText</p>
-                </div>
-            </div>
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.About</FluentLabel>
+            </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Kids Status:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.KidStatusText</FluentLabel>
+            </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Gender:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.BiologicalGenderText</FluentLabel>
+            </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Date Objective:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.CurrentDateObjectiveText</FluentLabel>
+            </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Eyes Color:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.EyesColorText</FluentLabel>
+            </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Hair Color:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.HairColorText</FluentLabel>
+            </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Religion:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.ReligionText</FluentLabel>
+            </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Tattoo Status:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.TattooStatusText</FluentLabel>
+            </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Location:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserLocationText</FluentLabel>
+            </p>
         </div>
-    </div>
-}
+        <div>
+            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                          OnClick="OnCloseSelectedProfile">Close</FluentButton>
+        </div>
+    }
+</FluentDialog>
+
 @code {
     private GridItemsProvider<UserProfileModel>? ItemsProvider;
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    private bool showDetailsDialog = false;
-    private UserProfileModel? selectedUserProfileModel;
+    private bool showDetailsDialog { get; set; } = false;
+    private FluentDialog? detailsDialog { get; set; }
+    private UserProfileModel? selectedUserProfileModel { get; set; }
     private bool IsBusy { get; set; }
     private bool HasUserProfile { get; set; }
     private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = 1
         };
+    private string? selectedUserLocationText { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -152,21 +220,34 @@
         this.HasUserProfile = userProfile != null;
     }
 
-    private void OnViewDetailsClicked(UserProfileModel userProfileModel)
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.detailsDialog!.Hide();
+        }
+    }
+
+    private async Task OnViewDetailsClicked(UserProfileModel userProfileModel)
     {
         this.selectedUserProfileModel = userProfileModel;
-        this.showDetailsDialog = true;
+        this.detailsDialog!.Show();
+        var geoData = await this.geoNamesService
+        .GetGeoLocationDataAsync(userProfileModel.CurrentLatitude, userProfileModel.CurrentLongitude,
+        this.cancellationTokenSource.Token);
+        this.selectedUserLocationText = 
+        $"{geoData!.nearest!.region}, {geoData.nearest.city}, {geoData.nearest.state}";
     }
 
     private void OnCloseSelectedProfile()
     {
-        this.showDetailsDialog = false;
+        this.detailsDialog!.Hide();
         this.selectedUserProfileModel = null;
     }
 
     private void CurrentPageIndexChanged()
     {
-        this.showDetailsDialog = false;
+        this.detailsDialog!.Hide();
         this.selectedUserProfileModel = null;
     }
 

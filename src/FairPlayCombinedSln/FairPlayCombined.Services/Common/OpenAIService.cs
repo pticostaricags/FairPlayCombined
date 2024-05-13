@@ -3,6 +3,8 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Models.OpenAI;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Net.Http.Json;
 
 namespace FairPlayCombined.Services.Common;
@@ -10,11 +12,16 @@ public class OpenAIService(
     HttpClient openAIAuthorizedHttpClient,
     HttpClient genericHttpClient,
     OpenAIServiceConfiguration openAIServiceConfiguration,
-    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
+    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+    ILogger<OpenAIService> logger)
 {
     public async Task<ChatCompletionResponseModel?> GenerateChatCompletionAsync(
         string systemMessage, string prompt, CancellationToken cancellationToken)
     {
+        Guid callGuid = Guid.NewGuid();
+        var stopWatch = Stopwatch.StartNew();
+        logger.LogInformation("Start of method: {MethodName}. CallId: {CallGuid}", 
+            nameof(GenerateChatCompletionAsync), callGuid);
         var requestUrl = openAIServiceConfiguration.ChatCompletionsUrl;
         ChatCompletionRequestModel request = new()
         {
@@ -37,6 +44,8 @@ public class OpenAIService(
             request, cancellationToken: cancellationToken);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<ChatCompletionResponseModel>(cancellationToken: cancellationToken);
+        logger.LogInformation("End of method: {MethodName}. CallId: {CallGuid}. Duration: {Duration}",
+            nameof(GenerateChatCompletionAsync), callGuid, stopWatch.Elapsed);
         return result;
     }
     public async Task<GenerateDallE3ResponseModel?> GenerateDallE3ImageAsync(string prompt, CancellationToken cancellationToken)

@@ -1,7 +1,11 @@
 ﻿using FairPlayCombined.Models.Common.PayPal;
 using FairPlayCombined.Services.Common;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace FairPlayTube.Extensions
+namespace FairPlayCombined.Services.Extensions
 {
     public static class PayPalCoreExtensions
     {

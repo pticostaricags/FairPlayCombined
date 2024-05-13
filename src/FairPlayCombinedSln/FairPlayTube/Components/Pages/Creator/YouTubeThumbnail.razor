@@ -108,7 +108,7 @@
             this.IsBusy = true;
             StateHasChanged();
             var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
-            "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
+            Constants.PromptsNames.CreateYouTubeThumbnail, cancellationToken: this.cancellationTokenSource.Token);
             var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
             cancellationToken: this.cancellationTokenSource.Token);
             var englishCaptions = await this.videoCaptionsService

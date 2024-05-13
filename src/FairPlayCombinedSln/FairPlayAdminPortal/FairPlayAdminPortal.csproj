@@ -45,4 +45,10 @@
     <ProjectReference Include="..\FairPlayCombined.Shared\FairPlayCombined.Shared.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\Pages\PromptsEditor.razor" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Pages\PromptsEditor.razor" />
+  </ItemGroup>
 </Project>

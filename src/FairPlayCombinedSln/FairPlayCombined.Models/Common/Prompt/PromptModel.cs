@@ -5,7 +5,6 @@ namespace FairPlayCombined.Models.Common.Promp
 {
     public class PromptModel
     {
-        [DeniedValues(default(int))]
         public int PromptId { get; set; }
 
         [Required]
@@ -14,8 +13,5 @@ namespace FairPlayCombined.Models.Common.Promp
 
         [Required]
         public string? BaseText { get; set; }
-        [Required]
-        [ValidateComplexType]
-        public PromptVariableModel[]? PromptVariables { get; set; }
     }
 }
