@@ -67,7 +67,7 @@
                     <div class="row">
                         <div class="col">
                             <FluentPaginator State="this.paginationState"
-                                             CurrentPageIndexChanged="@(()=>CurrentPageIndexChanged())"></FluentPaginator>
+                                             CurrentPageIndexChanged="@(()=>ResetDialog())"></FluentPaginator>
                         </div>
                     </div>
                 </div>
@@ -168,7 +168,7 @@
         </div>
         <div>
             <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
-                          OnClick="OnCloseSelectedProfile">Close</FluentButton>
+                          OnClick="ResetDialog">Close</FluentButton>
         </div>
     }
 </FluentDialog>
@@ -239,13 +239,7 @@
         $"{geoData!.nearest!.region}, {geoData.nearest.city}, {geoData.nearest.state}";
     }
 
-    private void OnCloseSelectedProfile()
-    {
-        this.detailsDialog!.Hide();
-        this.selectedUserProfileModel = null;
-    }
-
-    private void CurrentPageIndexChanged()
+    private void ResetDialog()
     {
         this.detailsDialog!.Hide();
         this.selectedUserProfileModel = null;
