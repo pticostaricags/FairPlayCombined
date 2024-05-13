@@ -59,7 +59,7 @@
     allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateVideoPassiveIncomeStrategy);
 
     private bool IsBusy { get; set; }
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override async Task OnInitializedAsync()
     {
