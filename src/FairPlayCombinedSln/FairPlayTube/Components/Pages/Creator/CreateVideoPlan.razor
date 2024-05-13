@@ -94,46 +94,52 @@
         this.createVideoPlanModel.ApplicationUserId = this.userProviderService.GetCurrentUserId();
     }
 
+    private async Task<bool> IsValidInputAsync()
+    {
+        var videoNameModerationResult =
+        await this.azureContentSafetyService.AnalyzeTextAsync(
+            this.createVideoPlanModel.VideoName!, this.cancellationTokenSource.Token
+        );
+        if (videoNameModerationResult.IsOffensive || videoNameModerationResult.IsSexuallySuggestive ||
+        videoNameModerationResult.IsSexuallyExplicity)
+        {
+            this.toastService.ShowError("You are not allowed to use that title, please use something more appropiate");
+            return false;
+        }
+
+        var videoDescriptionModerationResult =
+        await this.azureContentSafetyService.AnalyzeTextAsync(
+            this.createVideoPlanModel.VideoDescription!, this.cancellationTokenSource.Token
+        );
+        if (videoDescriptionModerationResult.IsOffensive || videoDescriptionModerationResult.IsSexuallySuggestive ||
+        videoDescriptionModerationResult.IsSexuallyExplicity)
+        {
+            this.toastService.ShowError("You are not allowed to use that description, please use something more appropiate");
+            return false;
+        }
+
+        var videoScriptModerationResult =
+        await this.azureContentSafetyService.AnalyzeTextAsync(
+            this.createVideoPlanModel.VideoScript!, this.cancellationTokenSource.Token
+        );
+        if (videoScriptModerationResult.IsOffensive || videoScriptModerationResult.IsSexuallySuggestive ||
+        videoScriptModerationResult.IsSexuallyExplicity)
+        {
+            this.toastService.ShowError("You are not allowed to use that script, please use something more appropiate");
+            return false;
+        }
+
+        return true;
+    }
+
     private async Task OnValidSubmitAsync()
     {
         try
         {
             this.IsBusy = true;
             StateHasChanged();
-            bool hasProhibitedContent = false;
-            var videoNameModerationResult =
-            await this.azureContentSafetyService.AnalyzeTextAsync(
-                this.createVideoPlanModel.VideoName!, this.cancellationTokenSource.Token
-            );
-            if (videoNameModerationResult.IsOffensive || videoNameModerationResult.IsSexuallySuggestive ||
-            videoNameModerationResult.IsSexuallyExplicity)
-            {
-                hasProhibitedContent = true;
-                this.toastService.ShowError("You are not allowed to use that title, please use something more appropiate");
-            }
-
-            var videoDescriptionModerationResult =
-            await this.azureContentSafetyService.AnalyzeTextAsync(
-                this.createVideoPlanModel.VideoDescription!, this.cancellationTokenSource.Token
-            );
-            if (videoDescriptionModerationResult.IsOffensive || videoDescriptionModerationResult.IsSexuallySuggestive ||
-            videoDescriptionModerationResult.IsSexuallyExplicity)
-            {
-                hasProhibitedContent = true;
-                this.toastService.ShowError("You are not allowed to use that description, please use something more appropiate");
-            }
-
-            var videoScriptModerationResult =
-            await this.azureContentSafetyService.AnalyzeTextAsync(
-                this.createVideoPlanModel.VideoScript!, this.cancellationTokenSource.Token
-            );
-            if (videoScriptModerationResult.IsOffensive || videoScriptModerationResult.IsSexuallySuggestive ||
-            videoScriptModerationResult.IsSexuallyExplicity)
-            {
-                hasProhibitedContent = true;
-                this.toastService.ShowError("You are not allowed to use that script, please use something more appropiate");
-            }
-            if (!hasProhibitedContent)
+            bool isValidInput = await IsValidInputAsync();
+            if (isValidInput)
             {
                 var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
                         "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
@@ -151,22 +157,7 @@
                 }
                 else
                 {
-                    await this.videoPlanService.CreateVideoPlanAsync(
-                        this.createVideoPlanModel, this.cancellationTokenSource.Token);
-                    this.toastService.ShowSuccess("Your Plan has been created");
-                    StateHasChanged();
-                    this.IsPlanCreated = true;
-                    var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
-                    if (result != null)
-                    {
-                        this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
-                        this.RevisedPrompt = result!.data[0]!.revised_prompt;
-                        this.toastService.ShowSuccess("Your thumbnail has been created");
-                    }
-                    else
-                    {
-                        this.toastService.ShowError("Your thumbnail could not be created");
-                    }
+                    await CreateVideoPlanAsync(prompt);
                 }
             }
         }
@@ -178,6 +169,26 @@
         {
             this.IsBusy = false;
             StateHasChanged();
+        }
+    }
+
+    private async Task CreateVideoPlanAsync(string prompt)
+    {
+        await this.videoPlanService.CreateVideoPlanAsync(
+            this.createVideoPlanModel, this.cancellationTokenSource.Token);
+        this.toastService.ShowSuccess("Your Plan has been created");
+        StateHasChanged();
+        this.IsPlanCreated = true;
+        var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
+        if (result != null)
+        {
+            this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
+            this.RevisedPrompt = result!.data[0]!.revised_prompt;
+            this.toastService.ShowSuccess("Your thumbnail has been created");
+        }
+        else
+        {
+            this.toastService.ShowError("Your thumbnail could not be created");
         }
     }
 
