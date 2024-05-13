@@ -3,9 +3,12 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.Common;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-namespace FairPlayTube.Extensions
+namespace FairPlayCombined.Services.Extensions
 {
     public static class OpenAIExtensions
     {

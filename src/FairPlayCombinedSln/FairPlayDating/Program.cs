@@ -16,7 +16,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.Net.Mime;
 using FairPlayCombined.Services.Extensions;
-using FairPlayDating.Extensions;
 using Microsoft.FluentUI.AspNetCore.Components;
 using FairPlayDating.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;

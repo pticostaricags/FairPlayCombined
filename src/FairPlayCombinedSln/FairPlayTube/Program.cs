@@ -13,7 +13,6 @@ using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayTube.Components;
 using FairPlayTube.Components.Account;
 using FairPlayTube.Data;
-using FairPlayTube.Extensions;
 using FairPlayTube.HealthChecks;
 using FairPlayTube.MetricsConfiguration;
 using Google.Apis.Auth.OAuth2;
@@ -27,6 +26,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
+using FairPlayCombined.Services.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

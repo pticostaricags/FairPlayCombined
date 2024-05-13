@@ -6,8 +6,10 @@ using FairPlayCombined.Services.Common;
 using FairPlayCombined.Common;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.Models.AzureContentSafety;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace FairPlayTube.Extensions
+namespace FairPlayCombined.Services.Extensions
 {
     public static class AzureAIContentSafetyExtensions
     {

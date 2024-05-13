@@ -1,12 +1,13 @@
 ﻿using FairPlayCombined.Models.GoogleAuth;
+using Microsoft.AspNetCore.Builder;
 
-namespace FairPlayTube.Extensions
+namespace FairPlayCombined.Services.Extensions
 {
     public static class GoogleAuthExtensions
     {
         public static string? GetConfigurationValue(this WebApplicationBuilder builder, string key)
         {
-            var configurationValue = builder.Configuration[key] ?? 
+            var configurationValue = builder.Configuration[key] ??
                 throw new InvalidOperationException($"{key} not found");
             return configurationValue;
         }
