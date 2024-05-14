@@ -38,6 +38,16 @@
             <FluentValidationMessage For="@( () => CreateVideoPassiveIncomeStrategyPrompt.BaseText)"></FluentValidationMessage>
         </div>
     }
+    @if (this.CreateVideoLinkedInArticlePrompt != null)
+    {
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                @CreateVideoLinkedInArticlePrompt.PromptName
+            </FluentLabel>
+            <FluentTextArea Rows="10" style="width:100%;" @bind-Value="this.CreateVideoLinkedInArticlePrompt.BaseText"></FluentTextArea>
+            <FluentValidationMessage For="@( () => CreateVideoLinkedInArticlePrompt.BaseText)"></FluentValidationMessage>
+        </div>
+    }
     <div>
         <FluentButton Type="ButtonType.Submit"
                       IconStart="@(new Icons.Regular.Size16.ArrowClockwise())"
@@ -57,6 +67,9 @@
 
     private PromptModel? CreateVideoPassiveIncomeStrategyPrompt =>
     allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateVideoPassiveIncomeStrategy);
+
+    private PromptModel? CreateVideoLinkedInArticlePrompt =>
+    allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateVideoLinkedInArticle);
 
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
@@ -80,6 +93,13 @@
                 this.allPrompts.Add(new PromptModel()
                     {
                         PromptName = Constants.PromptsNames.CreateVideoPassiveIncomeStrategy
+                    });
+            }
+            if (this.CreateVideoLinkedInArticlePrompt is null)
+            {
+                this.allPrompts.Add(new PromptModel()
+                    {
+                        PromptName = Constants.PromptsNames.CreateVideoLinkedInArticle
                     });
             }
         }

@@ -6,6 +6,7 @@
         {
             public const string CreateYouTubeThumbnail = "YouTubeThumbnail";
             public const string CreateVideoPassiveIncomeStrategy = nameof(CreateVideoPassiveIncomeStrategy);
+            public const string CreateVideoLinkedInArticle = nameof(CreateVideoLinkedInArticle);
         }
         public static class Routes
         {

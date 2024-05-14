@@ -15,6 +15,8 @@ public class OpenAIService(
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
     ILogger<OpenAIService> logger)
 {
+
+    private const string TextGenerationModel = "gpt-4o";
     public async Task<ChatCompletionResponseModel?> GenerateChatCompletionAsync(
         string systemMessage, string prompt, CancellationToken cancellationToken)
     {
@@ -25,7 +27,7 @@ public class OpenAIService(
         var requestUrl = openAIServiceConfiguration.ChatCompletionsUrl;
         ChatCompletionRequestModel request = new()
         {
-            model = "gpt-4-1106-preview",
+            model = TextGenerationModel,
             messages =
             [
                 new()
