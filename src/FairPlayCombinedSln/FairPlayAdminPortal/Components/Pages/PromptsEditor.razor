@@ -38,6 +38,56 @@
             <FluentValidationMessage For="@( () => CreateVideoPassiveIncomeStrategyPrompt.BaseText)"></FluentValidationMessage>
         </div>
     }
+    @if (this.CreateVideoLinkedInArticlePrompt != null)
+    {
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                @CreateVideoLinkedInArticlePrompt.PromptName
+            </FluentLabel>
+            <FluentTextArea Rows="10" style="width:100%;" @bind-Value="this.CreateVideoLinkedInArticlePrompt.BaseText"></FluentTextArea>
+            <FluentValidationMessage For="@( () => CreateVideoLinkedInArticlePrompt.BaseText)"></FluentValidationMessage>
+        </div>
+    }
+    @if (this.CreateVideoDailyPostsPrompt != null)
+    {
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                @CreateVideoDailyPostsPrompt.PromptName
+            </FluentLabel>
+            <FluentTextArea Rows="10" style="width:100%;" @bind-Value="this.CreateVideoDailyPostsPrompt.BaseText"></FluentTextArea>
+            <FluentValidationMessage For="@( () => CreateVideoDailyPostsPrompt.BaseText)"></FluentValidationMessage>
+        </div>
+    }
+    @if (this.CreateDigitalMarketingIdeasPrompt != null)
+    {
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                @CreateDigitalMarketingIdeasPrompt.PromptName
+            </FluentLabel>
+            <FluentTextArea Rows="10" style="width:100%;" @bind-Value="this.CreateDigitalMarketingIdeasPrompt.BaseText"></FluentTextArea>
+            <FluentValidationMessage For="@( () => CreateDigitalMarketingIdeasPrompt.BaseText)"></FluentValidationMessage>
+        </div>
+    }
+    @if (this.CreateVideoInfographicPrompt != null)
+    {
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                @CreateVideoInfographicPrompt.PromptName
+            </FluentLabel>
+            <FluentTextArea Rows="10" style="width:100%;" @bind-Value="this.CreateVideoInfographicPrompt.BaseText"></FluentTextArea>
+            <FluentValidationMessage For="@( () => CreateVideoInfographicPrompt.BaseText)"></FluentValidationMessage>
+        </div>
+    }
+    @if (this.CreateNewVideoRecommendationIdeaPrompt != null)
+    {
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                @CreateNewVideoRecommendationIdeaPrompt.PromptName
+            </FluentLabel>
+            <FluentTextArea Rows="10" style="width:100%;" @bind-Value="this.CreateNewVideoRecommendationIdeaPrompt.BaseText"></FluentTextArea>
+            <FluentValidationMessage For="@( () => CreateNewVideoRecommendationIdeaPrompt.BaseText)"></FluentValidationMessage>
+        </div>
+    }
     <div>
         <FluentButton Type="ButtonType.Submit"
                       IconStart="@(new Icons.Regular.Size16.ArrowClockwise())"
@@ -57,6 +107,21 @@
 
     private PromptModel? CreateVideoPassiveIncomeStrategyPrompt =>
     allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateVideoPassiveIncomeStrategy);
+
+    private PromptModel? CreateVideoLinkedInArticlePrompt =>
+    allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateVideoLinkedInArticle);
+
+    private PromptModel? CreateVideoDailyPostsPrompt =>
+    allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateVideoDailyPosts);
+
+    private PromptModel? CreateDigitalMarketingIdeasPrompt =>
+    allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateDigitalMarketingIdeas);
+
+    private PromptModel? CreateVideoInfographicPrompt =>
+    allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateVideoInfographic);
+
+    private PromptModel? CreateNewVideoRecommendationIdeaPrompt =>
+    allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateNewVideoRecommendationIdea);
 
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
@@ -80,6 +145,41 @@
                 this.allPrompts.Add(new PromptModel()
                     {
                         PromptName = Constants.PromptsNames.CreateVideoPassiveIncomeStrategy
+                    });
+            }
+            if (this.CreateVideoLinkedInArticlePrompt is null)
+            {
+                this.allPrompts.Add(new PromptModel()
+                    {
+                        PromptName = Constants.PromptsNames.CreateVideoLinkedInArticle
+                    });
+            }
+            if (this.CreateVideoDailyPostsPrompt is null)
+            {
+                this.allPrompts.Add(new PromptModel()
+                    {
+                        PromptName = Constants.PromptsNames.CreateVideoDailyPosts
+                    });
+            }
+            if (this.CreateDigitalMarketingIdeasPrompt is null)
+            {
+                this.allPrompts.Add(new PromptModel()
+                    {
+                        PromptName = Constants.PromptsNames.CreateDigitalMarketingIdeas
+                    });
+            }
+            if (this.CreateVideoInfographicPrompt is null)
+            {
+                this.allPrompts.Add(new PromptModel()
+                    {
+                        PromptName = Constants.PromptsNames.CreateVideoInfographic
+                    });
+            }
+            if (this.CreateNewVideoRecommendationIdeaPrompt is null)
+            {
+                this.allPrompts.Add(new PromptModel()
+                    {
+                        PromptName = Constants.PromptsNames.CreateNewVideoRecommendationIdea
                     });
             }
         }

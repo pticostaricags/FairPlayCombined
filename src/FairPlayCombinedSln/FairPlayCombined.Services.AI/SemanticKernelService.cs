@@ -8,7 +8,7 @@ namespace FairPlayCombined.Services.AI
     public class SemanticKernelService(AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration,
         OpenAIServiceConfiguration openAIServiceConfiguration)
     {
-        private const string OPENAI_MODEL = "gpt-4-0125-preview";
+        private const string OPENAI_MODEL = "gpt-4o";
 
         public async Task<FunctionResult?> TranslateTextAsync(string text, string fromLanguage, string toLanguage,
             CancellationToken cancellationToken)

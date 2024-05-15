@@ -16,7 +16,7 @@
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
 @inject VideoDigitalMarketingPlanService videoDigitalMarketingPlanService
-
+@inject PromptGeneratorService promptGeneratorService
 <PageTitle>
     Video Digital Marketing Strategy
 </PageTitle>
@@ -85,9 +85,12 @@
         var englishCaptions = await this.videoCaptionsService
             .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
             language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        var systemMessage = "You will take the role of an expert in Digital Marketing. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to use the content to grow my audience. You will give me a 1 month Digital Marketing plan to repurpose the video content into LinkedIn. I post 3 times per day. Your response must be in HTML 5";
+        var promptModel = await this.promptGeneratorService
+            .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateDigitalMarketingIdeas,
+                this.cancellationTokenSource.Token);
         var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
+        var result = await this.openAIService.GenerateChatCompletionAsync(promptModel!.BaseText!, 
+            userMessage, this.cancellationTokenSource.Token);
         if (result != null)
         {
             this.DigitalMarketingIdeas = result!.choices![0]!.message!.content!;

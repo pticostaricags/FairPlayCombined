@@ -6,6 +6,11 @@
         {
             public const string CreateYouTubeThumbnail = "YouTubeThumbnail";
             public const string CreateVideoPassiveIncomeStrategy = nameof(CreateVideoPassiveIncomeStrategy);
+            public const string CreateVideoLinkedInArticle = nameof(CreateVideoLinkedInArticle);
+            public const string CreateVideoDailyPosts = nameof(CreateVideoDailyPosts);
+            public const string CreateDigitalMarketingIdeas = nameof(CreateDigitalMarketingIdeas);
+            public const string CreateVideoInfographic = nameof(CreateVideoInfographic);
+            public const string CreateNewVideoRecommendationIdea = nameof(CreateNewVideoRecommendationIdea);
         }
         public static class Routes
         {

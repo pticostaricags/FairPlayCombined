@@ -16,6 +16,8 @@
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
 @inject VideoDigitalMarketingPlanService videoDigitalMarketingPlanService
+@inject PromptGeneratorService promptGeneratorService
+@inject IToastService toastService
 
 <PageTitle>
     Video Article
@@ -56,19 +58,30 @@
 
     private async Task CreateLinkedInArticleAsync()
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        var englishCaptions = await this.videoCaptionsService
-        .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-        language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        var systemMessage = "You will take the role of an expert in Digital Marketing, monetization and passive income. I will give you the information for one of my videos. Your job is to give me a draft article for my Linkedin newsletter, do not reduce the response if is lengthy, article must have at least 1000 words. Your response must be in HTML 5.";
-        var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
-        this.LinkedInArticleDraftText = result!.choices![0]!.message!.content!;
-        this.IsBusy = false;
-        StateHasChanged();
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
+            cancellationToken: this.cancellationTokenSource.Token);
+            var englishCaptions = await this.videoCaptionsService
+            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
+            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
+            var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
+                Constants.PromptsNames.CreateVideoLinkedInArticle, cancellationToken: this.cancellationTokenSource.Token);
+            var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+            var result = await this.openAIService.GenerateChatCompletionAsync(promptInfo!.BaseText!, userMessage, this.cancellationTokenSource.Token);
+            this.LinkedInArticleDraftText = result!.choices![0]!.message!.content!;
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
     }
 
     void IDisposable.Dispose()
