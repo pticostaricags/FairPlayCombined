@@ -16,6 +16,8 @@
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
 @inject VideoInfoService videoInfoService
+@inject PromptGeneratorService promptGeneratorService
+@inject IToastService toastService
 
 <PageTitle>
     New Video Recommendation
@@ -61,16 +63,25 @@
 
     private async Task LoadDataAsync()
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        await this.GenerateNewVideoRecommendationIdeaAsync();
-        this.IsBusy = false;
-        StateHasChanged();
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            await this.GenerateNewVideoRecommendationIdeaAsync();
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
     }
 
     private async Task GenerateNewVideoRecommendationIdeaAsync()
     {
-        var systemMessage = "You will take the role of an expert in Digital Marketing and YouTube SEO. I will give you the titles for 5 of my videos. Your job is to give me the title, description, and script for a new video mixing the content and ideas of my previous videos. The new video must have content from all of my previous videos. Your response must be in HTML 5.";
+        var promptModel = await this.promptGeneratorService
+            .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateNewVideoRecommendationIdea,
+                this.cancellationTokenSource.Token);
         var videos = await this.videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(new PaginationRequest()
             {
                 PageSize = 5,
@@ -89,7 +100,8 @@
 
         var titles = videos!.Items!.Select(p => $"* Title: {p.Name}. Keywords: {String.Join(",", p.VideoKeywords!)}. Topics: {String.Join(",",p.VideoTopics!)}. Video Captions: {String.Join(",",p.EnglishCaptions)}\r\n");
         var userMessage = $"Video Titles: {String.Join(".", titles)}.";
-        var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
+        var result = await this.openAIService.GenerateChatCompletionAsync(promptModel!.BaseText!, 
+            userMessage, this.cancellationTokenSource.Token);
         if (result != null)
         {
             this.NewVideoRecommendationIdea = result!.choices![0]!.message!.content!;
