@@ -17,12 +17,55 @@ public class OpenAIService(
 {
 
     private const string TextGenerationModel = "gpt-4o";
+
+    public async Task<AnalyzeImageResponseModel?> AnalyzeImageAsync(
+        string imageBase64String, string prompt, CancellationToken cancellationToken)
+    {
+        AnalyzeImageRequestModel analyzeImageRequestModel = new()
+        {
+            model = TextGenerationModel,
+            max_tokens = 4000,
+            messages =
+            [
+                new Message()
+                {
+                    role="user",
+                    content=new Content[]
+                    {
+                        new()
+                        {
+                            type="text",
+                            text = prompt!,
+                        },
+                        new()
+                        {
+                            type="image_url",
+                            image_url = new Image_Url()
+                            {
+                                url = imageBase64String
+                            }
+                        }
+                    }
+                }
+             ]
+        };
+        var requestUrl = openAIServiceConfiguration.ChatCompletionsUrl;
+        var response = await openAIAuthorizedHttpClient
+            .PostAsJsonAsync(requestUrl, analyzeImageRequestModel,
+            options: new()
+            {
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+            }, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<AnalyzeImageResponseModel>();
+        return result!;
+    }
     public async Task<ChatCompletionResponseModel?> GenerateChatCompletionAsync(
         string systemMessage, string prompt, CancellationToken cancellationToken)
     {
         Guid callGuid = Guid.NewGuid();
         var stopWatch = Stopwatch.StartNew();
-        logger.LogInformation("Start of method: {MethodName}. CallId: {CallGuid}", 
+        logger.LogInformation("Start of method: {MethodName}. CallId: {CallGuid}",
             nameof(GenerateChatCompletionAsync), callGuid);
         var requestUrl = openAIServiceConfiguration.ChatCompletionsUrl;
         ChatCompletionRequestModel request = new()
