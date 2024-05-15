@@ -336,7 +336,7 @@
         @if (!String.IsNullOrWhiteSpace(this.ProfileImageBase64))
         {
             <div>
-                <img src="@ProfileImageBase64" @ref="ProfileImagePhotoElement" />
+                <img src="@ProfileImageBase64" @ref="ProfileImagePhotoElement" style="max-height:300px;" />
                 <FluentButton Type="ButtonType.Button"
                               OnClick="OnAnalyzePhotoClickedAsync">Analyze Photo</FluentButton>
             </div>
