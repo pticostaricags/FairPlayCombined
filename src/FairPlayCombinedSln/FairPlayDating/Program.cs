@@ -86,7 +86,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAzureOpenAIService();
-
+builder.AddOpenAI();
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddTransient<ICultureService, CultureService>();
@@ -102,6 +102,7 @@ builder.Services.AddTransient<PhotoService>();
 builder.Services.AddTransient<MyMatchesService>();
 builder.Services.AddTransient<GeoNamesService>();
 builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();
+builder.Services.AddTransient<PromptGeneratorService>();
 builder.AddAzureAIContentSafety();
 var app = builder.Build();
 

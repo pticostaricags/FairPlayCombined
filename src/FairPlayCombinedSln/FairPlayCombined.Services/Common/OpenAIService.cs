@@ -18,14 +18,13 @@ public class OpenAIService(
 
     private const string TextGenerationModel = "gpt-4o";
 
-    public async Task<AnalyzeImageResponseModel?> AnalyzeImageAsync(byte[] imageBytes,
-        string prompt, CancellationToken cancellationToken)
+    public async Task<AnalyzeImageResponseModel?> AnalyzeImageAsync(
+        string imageBase64String, string prompt, CancellationToken cancellationToken)
     {
-        var imageBase64String = Convert.ToBase64String(imageBytes);
         AnalyzeImageRequestModel analyzeImageRequestModel = new()
         {
             model = TextGenerationModel,
-            max_tokens = 300,
+            max_tokens = 4000,
             messages =
             [
                 new Message()
@@ -43,7 +42,7 @@ public class OpenAIService(
                             type="image_url",
                             image_url = new Image_Url()
                             {
-                                url = $"data:image/jpeg;base64,{imageBase64String}"
+                                url = imageBase64String
                             }
                         }
                     }

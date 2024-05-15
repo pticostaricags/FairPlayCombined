@@ -12,6 +12,7 @@
 @using FairPlayCombined.Models.FairPlayDating.Religion
 @using FairPlayCombined.Models.FairPlayDating.TattooStatus
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
+@using FairPlayCombined.Models.OpenAI
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
@@ -35,6 +36,8 @@
 @inject AzureContentSafetyService azureContentSafetyService
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+@inject PromptGeneratorService promptGeneratorService
+@inject OpenAIService openAIService
 
 <h3>MyUserProfile</h3>
 
@@ -333,7 +336,9 @@
         @if (!String.IsNullOrWhiteSpace(this.ProfileImageBase64))
         {
             <div>
-                <img src="@ProfileImageBase64" @ref="ProfileImagePhotoElement" />
+                <img src="@ProfileImageBase64" @ref="ProfileImagePhotoElement" style="max-height:300px;" />
+                <FluentButton Type="ButtonType.Button"
+                              OnClick="OnAnalyzePhotoClickedAsync">Analyze Photo</FluentButton>
             </div>
         }
     </div>
@@ -344,6 +349,23 @@
         </div>
     }
 </FluentEditForm>
+<FluentDialog @ref="photoAnalysisDialog"
+              @bind-Hidden="@showPhotoAnalysisDialog"
+              Modal="true" TrapFocus="true"
+              PreventScroll="false">
+    <FluentDialogHeader Visible="false"></FluentDialogHeader>
+    @if (this.analyzeImageResponseModel != null)
+    {
+        <div style="max-height:300px; overflow-y:auto;">
+            @((MarkupString)this.analyzeImageResponseModel.choices![0].message!.content!)
+        </div>
+        <div>
+            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                          OnClick="ResetPhotoAnalysisDialog">Close</FluentButton>
+        </div>
+    }
+</FluentDialog>
+
 
 @code {
     private ElementReference ProfileImagePhotoElement { get; set; }
@@ -367,6 +389,9 @@
     private bool IsAllDataLoad { get; set; }
     private FluentEditForm? EditFormInstance { get; set; }
     private string? GeoLocationInfoText { get; set; }
+    private FluentDialog? photoAnalysisDialog { get; set; }
+    private bool showPhotoAnalysisDialog { get; set; }
+    private AnalyzeImageResponseModel? analyzeImageResponseModel { get; set; }
 
     protected override void OnInitialized()
     {
@@ -428,6 +453,8 @@
             StateHasChanged();
             try
             {
+
+                this.photoAnalysisDialog!.Hide();
                 var geoLocation = await
                 this.geolocationService.GetCurrentPositionAsync();
                 if (geoLocation != null)
@@ -444,7 +471,7 @@
                     var geoData = await this.geoNamesService.GetGeoLocationDataAsync(
                         geoLocation.Latitude, geoLocation.Longitude, this.cancellationTokenSource.Token
                     );
-                    this.GeoLocationInfoText = 
+                    this.GeoLocationInfoText =
                     $"{geoData!.nearest!.region}, {geoData.nearest.city}, {geoData.nearest.state}";
                 }
             }
@@ -452,6 +479,36 @@
             {
                 this.toastService.ShowError(ex.Message);
             }
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ResetPhotoAnalysisDialog()
+    {
+        this.photoAnalysisDialog!.Hide();
+    }
+
+    private async Task OnAnalyzePhotoClickedAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var imageBase64String = this.GetProfileImageBase64();
+            var promptInfo = await promptGeneratorService.GetPromptCompleteInfoAsync(
+                Constants.PromptsNames.AnalyzeDatingProfilePhoto, this.cancellationTokenSource.Token);
+            this.analyzeImageResponseModel = await this.openAIService.AnalyzeImageAsync(
+                imageBase64String, promptInfo!.BaseText!,
+            this.cancellationTokenSource.Token);
+            this.photoAnalysisDialog!.Show();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
             this.IsBusy = false;
             StateHasChanged();
         }
@@ -553,7 +610,7 @@
             string baseUrl = this.navigationManager.BaseUri;
             string requestUrl = $"{baseUrl}api/photoimage/{this.createUserProfileModel.ProfilePhotoId}";
             var bytes = httpClient.GetByteArrayAsync(requestUrl).Result;
-            string result = $"data:image/png;base64, {Convert.ToBase64String(bytes)}";
+            string result = $"data:image/jpg;base64, {Convert.ToBase64String(bytes)}";
             return result;
         }
         catch (Exception ex)
