@@ -649,9 +649,19 @@
                     prompt.AppendLine(this.createUserProfileModel.About);
                 }
                 prompt.AppendLine($"Biological Gender: {this.genders!.Single(p => p.GenderId == this.createUserProfileModel.BiologicalGenderId).Name}");
+                prompt.AppendLine($"Religion: {this.religions!.Single(p => p.ReligionId == this.createUserProfileModel.ReligionId).Name}");
+                prompt.AppendLine($"Date Objective: {this.dateObjectives!.Single(p => p.DateObjectiveId == this.createUserProfileModel.CurrentDateObjectiveId).Name}");
+                prompt.AppendLine($"Eyes Color: {this.eyesColors!.Single(p => p.EyesColorId == this.createUserProfileModel.EyesColorId).Name}");
+                prompt.AppendLine($"Hair Color: {this.hairColors!.Single(p => p.HairColorId == this.createUserProfileModel.HairColorId).Name}");
+                prompt.AppendLine($"Kids Status: {this.kidStatuses!.Single(p => p.KidStatusId == this.createUserProfileModel.KidStatusId).Name}");
+                prompt.AppendLine($"Tattoo Status: {this.tattooStatuses!.Single(p => p.TattooStatusId == this.createUserProfileModel.TattooStatusId).Name}");
                 prompt.AppendLine("**END OF MY INFORMATION**");
                 prompt.AppendLine("**START OF MY PREFERENCES IN A PARTNER**");
                 prompt.AppendLine($"Eyes Color: {this.eyesColors!.Single(p => p.EyesColorId == this.createUserProfileModel.PreferredEyesColorId).Name}");
+                prompt.AppendLine($"Hair Color: {this.hairColors!.Single(p => p.HairColorId == this.createUserProfileModel.PreferredHairColorId).Name}");
+                prompt.AppendLine($"Kids Status: {this.kidStatuses!.Single(p => p.KidStatusId == this.createUserProfileModel.PreferredKidStatusId).Name}");
+                prompt.AppendLine($"Religion: {this.religions!.Single(p => p.ReligionId == this.createUserProfileModel.PreferredReligionId).Name}");
+                prompt.AppendLine($"Religion: {this.tattooStatuses!.Single(p => p.TattooStatusId == this.createUserProfileModel.PreferredTattooStatusId).Name}");
                 prompt.AppendLine("**END OF MY PREFERENCES IN A PARTNER**");
                 var result = await this.openAIService
                 .GenerateChatCompletionAsync(systemMessage, prompt.ToString(),
