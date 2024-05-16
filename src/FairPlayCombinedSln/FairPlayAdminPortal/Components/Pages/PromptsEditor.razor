@@ -98,6 +98,16 @@
             <FluentValidationMessage For="@( () => AnalyzeDatingProfilePhotoPrompt.BaseText)"></FluentValidationMessage>
         </div>
     }
+    @if (this.CreateDatingProfileAboutMePrompt != null)
+    {
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                @CreateDatingProfileAboutMePrompt.PromptName
+            </FluentLabel>
+            <FluentTextArea Rows="10" style="width:100%;" @bind-Value="this.CreateDatingProfileAboutMePrompt.BaseText"></FluentTextArea>
+            <FluentValidationMessage For="@( () => CreateDatingProfileAboutMePrompt.BaseText)"></FluentValidationMessage>
+        </div>
+    }
     <div>
         <FluentButton Type="ButtonType.Submit"
                       IconStart="@(new Icons.Regular.Size16.ArrowClockwise())"
@@ -135,6 +145,9 @@
 
     private PromptModel? AnalyzeDatingProfilePhotoPrompt =>
     allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.AnalyzeDatingProfilePhoto);
+
+    private PromptModel? CreateDatingProfileAboutMePrompt =>
+    allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.CreateDatingProfileAboutMe);
 
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
@@ -200,6 +213,13 @@
                 this.allPrompts.Add(new PromptModel()
                     {
                         PromptName = Constants.PromptsNames.AnalyzeDatingProfilePhoto
+                    });
+            }
+            if (this.CreateDatingProfileAboutMePrompt is null)
+            {
+                this.allPrompts.Add(new PromptModel()
+                    {
+                        PromptName = Constants.PromptsNames.CreateDatingProfileAboutMe
                     });
             }
         }

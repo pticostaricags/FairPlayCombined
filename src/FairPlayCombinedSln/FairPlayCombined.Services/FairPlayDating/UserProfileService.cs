@@ -57,7 +57,8 @@ namespace FairPlayCombined.Services.FairPlayDating
                     ProfilePhotoId = p.ProfilePhotoId,
                     ReligionId = p.ReligionId,
                     TattooStatusId = p.TattooStatusId,
-                    UserProfileId = p.UserProfileId
+                    UserProfileId = p.UserProfileId,
+                    MainProfessionId = p.MainProfessionId
                 })
                 .SingleOrDefaultAsync(cancellationToken);
             return result;

@@ -66,6 +66,11 @@ namespace FairPlayDating.HealthChecks
                 {
                     return HealthCheckResult.Unhealthy(description: "Tattoo statuses missing");
                 }
+                var professions = await dbContext.Profession.ToArrayAsync(cancellationToken);
+                if (professions?.Length == 0)
+                {
+                    return HealthCheckResult.Unhealthy(description: "Professions missing");
+                }
                 Dictionary<string, object> data = new()
                 {
                     {nameof(roles), roles! },
@@ -77,7 +82,8 @@ namespace FairPlayDating.HealthChecks
                     {nameof(hairColors), hairColors! },
                     {nameof(kidsStatuses), kidsStatuses! },
                     {nameof(religions), religions! },
-                    {nameof(tatooStatuses), tatooStatuses! }
+                    {nameof(tatooStatuses), tatooStatuses! },
+                    {nameof(professions), professions!}
                 };
                 return HealthCheckResult.Healthy(data: data.AsReadOnly());
             }

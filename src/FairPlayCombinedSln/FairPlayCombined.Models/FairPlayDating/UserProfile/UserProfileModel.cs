@@ -61,5 +61,6 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         public string? TattooStatusText { get; set; }
         public NetTopologySuite.Geometries.Point? CurrentGeoLocation { get; set; }
         public double Distance { get; set; }
+        public int MainProfessionId { get; set; }
     }
 }

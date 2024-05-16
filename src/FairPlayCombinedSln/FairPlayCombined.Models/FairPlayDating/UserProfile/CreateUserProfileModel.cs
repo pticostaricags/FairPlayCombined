@@ -41,6 +41,8 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         public int TattooStatusId { get; set; }
         [DeniedValues(0)]
         public int PreferredTattooStatusId { get; set; }
+        [DeniedValues(0)]
+        public int MainProfessionId { get; set; }
         public DateTimeOffset BirthDate { get; set; }
         [Required]
         public NetTopologySuite.Geometries.Point? CurrentGeoLocation { get; set; }

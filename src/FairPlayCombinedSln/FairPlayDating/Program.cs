@@ -42,10 +42,10 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
     .AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("FairPlayCombinedDb") ??
@@ -85,25 +85,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAzureOpenAIService();
-builder.AddOpenAI();
-builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-builder.Services.AddTransient<ICultureService, CultureService>();
-builder.Services.AddTransient<GenderService>();
-builder.Services.AddTransient<DateObjectiveService>();
-builder.Services.AddTransient<EyesColorService>();
-builder.Services.AddTransient<HairColorService>();
-builder.Services.AddTransient<KidStatusService>();
-builder.Services.AddTransient<ReligionService>();
-builder.Services.AddTransient<TattooStatusService>();
-builder.Services.AddTransient<UserProfileService>();
-builder.Services.AddTransient<PhotoService>();
-builder.Services.AddTransient<MyMatchesService>();
-builder.Services.AddTransient<GeoNamesService>();
-builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();
-builder.Services.AddTransient<PromptGeneratorService>();
-builder.AddAzureAIContentSafety();
+AddPlatformServices(builder);
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -161,3 +143,26 @@ app.UseSwaggerUI();
 
 app.Run();
 
+static void AddPlatformServices(WebApplicationBuilder builder)
+{
+    builder.Services.AddAzureOpenAIService();
+    builder.AddOpenAI();
+    builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
+    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+    builder.Services.AddTransient<ICultureService, CultureService>();
+    builder.Services.AddTransient<GenderService>();
+    builder.Services.AddTransient<DateObjectiveService>();
+    builder.Services.AddTransient<EyesColorService>();
+    builder.Services.AddTransient<HairColorService>();
+    builder.Services.AddTransient<KidStatusService>();
+    builder.Services.AddTransient<ReligionService>();
+    builder.Services.AddTransient<TattooStatusService>();
+    builder.Services.AddTransient<UserProfileService>();
+    builder.Services.AddTransient<PhotoService>();
+    builder.Services.AddTransient<MyMatchesService>();
+    builder.Services.AddTransient<GeoNamesService>();
+    builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();
+    builder.Services.AddTransient<PromptGeneratorService>();
+    builder.Services.AddTransient<ProfessionService>();
+    builder.AddAzureAIContentSafety();
+}

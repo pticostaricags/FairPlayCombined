@@ -20,6 +20,7 @@
     [PreferredTattooStatusId] INT NOT NULL, 
     [BirthDate] DATETIMEOFFSET NOT NULL, 
     [CurrentGeoLocation] [sys].[geography] NOT NULL, 
+    [MainProfessionId] INT NOT NULL, 
     CONSTRAINT [FK_UserProfile_HairColor] FOREIGN KEY ([HairColorId]) REFERENCES [FairPlayDating].[HairColor]([HairColorId]),
 	CONSTRAINT [FK_UserProfile_PreferredHairColor] FOREIGN KEY ([PreferredHairColorId]) REFERENCES [FairPlayDating].[HairColor]([HairColorId]),
     CONSTRAINT [FK_UserProfile_EyesColor] FOREIGN KEY ([EyesColorId]) REFERENCES [FairPlayDating].[EyesColor]([EyesColorId]),
@@ -32,7 +33,8 @@
     CONSTRAINT [FK_UserProfile_KidStatus] FOREIGN KEY ([KidStatusId]) REFERENCES [FairPlayDating].[KidStatus]([KidStatusId]),
     CONSTRAINT [FK_UserProfile_PreferredKidStatus] FOREIGN KEY ([PreferredKidStatusId]) REFERENCES [FairPlayDating].[KidStatus]([KidStatusId]), 
     CONSTRAINT [FK_UserProfile_TattooStatus] FOREIGN KEY ([TattooStatusId]) REFERENCES [FairPlayDating].[TattooStatus]([TattooStatusId]), 
-    CONSTRAINT [FK_UserProfile_PreferredTattooStatus] FOREIGN KEY ([PreferredTattooStatusId]) REFERENCES [FairPlayDating].[TattooStatus]([TattooStatusId])
+    CONSTRAINT [FK_UserProfile_PreferredTattooStatus] FOREIGN KEY ([PreferredTattooStatusId]) REFERENCES [FairPlayDating].[TattooStatus]([TattooStatusId]), 
+    CONSTRAINT [FK_UserProfile_Profession] FOREIGN KEY ([MainProfessionId]) REFERENCES [FairPlayDating].[Profession]([ProfessionId])
 )
 
 GO

@@ -9,6 +9,7 @@
 @using FairPlayCombined.Models.FairPlayDating.Gender
 @using FairPlayCombined.Models.FairPlayDating.HairColor
 @using FairPlayCombined.Models.FairPlayDating.KidStatus
+@using FairPlayCombined.Models.FairPlayDating.Profession
 @using FairPlayCombined.Models.FairPlayDating.Religion
 @using FairPlayCombined.Models.FairPlayDating.TattooStatus
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
@@ -28,6 +29,7 @@
 @inject KidStatusService kidStatusService
 @inject ReligionService religionService
 @inject TattooStatusService tattooStatusService
+@inject ProfessionService professionService
 @inject IUserProviderService userProviderService
 @inject UserProfileService userProfileService
 @inject IToastService toastService
@@ -297,6 +299,25 @@
                         </FluentSelect>
                     </div>
                 </FluentWizardStep>
+                <FluentWizardStep Label="Profession">
+                    <div>
+                        <FluentLabel Typo="Typography.Body">Main Profession</FluentLabel>
+                        <FluentSelect TOption="string"
+                                      Value="@this.createUserProfileModel.MainProfessionId.ToString()"
+                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.MainProfessionId = Convert.ToInt32(selectedValue))">
+                            <FluentOption Value="0">Select Profession</FluentOption>
+                            @if (this.professions != null)
+                            {
+                                foreach (var singleProfession in this.professions)
+                                {
+                                    <FluentOption Value="@singleProfession.ProfessionId.ToString()">
+                                        @singleProfession.Name
+                                    </FluentOption>
+                                }
+                            }
+                        </FluentSelect>
+                    </div>
+                </FluentWizardStep>
                 <FluentWizardStep Label="Photo">
                     <div>
                         <FluentLabel Typo="Typography.Body">Photo</FluentLabel>
@@ -390,6 +411,7 @@
     private KidStatusModel[]? kidStatuses;
     private ReligionModel[]? religions;
     private TattooStatusModel[]? tattooStatuses;
+    private ProfessionModel[]? professions;
     private bool IsBusy { get; set; }
     private bool IsAllDataLoad { get; set; }
     private FluentEditForm? EditFormInstance { get; set; }
@@ -430,7 +452,8 @@
                         PreferredTattooStatusId = existentUserProfile.PreferredTattooStatusId,
                         ProfilePhotoId = existentUserProfile.ProfilePhotoId,
                         ReligionId = existentUserProfile.ReligionId,
-                        TattooStatusId = existentUserProfile.TattooStatusId
+                        TattooStatusId = existentUserProfile.TattooStatusId,
+                        MainProfessionId = existentUserProfile.MainProfessionId
                     };
                 this.ProfileImageBase64 = GetProfileImageBase64();
             }
@@ -441,6 +464,7 @@
             this.kidStatuses = await this.kidStatusService.GetAllKidStatusAsync(cancellationTokenSource.Token);
             this.religions = await this.religionService.GetAllReligionAsync(cancellationTokenSource.Token);
             this.tattooStatuses = await this.tattooStatusService.GetAllTattooStatusAsync(cancellationTokenSource.Token);
+            this.professions = await this.professionService.GetAllProfessionAsync(cancellationTokenSource.Token);
             this.IsAllDataLoad = true;
         }
         catch (Exception ex)
@@ -641,13 +665,16 @@
             StateHasChanged();
             if (this.EditFormInstance!.EditContext!.Validate())
             {
-                string systemMessage = "You will take the role of an expert in Dating apps and Match making. Your job is to generete an optimize text for the 'About me' section based on the information I'll provide. Your response must be in plain text, and contain only the 'About me' data, avoid adding any part of your system replies.";
+                var promptInfo = await this.promptGeneratorService
+                .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateDatingProfileAboutMe, 
+                    this.cancellationTokenSource.Token);
                 StringBuilder prompt = new();
                 prompt.AppendLine("**START OF MY INFORMATION**");
                 if (!string.IsNullOrWhiteSpace(this.createUserProfileModel.About))
                 {
                     prompt.AppendLine(this.createUserProfileModel.About);
                 }
+                prompt.AppendLine($"Main Profession: {this.professions!.Single(p => p.ProfessionId == this.createUserProfileModel.MainProfessionId).Name}");
                 prompt.AppendLine($"Biological Gender: {this.genders!.Single(p => p.GenderId == this.createUserProfileModel.BiologicalGenderId).Name}");
                 prompt.AppendLine($"Religion: {this.religions!.Single(p => p.ReligionId == this.createUserProfileModel.ReligionId).Name}");
                 prompt.AppendLine($"Date Objective: {this.dateObjectives!.Single(p => p.DateObjectiveId == this.createUserProfileModel.CurrentDateObjectiveId).Name}");
@@ -664,7 +691,7 @@
                 prompt.AppendLine($"Religion: {this.tattooStatuses!.Single(p => p.TattooStatusId == this.createUserProfileModel.PreferredTattooStatusId).Name}");
                 prompt.AppendLine("**END OF MY PREFERENCES IN A PARTNER**");
                 var result = await this.openAIService
-                .GenerateChatCompletionAsync(systemMessage, prompt.ToString(),
+                .GenerateChatCompletionAsync(promptInfo!.BaseText!, prompt.ToString(),
                 this.cancellationTokenSource.Token);
                 this.createUserProfileModel.About = result!.choices![0].message!.content;
             }
