@@ -16,6 +16,7 @@
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
+@using System.Text
 
 @attribute [Authorize]
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
@@ -74,7 +75,11 @@
                 <FluentWizardStep Label="About Me">
                     <div>
                         <FluentLabel Typo="Typography.Body">About</FluentLabel>
-                        <FluentTextArea @bind-Value="this.createUserProfileModel.About"></FluentTextArea>
+                        <FluentTextArea @bind-Value="this.createUserProfileModel.About"
+                                        style="width:100%;"
+                                        Rows="10"
+                                        Placeholder="✨ Hello! I'm passionate about my career in [broad industry or job function] and love unwinding through [hobbies]. On weekends, I enjoy [preferred sports] and am a proud [dog/cat/both/neither] person. I dedicate time to causes like [general social causes] and value kindness and open-mindedness in others. What inspires you daily? Share your passions and what you’re looking for in this adventure! ✨"></FluentTextArea>
+                        <FluentButton Type="ButtonType.Button" OnClick="OnGenerateAboutMeClickedAsync">Generate with AI</FluentButton>
                     </div>
                 </FluentWizardStep>
                 <FluentWizardStep Label="Birth Date">
@@ -625,6 +630,43 @@
         if (this.EditFormInstance!.EditContext!.Validate())
         {
             await EditFormInstance.OnValidSubmit.InvokeAsync();
+        }
+    }
+
+    private async Task OnGenerateAboutMeClickedAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            if (this.EditFormInstance!.EditContext!.Validate())
+            {
+                string systemMessage = "You will take the role of an expert in Dating apps and Match making. Your job is to generete an optimize text for the 'About me' section based on the information I'll provide. Your response must be in plain text, and contain only the 'About me' data, avoid adding any part of your system replies.";
+                StringBuilder prompt = new();
+                prompt.AppendLine("**START OF MY INFORMATION**");
+                if (!string.IsNullOrWhiteSpace(this.createUserProfileModel.About))
+                {
+                    prompt.AppendLine(this.createUserProfileModel.About);
+                }
+                prompt.AppendLine($"Biological Gender: {this.genders!.Single(p => p.GenderId == this.createUserProfileModel.BiologicalGenderId).Name}");
+                prompt.AppendLine("**END OF MY INFORMATION**");
+                prompt.AppendLine("**START OF MY PREFERENCES IN A PARTNER**");
+                prompt.AppendLine($"Eyes Color: {this.eyesColors!.Single(p => p.EyesColorId == this.createUserProfileModel.PreferredEyesColorId).Name}");
+                prompt.AppendLine("**END OF MY PREFERENCES IN A PARTNER**");
+                var result = await this.openAIService
+                .GenerateChatCompletionAsync(systemMessage, prompt.ToString(),
+                this.cancellationTokenSource.Token);
+                this.createUserProfileModel.About = result!.choices![0].message!.content;
+            }
+        }
+        catch (Exception ex)
+        {
+            this.toastService!.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
         }
     }
 

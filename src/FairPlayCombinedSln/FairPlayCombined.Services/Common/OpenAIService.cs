@@ -30,8 +30,8 @@ public class OpenAIService(
                 new Message()
                 {
                     role="user",
-                    content=new Content[]
-                    {
+                    content=
+                    [
                         new()
                         {
                             type="text",
@@ -45,7 +45,7 @@ public class OpenAIService(
                                 url = imageBase64String
                             }
                         }
-                    }
+                    ]
                 }
              ]
         };
@@ -57,7 +57,7 @@ public class OpenAIService(
                 DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
             }, cancellationToken);
         response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<AnalyzeImageResponseModel>();
+        var result = await response.Content.ReadFromJsonAsync<AnalyzeImageResponseModel>(cancellationToken);
         return result!;
     }
     public async Task<ChatCompletionResponseModel?> GenerateChatCompletionAsync(
