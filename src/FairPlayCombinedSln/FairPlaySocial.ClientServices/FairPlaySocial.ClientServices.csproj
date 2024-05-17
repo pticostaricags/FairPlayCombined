@@ -6,14 +6,14 @@
     <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.12.0-beta.1" />
-    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.8.4" />
+    <PackageReference Include="Azure.Identity" Version="1.12.0-beta.2" />
+    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.9.1" />
     <PackageReference Include="Microsoft.Kiota.Authentication.Azure" Version="1.1.5" />
-    <PackageReference Include="Microsoft.Kiota.Http.HttpClientLibrary" Version="1.4.0" />
-    <PackageReference Include="Microsoft.Kiota.Serialization.Form" Version="1.1.6" />
-    <PackageReference Include="Microsoft.Kiota.Serialization.Json" Version="1.2.3" />
+    <PackageReference Include="Microsoft.Kiota.Http.HttpClientLibrary" Version="1.4.1" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Form" Version="1.2.0" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Json" Version="1.3.0" />
     <PackageReference Include="Microsoft.Kiota.Serialization.Multipart" Version="1.1.4" />
-    <PackageReference Include="Microsoft.Kiota.Serialization.Text" Version="1.1.5" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Text" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="FairPlaySocialClient.cs">

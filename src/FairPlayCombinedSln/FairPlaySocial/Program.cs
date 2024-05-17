@@ -124,7 +124,7 @@ app.UseAntiforgery();
 using var scope = app.Services.CreateScope();
 using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
 
-var supportedCultures = ctx.Culture.Select(p => p.Name).ToArray();
+var supportedCultures = await ctx.Culture.Select(p => p.Name).ToArrayAsync();
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])
     .AddSupportedCultures(supportedCultures)
@@ -146,4 +146,4 @@ app.MapHub<UserMessageNotificationHub>(FairPlayCombined.Common.FairPlaySocial.Co
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.Run();
+await app.RunAsync();

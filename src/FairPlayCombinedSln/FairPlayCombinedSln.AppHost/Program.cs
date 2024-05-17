@@ -116,7 +116,7 @@ if (addFairPlayBudget)
         .WithReference(sqlResourceWithConnectionString);
 }
 
-builder.Build().Run();
+await builder.Build().RunAsync();
 
 static void AddTestDataGenerator(IDistributedApplicationBuilder builder,
     IResourceBuilder<IResourceWithConnectionString> sqlServerResource)

@@ -23,4 +23,4 @@ builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 builder.Services.AddHostedService<TestDataGenerator>();
 
 var host = builder.Build();
-host.Run();
+await host.RunAsync();
