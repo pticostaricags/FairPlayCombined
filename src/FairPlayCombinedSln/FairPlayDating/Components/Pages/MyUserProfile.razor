@@ -603,7 +603,7 @@
             var promptInfo = await promptGeneratorService.GetPromptCompleteInfoAsync(
                 Constants.PromptsNames.AnalyzeDatingProfilePhoto, this.cancellationTokenSource.Token);
             this.analyzeImageResponseModel = await this.openAIService.AnalyzeImageAsync(
-                imageBase64String, promptInfo!.BaseText!,
+                [imageBase64String], promptInfo!.BaseText!,
             this.cancellationTokenSource.Token);
             this.photoAnalysisDialog!.Show();
         }
@@ -650,7 +650,7 @@
             photoExtraAnalysisPrompt.AppendLine("If the given rules are met, include 'Allowed Photo'");
             photoExtraAnalysisPrompt.AppendLine("Always include details explaining the photo.");
             var photoExtraAnalysisResult = await this.openAIService
-            .AnalyzeImageAsync(photoBase64String, photoExtraAnalysisPrompt.ToString(), this.cancellationTokenSource.Token);
+            .AnalyzeImageAsync([photoBase64String], photoExtraAnalysisPrompt.ToString(), this.cancellationTokenSource.Token);
             if (photoExtraAnalysisResult!.choices![0].message!.content!.IndexOf("Allowed Photo") == -1)
             {
                 this.toastService.ShowWarning(photoExtraAnalysisResult.choices![0].message!.content!);

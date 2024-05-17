@@ -23,7 +23,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 }
                 var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
                 var (_, allEyesColors, allDateObjectives, allHairColor, allKidStatus, allReligions,
-                    allTattooStatuses, allProfessions) =
+                    allTattooStatuses, allProfessions, allFrequencies, allActivities) =
                 await GetAllEntitiesListsAsync(dbContext, stoppingToken);
                 var (allMalesPhotosPaths, allFemalesPhotosPaths) = PreparaHumansPhotosPaths();
                 HttpClient httpClient = new();
@@ -47,6 +47,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                         photo = InitilizePhoto(allMalesPhotosPaths);
                         await AddUserAsync(logger, dbContext, allEyesColors, allDateObjectives,
                             allHairColor, allKidStatus, allReligions, allTattooStatuses, allProfessions,
+                            allFrequencies, allActivities,
                             itemsCount, i, randomGeoLocation, currentGeoLocation, photo,
                             biologicalGenderId: 1, stoppingToken);
                     }
@@ -55,6 +56,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                         photo = InitilizePhoto(allFemalesPhotosPaths);
                         await AddUserAsync(logger, dbContext, allEyesColors, allDateObjectives,
                             allHairColor, allKidStatus, allReligions, allTattooStatuses, allProfessions,
+                            allFrequencies, allActivities,
                             itemsCount, i, randomGeoLocation, currentGeoLocation, photo,
                             biologicalGenderId: 2, stoppingToken);
                     }
@@ -76,6 +78,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         FairPlayCombinedDbContext dbContext, EyesColor[] allEyesColors, 
         DateObjective[] allDateObjectives, HairColor[] allHairColor, KidStatus[] allKidStatus, 
         Religion[] allReligions, TattooStatus[] allTattooStatuses, Profession[] allProfessions, 
+        Frequency[] allfrequencies, Activity[] allActivities,
         int itemsCount, int i, geodata randomGeoLocation, Point currentGeoLocation, Photo photo,
         int biologicalGenderId, CancellationToken stoppingToken)
 #pragma warning restore S107 // Methods should not have too many parameters
@@ -87,7 +90,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         var dateOfBirthTicks =
         Random.Shared.NextInt64(minDateOfBirthDallowed.Ticks, maxDateOfBirthAllowed.Ticks);
         logger.LogInformation("Adding item {x} of {y}", i, itemsCount);
-        await dbContext.AspNetUsers.AddAsync(new AspNetUsers()
+        AspNetUsers entity = new()
         {
             Id = Guid.NewGuid().ToString(),
             UserName = email,
@@ -118,8 +121,18 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 CurrentGeoLocation = currentGeoLocation,
                 CurrentLatitude = (double)randomGeoLocation.nearest!.latt,
                 CurrentLongitude = (double)randomGeoLocation.nearest.longt
-            }
-        }, stoppingToken);
+            },
+        };
+        var randomActivities = Random.Shared.GetItems<Activity>(allActivities, 1);
+        foreach (var activity in randomActivities)
+        {
+            entity.UserActivity.Add(new()
+            {
+                ActivityId = activity.ActivityId,
+                FrequencyId = Random.Shared.GetItems<Frequency>(allfrequencies, 1)[0].FrequencyId
+            });
+        }
+        await dbContext.AspNetUsers.AddAsync(entity, stoppingToken);
     }
 
     private static Photo InitilizePhoto(string[]? allHumansPhotosPaths)
@@ -206,7 +219,8 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
     private static async Task<(
         Gender[] allGenders, EyesColor[] allEyesColors, DateObjective[] allDateObjectives,
         HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions,
-        TattooStatus[] allTattooStatuses, Profession[] allProfessions)> 
+        TattooStatus[] allTattooStatuses, Profession[] allProfessions,
+        Frequency[] allFrequencies, Activity[] allActivities)> 
         GetAllEntitiesListsAsync(FairPlayCombinedDbContext dbContext,
         CancellationToken stoppingToken)
     {
@@ -218,8 +232,11 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         var allReligions = await dbContext.Religion.ToArrayAsync(stoppingToken);
         var allTattooStatuses = await dbContext.TattooStatus.ToArrayAsync(stoppingToken);
         var allProfessions = await dbContext.Profession.ToArrayAsync(stoppingToken);
+        var allFrequencies = await dbContext.Frequency.ToArrayAsync(stoppingToken);
+        var allactivities = await dbContext.Activity.ToArrayAsync(stoppingToken);
         return (allGenders, allEyesColors, allDateObjectives,
-        allHairColor, allKidStatus, allReligions, allTattooStatuses, allProfessions);
+        allHairColor, allKidStatus, allReligions, allTattooStatuses, allProfessions,
+        allFrequencies, allactivities);
     }
 }
 #pragma warning restore S6678 // Use PascalCase for named placeholders

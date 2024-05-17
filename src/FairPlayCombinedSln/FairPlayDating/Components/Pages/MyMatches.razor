@@ -11,6 +11,7 @@
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
+@using System.Text
 
 @attribute [Authorize]
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
@@ -19,7 +20,11 @@
 @inject IUserProviderService userProviderService
 @inject IStringLocalizer<MyMatches> localizer
 @inject GeoNamesService geoNamesService
-
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject OpenAIService openAIService
+@inject ActivityService activityService
 <h3>
     @localizer[MyMatchesTextKey]
 </h3>
@@ -62,6 +67,8 @@
                             <p>@context.About</p>
                             <a class="btn btn-primary"
                                @onclick="@( ()=> OnViewDetailsClicked(context))">@localizer[ViewDetailsTextKey]</a>
+                            <a class="btn btn-primary"
+                               @onclick="@( async ()=> await OnAnalyzePotentialMatchAsync(context))">Analyze Potential Match</a>
                         </div>
                     </div>
                     <div class="row">
@@ -228,6 +235,53 @@
         }
     }
 
+    private async Task OnAnalyzePotentialMatchAsync(UserProfileModel potentialMatchProfileModel)
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var userId = this.userProviderService.GetCurrentUserId();
+            var existentUserProfile = await this.userProfileService
+                .GetUserProfileByUserIdAsync(userId!, this.cancellationTokenSource.Token);
+            string baseUrl = this.navigationManager.BaseUri;
+
+            string myProfileImageRequestUrl = $"{baseUrl}api/photoimage/{existentUserProfile!.ProfilePhotoId}";
+            var myProfileImageBytes = httpClient.GetByteArrayAsync(myProfileImageRequestUrl).Result;
+            string myProfileImageBase64String = $"data:image/jpg;base64, {Convert.ToBase64String(myProfileImageBytes)}";
+
+            string potentialMatchProfileImageRequestUrl = $"{baseUrl}api/photoimage/{potentialMatchProfileModel!.ProfilePhotoId}";
+            var potentialMatchProfileImageBytes = httpClient.GetByteArrayAsync(potentialMatchProfileImageRequestUrl).Result;
+            string potentialMatchProfileImageBase64String = $"data:image/jpg;base64, {Convert.ToBase64String(potentialMatchProfileImageBytes)}";
+
+
+            StringBuilder prompt = new("You will take the role of an expert in Dating Apps. I'll share the photos of a man and a woman. Your job is to analyze them and tell if they seem like a potential match.");
+            var activities = await this.activityService.GetAllActivityAsync(cancellationTokenSource.Token);
+            prompt.AppendLine("My activities:");
+            foreach (var singleActivity in existentUserProfile!.ActivitiesFrequency!)
+            {
+                prompt.AppendLine(activities.Single(p=>p.ActivityId == singleActivity.ActivityId).Name);
+            }
+            prompt.AppendLine("Possible potential match activities:");
+            foreach (var singleActivity in potentialMatchProfileModel!.ActivitiesFrequency!)
+            {
+                prompt.AppendLine(activities.Single(p => p.ActivityId == singleActivity.ActivityId).Name);
+            }
+            var result = await this.openAIService.AnalyzeImageAsync([myProfileImageBase64String, potentialMatchProfileImageBase64String],
+            prompt.ToString(), this.cancellationTokenSource.Token);
+            this.toastService.ShowInfo(result!.choices![0].message!.content!, timeout: 0);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
     private async Task OnViewDetailsClicked(UserProfileModel userProfileModel)
     {
         this.selectedUserProfileModel = userProfileModel;
@@ -235,7 +289,7 @@
         var geoData = await this.geoNamesService
         .GetGeoLocationDataAsync(userProfileModel.CurrentLatitude, userProfileModel.CurrentLongitude,
         this.cancellationTokenSource.Token);
-        this.selectedUserLocationText = 
+        this.selectedUserLocationText =
         $"{geoData!.nearest!.region}, {geoData.nearest.city}, {geoData.nearest.state}";
     }
 
