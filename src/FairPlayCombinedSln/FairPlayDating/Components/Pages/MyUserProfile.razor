@@ -575,6 +575,12 @@
             var photoBytes = memoryStream.ToArray();
             var photoModerationResult = await this.azureContentSafetyService
             .AnalyzeImageAsync(photoBytes, this.cancellationTokenSource.Token);
+            if (photoModerationResult.IsViolence || photoModerationResult.IsAdult ||
+                photoModerationResult.IsHate || photoModerationResult.IsSelfHarm)
+            {
+                this.toastService.ShowWarning("You are not allowed to use that image, please use another one");
+                return;
+            }
             string photoBase64String = $"data:image/jpg;base64, {Convert.ToBase64String(photoBytes)}";
             StringBuilder photoExtraAnalysisPrompt = new("Analyze the provided image. Make sure there is only one person in the photo and that the face is looking towards the camera.");
             if (this.createUserProfileModel.BiologicalGenderId > 0)
@@ -585,44 +591,43 @@
             }
             photoExtraAnalysisPrompt.AppendLine("Your results must be in plain text. If the given rules are not met respond using the following format:");
             photoExtraAnalysisPrompt.AppendLine("Prohibited due to the following reasons: {reasons}.");
+            photoExtraAnalysisPrompt.AppendLine("If the given rules are met, include 'Allowed Photo'");
+            photoExtraAnalysisPrompt.AppendLine("Always include details explaining the photo.");
             var photoExtraAnalysisResult = await this.openAIService
             .AnalyzeImageAsync(photoBase64String, photoExtraAnalysisPrompt.ToString(), this.cancellationTokenSource.Token);
-            if (photoExtraAnalysisResult!.choices![0].message!.content!.IndexOf("Prohibited") >= 0)
+            if (photoExtraAnalysisResult!.choices![0].message!.content!.IndexOf("Allowed Photo") == -1)
             {
                 this.toastService.ShowWarning(photoExtraAnalysisResult.choices![0].message!.content!);
-            }
-            else
-            if (photoModerationResult.IsViolence || photoModerationResult.IsAdult ||
-                photoModerationResult.IsHate || photoModerationResult.IsSelfHarm)
-            {
-                this.toastService.ShowWarning("You are not allowed to use that image, please use another one");
+                return;
             }
             else
             {
-                var fileName = "test";
-                if (this.createUserProfileModel.ProfilePhotoId == default)
-                {
-                    CreatePhotoModel createPhotoModel = new();
-                    createPhotoModel.Name = fileName;
-                    createPhotoModel.Filename = fileName;
-                    createPhotoModel.PhotoBytes = photoBytes;
-                    this.createUserProfileModel.ProfilePhotoId =
-                    await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
-                }
-                else
-                {
-                    UpdatePhotoModel updatePhotoModel = new()
-                        {
-                            Filename = fileName,
-                            Name = fileName,
-                            PhotoBytes = photoBytes,
-                            PhotoId = createUserProfileModel.ProfilePhotoId
-                        };
-                    await photoService.UpdatePhotoAsync(updatePhotoModel, cancellationTokenSource.Token);
-                }
-                this.ProfileImageBase64 = GetProfileImageBase64();
-                this.toastService.ShowSuccess("Your photo has been saved");
+                this.toastService.ShowInfo(photoExtraAnalysisResult.choices![0].message!.content!,
+                timeout:0);
             }
+            var fileName = "test";
+            if (this.createUserProfileModel.ProfilePhotoId == default)
+            {
+                CreatePhotoModel createPhotoModel = new();
+                createPhotoModel.Name = fileName;
+                createPhotoModel.Filename = fileName;
+                createPhotoModel.PhotoBytes = photoBytes;
+                this.createUserProfileModel.ProfilePhotoId =
+                await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
+            }
+            else
+            {
+                UpdatePhotoModel updatePhotoModel = new()
+                    {
+                        Filename = fileName,
+                        Name = fileName,
+                        PhotoBytes = photoBytes,
+                        PhotoId = createUserProfileModel.ProfilePhotoId
+                    };
+                await photoService.UpdatePhotoAsync(updatePhotoModel, cancellationTokenSource.Token);
+            }
+            this.ProfileImageBase64 = GetProfileImageBase64();
+            this.toastService.ShowSuccess("Your photo has been saved");
         }
         catch (Exception ex)
         {

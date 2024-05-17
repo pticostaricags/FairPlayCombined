@@ -52,68 +52,93 @@ END
 SET IDENTITY_INSERT [FairPlayDating].[Frequency] OFF
 --END OF DEFAULT FREQUENCY
 --START OF DEFAULT ACTIVITY
-SET IDENTITY_INSERT [FairPlayDating].[Activity] ON
-DECLARE @ACTIVITYNAME NVARCHAR(50) = 'Excercise'
-DECLARE @ACTIVITYID INT = 1
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Smoking'
-SET @ACTIVITYID = 2
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Drinking'
-SET @ACTIVITYID = 3
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Swimming'
-SET @ACTIVITYID = 4
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Road Bike'
-SET @ACTIVITYID = 5
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Mountain Bike'
-SET @ACTIVITYID = 6
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Play Volleyball'
-SET @ACTIVITYID = 7
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Play Tennis'
-SET @ACTIVITYID = 8
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Bowling'
-SET @ACTIVITYID = 9
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Play Soccer'
-SET @ACTIVITYID = 10
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET IDENTITY_INSERT [FairPlayDating].[Activity] OFF
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Archery');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Astronomy');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Backpacking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Badminton');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Baking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Basketball');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Birdwatching');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Board games');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Bowling');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Calligraphy');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Camping');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Canoeing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Chess');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Climbing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Collecting stamps');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Cooking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Crafting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Crochet');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Cycling');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Dancing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Drawing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Embroidery');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Fencing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Fishing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Gardening');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Geocaching');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Golf');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Handball');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Hiking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Horseback riding');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Ice skating');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Inline skating');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Jigsaw puzzles');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Jogging');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Kayaking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Knitting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Lacrosse');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Lego building');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Magic tricks');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Martial arts');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Meditation');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Metal detecting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Model building');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Mountain biking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Painting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Paragliding');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Photography');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Pilates');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Pottery');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Quilting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Racquetball');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Reading');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Rock climbing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Rollerblading');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Rowing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Running');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Sailing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Scrapbooking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Scuba diving');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Singing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Skateboarding');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Sketching');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Skiing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Snowboarding');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Snowshoeing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Soccer');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Softball');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Surfing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Swimming');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Table tennis');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Taekwondo');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Tennis');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Traveling');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Triathlon');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Ultimate Frisbee');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Video gaming');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Volleyball');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Wakeboarding');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Walking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Watching movies');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Weightlifting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Wind surfing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Wine tasting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Woodworking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Writing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Yoga');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Zumba');
 --END OF DEFAULT ACTIVITY
 --START OF DEFAULT GENDERS
 SET IDENTITY_INSERT [FairPlayDating].[Gender] ON
