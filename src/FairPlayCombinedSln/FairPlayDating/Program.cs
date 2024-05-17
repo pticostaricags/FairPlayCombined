@@ -164,5 +164,7 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();
     builder.Services.AddTransient<PromptGeneratorService>();
     builder.Services.AddTransient<ProfessionService>();
+    builder.Services.AddTransient<FrequencyService>();
+    builder.Services.AddTransient<ActivityService>();
     builder.AddAzureAIContentSafety();
 }

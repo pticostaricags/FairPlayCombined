@@ -4,8 +4,10 @@
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.Common.Photo
+@using FairPlayCombined.Models.FairPlayDating
 @using FairPlayCombined.Models.FairPlayDating.DateObjective
 @using FairPlayCombined.Models.FairPlayDating.EyesColor
+@using FairPlayCombined.Models.FairPlayDating.Frequency
 @using FairPlayCombined.Models.FairPlayDating.Gender
 @using FairPlayCombined.Models.FairPlayDating.HairColor
 @using FairPlayCombined.Models.FairPlayDating.KidStatus
@@ -41,6 +43,8 @@
 @inject NavigationManager navigationManager
 @inject PromptGeneratorService promptGeneratorService
 @inject OpenAIService openAIService
+@inject FrequencyService frequencyService
+@inject ActivityService activityService
 
 <h3>MyUserProfile</h3>
 
@@ -60,6 +64,49 @@
                                   StepSequence="WizardStepSequence.Any"
                                   OnFinish="OnWizardCompleButtonClickedAsync">
                         <Steps>
+
+                            <FluentWizardStep Label="Activities">
+                                <div>
+                                    @if (this.createUserProfileModel?.ActivitiesFrequency?.Count > 0)
+                                    {
+                                        foreach (var singleActivityFrequency in this.createUserProfileModel.ActivitiesFrequency)
+                                        {
+                                            <div>
+                                                <FluentSelect TOption="string"
+                                                              Value="@singleActivityFrequency.ActivityId.ToString()"
+                                                              ValueChanged="@((string selectedValue) => singleActivityFrequency.ActivityId=Convert.ToInt32(selectedValue))">
+                                                    <FluentOption Value="0">Select Activity</FluentOption>
+                                                    @if (this.activities != null)
+                                                    {
+                                                        foreach (var singleActivity in this.activities)
+                                                        {
+                                                            <FluentOption Value="@singleActivity.ActivityId.ToString()">@singleActivity.Name</FluentOption>
+                                                        }
+                                                    }
+                                                </FluentSelect>
+                                                <FluentValidationMessage For="@(()=>singleActivityFrequency.ActivityId)"></FluentValidationMessage>
+                                                <FluentSelect TOption="string"
+                                                              Value="@singleActivityFrequency.FrequencyId.ToString()"
+                                                              ValueChanged="@((string selectedValue) => singleActivityFrequency.FrequencyId=Convert.ToInt32(selectedValue))">
+                                                    <FluentOption Value="0">Select Frecuency</FluentOption>
+                                                    @if (this.frecuencies != null)
+                                                    {
+                                                        foreach (var singleFrecuency in this.frecuencies)
+                                                        {
+                                                            <FluentOption Value="@singleFrecuency.FrequencyId.ToString()">@singleFrecuency.Name</FluentOption>
+                                                        }
+                                                    }
+                                                </FluentSelect>
+                                                <FluentValidationMessage For="@(()=>singleActivityFrequency.FrequencyId)"></FluentValidationMessage>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                                <div>
+                                    <FluentButton Type="ButtonType.Button"
+                                                  OnClick="@(()=>this.createUserProfileModel!.ActivitiesFrequency!.Add(new()))">Add New Activity</FluentButton>
+                                </div>
+                            </FluentWizardStep>
                             <FluentWizardStep Label="Gender">
                                 <div>
                                     <FluentLabel Typo="Typography.Body" class="form-label">Gender</FluentLabel>
@@ -420,7 +467,8 @@
         {
             BirthDate = DateTimeOffset.UtcNow,
             CurrentLatitude = 10,
-            CurrentLongitude = 10
+            CurrentLongitude = 10,
+            ActivitiesFrequency = new()
         };
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private GenderModel[]? genders;
@@ -438,7 +486,8 @@
     private FluentDialog? photoAnalysisDialog { get; set; }
     private bool showPhotoAnalysisDialog { get; set; }
     private AnalyzeImageResponseModel? analyzeImageResponseModel { get; set; }
-
+    private ActivityModel[]? activities;
+    private FrequencyModel[]? frecuencies;
     protected override void OnInitialized()
     {
         this.IsAllDataLoad = false;
@@ -472,7 +521,12 @@
                         ProfilePhotoId = existentUserProfile.ProfilePhotoId,
                         ReligionId = existentUserProfile.ReligionId,
                         TattooStatusId = existentUserProfile.TattooStatusId,
-                        MainProfessionId = existentUserProfile.MainProfessionId
+                        MainProfessionId = existentUserProfile.MainProfessionId,
+                        ActivitiesFrequency = existentUserProfile?.ActivitiesFrequency?.Select(p => new CreateUserProfileActivityFrequencyModel()
+                        {
+                            ActivityId = p.ActivityId,
+                            FrequencyId = p.FrequencyId
+                        })?.ToList()
                     };
                 this.ProfileImageBase64 = GetProfileImageBase64();
             }
@@ -484,6 +538,8 @@
             this.religions = await this.religionService.GetAllReligionAsync(cancellationTokenSource.Token);
             this.tattooStatuses = await this.tattooStatusService.GetAllTattooStatusAsync(cancellationTokenSource.Token);
             this.professions = await this.professionService.GetAllProfessionAsync(cancellationTokenSource.Token);
+            this.activities = await this.activityService.GetAllActivityAsync(cancellationTokenSource.Token);
+            this.frecuencies = await this.frequencyService.GetAllFrequencyAsync(cancellationTokenSource.Token);
             this.IsAllDataLoad = true;
         }
         catch (Exception ex)
@@ -603,7 +659,7 @@
             else
             {
                 this.toastService.ShowInfo(photoExtraAnalysisResult.choices![0].message!.content!,
-                timeout:0);
+                timeout: 0);
             }
             var fileName = "test";
             if (this.createUserProfileModel.ProfilePhotoId == default)
@@ -663,7 +719,7 @@
                 .DeleteUserProfileByIdAsync(existentUserProfileId.Value,
                 this.cancellationTokenSource.Token);
             }
-            await this.userProfileService.CreateUserProfileAsync(this.createUserProfileModel,
+            await this.userProfileService.CreateUserProfileExtendedAsync(this.createUserProfileModel,
             cancellationTokenSource.Token);
             this.toastService.ShowSuccess("Your profile has been saved");
         }

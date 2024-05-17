@@ -49,12 +49,17 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         public NetTopologySuite.Geometries.Point? CurrentGeoLocation { get; set; }
         [Required]
         [ValidateComplexType]
-        public CreateUserProfileActivityFrequencyModel[]? ActivitiesFrequency { get; set; }
+        public List<CreateUserProfileActivityFrequencyModel>? ActivitiesFrequency { get; set; }
     }
 
     public class CreateUserProfileActivityFrequencyModel
     {
+
+        [Required]
+        [DeniedValues(default(int))]
         public int ActivityId { get; set; }
+        [Required]
+        [DeniedValues(default(int))]
         public int FrequencyId { get; set; }
     }
 }

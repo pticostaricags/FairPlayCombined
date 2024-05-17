@@ -49,10 +49,10 @@ namespace FairPlayCombined.Services.FairPlayDating
                 MainProfessionId = createModel.MainProfessionId,
                 BirthDate = createModel.BirthDate,
                 CurrentGeoLocation = createModel.CurrentGeoLocation,
-                
+
             };
             await dbContext.UserProfile.AddAsync(entity, cancellationToken);
-            if (createModel.ActivitiesFrequency?.Length > 0)
+            if (createModel.ActivitiesFrequency?.Count > 0)
             {
                 var userEntity = await dbContext.AspNetUsers.SingleAsync(p => p.Id == createModel.ApplicationUserId,
                     cancellationToken);
@@ -110,7 +110,12 @@ namespace FairPlayCombined.Services.FairPlayDating
                     ReligionId = p.ReligionId,
                     TattooStatusId = p.TattooStatusId,
                     UserProfileId = p.UserProfileId,
-                    MainProfessionId = p.MainProfessionId
+                    MainProfessionId = p.MainProfessionId,
+                    ActivitiesFrequency = p.ApplicationUser.UserActivity.Select(x => new UserProfileActivityFrequencyModel()
+                    {
+                        FrequencyId = x.FrequencyId,
+                        ActivityId = x.ActivityId
+                    }).ToArray()
                 })
                 .SingleOrDefaultAsync(cancellationToken);
             return result;
