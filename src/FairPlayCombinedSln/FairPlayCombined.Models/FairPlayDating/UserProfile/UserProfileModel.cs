@@ -53,5 +53,6 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
     {
         public int ActivityId { get; set; }
         public int FrequencyId { get; set; }
+        public string? ActivityName { get; set; }
     }
 }

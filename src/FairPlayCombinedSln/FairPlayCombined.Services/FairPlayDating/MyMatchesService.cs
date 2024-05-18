@@ -78,6 +78,7 @@ namespace FairPlayCombined.Services.FairPlayDating
                     Distance = p.CurrentGeoLocation!.Distance(myUserProfile.CurrentGeoLocation),
                     ActivitiesFrequency=p.ApplicationUser.UserActivity.Select(x=>new UserProfileActivityFrequencyModel()
                     {
+                        ActivityName = x.Activity.Name,
                         ActivityId = x.ActivityId,
                         FrequencyId = x.FrequencyId
                     }).ToArray()

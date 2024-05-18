@@ -173,6 +173,17 @@
                 </FluentLabel>
                 <FluentLabel Typo="Typography.Body">@selectedUserLocationText</FluentLabel>
             </p>
+            @if (selectedUserProfileModel!.ActivitiesFrequency?.Length > 0)
+            {
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Activities:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">
+                    @(String.Join(",", selectedUserProfileModel!.ActivitiesFrequency.Select(p => p.ActivityName)))
+                </FluentLabel>
+            }
         </div>
         <div>
             <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
@@ -190,7 +201,9 @@
     {
         <div>
             <p>
-                @this.potentialMatchAnalysisResult!.choices![0].message!.content
+                <FluentTextArea style="width:100%;"
+                                Rows="10" ReadOnly="true"
+                                Value="@this.potentialMatchAnalysisResult!.choices![0].message!.content"></FluentTextArea>
             </p>
         </div>
         <div>
