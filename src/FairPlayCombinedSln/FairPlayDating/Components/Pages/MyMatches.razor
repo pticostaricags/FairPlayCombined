@@ -6,6 +6,7 @@
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
+@using FairPlayCombined.Models.OpenAI
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayDating
@@ -180,11 +181,34 @@
     }
 </FluentDialog>
 
+<FluentDialog @ref="potentialMatchAnalysisDialog"
+              @bind-Hidden="@showPotentialMatchAnalysisDialog"
+              Modal="true" TrapFocus="true"
+              PreventScroll="false">
+    <FluentDialogHeader Visible="false"></FluentDialogHeader>
+    @if (this.potentialMatchAnalysisResult != null)
+    {
+        <div>
+            <p>
+                @this.potentialMatchAnalysisResult!.choices![0].message!.content
+            </p>
+        </div>
+        <div>
+            <div>
+                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                              OnClick="ResetPotentialMAtchAnalysisDialog">Close</FluentButton>
+            </div>
+        </div>
+    }
+</FluentDialog>
+
 @code {
     private GridItemsProvider<UserProfileModel>? ItemsProvider;
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool showDetailsDialog { get; set; } = false;
     private FluentDialog? detailsDialog { get; set; }
+    private bool showPotentialMatchAnalysisDialog { get; set; }
+    private FluentDialog? potentialMatchAnalysisDialog { get; set; }
     private UserProfileModel? selectedUserProfileModel { get; set; }
     private bool IsBusy { get; set; }
     private bool HasUserProfile { get; set; }
@@ -193,6 +217,7 @@
             ItemsPerPage = 1
         };
     private string? selectedUserLocationText { get; set; }
+    private AnalyzeImageResponseModel? potentialMatchAnalysisResult { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -232,6 +257,7 @@
         if (firstRender)
         {
             this.detailsDialog!.Hide();
+            this.potentialMatchAnalysisDialog!.Hide();
         }
     }
 
@@ -260,16 +286,16 @@
             prompt.AppendLine("My activities:");
             foreach (var singleActivity in existentUserProfile!.ActivitiesFrequency!)
             {
-                prompt.AppendLine(activities.Single(p=>p.ActivityId == singleActivity.ActivityId).Name);
+                prompt.AppendLine(activities.Single(p => p.ActivityId == singleActivity.ActivityId).Name);
             }
             prompt.AppendLine("Possible potential match activities:");
             foreach (var singleActivity in potentialMatchProfileModel!.ActivitiesFrequency!)
             {
                 prompt.AppendLine(activities.Single(p => p.ActivityId == singleActivity.ActivityId).Name);
             }
-            var result = await this.openAIService.AnalyzeImageAsync([myProfileImageBase64String, potentialMatchProfileImageBase64String],
+            this.potentialMatchAnalysisResult = await this.openAIService.AnalyzeImageAsync([myProfileImageBase64String, potentialMatchProfileImageBase64String],
             prompt.ToString(), this.cancellationTokenSource.Token);
-            this.toastService.ShowInfo(result!.choices![0].message!.content!, timeout: 0);
+            this.potentialMatchAnalysisDialog!.Show();
         }
         catch (Exception ex)
         {
@@ -297,6 +323,11 @@
     {
         this.detailsDialog!.Hide();
         this.selectedUserProfileModel = null;
+    }
+
+    private void ResetPotentialMAtchAnalysisDialog()
+    {
+        this.potentialMatchAnalysisDialog!.Hide();
     }
 
     public ValueTask DisposeAsync()
