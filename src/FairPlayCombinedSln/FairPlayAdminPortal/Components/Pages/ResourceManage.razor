@@ -17,7 +17,7 @@
 </FluentLabel>
 
 
-@if (this.resources?.Count() > 0)
+@if (this.resources?.Any() == true)
 {
     <FluentEditForm FormName="frmResources" Model="this.resources" OnValidSubmit="OnValidSubmitAsync" Context="formContext">
         <div>

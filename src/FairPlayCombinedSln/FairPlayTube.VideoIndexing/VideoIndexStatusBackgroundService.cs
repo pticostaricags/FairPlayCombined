@@ -42,7 +42,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     LogVideoIndexStatus(logger, videosIndex);
                     var processingVideos = videosIndex?.results?.Where(p => p.state ==
                     FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processing.ToString());
-                    if (processingVideos?.Count() > 0)
+                    if (processingVideos?.Any() == true)
                     {
                         await UpdateProcessingPercentageAsync(logger, dbContext, azureVideoIndexerService, getviTokenResult, processingVideos, stoppingToken);
                     }
@@ -62,7 +62,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
 
     private static async Task UpdateVideoIndexingTransactionAsync(FairPlayCombinedDbContext dbContext, AzureVideoIndexerService azureVideoIndexerService, GetAccessTokenResponseModel? getviTokenResult, SearchVideosResponseModel? videosIndex, IEnumerable<Result>? indexCompleteVideos, CancellationToken stoppingToken)
     {
-        if (indexCompleteVideos?.Count() > 0)
+        if (indexCompleteVideos?.Any() == true)
         {
             var indexCompleteVideosIds = indexCompleteVideos.Select(p => p.id).ToArray();
             var query = dbContext.VideoInfo

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Models.OpenAI
 {
-
+#pragma warning disable IDE1006 // Naming Styles
     public class AnalyzeImageResponseModel
     {
         public string? id { get; set; }
@@ -38,5 +38,5 @@ namespace FairPlayCombined.Models.OpenAI
         public string? role { get; set; }
         public string? content { get; set; }
     }
-
+#pragma warning restore IDE1006 // Naming Styles
 }

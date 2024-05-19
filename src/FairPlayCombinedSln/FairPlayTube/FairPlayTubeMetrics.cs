@@ -8,15 +8,15 @@ namespace FairPlayTube.MetricsConfiguration
     public class FairPlayTubeMetrics(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
     {
         internal const string SESSION_METER_NAME = $"{nameof(FairPlayTube)}.Videos";
-        private Meter? sessionsMeter { get; set; }
-        private ObservableGauge<int>? realtimeVideoSessions { get; set; }
-        private ObservableGauge<int>? realtimeAuthenticatedVideoSessions { get; set; }
-        private ObservableGauge<int>? lifetimeVideoSessions { get; set; }
+        private Meter? SessionsMeter { get; set; }
+        private ObservableGauge<int>? RealtimeVideoSessions { get; set; }
+        private ObservableGauge<int>? RealtimeAuthenticatedVideoSessions { get; set; }
+        private ObservableGauge<int>? LifetimeVideoSessions { get; set; }
 
         public void Initialize()
         {
-            sessionsMeter = new(SESSION_METER_NAME);
-            realtimeVideoSessions = sessionsMeter!.CreateObservableGauge<int>($"{sessionsMeter!.Name}.RealtimeVideoSessions",
+            SessionsMeter = new(SESSION_METER_NAME);
+            RealtimeVideoSessions = SessionsMeter!.CreateObservableGauge<int>($"{SessionsMeter!.Name}.RealtimeVideoSessions",
                 observeValue: () => 
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
@@ -26,7 +26,7 @@ namespace FairPlayTube.MetricsConfiguration
                     .Count();
                     return result;
                 });
-            realtimeAuthenticatedVideoSessions = sessionsMeter!.CreateObservableGauge<int>($"{sessionsMeter!.Name}.RealtimeAuthenticatedVideoSessions",
+            RealtimeAuthenticatedVideoSessions = SessionsMeter!.CreateObservableGauge<int>($"{SessionsMeter!.Name}.RealtimeAuthenticatedVideoSessions",
                 observeValue: () =>
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
@@ -37,7 +37,7 @@ namespace FairPlayTube.MetricsConfiguration
                     .Count();
                     return result;
                 });
-            lifetimeVideoSessions = sessionsMeter!.CreateObservableGauge<int>($"{sessionsMeter!.Name}.LifetimeAuthenticatedVideoSessions",
+            LifetimeVideoSessions = SessionsMeter!.CreateObservableGauge<int>($"{SessionsMeter!.Name}.LifetimeAuthenticatedVideoSessions",
                 observeValue: () =>
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
