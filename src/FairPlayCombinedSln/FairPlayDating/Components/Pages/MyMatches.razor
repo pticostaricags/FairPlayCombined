@@ -26,6 +26,7 @@
 @inject IToastService toastService
 @inject OpenAIService openAIService
 @inject ActivityService activityService
+@inject PromptGeneratorService promptGeneratorService
 <h3>
     @localizer[MyMatchesTextKey]
 </h3>
@@ -293,8 +294,9 @@
             var potentialMatchProfileImageBytes = httpClient.GetByteArrayAsync(potentialMatchProfileImageRequestUrl).Result;
             string potentialMatchProfileImageBase64String = $"data:image/jpg;base64, {Convert.ToBase64String(potentialMatchProfileImageBytes)}";
 
-
-            StringBuilder prompt = new("You will take the role of an expert in Dating Apps. I'll share the photos of a man and a woman. Your job is to analyze them and tell if they seem like a potential match.");
+            var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(
+                Constants.PromptsNames.AnalyzePotentialMatch, this.cancellationTokenSource.Token);
+            StringBuilder prompt = new(promptInfo!.BaseText!);
             var activities = await this.activityService.GetAllActivityAsync(cancellationTokenSource.Token);
             prompt.AppendLine("My activities:");
             foreach (var singleActivity in existentUserProfile!.ActivitiesFrequency!)
