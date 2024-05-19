@@ -526,7 +526,7 @@
                         {
                             ActivityId = p.ActivityId,
                             FrequencyId = p.FrequencyId
-                        })?.ToList()
+                        }).ToList()
                     };
                 this.ProfileImageBase64 = GetProfileImageBase64();
             }
@@ -772,7 +772,6 @@
                     prompt.AppendLine(this.createUserProfileModel.About);
                 }
                 prompt.AppendLine($"Main Profession: {this.professions!.Single(p => p.ProfessionId == this.createUserProfileModel.MainProfessionId).Name}");
-                var ageTicks = (DateTimeOffset.UtcNow - this.createUserProfileModel.BirthDate).Ticks;
                 int age = (int)((DateTimeOffset.UtcNow - this.createUserProfileModel.BirthDate).TotalDays / 365.2425);
                 prompt.AppendLine($"Age: {age} years old.");
                 prompt.AppendLine($"Biological Gender: {this.genders!.Single(p => p.GenderId == this.createUserProfileModel.BiologicalGenderId).Name}");
