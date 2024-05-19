@@ -86,6 +86,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<ProductStatus> ProductStatus { get; set; }
 
+    public virtual DbSet<Profession> Profession { get; set; }
+
     public virtual DbSet<Prompt> Prompt { get; set; }
 
     public virtual DbSet<PromptVariable> PromptVariable { get; set; }
@@ -443,6 +445,10 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.KidStatus).WithMany(p => p.UserProfileKidStatus)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserProfile_KidStatus");
+
+            entity.HasOne(d => d.MainProfession).WithMany(p => p.UserProfile)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserProfile_Profession");
 
             entity.HasOne(d => d.PreferredEyesColor).WithMany(p => p.UserProfilePreferredEyesColor)
                 .OnDelete(DeleteBehavior.ClientSetNull)

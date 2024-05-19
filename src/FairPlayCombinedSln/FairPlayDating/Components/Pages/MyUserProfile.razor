@@ -4,11 +4,14 @@
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.Common.Photo
+@using FairPlayCombined.Models.FairPlayDating
 @using FairPlayCombined.Models.FairPlayDating.DateObjective
 @using FairPlayCombined.Models.FairPlayDating.EyesColor
+@using FairPlayCombined.Models.FairPlayDating.Frequency
 @using FairPlayCombined.Models.FairPlayDating.Gender
 @using FairPlayCombined.Models.FairPlayDating.HairColor
 @using FairPlayCombined.Models.FairPlayDating.KidStatus
+@using FairPlayCombined.Models.FairPlayDating.Profession
 @using FairPlayCombined.Models.FairPlayDating.Religion
 @using FairPlayCombined.Models.FairPlayDating.TattooStatus
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
@@ -16,6 +19,7 @@
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
+@using System.Text
 
 @attribute [Authorize]
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
@@ -27,6 +31,7 @@
 @inject KidStatusService kidStatusService
 @inject ReligionService religionService
 @inject TattooStatusService tattooStatusService
+@inject ProfessionService professionService
 @inject IUserProviderService userProviderService
 @inject UserProfileService userProfileService
 @inject IToastService toastService
@@ -38,6 +43,8 @@
 @inject NavigationManager navigationManager
 @inject PromptGeneratorService promptGeneratorService
 @inject OpenAIService openAIService
+@inject FrequencyService frequencyService
+@inject ActivityService activityService
 
 <h3>MyUserProfile</h3>
 
@@ -50,287 +57,372 @@
         <FluentValidationSummary></FluentValidationSummary>
     </div>
     <div>
-        <FluentWizard StepperPosition="StepperPosition.Top"
-                      StepSequence="WizardStepSequence.Any"
-                      OnFinish="OnWizardCompleButtonClickedAsync">
-            <Steps>
-                <FluentWizardStep Label="Gender">
-                    <div>
-                        <FluentLabel Typo="Typography.Body" class="form-label">Gender</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.BiologicalGenderId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.BiologicalGenderId=Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Gender</FluentOption>
-                            @if (this.genders != null)
-                            {
-                                foreach (var singleGender in this.genders)
-                                {
-                                    <FluentOption Value="@singleGender.GenderId.ToString()">@singleGender.Name</FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="About Me">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">About</FluentLabel>
-                        <FluentTextArea @bind-Value="this.createUserProfileModel.About"></FluentTextArea>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Birth Date">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Birth Date</FluentLabel>
-                        <InputDate class="form-control" @bind-Value="this.createUserProfileModel.BirthDate"></InputDate>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Date Objective">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Date Objective</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.CurrentDateObjectiveId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.CurrentDateObjectiveId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Date Objective</FluentOption>
-                            @if (this.dateObjectives != null)
-                            {
-                                foreach (var singleDateObjective in this.dateObjectives)
-                                {
-                                    <FluentOption Value="@singleDateObjective.DateObjectiveId.ToString()">
-                                        @singleDateObjective.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Eyes Color">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Eyes Color</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.EyesColorId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.EyesColorId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Eyes Color</FluentOption>
-                            @if (this.eyesColors != null)
-                            {
-                                foreach (var singleEyesColor in this.eyesColors)
-                                {
-                                    <FluentOption Value="@singleEyesColor.EyesColorId.ToString()">
-                                        @singleEyesColor.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Hair Color">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Hair Color</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.HairColorId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.HairColorId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Hair Color</FluentOption>
-                            @if (this.hairColors != null)
-                            {
-                                foreach (var singleHairColor in this.hairColors)
-                                {
-                                    <FluentOption Value="@singleHairColor.HairColorId.ToString()">
-                                        @singleHairColor.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Kid Status">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Kid Status</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.KidStatusId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.KidStatusId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Kid Status</FluentOption>
-                            @if (this.kidStatuses != null)
-                            {
-                                foreach (var singleKidStatus in this.kidStatuses)
-                                {
-                                    <FluentOption Value="@singleKidStatus.KidStatusId.ToString()">
-                                        @singleKidStatus.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Preferred Eyes Color">
-                    <div>
-                        <FluentLabel>Preferred Eyes Color</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.PreferredEyesColorId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredEyesColorId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Preferred Eyes Color</FluentOption>
-                            @if (this.eyesColors != null)
-                            {
-                                foreach (var singleEyesColor in this.eyesColors)
-                                {
-                                    <FluentOption Value="@singleEyesColor.EyesColorId.ToString()">
-                                        @singleEyesColor.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Preferred Hair Color">
-                    <div>
-                        <FluentLabel>Preferred Hair Color</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.PreferredHairColorId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredHairColorId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Preferred Hair Color</FluentOption>
-                            @if (this.hairColors != null)
-                            {
-                                foreach (var singleHairColor in this.hairColors)
-                                {
-                                    <FluentOption Value="@singleHairColor.HairColorId.ToString()">
-                                        @singleHairColor.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Preferred Kid Status">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Preferred Kid Status</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.PreferredKidStatusId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredKidStatusId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Preferred Kid Status</FluentOption>
-                            @if (this.kidStatuses != null)
-                            {
-                                foreach (var singleKidStatus in this.kidStatuses)
-                                {
-                                    <FluentOption Value="@singleKidStatus.KidStatusId.ToString()">
-                                        @singleKidStatus.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Preferred Religion">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Preferred Religion</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.PreferredReligionId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredReligionId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Preferred Religion</FluentOption>
-                            @if (this.religions != null)
-                            {
-                                foreach (var singleReligion in this.religions)
-                                {
-                                    <FluentOption Value="@singleReligion.ReligionId.ToString()">
-                                        @singleReligion.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Preferred Tatoo Status">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Preferred Tattoo Status</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.PreferredTattooStatusId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredTattooStatusId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Preferred Tattoo Status</FluentOption>
-                            @if (this.tattooStatuses != null)
-                            {
-                                foreach (var singletattooStatus in this.tattooStatuses)
-                                {
-                                    <FluentOption Value="@singletattooStatus.TattooStatusId.ToString()">
-                                        @singletattooStatus.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Religion">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Religion</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.ReligionId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.ReligionId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Religion</FluentOption>
-                            @if (this.religions != null)
-                            {
-                                foreach (var singleReligion in this.religions)
-                                {
-                                    <FluentOption Value="@singleReligion.ReligionId.ToString()">
-                                        @singleReligion.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Tatoo Status">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Tattoo Status</FluentLabel>
-                        <FluentSelect TOption="string"
-                                      Value="@this.createUserProfileModel.TattooStatusId.ToString()"
-                                      ValueChanged="@((string selectedValue) => this.createUserProfileModel.TattooStatusId = Convert.ToInt32(selectedValue))">
-                            <FluentOption Value="0">Select Tattoo Status</FluentOption>
-                            @if (this.tattooStatuses != null)
-                            {
-                                foreach (var singletattooStatus in this.tattooStatuses)
-                                {
-                                    <FluentOption Value="@singletattooStatus.TattooStatusId.ToString()">
-                                        @singletattooStatus.Name
-                                    </FluentOption>
-                                }
-                            }
-                        </FluentSelect>
-                    </div>
-                </FluentWizardStep>
-                <FluentWizardStep Label="Photo">
-                    <div>
-                        <FluentLabel Typo="Typography.Body">Photo</FluentLabel>
-                        <FluentInputFile Id="my-file-uploader"
-                                         Mode="InputFileMode.Stream"
-                                         Multiple="false"
-                                         MaximumFileCount="1"
-                                         MaximumFileSize="@(10*1024*1024)"
-                                         Accept="image/*"
-                                         OnCompleted="@OnFileUploadCompleted"
-                                         Style="height: 200px; border: 1px dashed var(--accent-fill-rest);">
-                            <ChildContent>
-                                <label for="my-file-uploader">
-                                    <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
-                                </label>
+        <FluentAccordion>
+            <FluentAccordionItem Heading="My Info" Expanded="true" style="background-color:lightskyblue">
+                <div>
+                    <FluentWizard StepperPosition="StepperPosition.Top"
+                                  StepSequence="WizardStepSequence.Any"
+                                  OnFinish="OnWizardCompleButtonClickedAsync">
+                        <Steps>
 
+                            <FluentWizardStep Label="Activities">
                                 <div>
-                                    Drag file here you wish to upload,
-                                    or <label for="my-file-uploader">browse</label>
-                                    for them<span style="color: red;">*</span>.
-                                    <br />
-                                    <em>Maximum of 1 file allowed.</em>
+                                    @if (this.createUserProfileModel?.ActivitiesFrequency?.Count > 0)
+                                    {
+                                        foreach (var singleActivityFrequency in this.createUserProfileModel.ActivitiesFrequency)
+                                        {
+                                            <div>
+                                                <FluentSelect TOption="string"
+                                                              Value="@singleActivityFrequency.ActivityId.ToString()"
+                                                              ValueChanged="@((string selectedValue) => singleActivityFrequency.ActivityId=Convert.ToInt32(selectedValue))">
+                                                    <FluentOption Value="0">Select Activity</FluentOption>
+                                                    @if (this.activities != null)
+                                                    {
+                                                        foreach (var singleActivity in this.activities)
+                                                        {
+                                                            <FluentOption Value="@singleActivity.ActivityId.ToString()">@singleActivity.Name</FluentOption>
+                                                        }
+                                                    }
+                                                </FluentSelect>
+                                                <FluentValidationMessage For="@(()=>singleActivityFrequency.ActivityId)"></FluentValidationMessage>
+                                                <FluentSelect TOption="string"
+                                                              Value="@singleActivityFrequency.FrequencyId.ToString()"
+                                                              ValueChanged="@((string selectedValue) => singleActivityFrequency.FrequencyId=Convert.ToInt32(selectedValue))">
+                                                    <FluentOption Value="0">Select Frecuency</FluentOption>
+                                                    @if (this.frecuencies != null)
+                                                    {
+                                                        foreach (var singleFrecuency in this.frecuencies)
+                                                        {
+                                                            <FluentOption Value="@singleFrecuency.FrequencyId.ToString()">@singleFrecuency.Name</FluentOption>
+                                                        }
+                                                    }
+                                                </FluentSelect>
+                                                <FluentValidationMessage For="@(()=>singleActivityFrequency.FrequencyId)"></FluentValidationMessage>
+                                            </div>
+                                        }
+                                    }
                                 </div>
+                                <div>
+                                    <FluentButton Type="ButtonType.Button"
+                                                  OnClick="@(()=>this.createUserProfileModel!.ActivitiesFrequency!.Add(new()))">Add New Activity</FluentButton>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Gender">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body" class="form-label">Gender</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.BiologicalGenderId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.BiologicalGenderId=Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Gender</FluentOption>
+                                        @if (this.genders != null)
+                                        {
+                                            foreach (var singleGender in this.genders)
+                                            {
+                                                <FluentOption Value="@singleGender.GenderId.ToString()">@singleGender.Name</FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="About Me">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">About</FluentLabel>
+                                    <FluentTextArea @bind-Value="this.createUserProfileModel.About"
+                                                    style="width:100%;"
+                                                    Rows="10"
+                                                    Placeholder="✨ Hello! I'm passionate about my career in [broad industry or job function] and love unwinding through [hobbies]. On weekends, I enjoy [preferred sports] and am a proud [dog/cat/both/neither] person. I dedicate time to causes like [general social causes] and value kindness and open-mindedness in others. What inspires you daily? Share your passions and what you’re looking for in this adventure! ✨"></FluentTextArea>
+                                    <FluentButton Type="ButtonType.Button" OnClick="OnGenerateAboutMeClickedAsync">Generate with AI</FluentButton>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Birth Date">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Birth Date</FluentLabel>
+                                    <InputDate class="form-control" @bind-Value="this.createUserProfileModel.BirthDate"></InputDate>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Date Objective">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Date Objective</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.CurrentDateObjectiveId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.CurrentDateObjectiveId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Date Objective</FluentOption>
+                                        @if (this.dateObjectives != null)
+                                        {
+                                            foreach (var singleDateObjective in this.dateObjectives)
+                                            {
+                                                <FluentOption Value="@singleDateObjective.DateObjectiveId.ToString()">
+                                                    @singleDateObjective.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Eyes Color">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Eyes Color</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.EyesColorId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.EyesColorId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Eyes Color</FluentOption>
+                                        @if (this.eyesColors != null)
+                                        {
+                                            foreach (var singleEyesColor in this.eyesColors)
+                                            {
+                                                <FluentOption Value="@singleEyesColor.EyesColorId.ToString()">
+                                                    @singleEyesColor.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Hair Color">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Hair Color</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.HairColorId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.HairColorId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Hair Color</FluentOption>
+                                        @if (this.hairColors != null)
+                                        {
+                                            foreach (var singleHairColor in this.hairColors)
+                                            {
+                                                <FluentOption Value="@singleHairColor.HairColorId.ToString()">
+                                                    @singleHairColor.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Kid Status">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Kid Status</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.KidStatusId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.KidStatusId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Kid Status</FluentOption>
+                                        @if (this.kidStatuses != null)
+                                        {
+                                            foreach (var singleKidStatus in this.kidStatuses)
+                                            {
+                                                <FluentOption Value="@singleKidStatus.KidStatusId.ToString()">
+                                                    @singleKidStatus.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Religion">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Religion</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.ReligionId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.ReligionId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Religion</FluentOption>
+                                        @if (this.religions != null)
+                                        {
+                                            foreach (var singleReligion in this.religions)
+                                            {
+                                                <FluentOption Value="@singleReligion.ReligionId.ToString()">
+                                                    @singleReligion.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Tatoo Status">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Tattoo Status</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.TattooStatusId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.TattooStatusId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Tattoo Status</FluentOption>
+                                        @if (this.tattooStatuses != null)
+                                        {
+                                            foreach (var singletattooStatus in this.tattooStatuses)
+                                            {
+                                                <FluentOption Value="@singletattooStatus.TattooStatusId.ToString()">
+                                                    @singletattooStatus.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Profession">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Main Profession</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.MainProfessionId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.MainProfessionId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Profession</FluentOption>
+                                        @if (this.professions != null)
+                                        {
+                                            foreach (var singleProfession in this.professions)
+                                            {
+                                                <FluentOption Value="@singleProfession.ProfessionId.ToString()">
+                                                    @singleProfession.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Photo">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Photo</FluentLabel>
+                                    <FluentInputFile Id="my-file-uploader"
+                                                     Mode="InputFileMode.Stream"
+                                                     Multiple="false"
+                                                     MaximumFileCount="1"
+                                                     MaximumFileSize="@(10*1024*1024)"
+                                                     Accept="image/*"
+                                                     OnCompleted="@OnFileUploadCompleted"
+                                                     Style="height: 200px; border: 1px dashed var(--accent-fill-rest);">
+                                        <ChildContent>
+                                            <label for="my-file-uploader">
+                                                <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
+                                            </label>
 
-                                <div>
-                                    <br />
-                                    <strong>Selecting a photo will save it immediately</strong>
+                                            <div>
+                                                Drag file here you wish to upload,
+                                                or <label for="my-file-uploader">browse</label>
+                                                for them<span style="color: red;">*</span>.
+                                                <br />
+                                                <em>Maximum of 1 file allowed.</em>
+                                            </div>
+
+                                            <div>
+                                                <br />
+                                                <strong>Selecting a photo will save it immediately</strong>
+                                            </div>
+                                        </ChildContent>
+                                    </FluentInputFile>
                                 </div>
-                            </ChildContent>
-                        </FluentInputFile>
-                    </div>
-                </FluentWizardStep>
-            </Steps>
-        </FluentWizard>
-    </div>
-    <div>
-        <FluentLabel Typo="Typography.Body">Current Latitude: @this.createUserProfileModel.CurrentLatitude</FluentLabel>
-        <FluentLabel Typo="Typography.Body">Current Longitude: @this.createUserProfileModel.CurrentLongitude</FluentLabel>
-        <FluentLabel Typo="Typography.Body">Location: @this.GeoLocationInfoText</FluentLabel>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Location">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Location</FluentLabel>
+                                    <FluentLabel Typo="Typography.Body">Current Latitude: @this.createUserProfileModel.CurrentLatitude</FluentLabel>
+                                    <FluentLabel Typo="Typography.Body">Current Longitude: @this.createUserProfileModel.CurrentLongitude</FluentLabel>
+                                    <FluentLabel Typo="Typography.Body">Location: @this.GeoLocationInfoText</FluentLabel>
+                                </div>
+                            </FluentWizardStep>
+                        </Steps>
+                    </FluentWizard>
+                </div>
+            </FluentAccordionItem>
+            <FluentAccordionItem Heading="My Preferences" style="background-color:lightskyblue">
+                <div>
+                    <FluentWizard StepperPosition="StepperPosition.Top"
+                                  StepSequence="WizardStepSequence.Any"
+                                  OnFinish="OnWizardCompleButtonClickedAsync">
+                        <Steps>
+                            <FluentWizardStep Label="Preferred Eyes Color">
+                                <div>
+                                    <FluentLabel>Preferred Eyes Color</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.PreferredEyesColorId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredEyesColorId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Preferred Eyes Color</FluentOption>
+                                        @if (this.eyesColors != null)
+                                        {
+                                            foreach (var singleEyesColor in this.eyesColors)
+                                            {
+                                                <FluentOption Value="@singleEyesColor.EyesColorId.ToString()">
+                                                    @singleEyesColor.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Preferred Hair Color">
+                                <div>
+                                    <FluentLabel>Preferred Hair Color</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.PreferredHairColorId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredHairColorId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Preferred Hair Color</FluentOption>
+                                        @if (this.hairColors != null)
+                                        {
+                                            foreach (var singleHairColor in this.hairColors)
+                                            {
+                                                <FluentOption Value="@singleHairColor.HairColorId.ToString()">
+                                                    @singleHairColor.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Preferred Kid Status">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Preferred Kid Status</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.PreferredKidStatusId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredKidStatusId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Preferred Kid Status</FluentOption>
+                                        @if (this.kidStatuses != null)
+                                        {
+                                            foreach (var singleKidStatus in this.kidStatuses)
+                                            {
+                                                <FluentOption Value="@singleKidStatus.KidStatusId.ToString()">
+                                                    @singleKidStatus.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Preferred Religion">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Preferred Religion</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.PreferredReligionId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredReligionId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Preferred Religion</FluentOption>
+                                        @if (this.religions != null)
+                                        {
+                                            foreach (var singleReligion in this.religions)
+                                            {
+                                                <FluentOption Value="@singleReligion.ReligionId.ToString()">
+                                                    @singleReligion.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                            <FluentWizardStep Label="Preferred Tatoo Status">
+                                <div>
+                                    <FluentLabel Typo="Typography.Body">Preferred Tattoo Status</FluentLabel>
+                                    <FluentSelect TOption="string"
+                                                  Value="@this.createUserProfileModel.PreferredTattooStatusId.ToString()"
+                                                  ValueChanged="@((string selectedValue) => this.createUserProfileModel.PreferredTattooStatusId = Convert.ToInt32(selectedValue))">
+                                        <FluentOption Value="0">Select Preferred Tattoo Status</FluentOption>
+                                        @if (this.tattooStatuses != null)
+                                        {
+                                            foreach (var singletattooStatus in this.tattooStatuses)
+                                            {
+                                                <FluentOption Value="@singletattooStatus.TattooStatusId.ToString()">
+                                                    @singletattooStatus.Name
+                                                </FluentOption>
+                                            }
+                                        }
+                                    </FluentSelect>
+                                </div>
+                            </FluentWizardStep>
+                        </Steps>
+                    </FluentWizard>
+                </div>
+            </FluentAccordionItem>
+        </FluentAccordion>
     </div>
     <div>
         @if (!String.IsNullOrWhiteSpace(this.ProfileImageBase64))
@@ -375,7 +467,8 @@
         {
             BirthDate = DateTimeOffset.UtcNow,
             CurrentLatitude = 10,
-            CurrentLongitude = 10
+            CurrentLongitude = 10,
+            ActivitiesFrequency = new()
         };
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private GenderModel[]? genders;
@@ -385,6 +478,7 @@
     private KidStatusModel[]? kidStatuses;
     private ReligionModel[]? religions;
     private TattooStatusModel[]? tattooStatuses;
+    private ProfessionModel[]? professions;
     private bool IsBusy { get; set; }
     private bool IsAllDataLoad { get; set; }
     private FluentEditForm? EditFormInstance { get; set; }
@@ -392,7 +486,8 @@
     private FluentDialog? photoAnalysisDialog { get; set; }
     private bool showPhotoAnalysisDialog { get; set; }
     private AnalyzeImageResponseModel? analyzeImageResponseModel { get; set; }
-
+    private ActivityModel[]? activities;
+    private FrequencyModel[]? frecuencies;
     protected override void OnInitialized()
     {
         this.IsAllDataLoad = false;
@@ -425,7 +520,13 @@
                         PreferredTattooStatusId = existentUserProfile.PreferredTattooStatusId,
                         ProfilePhotoId = existentUserProfile.ProfilePhotoId,
                         ReligionId = existentUserProfile.ReligionId,
-                        TattooStatusId = existentUserProfile.TattooStatusId
+                        TattooStatusId = existentUserProfile.TattooStatusId,
+                        MainProfessionId = existentUserProfile.MainProfessionId,
+                        ActivitiesFrequency = existentUserProfile.ActivitiesFrequency?.Select(p => new CreateUserProfileActivityFrequencyModel()
+                        {
+                            ActivityId = p.ActivityId,
+                            FrequencyId = p.FrequencyId
+                        }).ToList()
                     };
                 this.ProfileImageBase64 = GetProfileImageBase64();
             }
@@ -436,6 +537,9 @@
             this.kidStatuses = await this.kidStatusService.GetAllKidStatusAsync(cancellationTokenSource.Token);
             this.religions = await this.religionService.GetAllReligionAsync(cancellationTokenSource.Token);
             this.tattooStatuses = await this.tattooStatusService.GetAllTattooStatusAsync(cancellationTokenSource.Token);
+            this.professions = await this.professionService.GetAllProfessionAsync(cancellationTokenSource.Token);
+            this.activities = await this.activityService.GetAllActivityAsync(cancellationTokenSource.Token);
+            this.frecuencies = await this.frequencyService.GetAllFrequencyAsync(cancellationTokenSource.Token);
             this.IsAllDataLoad = true;
         }
         catch (Exception ex)
@@ -499,7 +603,7 @@
             var promptInfo = await promptGeneratorService.GetPromptCompleteInfoAsync(
                 Constants.PromptsNames.AnalyzeDatingProfilePhoto, this.cancellationTokenSource.Token);
             this.analyzeImageResponseModel = await this.openAIService.AnalyzeImageAsync(
-                imageBase64String, promptInfo!.BaseText!,
+                [imageBase64String], promptInfo!.BaseText!,
             this.cancellationTokenSource.Token);
             this.photoAnalysisDialog!.Show();
         }
@@ -531,33 +635,55 @@
                 photoModerationResult.IsHate || photoModerationResult.IsSelfHarm)
             {
                 this.toastService.ShowWarning("You are not allowed to use that image, please use another one");
+                return;
+            }
+            string photoBase64String = $"data:image/jpg;base64, {Convert.ToBase64String(photoBytes)}";
+            StringBuilder photoExtraAnalysisPrompt = new("Analyze the provided image.Make sure is a photo and not an AI generated image. Make sure is photo-realistic and not animated style. Make sure there is only one person in the photo and that the face is looking towards the camera.");
+            if (this.createUserProfileModel.BiologicalGenderId > 0)
+            {
+                var biologicalGender = this.genders!
+                .Single(p => p.GenderId == this.createUserProfileModel.BiologicalGenderId).Name;
+                photoExtraAnalysisPrompt.AppendLine($"Make sure the provided biological gender '{biologicalGender}' matches the photo.");
+            }
+            photoExtraAnalysisPrompt.AppendLine("Your results must be in plain text. If the given rules are not met respond using the following format:");
+            photoExtraAnalysisPrompt.AppendLine("Prohibited due to the following reasons: {reasons}.");
+            photoExtraAnalysisPrompt.AppendLine("If the given rules are met, include 'Allowed Photo'");
+            photoExtraAnalysisPrompt.AppendLine("Always include details explaining the photo.");
+            var photoExtraAnalysisResult = await this.openAIService
+            .AnalyzeImageAsync([photoBase64String], photoExtraAnalysisPrompt.ToString(), this.cancellationTokenSource.Token);
+            if (photoExtraAnalysisResult!.choices![0].message!.content!.IndexOf("Allowed Photo") == -1)
+            {
+                this.toastService.ShowWarning(photoExtraAnalysisResult.choices![0].message!.content!);
+                return;
             }
             else
             {
-                var fileName = "test";
-                if (this.createUserProfileModel.ProfilePhotoId == default)
-                {
-                    CreatePhotoModel createPhotoModel = new();
-                    createPhotoModel.Name = fileName;
-                    createPhotoModel.Filename = fileName;
-                    createPhotoModel.PhotoBytes = photoBytes;
-                    this.createUserProfileModel.ProfilePhotoId =
-                    await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
-                }
-                else
-                {
-                    UpdatePhotoModel updatePhotoModel = new()
-                        {
-                            Filename = fileName,
-                            Name = fileName,
-                            PhotoBytes = photoBytes,
-                            PhotoId = createUserProfileModel.ProfilePhotoId
-                        };
-                    await photoService.UpdatePhotoAsync(updatePhotoModel, cancellationTokenSource.Token);
-                }
-                this.ProfileImageBase64 = GetProfileImageBase64();
-                this.toastService.ShowSuccess("Your photo has been saved");
+                this.toastService.ShowInfo(photoExtraAnalysisResult.choices![0].message!.content!,
+                timeout: 0);
             }
+            var fileName = "test";
+            if (this.createUserProfileModel.ProfilePhotoId == default)
+            {
+                CreatePhotoModel createPhotoModel = new();
+                createPhotoModel.Name = fileName;
+                createPhotoModel.Filename = fileName;
+                createPhotoModel.PhotoBytes = photoBytes;
+                this.createUserProfileModel.ProfilePhotoId =
+                await photoService.CreatePhotoAsync(createPhotoModel, cancellationTokenSource.Token);
+            }
+            else
+            {
+                UpdatePhotoModel updatePhotoModel = new()
+                    {
+                        Filename = fileName,
+                        Name = fileName,
+                        PhotoBytes = photoBytes,
+                        PhotoId = createUserProfileModel.ProfilePhotoId
+                    };
+                await photoService.UpdatePhotoAsync(updatePhotoModel, cancellationTokenSource.Token);
+            }
+            this.ProfileImageBase64 = GetProfileImageBase64();
+            this.toastService.ShowSuccess("Your photo has been saved");
         }
         catch (Exception ex)
         {
@@ -593,7 +719,7 @@
                 .DeleteUserProfileByIdAsync(existentUserProfileId.Value,
                 this.cancellationTokenSource.Token);
             }
-            await this.userProfileService.CreateUserProfileAsync(this.createUserProfileModel,
+            await this.userProfileService.CreateUserProfileExtendedAsync(this.createUserProfileModel,
             cancellationTokenSource.Token);
             this.toastService.ShowSuccess("Your profile has been saved");
         }
@@ -625,6 +751,58 @@
         if (this.EditFormInstance!.EditContext!.Validate())
         {
             await EditFormInstance.OnValidSubmit.InvokeAsync();
+        }
+    }
+
+    private async Task OnGenerateAboutMeClickedAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            if (this.EditFormInstance!.EditContext!.Validate())
+            {
+                var promptInfo = await this.promptGeneratorService
+                .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateDatingProfileAboutMe,
+                    this.cancellationTokenSource.Token);
+                StringBuilder prompt = new();
+                prompt.AppendLine("**START OF MY INFORMATION**");
+                if (!string.IsNullOrWhiteSpace(this.createUserProfileModel.About))
+                {
+                    prompt.AppendLine(this.createUserProfileModel.About);
+                }
+                prompt.AppendLine($"Main Profession: {this.professions!.Single(p => p.ProfessionId == this.createUserProfileModel.MainProfessionId).Name}");
+                int age = (int)((DateTimeOffset.UtcNow - this.createUserProfileModel.BirthDate).TotalDays / 365.2425);
+                prompt.AppendLine($"Age: {age} years old.");
+                prompt.AppendLine($"Biological Gender: {this.genders!.Single(p => p.GenderId == this.createUserProfileModel.BiologicalGenderId).Name}");
+                prompt.AppendLine($"Religion: {this.religions!.Single(p => p.ReligionId == this.createUserProfileModel.ReligionId).Name}");
+                prompt.AppendLine($"Date Objective: {this.dateObjectives!.Single(p => p.DateObjectiveId == this.createUserProfileModel.CurrentDateObjectiveId).Name}");
+                prompt.AppendLine($"Eyes Color: {this.eyesColors!.Single(p => p.EyesColorId == this.createUserProfileModel.EyesColorId).Name}");
+                prompt.AppendLine($"Hair Color: {this.hairColors!.Single(p => p.HairColorId == this.createUserProfileModel.HairColorId).Name}");
+                prompt.AppendLine($"Kids Status: {this.kidStatuses!.Single(p => p.KidStatusId == this.createUserProfileModel.KidStatusId).Name}");
+                prompt.AppendLine($"Tattoo Status: {this.tattooStatuses!.Single(p => p.TattooStatusId == this.createUserProfileModel.TattooStatusId).Name}");
+                prompt.AppendLine("**END OF MY INFORMATION**");
+                prompt.AppendLine("**START OF MY PREFERENCES IN A PARTNER**");
+                prompt.AppendLine($"Eyes Color: {this.eyesColors!.Single(p => p.EyesColorId == this.createUserProfileModel.PreferredEyesColorId).Name}");
+                prompt.AppendLine($"Hair Color: {this.hairColors!.Single(p => p.HairColorId == this.createUserProfileModel.PreferredHairColorId).Name}");
+                prompt.AppendLine($"Kids Status: {this.kidStatuses!.Single(p => p.KidStatusId == this.createUserProfileModel.PreferredKidStatusId).Name}");
+                prompt.AppendLine($"Religion: {this.religions!.Single(p => p.ReligionId == this.createUserProfileModel.PreferredReligionId).Name}");
+                prompt.AppendLine($"Religion: {this.tattooStatuses!.Single(p => p.TattooStatusId == this.createUserProfileModel.PreferredTattooStatusId).Name}");
+                prompt.AppendLine("**END OF MY PREFERENCES IN A PARTNER**");
+                var result = await this.openAIService
+                .GenerateChatCompletionAsync(promptInfo!.BaseText!, prompt.ToString(),
+                this.cancellationTokenSource.Token);
+                this.createUserProfileModel.About = result!.choices![0].message!.content;
+            }
+        }
+        catch (Exception ex)
+        {
+            this.toastService!.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
         }
     }
 

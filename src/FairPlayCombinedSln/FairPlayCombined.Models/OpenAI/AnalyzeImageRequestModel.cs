@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Models.OpenAI
 {
-
+#pragma warning disable IDE1006 // Naming Styles
     public class AnalyzeImageRequestModel
     {
         public string? model { get; set; }
@@ -27,8 +27,11 @@ namespace FairPlayCombined.Models.OpenAI
         public Image_Url? image_url { get; set; }
     }
 
+#pragma warning disable S101 // Types should be named in PascalCase
     public class Image_Url
+#pragma warning restore S101 // Types should be named in PascalCase
     {
         public string? url { get; set; }
     }
+#pragma warning restore IDE1006 // Naming Styles
 }

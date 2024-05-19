@@ -1,5 +1,6 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FairPlayCombined.Models.FairPlayDating.UserProfile
 {
@@ -41,8 +42,24 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         public int TattooStatusId { get; set; }
         [DeniedValues(0)]
         public int PreferredTattooStatusId { get; set; }
+        [DeniedValues(0)]
+        public int MainProfessionId { get; set; }
         public DateTimeOffset BirthDate { get; set; }
         [Required]
         public NetTopologySuite.Geometries.Point? CurrentGeoLocation { get; set; }
+        [Required]
+        [ValidateComplexType]
+        public List<CreateUserProfileActivityFrequencyModel>? ActivitiesFrequency { get; set; }
+    }
+
+    public class CreateUserProfileActivityFrequencyModel
+    {
+
+        [Required]
+        [DeniedValues(default(int))]
+        public int ActivityId { get; set; }
+        [Required]
+        [DeniedValues(default(int))]
+        public int FrequencyId { get; set; }
     }
 }

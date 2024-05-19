@@ -12,6 +12,8 @@
             public const string CreateVideoInfographic = nameof(CreateVideoInfographic);
             public const string CreateNewVideoRecommendationIdea = nameof(CreateNewVideoRecommendationIdea);
             public const string AnalyzeDatingProfilePhoto = nameof(AnalyzeDatingProfilePhoto);
+            public const string CreateDatingProfileAboutMe = nameof(CreateDatingProfileAboutMe);
+            public const string AnalyzePotentialMatch = nameof(AnalyzePotentialMatch);
         }
         public static class Routes
         {

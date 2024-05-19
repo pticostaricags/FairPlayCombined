@@ -19,8 +19,27 @@ public class OpenAIService(
     private const string TextGenerationModel = "gpt-4o";
 
     public async Task<AnalyzeImageResponseModel?> AnalyzeImageAsync(
-        string imageBase64String, string prompt, CancellationToken cancellationToken)
+        string[] imagesBase64Strings, string prompt, CancellationToken cancellationToken)
     {
+        List<Content> contents =
+        [
+            new()
+            {
+                type = "text",
+                text = prompt!,
+            },
+        ];
+        foreach (var singleImageBase64String in imagesBase64Strings)
+        {
+            contents.Add(new()
+            {
+                type = "image_url",
+                image_url = new Image_Url()
+                {
+                    url = singleImageBase64String
+                }
+            });
+        }
         AnalyzeImageRequestModel analyzeImageRequestModel = new()
         {
             model = TextGenerationModel,
@@ -30,22 +49,7 @@ public class OpenAIService(
                 new Message()
                 {
                     role="user",
-                    content=new Content[]
-                    {
-                        new()
-                        {
-                            type="text",
-                            text = prompt!,
-                        },
-                        new()
-                        {
-                            type="image_url",
-                            image_url = new Image_Url()
-                            {
-                                url = imageBase64String
-                            }
-                        }
-                    }
+                    content=[.. contents]
                 }
              ]
         };
@@ -57,7 +61,7 @@ public class OpenAIService(
                 DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
             }, cancellationToken);
         response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<AnalyzeImageResponseModel>();
+        var result = await response.Content.ReadFromJsonAsync<AnalyzeImageResponseModel>(cancellationToken);
         return result!;
     }
     public async Task<ChatCompletionResponseModel?> GenerateChatCompletionAsync(

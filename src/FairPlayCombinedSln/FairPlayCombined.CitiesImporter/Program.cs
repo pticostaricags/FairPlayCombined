@@ -6,4 +6,4 @@ builder.AddServiceDefaults();
 builder.Services.AddHostedService<CitiesImporter>();
 
 var host = builder.Build();
-host.Run();
+await host.RunAsync();

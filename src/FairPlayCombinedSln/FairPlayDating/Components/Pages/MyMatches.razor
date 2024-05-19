@@ -6,11 +6,13 @@
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
+@using FairPlayCombined.Models.OpenAI
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayDating
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
+@using System.Text
 
 @attribute [Authorize]
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
@@ -19,7 +21,12 @@
 @inject IUserProviderService userProviderService
 @inject IStringLocalizer<MyMatches> localizer
 @inject GeoNamesService geoNamesService
-
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject OpenAIService openAIService
+@inject ActivityService activityService
+@inject PromptGeneratorService promptGeneratorService
 <h3>
     @localizer[MyMatchesTextKey]
 </h3>
@@ -62,6 +69,8 @@
                             <p>@context.About</p>
                             <a class="btn btn-primary"
                                @onclick="@( ()=> OnViewDetailsClicked(context))">@localizer[ViewDetailsTextKey]</a>
+                            <a class="btn btn-primary"
+                               @onclick="@( async ()=> await OnAnalyzePotentialMatchAsync(context))">Analyze Potential Match</a>
                         </div>
                     </div>
                     <div class="row">
@@ -165,10 +174,44 @@
                 </FluentLabel>
                 <FluentLabel Typo="Typography.Body">@selectedUserLocationText</FluentLabel>
             </p>
+            @if (selectedUserProfileModel!.ActivitiesFrequency?.Length > 0)
+            {
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Activities:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">
+                    @(String.Join(",", selectedUserProfileModel!.ActivitiesFrequency.Select(p => p.ActivityName)))
+                </FluentLabel>
+            }
         </div>
         <div>
             <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
                           OnClick="ResetDialog">Close</FluentButton>
+        </div>
+    }
+</FluentDialog>
+
+<FluentDialog @ref="potentialMatchAnalysisDialog"
+              @bind-Hidden="@showPotentialMatchAnalysisDialog"
+              Modal="true" TrapFocus="true"
+              PreventScroll="false">
+    <FluentDialogHeader Visible="false"></FluentDialogHeader>
+    @if (this.potentialMatchAnalysisResult != null)
+    {
+        <div>
+            <p>
+                <FluentTextArea style="width:100%;"
+                                Rows="10" ReadOnly="true"
+                                Value="@this.potentialMatchAnalysisResult!.choices![0].message!.content"></FluentTextArea>
+            </p>
+        </div>
+        <div>
+            <div>
+                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                              OnClick="ResetPotentialMAtchAnalysisDialog">Close</FluentButton>
+            </div>
         </div>
     }
 </FluentDialog>
@@ -178,6 +221,8 @@
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool showDetailsDialog { get; set; } = false;
     private FluentDialog? detailsDialog { get; set; }
+    private bool showPotentialMatchAnalysisDialog { get; set; }
+    private FluentDialog? potentialMatchAnalysisDialog { get; set; }
     private UserProfileModel? selectedUserProfileModel { get; set; }
     private bool IsBusy { get; set; }
     private bool HasUserProfile { get; set; }
@@ -186,6 +231,7 @@
             ItemsPerPage = 1
         };
     private string? selectedUserLocationText { get; set; }
+    private AnalyzeImageResponseModel? potentialMatchAnalysisResult { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -225,6 +271,55 @@
         if (firstRender)
         {
             this.detailsDialog!.Hide();
+            this.potentialMatchAnalysisDialog!.Hide();
+        }
+    }
+
+    private async Task OnAnalyzePotentialMatchAsync(UserProfileModel potentialMatchProfileModel)
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var userId = this.userProviderService.GetCurrentUserId();
+            var existentUserProfile = await this.userProfileService
+                .GetUserProfileByUserIdAsync(userId!, this.cancellationTokenSource.Token);
+            string baseUrl = this.navigationManager.BaseUri;
+
+            string myProfileImageRequestUrl = $"{baseUrl}api/photoimage/{existentUserProfile!.ProfilePhotoId}";
+            var myProfileImageBytes = httpClient.GetByteArrayAsync(myProfileImageRequestUrl).Result;
+            string myProfileImageBase64String = $"data:image/jpg;base64, {Convert.ToBase64String(myProfileImageBytes)}";
+
+            string potentialMatchProfileImageRequestUrl = $"{baseUrl}api/photoimage/{potentialMatchProfileModel!.ProfilePhotoId}";
+            var potentialMatchProfileImageBytes = httpClient.GetByteArrayAsync(potentialMatchProfileImageRequestUrl).Result;
+            string potentialMatchProfileImageBase64String = $"data:image/jpg;base64, {Convert.ToBase64String(potentialMatchProfileImageBytes)}";
+
+            var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(
+                Constants.PromptsNames.AnalyzePotentialMatch, this.cancellationTokenSource.Token);
+            StringBuilder prompt = new(promptInfo!.BaseText!);
+            var activities = await this.activityService.GetAllActivityAsync(cancellationTokenSource.Token);
+            prompt.AppendLine("My activities:");
+            foreach (var singleActivity in existentUserProfile!.ActivitiesFrequency!)
+            {
+                prompt.AppendLine(activities.Single(p => p.ActivityId == singleActivity.ActivityId).Name);
+            }
+            prompt.AppendLine("The other person activities:");
+            foreach (var singleActivity in potentialMatchProfileModel!.ActivitiesFrequency!)
+            {
+                prompt.AppendLine(activities.Single(p => p.ActivityId == singleActivity.ActivityId).Name);
+            }
+            this.potentialMatchAnalysisResult = await this.openAIService.AnalyzeImageAsync([myProfileImageBase64String, potentialMatchProfileImageBase64String],
+            prompt.ToString(), this.cancellationTokenSource.Token);
+            this.potentialMatchAnalysisDialog!.Show();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
         }
     }
 
@@ -235,7 +330,7 @@
         var geoData = await this.geoNamesService
         .GetGeoLocationDataAsync(userProfileModel.CurrentLatitude, userProfileModel.CurrentLongitude,
         this.cancellationTokenSource.Token);
-        this.selectedUserLocationText = 
+        this.selectedUserLocationText =
         $"{geoData!.nearest!.region}, {geoData.nearest.city}, {geoData.nearest.state}";
     }
 
@@ -243,6 +338,11 @@
     {
         this.detailsDialog!.Hide();
         this.selectedUserProfileModel = null;
+    }
+
+    private void ResetPotentialMAtchAnalysisDialog()
+    {
+        this.potentialMatchAnalysisDialog!.Hide();
     }
 
     public ValueTask DisposeAsync()

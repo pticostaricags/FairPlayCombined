@@ -103,7 +103,7 @@ app.UseAntiforgery();
 using var scope = app.Services.CreateScope();
 using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
 
-var supportedCultures = ctx.Culture.Select(p => p.Name).ToArray();
+var supportedCultures = await ctx.Culture.Select(p => p.Name).ToArrayAsync();
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])
     .AddSupportedCultures(supportedCultures)
@@ -117,7 +117,7 @@ app.MapRazorComponents<App>()
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
-app.Run();
+await app.RunAsync();
 
 namespace Utilities
 {

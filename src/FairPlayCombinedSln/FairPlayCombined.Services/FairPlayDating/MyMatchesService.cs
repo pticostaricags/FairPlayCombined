@@ -23,6 +23,7 @@ namespace FairPlayCombined.Services.FairPlayDating
             var myUserProfile = await dbContext.AspNetUsers
                 .AsNoTracking()
                 .Include(p => p.UserProfile)
+                .Include(p=>p.UserActivity)
                 .Where(p => p.Id == myUserId)
                 .Select(p => p.UserProfile)
                 .SingleOrDefaultAsync(cancellationToken);
@@ -33,6 +34,7 @@ namespace FairPlayCombined.Services.FairPlayDating
                     .AsNoTracking()
                 .Include(p => p.ProfilePhoto)
                 .Include(p => p.ApplicationUser).ThenInclude(p => p.LikedUserProfileLikedApplicationUser)
+                .Include(p=>p.ApplicationUser).ThenInclude(p=>p.UserActivity)
                 .Where(p =>
                 (Math.Abs(p.BirthDate.Year - myUserProfile.BirthDate.Year) < Constants.Matches.MaxAllowedAgeDifference) &&
                 p.BiologicalGenderId != myUserProfile.BiologicalGenderId &&
@@ -73,7 +75,13 @@ namespace FairPlayCombined.Services.FairPlayDating
                     ReligionText = p.Religion.Name,
                     TattooStatusText = p.TattooStatus.Name,
                     UserProfileId = p.UserProfileId,
-                    Distance = p.CurrentGeoLocation!.Distance(myUserProfile.CurrentGeoLocation)
+                    Distance = p.CurrentGeoLocation!.Distance(myUserProfile.CurrentGeoLocation),
+                    ActivitiesFrequency=p.ApplicationUser.UserActivity.Select(x=>new UserProfileActivityFrequencyModel()
+                    {
+                        ActivityName = x.Activity.Name,
+                        ActivityId = x.ActivityId,
+                        FrequencyId = x.FrequencyId
+                    }).ToArray()
                 })
                 .ToArrayAsync(cancellationToken);
             }

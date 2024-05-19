@@ -52,68 +52,93 @@ END
 SET IDENTITY_INSERT [FairPlayDating].[Frequency] OFF
 --END OF DEFAULT FREQUENCY
 --START OF DEFAULT ACTIVITY
-SET IDENTITY_INSERT [FairPlayDating].[Activity] ON
-DECLARE @ACTIVITYNAME NVARCHAR(50) = 'Excercise'
-DECLARE @ACTIVITYID INT = 1
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Smoking'
-SET @ACTIVITYID = 2
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Drinking'
-SET @ACTIVITYID = 3
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Swimming'
-SET @ACTIVITYID = 4
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Road Bike'
-SET @ACTIVITYID = 5
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Mountain Bike'
-SET @ACTIVITYID = 6
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Play Volleyball'
-SET @ACTIVITYID = 7
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Play Tennis'
-SET @ACTIVITYID = 8
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Bowling'
-SET @ACTIVITYID = 9
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET @ACTIVITYNAME = 'Play Soccer'
-SET @ACTIVITYID = 10
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Activity] A WHERE [A].[Name] = @ACTIVITYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Activity]([ActivityId],[Name]) VALUES(@ACTIVITYID, @ACTIVITYNAME)
-END
-SET IDENTITY_INSERT [FairPlayDating].[Activity] OFF
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Archery');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Astronomy');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Backpacking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Badminton');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Baking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Basketball');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Birdwatching');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Board games');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Bowling');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Calligraphy');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Camping');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Canoeing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Chess');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Climbing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Collecting stamps');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Cooking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Crafting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Crochet');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Cycling');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Dancing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Drawing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Embroidery');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Fencing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Fishing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Gardening');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Geocaching');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Golf');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Handball');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Hiking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Horseback riding');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Ice skating');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Inline skating');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Jigsaw puzzles');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Jogging');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Kayaking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Knitting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Lacrosse');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Lego building');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Magic tricks');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Martial arts');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Meditation');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Metal detecting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Model building');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Mountain biking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Painting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Paragliding');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Photography');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Pilates');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Pottery');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Quilting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Racquetball');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Reading');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Rock climbing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Rollerblading');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Rowing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Running');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Sailing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Scrapbooking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Scuba diving');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Singing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Skateboarding');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Sketching');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Skiing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Snowboarding');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Snowshoeing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Soccer');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Softball');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Surfing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Swimming');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Table tennis');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Taekwondo');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Tennis');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Traveling');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Triathlon');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Ultimate Frisbee');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Video gaming');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Volleyball');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Wakeboarding');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Walking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Watching movies');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Weightlifting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Wind surfing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Wine tasting');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Woodworking');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Writing');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Yoga');
+INSERT INTO [FairPlayDating].[Activity] ([Name]) VALUES ('Zumba');
 --END OF DEFAULT ACTIVITY
 --START OF DEFAULT GENDERS
 SET IDENTITY_INSERT [FairPlayDating].[Gender] ON
@@ -352,4 +377,218 @@ BEGIN
 END
 SET IDENTITY_INSERT [FairPlayDating].[TattooStatus] OFF
 --END OF DEFAULT TATOO STATUS
+--START OF DEFAULT PROFESSIONS values from Professions.Name
+INSERT INTO [FairPlayDating].[Profession] ([Name])
+VALUES
+    ('Accountant'),
+    ('Actor'),
+    ('Actuary'),
+    ('Administrative Assistant'),
+    ('Advertising Manager'),
+    ('Aerospace Engineer'),
+    ('Agricultural Engineer'),
+    ('Air Traffic Controller'),
+    ('Airline Pilot'),
+    ('Animator'),
+    ('Anthropologist'),
+    ('Archaeologist'),
+    ('Architect'),
+    ('Archivist'),
+    ('Art Director'),
+    ('Artist'),
+    ('Astronomer'),
+    ('Athlete'),
+    ('Attorney'),
+    ('Audiologist'),
+    ('Author'),
+    ('Auto Mechanic'),
+    ('Baker'),
+    ('Banker'),
+    ('Barber'),
+    ('Bartender'),
+    ('Biochemist'),
+    ('Biomedical Engineer'),
+    ('Biophysicist'),
+    ('Bookkeeper'),
+    ('Botanist'),
+    ('Broadcast Technician'),
+    ('Budget Analyst'),
+    ('Building Inspector'),
+    ('Bus Driver'),
+    ('Business Analyst'),
+    ('Butcher'),
+    ('Buyer'),
+    ('Carpenter'),
+    ('Cartographer'),
+    ('Cashier'),
+    ('Chef'),
+    ('Chemical Engineer'),
+    ('Chemist'),
+    ('Childcare Worker'),
+    ('Chiropractor'),
+    ('Civil Engineer'),
+    ('Claims Adjuster'),
+    ('Clinical Laboratory Technician'),
+    ('Coach'),
+    ('Commercial Diver'),
+    ('Computer Programmer'),
+    ('Computer Support Specialist'),
+    ('Construction Manager'),
+    ('Consultant'),
+    ('Content Writer'),
+    ('Copywriter'),
+    ('Cost Estimator'),
+    ('Counselor'),
+    ('Court Reporter'),
+    ('Curator'),
+    ('Customer Service Representative'),
+    ('Dancer'),
+    ('Database Administrator'),
+    ('Dental Assistant'),
+    ('Dental Hygienist'),
+    ('Dentist'),
+    ('Detective'),
+    ('Dietitian'),
+    ('Dispatcher'),
+    ('Doctor'),
+    ('Economist'),
+    ('Editor'),
+    ('Electrician'),
+    ('Elementary School Teacher'),
+    ('Elevator Installer'),
+    ('Emergency Medical Technician (EMT)'),
+    ('Engineer'),
+    ('Environmental Scientist'),
+    ('Event Planner'),
+    ('Executive Assistant'),
+    ('Farmer'),
+    ('Fashion Designer'),
+    ('Film Director'),
+    ('Financial Analyst'),
+    ('Firefighter'),
+    ('Fitness Trainer'),
+    ('Flight Attendant'),
+    ('Floral Designer'),
+    ('Forester'),
+    ('Game Designer'),
+    ('Gardener'),
+    ('Genetic Counselor'),
+    ('Geographer'),
+    ('Geologist'),
+    ('Graphic Designer'),
+    ('Guidance Counselor'),
+    ('Hairdresser'),
+    ('Health Educator'),
+    ('High School Teacher'),
+    ('Home Health Aide'),
+    ('Human Resources Specialist'),
+    ('HVAC Technician'),
+    ('Industrial Designer'),
+    ('Industrial Engineer'),
+    ('Information Security Analyst'),
+    ('Interpreter'),
+    ('IT Manager'),
+    ('Janitor'),
+    ('Jeweler'),
+    ('Journalist'),
+    ('Judge'),
+    ('Kindergarten Teacher'),
+    ('Landscape Architect'),
+    ('Lawyer'),
+    ('Librarian'),
+    ('Licensed Practical Nurse (LPN)'),
+    ('Locksmith'),
+    ('Machinist'),
+    ('Management Analyst'),
+    ('Market Research Analyst'),
+    ('Marketing Manager'),
+    ('Massage Therapist'),
+    ('Mathematician'),
+    ('Mechanical Engineer'),
+    ('Medical Assistant'),
+    ('Medical Laboratory Technician'),
+    ('Medical Transcriptionist'),
+    ('Meteorologist'),
+    ('Microbiologist'),
+    ('Middle School Teacher'),
+    ('Millwright'),
+    ('Multimedia Artist'),
+    ('Music Director'),
+    ('Musician'),
+    ('Network Administrator'),
+    ('Nuclear Engineer'),
+    ('Nurse'),
+    ('Nurse Practitioner'),
+    ('Nutritionist'),
+    ('Occupational Therapist'),
+    ('Operations Manager'),
+    ('Optician'),
+    ('Optometrist'),
+    ('Paralegal'),
+    ('Park Ranger'),
+    ('Pediatrician'),
+    ('Personal Trainer'),
+    ('Pharmacist'),
+    ('Photographer'),
+    ('Physical Therapist'),
+    ('Physician'),
+    ('Physician Assistant'),
+    ('Physicist'),
+    ('Pilot'),
+    ('Plumber'),
+    ('Police Officer'),
+    ('Political Scientist'),
+    ('Postal Service Worker'),
+    ('Preschool Teacher'),
+    ('Private Detective'),
+    ('Producer'),
+    ('Professor'),
+    ('Programmer'),
+    ('Project Manager'),
+    ('Property Manager'),
+    ('Psychiatrist'),
+    ('Psychologist'),
+    ('Public Relations Specialist'),
+    ('Purchasing Manager'),
+    ('Radiologic Technologist'),
+    ('Real Estate Agent'),
+    ('Receptionist'),
+    ('Registered Nurse (RN)'),
+    ('Reporter'),
+    ('Respiratory Therapist'),
+    ('Sales Manager'),
+    ('Sales Representative'),
+    ('Scientist'),
+    ('Sculptor'),
+    ('Security Guard'),
+    ('Social Media Manager'),
+    ('Social Worker'),
+    ('Software Architect'),
+    ('Software Developer'),
+    ('Software Engineer'),
+    ('Sound Engineer'),
+    ('Speech-Language Pathologist'),
+    ('Statistician'),
+    ('Stockbroker'),
+    ('Structural Engineer'),
+    ('Surgeon'),
+    ('Surveyor'),
+    ('Systems Analyst'),
+    ('Tailor'),
+    ('Teacher'),
+    ('Technical Writer'),
+    ('Telecommunications Technician'),
+    ('Translator'),
+    ('Travel Agent'),
+    ('Truck Driver'),
+    ('Urban Planner'),
+    ('Veterinarian'),
+    ('Video Editor'),
+    ('Waiter/Waitress'),
+    ('Web Developer'),
+    ('Welder'),
+    ('Writer'),
+    ('Zoologist');
+
+--END OF DEFAULT PROFESSIONS values from Professions.Name
 COMMIT

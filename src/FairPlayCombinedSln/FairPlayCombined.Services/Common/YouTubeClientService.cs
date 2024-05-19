@@ -50,8 +50,9 @@ namespace FairPlayCombined.Services.Common
             MemoryStream memoryStream = new(bytes);
             using (var stream = memoryStream)
             {
+                var secrets = await GoogleClientSecrets.FromStreamAsync(stream);
                 credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.FromStream(stream).Secrets,
+                    secrets.Secrets,
                     // This OAuth 2.0 access scope allows an application to upload files to the
                     // authenticated user's YouTube channel, but doesn't allow other types of access.
                     [ YouTubeService.Scope.YoutubeUpload,

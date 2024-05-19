@@ -61,6 +61,8 @@ public partial class UserProfile
 
     public DateTimeOffset BirthDate { get; set; }
 
+    public int MainProfessionId { get; set; }
+
     [ForeignKey("ApplicationUserId")]
     [InverseProperty("UserProfile")]
     public virtual AspNetUsers ApplicationUser { get; set; }
@@ -84,6 +86,10 @@ public partial class UserProfile
     [ForeignKey("KidStatusId")]
     [InverseProperty("UserProfileKidStatus")]
     public virtual KidStatus KidStatus { get; set; }
+
+    [ForeignKey("MainProfessionId")]
+    [InverseProperty("UserProfile")]
+    public virtual Profession MainProfession { get; set; }
 
     [ForeignKey("PreferredEyesColorId")]
     [InverseProperty("UserProfilePreferredEyesColor")]
