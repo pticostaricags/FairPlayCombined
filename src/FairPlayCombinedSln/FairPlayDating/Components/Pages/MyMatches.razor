@@ -303,7 +303,7 @@
             {
                 prompt.AppendLine(activities.Single(p => p.ActivityId == singleActivity.ActivityId).Name);
             }
-            prompt.AppendLine("Possible potential match activities:");
+            prompt.AppendLine("The other person activities:");
             foreach (var singleActivity in potentialMatchProfileModel!.ActivitiesFrequency!)
             {
                 prompt.AppendLine(activities.Single(p => p.ActivityId == singleActivity.ActivityId).Name);
