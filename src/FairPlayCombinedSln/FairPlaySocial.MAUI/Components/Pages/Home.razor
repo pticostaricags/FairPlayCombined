@@ -111,7 +111,7 @@
         if (MediaPicker.IsCaptureSupported)
         {
             var result = await MediaPicker.PickPhotoAsync();
-            using var stream = await result.OpenReadAsync();
+            using var stream = await result!.OpenReadAsync();
             byte[] photoBytes = new byte[stream.Length];
             stream.Read(photoBytes, 0, (int)stream.Length);
             stream.Close();
