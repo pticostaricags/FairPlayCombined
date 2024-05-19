@@ -522,7 +522,7 @@
                         ReligionId = existentUserProfile.ReligionId,
                         TattooStatusId = existentUserProfile.TattooStatusId,
                         MainProfessionId = existentUserProfile.MainProfessionId,
-                        ActivitiesFrequency = existentUserProfile?.ActivitiesFrequency?.Select(p => new CreateUserProfileActivityFrequencyModel()
+                        ActivitiesFrequency = existentUserProfile.ActivitiesFrequency?.Select(p => new CreateUserProfileActivityFrequencyModel()
                         {
                             ActivityId = p.ActivityId,
                             FrequencyId = p.FrequencyId
