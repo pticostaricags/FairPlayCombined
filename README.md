@@ -29,6 +29,14 @@ You can also help by sharing this wiki with other people and encouraging to beco
 <img width="940" alt="FairPlayCombined - NET Aspire - Admin Portal - Roles" src="https://github.com/pticostaricags/FairPlayCombined/assets/3481899/b55c8f46-1823-4050-a527-9da0c79e21c5">
 <img width="272" alt="FairPlayCombined - NET Aspire - Solution Explorer" src="https://github.com/pticostaricags/FairPlayCombined/assets/3481899/6f5861ff-c549-4faa-ab52-8da0a733a1ec">
 
+### Code of Conduct
+Check this page: [CODING STANDSRDS](/CODE_OF_CONDUCT.md)
+### How To contribute
+Check this page: [CONTRIBUTING.md](/CONTRIBUTING.md)
+
+### Coding Standards
+Check this page: [CODING STANDARDS](/CODING-STANDARDS.md)
+
 ### Disclaimer
 FairPlayCombined is a project evaluating technologies in preview, for that reason it is not currently suited for production scenarios.
 
