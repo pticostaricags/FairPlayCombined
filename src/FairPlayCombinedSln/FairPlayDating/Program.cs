@@ -166,5 +166,7 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddTransient<ProfessionService>();
     builder.Services.AddTransient<FrequencyService>();
     builder.Services.AddTransient<ActivityService>();
+    builder.Services.AddTransient<LikedUserProfileService>();
+    builder.Services.AddTransient<NotLikedUserProfileService>();
     builder.AddAzureAIContentSafety();
 }

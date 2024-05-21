@@ -5,6 +5,8 @@
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Models.FairPlayDating.LikedUserProfile
+@using FairPlayCombined.Models.FairPlayDating.NotLikedUserProfile
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
 @using FairPlayCombined.Models.OpenAI
 @using FairPlayCombined.Models.Pagination
@@ -29,6 +31,9 @@
 @inject ReligionService religionService
 @inject DateObjectiveService dateObjectiveService
 @inject PromptGeneratorService promptGeneratorService
+@inject LikedUserProfileService likedUserProfileService
+@inject NotLikedUserProfileService notLikedUserProfileService
+
 <h3>
     @localizer[MyMatchesTextKey]
 </h3>
@@ -44,6 +49,20 @@
 <div class="grid-container">
     <FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
         <TemplateColumn>
+            <div class="row">
+                <div class="col">
+                    <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  title="I like this person"
+                                  OnClick="@( () => OnPotentialMatchLikeClickedAsync(context))">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.ThumbLike())"></FluentIcon>
+                    </FluentButton>
+                    <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  title="I don't like this person"
+                                  OnClick="@( () => OnPotentialMatchDisLikeClickedAsync(context))">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.ThumbDislike())"></FluentIcon>
+                    </FluentButton>
+                </div>
+            </div>
             <div class="row">
                 <div class="col">
                     <div class="card" style="width: 100%;">
@@ -319,7 +338,7 @@
             prompt.AppendLine($"The other person date objective: {dateObjectives.Single(p => p.DateObjectiveId == potentialMatchProfileModel.CurrentDateObjectiveId).Name}");
 
             prompt.AppendLine("Have the analysis of photos in a separate section than the rest of the analysis.");
-            
+
             this.potentialMatchAnalysisResult = await this.openAIService.AnalyzeImageAsync([myProfileImageBase64String, potentialMatchProfileImageBase64String],
             prompt.ToString(), this.cancellationTokenSource.Token);
             this.potentialMatchAnalysisDialog!.Show();
@@ -355,6 +374,62 @@
     private void ResetPotentialMAtchAnalysisDialog()
     {
         this.potentialMatchAnalysisDialog!.Hide();
+    }
+
+    private async Task OnPotentialMatchLikeClickedAsync(UserProfileModel likedProfile)
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            CreateLikedUserProfileModel createLikedUserProfileModel = new()
+            {
+                LikedApplicationUserId = likedProfile.ApplicationUserId,
+                LikingApplicationUserId = this.userProviderService.GetCurrentUserId()
+            };
+            await this.likedUserProfileService.CreateLikedUserProfileAsync(
+                createModel: createLikedUserProfileModel,
+                cancellationToken:this.cancellationTokenSource.Token
+            );
+            await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnPotentialMatchDisLikeClickedAsync(UserProfileModel likedProfile)
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            CreateNotLikedUserProfileModel createNotLikedUserProfileModel = new()
+                {
+                    NotLikedApplicationUserId = likedProfile.ApplicationUserId,
+                    NotLikingApplicationUserId = this.userProviderService.GetCurrentUserId()
+                };
+            await this.notLikedUserProfileService.CreateNotLikedUserProfileAsync(
+                createModel: createNotLikedUserProfileModel,
+                cancellationToken: this.cancellationTokenSource.Token
+            );
+            await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
     }
 
     public ValueTask DisposeAsync()
