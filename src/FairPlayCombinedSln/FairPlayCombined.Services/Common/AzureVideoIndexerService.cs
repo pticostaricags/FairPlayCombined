@@ -166,6 +166,30 @@ namespace FairPlayCombined.Services.Common
             }
         }
 
+        public async Task<SearchVideosResponseModel?> SearchVideosByNameAsync(
+            string viAccessToken,
+            string name,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                string requestUrl = $"https://api.videoindexer.ai/" +
+                    $"/{azureVideoIndexerServiceConfiguration.Location}" +
+                    $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
+                    $"/Videos/Search" +
+                    $"?query={name}" +
+                    $"&textScope=Name";
+                httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
+                var result = await httpClient.GetFromJsonAsync<SearchVideosResponseModel>(requestUrl, cancellationToken: cancellationToken);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new AzureVideoIndexerException(ex.Message);
+            }
+        }
+
         public async Task<SearchVideosResponseModel?> SearchVideosByIdsAsync(
             string viAccessToken,
             string[] videoIds,
