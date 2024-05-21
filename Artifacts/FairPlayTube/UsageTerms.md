@@ -20,6 +20,7 @@ By accessing and using FairPlayTube (“Platform”), you accept and agree to be
 - Use the Platform to harass, stalk, or otherwise subject another person to unwanted or inappropriate behavior.
 - Engage in any conduct that is harmful or disruptive to the Platform or its users.
 - Upload or share AI-generated videos, deepfakes, or any content that is misleading or manipulative.
+- Upload or share videos that you do not own or have legal rights to, including copyrighted content.
 
 ## 3. User Conduct and Content
 
