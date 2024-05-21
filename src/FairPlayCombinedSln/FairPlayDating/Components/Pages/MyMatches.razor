@@ -30,6 +30,8 @@
 @inject ActivityService activityService
 @inject ReligionService religionService
 @inject DateObjectiveService dateObjectiveService
+@inject KidStatusService kidStatusService
+@inject ProfessionService professionService
 @inject PromptGeneratorService promptGeneratorService
 @inject LikedUserProfileService likedUserProfileService
 @inject NotLikedUserProfileService notLikedUserProfileService
@@ -122,6 +124,14 @@
                     </strong>
                 </FluentLabel>
                 <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.Age</FluentLabel>
+            </p>
+            <p>
+                <FluentLabel Typo="Typography.Subject">
+                    <strong>
+                        Profession:
+                    </strong>
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">@selectedUserProfileModel!.MainProfessionText</FluentLabel>
             </p>
             <p>
                 <FluentLabel Typo="Typography.Subject">
@@ -337,6 +347,12 @@
             prompt.AppendLine($"My date objective: {dateObjectives.Single(p=>p.DateObjectiveId == existentUserProfile.CurrentDateObjectiveId).Name}");
             prompt.AppendLine($"The other person date objective: {dateObjectives.Single(p => p.DateObjectiveId == potentialMatchProfileModel.CurrentDateObjectiveId).Name}");
 
+            var kidStatuses = await this.kidStatusService.GetAllKidStatusAsync(this.cancellationTokenSource.Token);
+            prompt.AppendLine($"My Preferred Kid Status in the other person: {kidStatuses.Single(p=>p.KidStatusId == existentUserProfile.PreferredKidStatusId).Name}");
+            prompt.AppendLine($"Current Kid Status in the other person: {kidStatuses.Single(p => p.KidStatusId == potentialMatchProfileModel.KidStatusId).Name}");
+
+            prompt.AppendLine($"My main profession: {existentUserProfile.MainProfessionText}");
+            prompt.AppendLine($"The other person main profession: {potentialMatchProfileModel.MainProfessionText}");
             prompt.AppendLine("Have the analysis of photos in a separate section than the rest of the analysis.");
 
             this.potentialMatchAnalysisResult = await this.openAIService.AnalyzeImageAsync([myProfileImageBase64String, potentialMatchProfileImageBase64String],
