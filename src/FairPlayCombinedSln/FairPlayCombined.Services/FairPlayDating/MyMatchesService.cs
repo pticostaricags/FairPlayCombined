@@ -70,6 +70,7 @@ namespace FairPlayCombined.Services.FairPlayDating
                     CurrentLongitude = p.CurrentLongitude,
                     EyesColorText = p.EyesColor.Name,
                     HairColorText = p.HairColor.Name,
+                    KidStatusId = p.KidStatusId,
                     KidStatusText = p.KidStatus.Name,
                     PreferredEyesColorText = p.PreferredEyesColor.Name,
                     PreferredHairColorText = p.PreferredHairColor.Name,
