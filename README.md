@@ -24,6 +24,9 @@ Developing software takes a lot of time and effort(researching, testing, trial a
 
 You can also help by sharing this wiki with other people and encouraging to become sponsors too.
 
+### Pricing
+Check the following link: [FairPlayCombined Pricing](/PRICING.md)
+
 ### Screenshots
 <img width="950" alt="FairPlayCombined - NET Aspire - Dashboard" src="https://github.com/pticostaricags/FairPlayCombined/assets/3481899/679af430-7d1e-49ef-b56d-147140b272e9">
 <img width="940" alt="FairPlayCombined - NET Aspire - Admin Portal - Roles" src="https://github.com/pticostaricags/FairPlayCombined/assets/3481899/b55c8f46-1823-4050-a527-9da0c79e21c5">
