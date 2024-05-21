@@ -41,7 +41,11 @@ namespace FairPlayCombined.Services.FairPlayDating
                 p.ApplicationUserId != myUserProfile.ApplicationUserId
                 &&
                 p.ApplicationUser.LikedUserProfileLikedApplicationUser
-                .Any(x => x.LikingApplicationUserId == myUserProfile.ApplicationUserId) == false);
+                .Any(x => x.LikingApplicationUserId == myUserProfile.ApplicationUserId) == false
+                &&
+                p.ApplicationUser.NotLikedUserProfileNotLikedApplicationUser
+                .Any(x=>x.NotLikingApplicationUserId == myUserProfile.ApplicationUserId) == false
+                );
 #pragma warning restore S1125 // Boolean literals should not be redundant
                 result = new()
                 {
