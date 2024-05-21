@@ -1,638 +1,253 @@
 ﻿BEGIN TRANSACTION
+
 --START OF DEFAULT FREQUENCY
 SET IDENTITY_INSERT [FairPlayDating].[Frequency] ON
-DECLARE @FREQUENCYNAME NVARCHAR(50) = 'Never'
-DECLARE @FREQUENCYID INT = 1
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Frequency] F WHERE [F].[Name] = @FREQUENCYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Frequency]([FrequencyId], [Name]) VALUES(@FREQUENCYID, @FREQUENCYNAME)
-END
-SET @FREQUENCYNAME = '1 day per week'
-SET @FREQUENCYID = 2
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Frequency] F WHERE [F].[Name] = @FREQUENCYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Frequency]([FrequencyId], [Name]) VALUES(@FREQUENCYID, @FREQUENCYNAME)
-END
-SET @FREQUENCYNAME = '2 days per week'
-SET @FREQUENCYID = 3
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Frequency] F WHERE [F].[Name] = @FREQUENCYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Frequency]([FrequencyId], [Name]) VALUES(@FREQUENCYID, @FREQUENCYNAME)
-END
-SET @FREQUENCYNAME = '3 days per week'
-SET @FREQUENCYID = 4
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Frequency] F WHERE [F].[Name] = @FREQUENCYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Frequency]([FrequencyId], [Name]) VALUES(@FREQUENCYID, @FREQUENCYNAME)
-END
-SET @FREQUENCYNAME = '4 days per week'
-SET @FREQUENCYID = 5
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Frequency] F WHERE [F].[Name] = @FREQUENCYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Frequency]([FrequencyId], [Name]) VALUES(@FREQUENCYID, @FREQUENCYNAME)
-END
-SET @FREQUENCYNAME = '5 days per week'
-SET @FREQUENCYID = 6
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Frequency] F WHERE [F].[Name] = @FREQUENCYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Frequency]([FrequencyId], [Name]) VALUES(@FREQUENCYID, @FREQUENCYNAME)
-END
-SET @FREQUENCYNAME = '6 days per week'
-SET @FREQUENCYID = 7
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Frequency] F WHERE [F].[Name] = @FREQUENCYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Frequency]([FrequencyId], [Name]) VALUES(@FREQUENCYID, @FREQUENCYNAME)
-END
-SET @FREQUENCYNAME = '7 days per week'
-SET @FREQUENCYID = 8
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[Frequency] F WHERE [F].[Name] = @FREQUENCYNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[Frequency]([FrequencyId], [Name]) VALUES(@FREQUENCYID, @FREQUENCYNAME)
-END
+
+DECLARE @Frequency TABLE (FrequencyId INT, Name NVARCHAR(50))
+INSERT INTO @Frequency (FrequencyId, Name) VALUES
+    (1, 'Never'),
+    (2, '1 day per week'),
+    (3, '2 days per week'),
+    (4, '3 days per week'),
+    (5, '4 days per week'),
+    (6, '5 days per week'),
+    (7, '6 days per week'),
+    (8, '7 days per week')
+
+MERGE INTO [FairPlayDating].[Frequency] AS target
+USING @Frequency AS source
+ON target.Name = source.Name
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([FrequencyId], [Name]) VALUES (source.FrequencyId, source.Name);
+
 SET IDENTITY_INSERT [FairPlayDating].[Frequency] OFF
 --END OF DEFAULT FREQUENCY
+
 --START OF DEFAULT ACTIVITY
 MERGE INTO [FairPlayDating].[Activity] AS target
-USING (
-    VALUES
-        ('Archery'),
-        ('Astronomy'),
-        ('Backpacking'),
-        ('Badminton'),
-        ('Baking'),
-        ('Basketball'),
-        ('Birdwatching'),
-        ('Board games'),
-        ('Bowling'),
-        ('Calligraphy'),
-        ('Camping'),
-        ('Canoeing'),
-        ('Chess'),
-        ('Climbing'),
-        ('Collecting stamps'),
-        ('Cooking'),
-        ('Crafting'),
-        ('Crochet'),
-        ('Cycling'),
-        ('Dancing'),
-        ('Drawing'),
-        ('Embroidery'),
-        ('Fencing'),
-        ('Fishing'),
-        ('Gardening'),
-        ('Geocaching'),
-        ('Golf'),
-        ('Handball'),
-        ('Hiking'),
-        ('Horseback riding'),
-        ('Ice skating'),
-        ('Inline skating'),
-        ('Jigsaw puzzles'),
-        ('Jogging'),
-        ('Kayaking'),
-        ('Knitting'),
-        ('Lacrosse'),
-        ('Lego building'),
-        ('Magic tricks'),
-        ('Martial arts'),
-        ('Meditation'),
-        ('Metal detecting'),
-        ('Model building'),
-        ('Mountain biking'),
-        ('Painting'),
-        ('Paragliding'),
-        ('Photography'),
-        ('Pilates'),
-        ('Pottery'),
-        ('Quilting'),
-        ('Racquetball'),
-        ('Reading'),
-        ('Rock climbing'),
-        ('Rollerblading'),
-        ('Rowing'),
-        ('Running'),
-        ('Sailing'),
-        ('Scrapbooking'),
-        ('Scuba diving'),
-        ('Singing'),
-        ('Skateboarding'),
-        ('Sketching'),
-        ('Skiing'),
-        ('Snowboarding'),
-        ('Snowshoeing'),
-        ('Soccer'),
-        ('Softball'),
-        ('Surfing'),
-        ('Swimming'),
-        ('Table tennis'),
-        ('Taekwondo'),
-        ('Tennis'),
-        ('Traveling'),
-        ('Triathlon'),
-        ('Ultimate Frisbee'),
-        ('Video gaming'),
-        ('Volleyball'),
-        ('Wakeboarding'),
-        ('Walking'),
-        ('Watching movies'),
-        ('Weightlifting'),
-        ('Wind surfing'),
-        ('Wine tasting'),
-        ('Woodworking'),
-        ('Writing'),
-        ('Yoga'),
-        ('Zumba')
+USING (VALUES
+    ('Archery'), ('Astronomy'), ('Backpacking'), ('Badminton'), ('Baking'), ('Basketball'), 
+    ('Birdwatching'), ('Board games'), ('Bowling'), ('Calligraphy'), ('Camping'), ('Canoeing'), 
+    ('Chess'), ('Climbing'), ('Collecting stamps'), ('Cooking'), ('Crafting'), ('Crochet'), 
+    ('Cycling'), ('Dancing'), ('Drawing'), ('Embroidery'), ('Fencing'), ('Fishing'), 
+    ('Gardening'), ('Geocaching'), ('Golf'), ('Handball'), ('Hiking'), ('Horseback riding'), 
+    ('Ice skating'), ('Inline skating'), ('Jigsaw puzzles'), ('Jogging'), ('Kayaking'), 
+    ('Knitting'), ('Lacrosse'), ('Lego building'), ('Magic tricks'), ('Martial arts'), 
+    ('Meditation'), ('Metal detecting'), ('Model building'), ('Mountain biking'), 
+    ('Painting'), ('Paragliding'), ('Photography'), ('Pilates'), ('Pottery'), ('Quilting'), 
+    ('Racquetball'), ('Reading'), ('Rock climbing'), ('Rollerblading'), ('Rowing'), ('Running'), 
+    ('Sailing'), ('Scrapbooking'), ('Scuba diving'), ('Singing'), ('Skateboarding'), 
+    ('Sketching'), ('Skiing'), ('Snowboarding'), ('Snowshoeing'), ('Soccer'), ('Softball'), 
+    ('Surfing'), ('Swimming'), ('Table tennis'), ('Taekwondo'), ('Tennis'), ('Traveling'), 
+    ('Triathlon'), ('Ultimate Frisbee'), ('Video gaming'), ('Volleyball'), ('Wakeboarding'), 
+    ('Walking'), ('Watching movies'), ('Weightlifting'), ('Wind surfing'), ('Wine tasting'), 
+    ('Woodworking'), ('Writing'), ('Yoga'), ('Zumba')
 ) AS source (Name)
 ON target.Name = source.Name
 WHEN NOT MATCHED BY TARGET THEN
     INSERT (Name) VALUES (source.Name);
-
 --END OF DEFAULT ACTIVITY
+
 --START OF DEFAULT GENDERS
 SET IDENTITY_INSERT [FairPlayDating].[Gender] ON
-DECLARE @MALE VARCHAR(20) = 'Male'
-DECLARE @MALE_ID INT = 1
-DECLARE @FEMALE VARCHAR(20) = 'Female'
-DECLARE @FEMALE_ID INT = 2
 
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[Gender] WHERE [Name] = @MALE)
-BEGIN
-    INSERT INTO [FairPlayDating].[Gender]([GenderId],[Name]) VALUES (@MALE_ID,@MALE)
-END
+DECLARE @Gender TABLE (GenderId INT, Name NVARCHAR(50))
+INSERT INTO @Gender (GenderId, Name) VALUES
+    (1, 'Male'),
+    (2, 'Female')
 
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[Gender] WHERE [Name] = @FEMALE)
-BEGIN
-    INSERT INTO [FairPlayDating].[Gender]([GenderId],[Name]) VALUES (@FEMALE_ID,@FEMALE)
-END
+MERGE INTO [FairPlayDating].[Gender] AS target
+USING @Gender AS source
+ON target.Name = source.Name
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([GenderId], [Name]) VALUES (source.GenderId, source.Name);
+
 SET IDENTITY_INSERT [FairPlayDating].[Gender] OFF
 --END OF DEFAULT GENDERS
+
 --START OF DEFAULT RELIGIONS
 SET IDENTITY_INSERT [FairPlayDating].[Religion] ON
-DECLARE @Catholic VARCHAR(20) = 'Catholic'
-DECLARE @Catholic_ID INT = 1
-DECLARE @Christian VARCHAR(20) = 'Christian'
-DECLARE @Christian_ID INT = 2
-DECLARE @Jewish VARCHAR(20) = 'Jewish'
-DECLARE @Jewish_ID INT = 3
-DECLARE @Muslim VARCHAR(20) = 'Muslim'
-DECLARE @Muslim_ID INT = 4
-DECLARE @Other VARCHAR(20) = 'Other'
-DECLARE @Other_ID INT = 5
 
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[Religion] WHERE [Name] = @Catholic)
-BEGIN
-    INSERT INTO [FairPlayDating].[Religion]([ReligionId],[Name]) VALUES (@Catholic_ID,@Catholic)
-END
+DECLARE @Religion TABLE (ReligionId INT, Name NVARCHAR(50))
+INSERT INTO @Religion (ReligionId, Name) VALUES
+    (1, 'Catholic'),
+    (2, 'Christian'),
+    (3, 'Jewish'),
+    (4, 'Muslim'),
+    (5, 'Other')
 
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[Religion] WHERE [Name] = @Christian)
-BEGIN
-    INSERT INTO [FairPlayDating].[Religion]([ReligionId],[Name]) VALUES (@Christian_ID,@Christian)
-END
+MERGE INTO [FairPlayDating].[Religion] AS target
+USING @Religion AS source
+ON target.Name = source.Name
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([ReligionId], [Name]) VALUES (source.ReligionId, source.Name);
 
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[Religion] WHERE [Name] = @Jewish)
-BEGIN
-    INSERT INTO [FairPlayDating].[Religion]([ReligionId],[Name]) VALUES (@Jewish_ID,@Jewish)
-END
-
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[Religion] WHERE [Name] = @Muslim)
-BEGIN
-    INSERT INTO [FairPlayDating].[Religion]([ReligionId],[Name]) VALUES (@Muslim_ID,@Muslim)
-END
-
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[Religion] WHERE [Name] = @Other)
-BEGIN
-    INSERT INTO [FairPlayDating].[Religion]([ReligionId],[Name]) VALUES (@Other_ID,@Other)
-END
 SET IDENTITY_INSERT [FairPlayDating].[Religion] OFF
 --END OF DEFAULT RELIGIONS
+
 --START OF DEFAULT DATEOBJECTIVE
 SET IDENTITY_INSERT [FairPlayDating].[DateObjective] ON
-DECLARE @FRIENDSHIP VARCHAR(20) = 'Friendship'
-DECLARE @FRIENDSHIP_ID INT = 1
-DECLARE @DATING VARCHAR(20) = 'Dating'
-DECLARE @DATING_ID INT = 2
-DECLARE @MARRIAGE VARCHAR(20) = 'Marriage'
-DECLARE @MARRIAGE_ID INT = 3
 
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[DateObjective] WHERE [Name] = @FRIENDSHIP)
-BEGIN
-    INSERT INTO [FairPlayDating].[DateObjective]([DateObjectiveId],[Name]) VALUES (@FRIENDSHIP_ID,@FRIENDSHIP)
-END
+DECLARE @DateObjective TABLE (DateObjectiveId INT, Name NVARCHAR(50))
+INSERT INTO @DateObjective (DateObjectiveId, Name) VALUES
+    (1, 'Friendship'),
+    (2, 'Dating'),
+    (3, 'Marriage')
 
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[DateObjective] WHERE [Name] = @DATING)
-BEGIN
-    INSERT INTO [FairPlayDating].[DateObjective]([DateObjectiveId],[Name]) VALUES (@DATING_ID,@DATING)
-END
+MERGE INTO [FairPlayDating].[DateObjective] AS target
+USING @DateObjective AS source
+ON target.Name = source.Name
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([DateObjectiveId], [Name]) VALUES (source.DateObjectiveId, source.Name);
 
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[DateObjective] WHERE [Name] = @MARRIAGE)
-BEGIN
-    INSERT INTO [FairPlayDating].[DateObjective]([DateObjectiveId],[Name]) VALUES (@MARRIAGE_ID,@MARRIAGE)
-END
-SET IDENTITY_INSERT [FairPlayDating].[Activity] OFF
 SET IDENTITY_INSERT [FairPlayDating].[DateObjective] OFF
 --END OF DEFAULT DATEOBJECTIVE
+
 --START OF DEFAULT KIDSTATUS
 SET IDENTITY_INSERT [FairPlayDating].[KidStatus] ON
-DECLARE @KIDSTATUSNAME NVARCHAR(50) = 'Don''t have & Don''t want'
-DECLARE @KIDSTATUSID INT = 1
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[KidStatus] k WHERE [K].[Name] = @KIDSTATUSNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[KidStatus]([KidStatusId],[Name]) VALUES(@KIDSTATUSID, @KIDSTATUSNAME)
-END
-SET @KIDSTATUSNAME = 'Don''t have & Want'
-SET @KIDSTATUSID = 2
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[KidStatus] k WHERE [K].[Name] = @KIDSTATUSNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[KidStatus]([KidStatusId],[Name]) VALUES(@KIDSTATUSID, @KIDSTATUSNAME)
-END
-SET @KIDSTATUSNAME = 'Have & Don''t want more'
-SET @KIDSTATUSID = 3
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[KidStatus] k WHERE [K].[Name] = @KIDSTATUSNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[KidStatus]([KidStatusId],[Name]) VALUES(@KIDSTATUSID, @KIDSTATUSNAME)
-END
-SET @KIDSTATUSNAME = 'Have & Want more'
-SET @KIDSTATUSID = 4
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[KidStatus] k WHERE [K].[Name] = @KIDSTATUSNAME)
-BEGIN
-    INSERT INTO [FairPlayDating].[KidStatus]([KidStatusId],[Name]) VALUES(@KIDSTATUSID, @KIDSTATUSNAME)
-END
+
+DECLARE @KidStatus TABLE (KidStatusId INT, Name NVARCHAR(50))
+INSERT INTO @KidStatus (KidStatusId, Name) VALUES
+    (1, 'Don''t have & Don''t want'),
+    (2, 'Don''t have & Want'),
+    (3, 'Have & Don''t want more'),
+    (4, 'Have & Want more')
+
+MERGE INTO [FairPlayDating].[KidStatus] AS target
+USING @KidStatus AS source
+ON target.Name = source.Name
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([KidStatusId], [Name]) VALUES (source.KidStatusId, source.Name);
+
 SET IDENTITY_INSERT [FairPlayDating].[KidStatus] OFF
 --END OF DEFAULT KIDSTATUS
+
 --START OF DEFAULT HAIRCOLOR
 SET IDENTITY_INSERT [FairPlayDating].[HairColor] ON
-DECLARE @HAIRCOLORNAME NVARCHAR(50) = 'Black'
-DECLARE @HAIRCOLORID INT = 1
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[HairColor] h WHERE [H].[Name] = @HAIRCOLORNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[HairColor]([HairColorId],[Name]) VALUES(@HAIRCOLORID, @HAIRCOLORNAME)
-END
-SET @HAIRCOLORNAME = 'Brown'
-SET @HAIRCOLORID = 2
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[HairColor] h WHERE [H].[Name] = @HAIRCOLORNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[HairColor]([HairColorId],[Name]) VALUES(@HAIRCOLORID, @HAIRCOLORNAME)
-END
-SET @HAIRCOLORNAME = 'Blond'
-SET @HAIRCOLORID = 3
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[HairColor] h WHERE [H].[Name] = @HAIRCOLORNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[HairColor]([HairColorId],[Name]) VALUES(@HAIRCOLORID, @HAIRCOLORNAME)
-END
-SET @HAIRCOLORNAME = 'Red'
-SET @HAIRCOLORID = 4
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[HairColor] h WHERE [H].[Name] = @HAIRCOLORNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[HairColor]([HairColorId],[Name]) VALUES(@HAIRCOLORID, @HAIRCOLORNAME)
-END
-SET @HAIRCOLORNAME = 'Gray'
-SET @HAIRCOLORID = 5
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[HairColor] h WHERE [H].[Name] = @HAIRCOLORNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[HairColor]([HairColorId],[Name]) VALUES(@HAIRCOLORID, @HAIRCOLORNAME)
-END
-SET @HAIRCOLORNAME = 'White'
-SET @HAIRCOLORID = 6
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[HairColor] h WHERE [H].[Name] = @HAIRCOLORNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[HairColor]([HairColorId],[Name]) VALUES(@HAIRCOLORID, @HAIRCOLORNAME)
-END
-SET @HAIRCOLORNAME = 'Bald'
-SET @HAIRCOLORID = 7
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[HairColor] h WHERE [H].[Name] = @HAIRCOLORNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[HairColor]([HairColorId],[Name]) VALUES(@HAIRCOLORID, @HAIRCOLORNAME)
-END
+
+DECLARE @HairColor TABLE (HairColorId INT, Name NVARCHAR(50))
+INSERT INTO @HairColor (HairColorId, Name) VALUES
+    (1, 'Black'),
+    (2, 'Brown'),
+    (3, 'Blond'),
+    (4, 'Red'),
+    (5, 'Gray'),
+    (6, 'White'),
+    (7, 'Bald')
+
+MERGE INTO [FairPlayDating].[HairColor] AS target
+USING @HairColor AS source
+ON target.Name = source.Name
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([HairColorId], [Name]) VALUES (source.HairColorId, source.Name);
+
 SET IDENTITY_INSERT [FairPlayDating].[HairColor] OFF
 --END OF DEFAULT HAIRCOLOR
+
 --START OF DEFAULT EYECOLOR
 SET IDENTITY_INSERT [FairPlayDating].[EyesColor] ON
-DECLARE @EyesColorNAME NVARCHAR(50) = 'Black'
-DECLARE @EyesColorID INT = 1
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[EyesColor] e WHERE [E].[Name] = @EyesColorNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[EyesColor]([EyesColorId],[Name]) VALUES(@EyesColorID, @EyesColorNAME)
-END
-SET @EyesColorNAME = 'Brown'
-SET @EyesColorID = 2
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[EyesColor] e WHERE [E].[Name] = @EyesColorNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[EyesColor]([EyesColorId],[Name]) VALUES(@EyesColorID, @EyesColorNAME)
-END
-SET @EyesColorNAME = 'Blue'
-SET @EyesColorID = 3
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[EyesColor] e WHERE [E].[Name] = @EyesColorNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[EyesColor]([EyesColorId],[Name]) VALUES(@EyesColorID, @EyesColorNAME)
-END
-SET @EyesColorNAME = 'Green'
-SET @EyesColorID = 4
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[EyesColor] e WHERE [E].[Name] = @EyesColorNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[EyesColor]([EyesColorId],[Name]) VALUES(@EyesColorID, @EyesColorNAME)
-END
-SET @EyesColorNAME = 'Hazel'
-SET @EyesColorID = 5
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[EyesColor] e WHERE [E].[Name] = @EyesColorNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[EyesColor]([EyesColorId],[Name]) VALUES(@EyesColorID, @EyesColorNAME)
-END
-SET @EyesColorNAME = 'Gray'
-SET @EyesColorID = 6
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[EyesColor] e WHERE [E].[Name] = @EyesColorNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[EyesColor]([EyesColorId],[Name]) VALUES(@EyesColorID, @EyesColorNAME)
-END
-SET @EyesColorNAME = 'Amber'
-SET @EyesColorID = 7
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[EyesColor] e WHERE [E].[Name] = @EyesColorNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[EyesColor]([EyesColorId],[Name]) VALUES(@EyesColorID, @EyesColorNAME)
-END
-SET @EyesColorNAME = 'Other'
-SET @EyesColorID = 8
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[EyesColor] e WHERE [E].[Name] = @EyesColorNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[EyesColor]([EyesColorId],[Name]) VALUES(@EyesColorID, @EyesColorNAME)
-END
+
+DECLARE @EyesColor TABLE (EyesColorId INT, Name NVARCHAR(50))
+INSERT INTO @EyesColor (EyesColorId, Name) VALUES
+    (1, 'Black'),
+    (2, 'Brown'),
+    (3, 'Blue'),
+    (4, 'Green'),
+    (5, 'Hazel'),
+    (6, 'Gray'),
+    (7, 'Amber'),
+    (8, 'Other')
+
+MERGE INTO [FairPlayDating].[EyesColor] AS target
+USING @EyesColor AS source
+ON target.Name = source.Name
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([EyesColorId], [Name]) VALUES (source.EyesColorId, source.Name);
+
 SET IDENTITY_INSERT [FairPlayDating].[EyesColor] OFF
 --END OF DEFAULT EYECOLOR
---START OF TATOO STATUS values from KidStatus.Name
+
+--START OF DEFAULT TATOO STATUS
 SET IDENTITY_INSERT [FairPlayDating].[TattooStatus] ON
-DECLARE @TattooStatusNAME NVARCHAR(50) = 'Don''t have & Don''t want'
-DECLARE @TattooStatusID INT = 1
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[TattooStatus] t WHERE [T].[Name] = @TattooStatusNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[TattooStatus]([TattooStatusId],[Name]) VALUES(@TattooStatusID, @TattooStatusNAME)
-END
-SET @TattooStatusNAME = 'Don''t have & Want'
-SET @TattooStatusID = 2
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[TattooStatus] t WHERE [T].[Name] = @TattooStatusNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[TattooStatus]([TattooStatusId],[Name]) VALUES(@TattooStatusID, @TattooStatusNAME)
-END
-SET @TattooStatusNAME = 'Have & Don''t want more'
-SET @TattooStatusID = 3
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[TattooStatus] t WHERE [T].[Name] = @TattooStatusNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[TattooStatus]([TattooStatusId],[Name]) VALUES(@TattooStatusID, @TattooStatusNAME)
-END
-SET @TattooStatusNAME = 'Have & Want more'
-SET @TattooStatusID = 4
-IF NOT EXISTS (SELECT * FROM [FairPlayDating].[TattooStatus] t WHERE [T].[Name] = @TattooStatusNAME)
-BEGIN
-	INSERT INTO [FairPlayDating].[TattooStatus]([TattooStatusId],[Name]) VALUES(@TattooStatusID, @TattooStatusNAME)
-END
+
+DECLARE @TattooStatus TABLE (TattooStatusId INT, Name NVARCHAR(50))
+INSERT INTO @TattooStatus (TattooStatusId, Name) VALUES
+    (1, 'Don''t have & Don''t want'),
+    (2, 'Don''t have & Want'),
+    (3, 'Have & Don''t want more'),
+    (4, 'Have & Want more')
+
+MERGE INTO [FairPlayDating].[TattooStatus] AS target
+USING @TattooStatus AS source
+ON target.Name = source.Name
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([TattooStatusId], [Name]) VALUES (source.TattooStatusId, source.Name);
+
 SET IDENTITY_INSERT [FairPlayDating].[TattooStatus] OFF
 --END OF DEFAULT TATOO STATUS
---START OF DEFAULT PROFESSIONS values from Professions.Name
+
+--START OF DEFAULT PROFESSIONS
 MERGE INTO [FairPlayDating].[Profession] AS target
 USING (VALUES 
-    ('Accountant'),
-    ('Actor'),
-    ('Actuary'),
-    ('Administrative Assistant'),
-    ('Advertising Manager'),
-    ('Aerospace Engineer'),
-    ('Agricultural Engineer'),
-    ('Air Traffic Controller'),
-    ('Airline Pilot'),
-    ('Animator'),
-    ('Anthropologist'),
-    ('Archaeologist'),
-    ('Architect'),
-    ('Archivist'),
-    ('Art Director'),
-    ('Artist'),
-    ('Astronomer'),
-    ('Athlete'),
-    ('Attorney'),
-    ('Audiologist'),
-    ('Author'),
-    ('Auto Mechanic'),
-    ('Baker'),
-    ('Banker'),
-    ('Barber'),
-    ('Bartender'),
-    ('Biochemist'),
-    ('Biomedical Engineer'),
-    ('Biophysicist'),
-    ('Bookkeeper'),
-    ('Botanist'),
-    ('Broadcast Technician'),
-    ('Budget Analyst'),
-    ('Building Inspector'),
-    ('Bus Driver'),
-    ('Business Analyst'),
-    ('Butcher'),
-    ('Buyer'),
-    ('Carpenter'),
-    ('Cartographer'),
-    ('Cashier'),
-    ('Chef'),
-    ('Chemical Engineer'),
-    ('Chemist'),
-    ('Childcare Worker'),
-    ('Chiropractor'),
-    ('Civil Engineer'),
-    ('Claims Adjuster'),
-    ('Clinical Laboratory Technician'),
-    ('Coach'),
-    ('Commercial Diver'),
-    ('Computer Programmer'),
-    ('Computer Support Specialist'),
-    ('Construction Manager'),
-    ('Consultant'),
-    ('Content Writer'),
-    ('Copywriter'),
-    ('Cost Estimator'),
-    ('Counselor'),
-    ('Court Reporter'),
-    ('Curator'),
-    ('Customer Service Representative'),
-    ('Dancer'),
-    ('Database Administrator'),
-    ('Dental Assistant'),
-    ('Dental Hygienist'),
-    ('Dentist'),
-    ('Detective'),
-    ('Dietitian'),
-    ('Dispatcher'),
-    ('Doctor'),
-    ('Economist'),
-    ('Editor'),
-    ('Electrician'),
-    ('Elementary School Teacher'),
-    ('Elevator Installer'),
-    ('Emergency Medical Technician (EMT)'),
-    ('Engineer'),
-    ('Environmental Scientist'),
-    ('Event Planner'),
-    ('Executive Assistant'),
-    ('Farmer'),
-    ('Fashion Designer'),
-    ('Film Director'),
-    ('Financial Analyst'),
-    ('Firefighter'),
-    ('Fitness Trainer'),
-    ('Flight Attendant'),
-    ('Floral Designer'),
-    ('Forester'),
-    ('Game Designer'),
-    ('Gardener'),
-    ('Genetic Counselor'),
-    ('Geographer'),
-    ('Geologist'),
-    ('Graphic Designer'),
-    ('Guidance Counselor'),
-    ('Hairdresser'),
-    ('Health Educator'),
-    ('High School Teacher'),
-    ('Home Health Aide'),
-    ('Human Resources Specialist'),
-    ('HVAC Technician'),
-    ('Industrial Designer'),
-    ('Industrial Engineer'),
-    ('Information Security Analyst'),
-    ('Interpreter'),
-    ('IT Manager'),
-    ('Janitor'),
-    ('Jeweler'),
-    ('Journalist'),
-    ('Judge'),
-    ('Kindergarten Teacher'),
-    ('Landscape Architect'),
-    ('Lawyer'),
-    ('Librarian'),
-    ('Licensed Practical Nurse (LPN)'),
-    ('Locksmith'),
-    ('Machinist'),
-    ('Management Analyst'),
-    ('Market Research Analyst'),
-    ('Marketing Manager'),
-    ('Massage Therapist'),
-    ('Mathematician'),
-    ('Mechanical Engineer'),
-    ('Medical Assistant'),
-    ('Medical Laboratory Technician'),
-    ('Medical Transcriptionist'),
-    ('Meteorologist'),
-    ('Microbiologist'),
-    ('Middle School Teacher'),
-    ('Millwright'),
-    ('Multimedia Artist'),
-    ('Music Director'),
-    ('Musician'),
-    ('Network Administrator'),
-    ('Nuclear Engineer'),
-    ('Nurse'),
-    ('Nurse Practitioner'),
-    ('Nutritionist'),
-    ('Occupational Therapist'),
-    ('Operations Manager'),
-    ('Optician'),
-    ('Optometrist'),
-    ('Paralegal'),
-    ('Park Ranger'),
-    ('Pediatrician'),
-    ('Personal Trainer'),
-    ('Pharmacist'),
-    ('Photographer'),
-    ('Physical Therapist'),
-    ('Physician'),
-    ('Physician Assistant'),
-    ('Physicist'),
-    ('Pilot'),
-    ('Plumber'),
-    ('Police Officer'),
-    ('Political Scientist'),
-    ('Postal Service Worker'),
-    ('Preschool Teacher'),
-    ('Private Detective'),
-    ('Producer'),
-    ('Professor'),
-    ('Programmer'),
-    ('Project Manager'),
-    ('Property Manager'),
-    ('Psychiatrist'),
-    ('Psychologist'),
-    ('Public Relations Specialist'),
-    ('Purchasing Manager'),
-    ('Radiologic Technologist'),
-    ('Real Estate Agent'),
-    ('Receptionist'),
-    ('Registered Nurse (RN)'),
-    ('Reporter'),
-    ('Respiratory Therapist'),
-    ('Sales Manager'),
-    ('Sales Representative'),
-    ('Scientist'),
-    ('Sculptor'),
-    ('Security Guard'),
-    ('Social Media Manager'),
-    ('Social Worker'),
-    ('Software Architect'),
-    ('Software Developer'),
-    ('Software Engineer'),
-    ('Sound Engineer'),
-    ('Speech-Language Pathologist'),
-    ('Statistician'),
-    ('Stockbroker'),
-    ('Structural Engineer'),
-    ('Surgeon'),
-    ('Surveyor'),
-    ('Systems Analyst'),
-    ('Tailor'),
-    ('Teacher'),
-    ('Technical Writer'),
-    ('Telecommunications Technician'),
-    ('Translator'),
-    ('Travel Agent'),
-    ('Truck Driver'),
-    ('Urban Planner'),
-    ('Veterinarian'),
-    ('Video Editor'),
-    ('Waiter/Waitress'),
-    ('Web Developer'),
-    ('Welder'),
-    ('Writer'),
-    ('Zoologist')
+    ('Accountant'), ('Actor'), ('Actuary'), ('Administrative Assistant'), ('Advertising Manager'), 
+    ('Aerospace Engineer'), ('Agricultural Engineer'), ('Air Traffic Controller'), ('Airline Pilot'), 
+    ('Animator'), ('Anthropologist'), ('Archaeologist'), ('Architect'), ('Archivist'), ('Art Director'), 
+    ('Artist'), ('Astronomer'), ('Athlete'), ('Attorney'), ('Audiologist'), ('Author'), ('Auto Mechanic'), 
+    ('Baker'), ('Banker'), ('Barber'), ('Bartender'), ('Biochemist'), ('Biomedical Engineer'), 
+    ('Biophysicist'), ('Bookkeeper'), ('Botanist'), ('Broadcast Technician'), ('Budget Analyst'), 
+    ('Building Inspector'), ('Bus Driver'), ('Business Analyst'), ('Butcher'), ('Buyer'), ('Carpenter'), 
+    ('Cartographer'), ('Cashier'), ('Chef'), ('Chemical Engineer'), ('Chemist'), ('Childcare Worker'), 
+    ('Chiropractor'), ('Civil Engineer'), ('Claims Adjuster'), ('Clinical Laboratory Technician'), 
+    ('Coach'), ('Commercial Diver'), ('Computer Programmer'), ('Computer Support Specialist'), 
+    ('Construction Manager'), ('Consultant'), ('Content Writer'), ('Copywriter'), ('Cost Estimator'), 
+    ('Counselor'), ('Court Reporter'), ('Curator'), ('Customer Service Representative'), ('Dancer'), 
+    ('Database Administrator'), ('Dental Assistant'), ('Dental Hygienist'), ('Dentist'), ('Detective'), 
+    ('Dietitian'), ('Dispatcher'), ('Doctor'), ('Economist'), ('Editor'), ('Electrician'), 
+    ('Elementary School Teacher'), ('Elevator Installer'), ('Emergency Medical Technician (EMT)'), 
+    ('Engineer'), ('Environmental Scientist'), ('Event Planner'), ('Executive Assistant'), ('Farmer'), 
+    ('Fashion Designer'), ('Film Director'), ('Financial Analyst'), ('Firefighter'), ('Fitness Trainer'), 
+    ('Flight Attendant'), ('Floral Designer'), ('Forester'), ('Game Designer'), ('Gardener'), 
+    ('Genetic Counselor'), ('Geographer'), ('Geologist'), ('Graphic Designer'), ('Guidance Counselor'), 
+    ('Hairdresser'), ('Health Educator'), ('High School Teacher'), ('Home Health Aide'), 
+    ('Human Resources Specialist'), ('HVAC Technician'), ('Industrial Designer'), ('Industrial Engineer'), 
+    ('Information Security Analyst'), ('Interpreter'), ('IT Manager'), ('Janitor'), ('Jeweler'), 
+    ('Journalist'), ('Judge'), ('Kindergarten Teacher'), ('Landscape Architect'), ('Lawyer'), 
+    ('Librarian'), ('Licensed Practical Nurse (LPN)'), ('Locksmith'), ('Machinist'), ('Management Analyst'), 
+    ('Market Research Analyst'), ('Marketing Manager'), ('Massage Therapist'), ('Mathematician'), 
+    ('Mechanical Engineer'), ('Medical Assistant'), ('Medical Laboratory Technician'), 
+    ('Medical Transcriptionist'), ('Meteorologist'), ('Microbiologist'), ('Middle School Teacher'), 
+    ('Millwright'), ('Multimedia Artist'), ('Music Director'), ('Musician'), ('Network Administrator'), 
+    ('Nuclear Engineer'), ('Nurse'), ('Nurse Practitioner'), ('Nutritionist'), ('Occupational Therapist'), 
+    ('Operations Manager'), ('Optician'), ('Optometrist'), ('Paralegal'), ('Park Ranger'), 
+    ('Pediatrician'), ('Personal Trainer'), ('Pharmacist'), ('Photographer'), ('Physical Therapist'), 
+    ('Physician'), ('Physician Assistant'), ('Physicist'), ('Pilot'), ('Plumber'), ('Police Officer'), 
+    ('Political Scientist'), ('Postal Service Worker'), ('Preschool Teacher'), ('Private Detective'), 
+    ('Producer'), ('Professor'), ('Programmer'), ('Project Manager'), ('Property Manager'), 
+    ('Psychiatrist'), ('Psychologist'), ('Public Relations Specialist'), ('Purchasing Manager'), 
+    ('Radiologic Technologist'), ('Real Estate Agent'), ('Receptionist'), ('Registered Nurse (RN)'), 
+    ('Reporter'), ('Respiratory Therapist'), ('Sales Manager'), ('Sales Representative'), ('Scientist'), 
+    ('Sculptor'), ('Security Guard'), ('Social Media Manager'), ('Social Worker'), ('Software Architect'), 
+    ('Software Developer'), ('Software Engineer'), ('Sound Engineer'), ('Speech-Language Pathologist'), 
+    ('Statistician'), ('Stockbroker'), ('Structural Engineer'), ('Surgeon'), ('Surveyor'), 
+    ('Systems Analyst'), ('Tailor'), ('Teacher'), ('Technical Writer'), ('Telecommunications Technician'), 
+    ('Translator'), ('Travel Agent'), ('Truck Driver'), ('Urban Planner'), ('Veterinarian'), 
+    ('Video Editor'), ('Waiter/Waitress'), ('Web Developer'), ('Welder'), ('Writer'), ('Zoologist')
 ) AS source ([Name])
-ON (target.[Name] = source.[Name])
+ON target.[Name] = source.[Name]
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([Name])
-    VALUES (source.[Name]);
---END OF DEFAULT PROFESSIONS values from Professions.Name
---START OF DEFAULT PERSONALITYTYPE values from PersonalityType.Name
--- Insert personality types if they don't already exist
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[PersonalityType] WHERE [Name] = 'Ambivert')
-    INSERT INTO [FairPlayDating].[PersonalityType] ([Name]) VALUES ('Ambivert');
+    INSERT ([Name]) VALUES (source.[Name]);
+--END OF DEFAULT PROFESSIONS
 
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[PersonalityType] WHERE [Name] = 'Anxious Introvert')
-    INSERT INTO [FairPlayDating].[PersonalityType] ([Name]) VALUES ('Anxious Introvert');
+--START OF DEFAULT PERSONALITYTYPE
+MERGE INTO [FairPlayDating].[PersonalityType] AS target
+USING (VALUES
+    ('Ambivert'), ('Anxious Introvert'), ('Extrovert'), ('Extraverted Introvert'), 
+    ('Introvert'), ('Introverted Extrovert'), ('Omnivert'), ('Restrained Introvert'), 
+    ('Social Introvert'), ('Thinking Introvert')
+) AS source ([Name])
+ON target.[Name] = source.[Name]
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([Name]) VALUES (source.[Name]);
+--END OF DEFAULT PERSONALITYTYPE
 
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[PersonalityType] WHERE [Name] = 'Extrovert')
-    INSERT INTO [FairPlayDating].[PersonalityType] ([Name]) VALUES ('Extrovert');
-
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[PersonalityType] WHERE [Name] = 'Extraverted Introvert')
-    INSERT INTO [FairPlayDating].[PersonalityType] ([Name]) VALUES ('Extraverted Introvert');
-
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[PersonalityType] WHERE [Name] = 'Introvert')
-    INSERT INTO [FairPlayDating].[PersonalityType] ([Name]) VALUES ('Introvert');
-
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[PersonalityType] WHERE [Name] = 'Introverted Extrovert')
-    INSERT INTO [FairPlayDating].[PersonalityType] ([Name]) VALUES ('Introverted Extrovert');
-
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[PersonalityType] WHERE [Name] = 'Omnivert')
-    INSERT INTO [FairPlayDating].[PersonalityType] ([Name]) VALUES ('Omnivert');
-
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[PersonalityType] WHERE [Name] = 'Restrained Introvert')
-    INSERT INTO [FairPlayDating].[PersonalityType] ([Name]) VALUES ('Restrained Introvert');
-
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[PersonalityType] WHERE [Name] = 'Social Introvert')
-    INSERT INTO [FairPlayDating].[PersonalityType] ([Name]) VALUES ('Social Introvert');
-
-IF NOT EXISTS (SELECT 1 FROM [FairPlayDating].[PersonalityType] WHERE [Name] = 'Thinking Introvert')
-    INSERT INTO [FairPlayDating].[PersonalityType] ([Name]) VALUES ('Thinking Introvert');
---END OF DEFAULT PERSONALITYTYPE values from PersonalityType.Name
 COMMIT
