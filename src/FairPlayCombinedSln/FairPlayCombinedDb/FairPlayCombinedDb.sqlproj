@@ -163,6 +163,7 @@
     <Build Include="FairPlayTube\Tables\VideoComment.sql" />
     <Build Include="dbo\Tables\UserFunds.sql" />
     <Build Include="FairPlayDating\Profession.sql" />
+    <Build Include="FairPlayDating\PersonalityType.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
@@ -170,9 +171,6 @@
   <ItemGroup>
     <None Include="Scripts\3-FairPlaySocial.sql" />
     <None Include="Scripts\4-FairPlayTube.sql" />
-    <None Include="..\FairPlayAdminPortal\Components\Layout\FluentToastProvider.razor">
-      <Link>FluentToastProvider.razor</Link>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="FairPlayCombinedDb.refactorlog" />
