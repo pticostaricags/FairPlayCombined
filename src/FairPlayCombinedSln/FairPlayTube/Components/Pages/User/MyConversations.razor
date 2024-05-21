@@ -33,7 +33,7 @@
                     <TemplateColumn>
                         <FluentButton Appearance="Appearance.Lightweight" Type="ButtonType.Button" OnClick="@( async () => await SelectUserAsync(context))"
                                       aria-current="true">
-                            @if (context == this.SelectedUser)
+                            @if (context.Id == this.SelectedUser?.Id)
                             {
                                 <strong>
                                     @context.UserName

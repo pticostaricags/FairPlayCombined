@@ -26,6 +26,8 @@
 @inject IToastService toastService
 @inject OpenAIService openAIService
 @inject ActivityService activityService
+@inject ReligionService religionService
+@inject DateObjectiveService dateObjectiveService
 @inject PromptGeneratorService promptGeneratorService
 <h3>
     @localizer[MyMatchesTextKey]
@@ -308,6 +310,16 @@
             {
                 prompt.AppendLine(activities.Single(p => p.ActivityId == singleActivity.ActivityId).Name);
             }
+            var religions = await this.religionService.GetAllReligionAsync(cancellationTokenSource.Token);
+            prompt.AppendLine($"My religion: {religions.Single(p => p.ReligionId == existentUserProfile.ReligionId).Name}");
+            prompt.AppendLine($"The other person religion: {religions.Single(p => p.ReligionId == potentialMatchProfileModel.ReligionId).Name}");
+
+            var dateObjectives = await this.dateObjectiveService.GetAllDateObjectiveAsync(cancellationTokenSource.Token);
+            prompt.AppendLine($"My date objective: {dateObjectives.Single(p=>p.DateObjectiveId == existentUserProfile.CurrentDateObjectiveId).Name}");
+            prompt.AppendLine($"The other person date objective: {dateObjectives.Single(p => p.DateObjectiveId == potentialMatchProfileModel.CurrentDateObjectiveId).Name}");
+
+            prompt.AppendLine("Have the analysis of photos in a separate section than the rest of the analysis.");
+            
             this.potentialMatchAnalysisResult = await this.openAIService.AnalyzeImageAsync([myProfileImageBase64String, potentialMatchProfileImageBase64String],
             prompt.ToString(), this.cancellationTokenSource.Token);
             this.potentialMatchAnalysisDialog!.Show();
