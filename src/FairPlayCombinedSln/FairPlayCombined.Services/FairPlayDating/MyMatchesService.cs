@@ -72,6 +72,8 @@ namespace FairPlayCombined.Services.FairPlayDating
                     HairColorText = p.HairColor.Name,
                     KidStatusId = p.KidStatusId,
                     KidStatusText = p.KidStatus.Name,
+                    MainProfessionId = p.MainProfessionId,
+                    MainProfessionText = p.MainProfession.Name,
                     PreferredEyesColorText = p.PreferredEyesColor.Name,
                     PreferredHairColorText = p.PreferredHairColor.Name,
                     PreferredKidStatusText = p.PreferredKidStatus.Name,

@@ -47,6 +47,7 @@ namespace FairPlayCombined.Models.FairPlayDating.UserProfile
         public double Distance { get; set; }
         public int MainProfessionId { get; set; }
         public UserProfileActivityFrequencyModel[]? ActivitiesFrequency { get; set; }
+        public string? MainProfessionText { get; set; }
     }
 
     public class UserProfileActivityFrequencyModel
