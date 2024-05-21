@@ -290,8 +290,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 {
                     ArmAccessToken = getAccessTokenResult.AccessToken!,
                     Description = "Test Desc",
-                    FileName = "TestFile",
-                    Name = $"AT File {Random.Shared.Next(1, 100)}",
+                    FileName = $"TestFile {Random.Shared.Next(1, 10000)}",
+                    Name = $"AT File {Random.Shared.Next(1, 10000)}",
                     VideoUri = new Uri(videoToIndexUrl!)
                 });
             Assert.IsNotNull(result);

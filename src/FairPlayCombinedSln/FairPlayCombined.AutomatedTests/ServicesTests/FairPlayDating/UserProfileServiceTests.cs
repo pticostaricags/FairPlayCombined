@@ -72,6 +72,10 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             {
                 dbContext.AspNetUsers.Remove(singleUser);
             }
+            foreach (var singleProfession in dbContext.Profession)
+            {
+                dbContext.Profession.Remove(singleProfession);
+            }
             foreach (var singlePhoto in dbContext.Photo)
             {
                 dbContext.Photo.Remove(singlePhoto);
@@ -98,7 +102,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 _, Gender gender,
                 DateObjective dateObjective, EyesColor eyesColor,
                 HairColor hairColor, KidStatus kidStatus, Religion religion,
-                TattooStatus tattooStatus, Photo photo) =
+                TattooStatus tattooStatus, Photo photo, Profession profession) =
                 await CreateTestRecordsAsync(dbContext);
             var UserProfileService = sp.GetRequiredService<UserProfileService>();
             CreateUserProfileModel createUserProfileModel = new()
@@ -117,6 +121,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 PreferredKidStatusId = kidStatus.KidStatusId,
                 PreferredReligionId = religion.ReligionId,
                 PreferredTattooStatusId = tattooStatus.TattooStatusId,
+                MainProfessionId = profession.ProfessionId,
                 ReligionId = religion.ReligionId,
                 TattooStatusId = tattooStatus.TattooStatusId,
                 CurrentGeoLocation = new NetTopologySuite.Geometries
@@ -150,7 +155,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             Gender gender, DateObjective dateObjective,
             EyesColor eyesColor, HairColor hairColor, KidStatus kidStatus,
             Religion religion, TattooStatus tattooStatus,
-            Photo photo)>
+            Photo photo, Profession profession)>
             CreateTestRecordsAsync(FairPlayCombinedDbContext dbContext)
         {
             string fromUserName = "fromuser@test.test";
@@ -220,9 +225,14 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 PhotoBytes = Properties.Resources.TestProduct,
             };
             await dbContext.Photo.AddAsync(photo);
+            Profession profession = new()
+            {
+                Name = "TEST PROFESSION"
+            };
+            await dbContext.Profession.AddAsync(profession);
             await dbContext.SaveChangesAsync();
             return (fromUser, toUser, activity, gender, dateObjective, eyesColor, hairColor,
-                kidStatus, religion, tattooStatus, photo);
+                kidStatus, religion, tattooStatus, photo, profession);
         }
 
         [TestMethod]
@@ -244,7 +254,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                             _, Gender gender,
                             DateObjective dateObjective, EyesColor eyesColor,
                             HairColor hairColor, KidStatus kidStatus, Religion religion,
-                            TattooStatus tattooStatus, Photo photo) =
+                            TattooStatus tattooStatus, Photo photo, Profession profession) =
                             await CreateTestRecordsAsync(dbContext);
             var UserProfileService = sp.GetRequiredService<UserProfileService>();
             UserProfile entity = new()
@@ -263,6 +273,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 PreferredKidStatusId = kidStatus.KidStatusId,
                 PreferredReligionId = religion.ReligionId,
                 PreferredTattooStatusId = tattooStatus.TattooStatusId,
+                MainProfessionId = profession.ProfessionId,
                 ReligionId = religion.ReligionId,
                 TattooStatusId = tattooStatus.TattooStatusId,
                 CurrentGeoLocation = new NetTopologySuite.Geometries
@@ -298,7 +309,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                             _, Gender gender,
                             DateObjective dateObjective, EyesColor eyesColor,
                             HairColor hairColor, KidStatus kidStatus, Religion religion,
-                            TattooStatus tattooStatus, Photo photo) =
+                            TattooStatus tattooStatus, Photo photo, Profession profession) =
                             await CreateTestRecordsAsync(dbContext);
             var UserProfileService = sp.GetRequiredService<UserProfileService>();
             UserProfile entity = new()
@@ -317,6 +328,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 PreferredKidStatusId = kidStatus.KidStatusId,
                 PreferredReligionId = religion.ReligionId,
                 PreferredTattooStatusId = tattooStatus.TattooStatusId,
+                MainProfessionId = profession.ProfessionId,
                 ReligionId = religion.ReligionId,
                 TattooStatusId = tattooStatus.TattooStatusId,
                 CurrentGeoLocation = new NetTopologySuite.Geometries
@@ -365,7 +377,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                             _, Gender gender,
                             DateObjective dateObjective, EyesColor eyesColor,
                             HairColor hairColor, KidStatus kidStatus, Religion religion,
-                            TattooStatus tattooStatus, Photo photo) =
+                            TattooStatus tattooStatus, Photo photo, Profession profession) =
                             await CreateTestRecordsAsync(dbContext);
             var UserProfileService = sp.GetRequiredService<UserProfileService>();
             UserProfile entity = new()
@@ -379,6 +391,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 EyesColorId = eyesColor.EyesColorId,
                 HairColorId = hairColor.HairColorId,
                 KidStatusId = kidStatus.KidStatusId,
+                MainProfessionId = profession.ProfessionId,
                 PreferredEyesColorId = eyesColor.EyesColorId,
                 PreferredHairColorId = hairColor.HairColorId,
                 PreferredKidStatusId = kidStatus.KidStatusId,
