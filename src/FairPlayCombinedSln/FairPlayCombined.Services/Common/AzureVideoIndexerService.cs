@@ -2,6 +2,8 @@
 using Azure.Identity;
 using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.Models.AzureVideoIndexer;
+using Microsoft.Identity.Client;
+using NetTopologySuite.Geometries;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Web;
@@ -93,6 +95,35 @@ namespace FairPlayCombined.Services.Common
             public string? FileName { get; set; }
             public string? Language { get; set; } = "auto";
             public string? IndexingPreset { get; set; } = "Default";
+        }
+
+        public async Task<bool> DeleteVideoByIdAsync(string videoId, string viAccessToken,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                string requestUrl =
+                    $"https://api.videoindexer.ai/{azureVideoIndexerServiceConfiguration.Location}" +
+                    $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
+                    $"/Videos/{videoId}";
+                httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
+                var response = await httpClient.DeleteAsync(requestUrl, cancellationToken);
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else
+                {
+                    var reasonPhrase = response.ReasonPhrase;
+                    var responseContent = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
+                    throw new AzureVideoIndexerException($"Error: {reasonPhrase} - Details:{responseContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new AzureVideoIndexerException(ex.Message);
+            }
         }
         public async Task<UploadVideoResponseModel?> IndexVideoFromUriAsync(
             IndexVideoFromUriParameters indexVideoFromUriParameters,
