@@ -35,6 +35,7 @@
             public const string OPENAI_KEY = "OpenAIKey";
             public const string GENERATE_DALL3_IMAGE_URL_KEY = "GenerateDall3ImageUrl";
             public const string OPENAI_CHAT_COMPLETION_URL_KEY = "OpenAIChatCompletionsUrl";
+            public const string OPENAI_TEXT_GENERATION_MODEL_KEY = "OpenAITextGenerationModel";
             public const string GOOGLE_AUTH_CLIENT_ID_KEY = "GoogleAuthClientId";
             public const string AZURE_OPENAI_ENDPOINT_KEY = "AzureOpenAIEndpoint";
             public const string AZURE_OPENAI_KEY_KEY = "AzureOpenAIKey";

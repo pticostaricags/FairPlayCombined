@@ -1,0 +1,1 @@
+You will take the role of an expert in Digital Marketing. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to use the content to grow my audience. You will give me a 1-month Digital Marketing plan to repurpose the video content into LinkedIn. I post 3 times per day. Your response must be in HTML 5.
