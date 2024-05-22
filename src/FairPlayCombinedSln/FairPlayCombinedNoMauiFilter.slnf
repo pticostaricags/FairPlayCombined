@@ -25,6 +25,7 @@
       "FairPlaySocial.ClientServices\\FairPlaySocial.ClientServices.csproj",
       "FairPlaySocial.TestDataGenerator\\FairPlaySocial.TestDataGenerator.csproj",
       "FairPlaySocial\\FairPlaySocial.csproj",
+      "FairPlayTube.SharedUI\\FairPlayTube.SharedUI.csproj",
       "FairPlayTube.VideoIndexing\\FairPlayTube.VideoIndexing.csproj",
       "FairPlayTube\\FairPlayTube.csproj"
     ]

@@ -27,6 +27,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
 using FairPlayCombined.Services.Extensions;
+using System.Reflection;
+using FairPlayCombined.Interfaces.FairPlayTube;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -180,7 +182,8 @@ var localizationOptions = new RequestLocalizationOptions()
 app.UseRequestLocalization(localizationOptions);
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(FairPlayTube.UIConfiguration.AdditionalSetup.AdditionalAssemblies);
 
 app.MapControllers();
 // Add additional endpoints required by the Identity /Account Razor components.
@@ -255,7 +258,7 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
         return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
             new HttpClient());
     });
-    builder.Services.AddTransient<VideoInfoService>();
+    builder.Services.AddTransient<IVideoInfoService, VideoInfoService>();
     builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
     {
         ClientId = googleAuthClientSecretInfo.installed!.client_id,
@@ -274,7 +277,18 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
     builder.Services.AddTransient<VideoThumbnailService>();
     builder.Services.AddTransient<PhotoService>();
     builder.Services.AddTransient<VideoCommentService>();
+
+
     builder.Services.AddTransient<AspNetUsersService>();
     builder.Services.AddTransient<UserProfileService>();
     builder.Services.AddTransient<UserFundService>();
+}
+
+namespace FairPlayTube.UIConfiguration
+{
+    public static class AdditionalSetup
+    {
+        internal static readonly Assembly[] AdditionalAssemblies =
+                [typeof(FairPlayTube.SharedUI.Components.Pages.Home).Assembly];
+    }
 }

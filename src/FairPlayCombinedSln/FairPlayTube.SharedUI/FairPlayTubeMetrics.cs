@@ -7,7 +7,7 @@ namespace FairPlayTube.MetricsConfiguration
 {
     public class FairPlayTubeMetrics(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
     {
-        internal const string SESSION_METER_NAME = $"{nameof(FairPlayTube)}.Videos";
+        public const string SESSION_METER_NAME = $"{nameof(FairPlayTube)}.Videos";
         private Meter? SessionsMeter { get; set; }
         private ObservableGauge<int>? RealtimeVideoSessions { get; set; }
         private ObservableGauge<int>? RealtimeAuthenticatedVideoSessions { get; set; }

@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿#if Debug_Enable_Paid_Tests
+using Azure;
 using Azure.AI.ContentSafety;
 using FairPlayCombined.Models.AzureContentSafety;
 using FairPlayCombined.Services.Common;
@@ -106,3 +107,4 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         }
     }
 }
+#endif

@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         PaginationRequest,
         PaginationOfT<VideoInfoModel>
         >]
-    public partial class VideoInfoService : BaseService
+    public partial class VideoInfoService : BaseService, IVideoInfoService
     {
         public async Task<PaginationOfT<VideoInfoModel>> GetPaginatedCompletedVideoInfobyUserIdAsync(
             PaginationRequest paginationRequest,
