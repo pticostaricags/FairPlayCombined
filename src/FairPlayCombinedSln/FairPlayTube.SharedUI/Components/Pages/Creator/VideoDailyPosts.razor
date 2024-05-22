@@ -3,6 +3,7 @@
 
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.Common
@@ -12,7 +13,7 @@
 @using System.Text
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject IJSRuntime jsRuntime
-@inject VideoInfoService videoInfoService
+@inject IVideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
 @inject OpenAIService openAIService
 @inject VideoCaptionsService videoCaptionsService
