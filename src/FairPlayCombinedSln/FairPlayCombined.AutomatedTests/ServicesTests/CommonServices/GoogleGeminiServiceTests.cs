@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Models.GoogleGemini;
+﻿#if Debug_Enable_Paid_Tests
+using FairPlayCombined.Models.GoogleGemini;
 using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -46,3 +47,4 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         }
     }
 }
+#endif

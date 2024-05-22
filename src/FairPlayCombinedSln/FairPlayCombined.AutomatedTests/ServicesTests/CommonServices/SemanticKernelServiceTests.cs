@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Models.AzureOpenAI;
+﻿#if Debug_Enable_Paid_Tests
+using FairPlayCombined.Models.AzureOpenAI;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.AI;
 using Microsoft.Extensions.Configuration;
@@ -75,3 +76,4 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         }
     }
 }
+#endif

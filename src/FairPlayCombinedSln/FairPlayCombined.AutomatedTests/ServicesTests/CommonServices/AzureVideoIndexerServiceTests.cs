@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿#if Debug_Enable_Paid_Tests
+using Azure.Core;
 using Azure.Identity;
 using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
@@ -352,9 +353,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             Assert.IsNotNull(result);
         }
 
-#pragma warning disable CA1822 // Mark members as static
         private static async Task<string> AuthenticatedToAzureArmAsync()
-#pragma warning restore CA1822 // Mark members as static
         {
             var tokenRequestContext = new TokenRequestContext(["https://management.azure.com/.default"]);
             var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, CancellationToken.None);
@@ -362,3 +361,4 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         }
     }
 }
+#endif

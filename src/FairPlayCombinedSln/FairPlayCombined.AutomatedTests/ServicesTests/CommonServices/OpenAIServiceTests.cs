@@ -13,6 +13,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
     public class OpenAIServiceTests : ServicesBase
     {
         private const string VideoCaptions = "Speaker #1: Is Blazer good for applications that handle millions of records\r\n\r\nSpeaker #1: of data?\r\n\r\nSpeaker #1: Yes it is, especially if you use best practices such\r\n\r\nSpeaker #1: as pagination and in the case of Entity Framework code,\r\n\r\nSpeaker #1: the disabling of the changed tracker when you are going\r\n\r\nSpeaker #1: to retrieve data that is not going to be modified.\r\n\r\nSpeaker #1: As you can see in this example I am showing\r\n\r\nSpeaker #1: a list of records from a table that has 1,000,000\r\n\r\nSpeaker #1: records.\r\n\r\nSpeaker #1: The average duration for the retrieval is around 25 milliseconds.\r\n\r\nSpeaker #1: O Yes, Racer is excellent for alications that handle millions\r\n\r\nSpeaker #1: of records of data, esecially if you use best ractices.";
+        private const string TEXT_GENERATION_MODEL = "gpt-4o";
 
         [TestMethod]
         public async Task Test_AnalyzeImageAsync()
@@ -34,13 +35,16 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 throw new Exception("'OpenAIChatCompletionsUrl' is not in configuration");
             var imageToAnalyzeFilePath = configuration["ImageToAnalyzeFilePath"] ??
                 throw new Exception("'ImageToAnalyzeFilePath' is not in configuration");
-            HttpClient httpClient = new();
-            httpClient.Timeout = TimeSpan.FromMinutes(2);
+            HttpClient httpClient = new()
+            {
+                Timeout = TimeSpan.FromMinutes(2)
+            };
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer",
                 openAIKey);
             OpenAIServiceConfiguration openAIServiceConfiguration = new()
             {
-                ChatCompletionsUrl = openAIChatCompletionsUrl
+                ChatCompletionsUrl = openAIChatCompletionsUrl,
+                TextGenerationModel= TEXT_GENERATION_MODEL
             };
             var dbContextFactory = sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
@@ -52,7 +56,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 logger: logger);
             string prompt = "Analyze this image";
             byte[] imageBytes = await File.ReadAllBytesAsync(imageToAnalyzeFilePath);
-            var result = await openAIService.AnalyzeImageAsync(imageBytes, prompt, CancellationToken.None);
+            string imageBase64String= $"data:image/jpg;base64, {Convert.ToBase64String(imageBytes)}";
+            var result = await openAIService.AnalyzeImageAsync([imageBase64String], prompt, CancellationToken.None);
             Assert.IsNotNull(result);
         }
 
@@ -74,13 +79,16 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 throw new Exception("'OpenAI:Key' is not in configuration");
             var openAIChatCompletionsUrl = configuration["OpenAIChatCompletionsUrl"] ??
                 throw new Exception("'OpenAIChatCompletionsUrl' is not in configuration");
-            HttpClient httpClient = new();
-            httpClient.Timeout = TimeSpan.FromMinutes(2);
+            HttpClient httpClient = new()
+            {
+                Timeout = TimeSpan.FromMinutes(2)
+            };
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer",
                 openAIKey);
             OpenAIServiceConfiguration openAIServiceConfiguration = new()
             {
-                ChatCompletionsUrl = openAIChatCompletionsUrl
+                ChatCompletionsUrl = openAIChatCompletionsUrl,
+                TextGenerationModel = TEXT_GENERATION_MODEL
             };
             var dbContextFactory = sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
