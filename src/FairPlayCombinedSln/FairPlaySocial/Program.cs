@@ -64,12 +64,12 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 
 builder.Services.AddTransient<IUserProviderService, UserProviderService>();
-builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
+builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp, builder) =>
 {
     IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
-    DbContextOptionsBuilder<FairPlayCombinedDbContext> optionsBuilder = new();
-    optionsBuilder.AddInterceptors(new SaveChangesInterceptor(userProviderService));
-    optionsBuilder.UseSqlServer(connectionString,
+
+    builder.AddInterceptors(new SaveChangesInterceptor(userProviderService));
+    builder.UseSqlServer(connectionString,
         sqlServerOptionsAction =>
         {
             sqlServerOptionsAction.UseNetTopologySuite();
@@ -77,10 +77,11 @@ builder.Services.AddTransient<DbContextOptions<FairPlayCombinedDbContext>>(sp =>
                 maxRetryDelay: TimeSpan.FromSeconds(30),
                 errorNumbersToAdd: null);
         });
-    return optionsBuilder.Options;
-});
-builder.AddSqlServerDbContext<FairPlayCombinedDbContext>(connectionName: "FairPlayCombinedDb");
+}, contextLifetime: ServiceLifetime.Transient,
+optionsLifetime: ServiceLifetime.Transient);
+
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
+builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 
 builder.Services.AddSignalR(hubOptions =>
 {

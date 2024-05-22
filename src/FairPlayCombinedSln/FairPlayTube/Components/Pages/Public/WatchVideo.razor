@@ -164,7 +164,8 @@ else
             }
             this.VideoUrl = videoInfoModel!.PublishedUrl;
             this.SupportedLanguages = await supportedLanguageService
-            .GetAllSupportedLanguageAsync(this.cancellationTokenSource.Token);
+            .GetAllSupportedLanguageForVideoInfoIdAsync(videoInfoId:videoInfoModel.VideoInfoId, 
+                cancellationToken:this.cancellationTokenSource.Token);
             StateHasChanged();
             await jsRuntime.InvokeVoidAsync("initializeVideoJsPlayer", "my_video_1", Guid.NewGuid().ToString(), this.dotNetObjectReference);
             this.IsBusy = false;

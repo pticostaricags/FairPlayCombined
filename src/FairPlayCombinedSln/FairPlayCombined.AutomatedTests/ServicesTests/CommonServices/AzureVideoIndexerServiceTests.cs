@@ -2,6 +2,7 @@
 using Azure.Identity;
 using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
 {
@@ -9,6 +10,60 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
     [TestClass]
     public class AzureVideoIndexerServiceTests : ServicesBase
     {
+        [ClassCleanup]
+        public static async Task ClassCleanup()
+        {
+            try
+            {
+                var configurationBuilder = new ConfigurationBuilder();
+                configurationBuilder.AddUserSecrets<ServicesBase>();
+                var configuration = configurationBuilder.Build();
+                var azureVideoIndexerAccountId = configuration["AzureVideoIndexerAccountId"]!;
+                var azureVideoIndexerLocation = configuration["AzureVideoIndexerLocation"]!;
+                var azureVideoIndexerResourceGroup = configuration["AzureVideoIndexerResourceGroup"]!;
+                var azureVideoIndexerResourceName = configuration["AzureVideoIndexerResourceName"]!;
+                var azureVideoIndexerSubscriptionId = configuration["AzureVideoIndexerSubscriptionId"]!;
+                var testVideoId = configuration["TestVideoId"];
+                AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration =
+                    new()
+                    {
+                        AccountId = azureVideoIndexerAccountId,
+                        IsArmAccount = true,
+                        Location = azureVideoIndexerLocation,
+                        ResourceGroup = azureVideoIndexerResourceGroup,
+                        ResourceName = azureVideoIndexerResourceName,
+                        SubscriptionId = azureVideoIndexerSubscriptionId,
+                    };
+                AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
+                    new HttpClient());
+                string bearerToken = await AuthenticatedToAzureArmAsync();
+                var getAccessToken = await azureVideoIndexerService
+                    .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
+                Assert.IsNotNull(getAccessToken);
+                var foundVideos = await azureVideoIndexerService.SearchVideosByNameAsync(
+                    viAccessToken: getAccessToken!.AccessToken!,
+                    name: "AT File ",
+                    cancellationToken: CancellationToken.None);
+                if (foundVideos?.results?.Length > 0)
+                {
+                    foreach (var singleVideo in foundVideos.results)
+                    {
+                        if (singleVideo.id != testVideoId)
+                        {
+                            await azureVideoIndexerService.DeleteVideoByIdAsync(
+                                videoId: singleVideo.id!,
+                                viAccessToken: getAccessToken.AccessToken!,
+                                cancellationToken: CancellationToken.None);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) 
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+        }
 
         [TestMethod]
         public async Task Test_GetVideoStreamingUrlAsync()
@@ -34,7 +89,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
                 new HttpClient());
-            string bearerToken = await this.AuthenticatedToAzureArmAsync();
+            string bearerToken = await AuthenticatedToAzureArmAsync();
             var getAccessToken = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
             Assert.IsNotNull(getAccessToken);
@@ -68,7 +123,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
                 new HttpClient());
-            string bearerToken = await this.AuthenticatedToAzureArmAsync();
+            string bearerToken = await AuthenticatedToAzureArmAsync();
             var getAccessToken = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
             Assert.IsNotNull(getAccessToken);
@@ -106,7 +161,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
                 new HttpClient());
-            string bearerToken = await this.AuthenticatedToAzureArmAsync();
+            string bearerToken = await AuthenticatedToAzureArmAsync();
             var getAccessToken = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
             Assert.IsNotNull(getAccessToken);
@@ -141,7 +196,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
                 new HttpClient());
-            string bearerToken = await this.AuthenticatedToAzureArmAsync();
+            string bearerToken = await AuthenticatedToAzureArmAsync();
             var getAccessToken = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
             Assert.IsNotNull(getAccessToken);
@@ -177,7 +232,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
                 new HttpClient());
-            string bearerToken = await this.AuthenticatedToAzureArmAsync();
+            string bearerToken = await AuthenticatedToAzureArmAsync();
             var getAccessToken = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
             Assert.IsNotNull(getAccessToken);
@@ -212,7 +267,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
                 new HttpClient());
-            string bearerToken = await this.AuthenticatedToAzureArmAsync();
+            string bearerToken = await AuthenticatedToAzureArmAsync();
             var result = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(bearerToken, CancellationToken.None);
             Assert.IsNotNull(result);
@@ -242,7 +297,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
                 new HttpClient());
-            string armAccesstoken = await this.AuthenticatedToAzureArmAsync();
+            string armAccesstoken = await AuthenticatedToAzureArmAsync();
             var getAccessTokenResult = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(armAccesstoken, CancellationToken.None);
             Assert.IsNotNull(getAccessTokenResult);
@@ -281,7 +336,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             AzureVideoIndexerService azureVideoIndexerService = new(azureVideoIndexerServiceConfiguration,
                 new HttpClient());
-            string armAccesstoken = await this.AuthenticatedToAzureArmAsync();
+            string armAccesstoken = await AuthenticatedToAzureArmAsync();
             var getAccessTokenResult = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(armAccesstoken, CancellationToken.None);
             Assert.IsNotNull(getAccessTokenResult);
@@ -290,15 +345,15 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 {
                     ArmAccessToken = getAccessTokenResult.AccessToken!,
                     Description = "Test Desc",
-                    FileName = "TestFile",
-                    Name = $"AT File {Random.Shared.Next(1, 100)}",
+                    FileName = $"TestFile {Random.Shared.Next(1, 10000)}",
+                    Name = $"AT File {Random.Shared.Next(1, 10000)}",
                     VideoUri = new Uri(videoToIndexUrl!)
                 });
             Assert.IsNotNull(result);
         }
 
 #pragma warning disable CA1822 // Mark members as static
-        private async Task<string> AuthenticatedToAzureArmAsync()
+        private static async Task<string> AuthenticatedToAzureArmAsync()
 #pragma warning restore CA1822 // Mark members as static
         {
             var tokenRequestContext = new TokenRequestContext(["https://management.azure.com/.default"]);
