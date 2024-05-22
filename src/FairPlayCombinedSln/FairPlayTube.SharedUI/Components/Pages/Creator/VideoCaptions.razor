@@ -1,6 +1,7 @@
 ﻿@page "/Creator/VideoCaptions/VideoInfo{VideoInfoId:long}/YouTube/{YouTubeVideoId}"
 @implements IDisposable
 
+@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.FairPlaySocial.VideoCaptions
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
@@ -13,7 +14,7 @@
 @attribute [StreamRendering(enabled: true)]
 
 @inject VideoCaptionsService videoCaptionsService
-@inject YouTubeClientService youTubeClientService
+@inject IYouTubeClientService youTubeClientService
 @inject IToastService toastService
 
 <FluentLabel Typo="Typography.H3">VideoCaptions</FluentLabel>
@@ -56,7 +57,7 @@
         var youTubeService = await this.youTubeClientService.AuthorizeAsync();
         var contentBytes = Encoding.UTF8.GetBytes(videoCaptionsModel.Content!);
         MemoryStream memoryStream = new MemoryStream(contentBytes);
-        await YouTubeClientService.UploadCaptionsAsync(this.YouTubeVideoId!,
+        await this.youTubeClientService.UploadCaptionsAsync(this.YouTubeVideoId!,
         language: videoCaptionsModel.Language!,
         youTubeService,
         memoryStream,

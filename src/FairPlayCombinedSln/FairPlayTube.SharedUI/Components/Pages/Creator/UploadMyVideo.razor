@@ -4,6 +4,7 @@
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.FairPlayTube.Enums
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Services.Common
@@ -19,7 +20,7 @@
 @inject IVideoInfoService videoInfoService
 @inject IToastService toastService
 @inject IUserProviderService userProviderService
-@inject YouTubeClientService youTubeClientService
+@inject IYouTubeClientService youTubeClientService
 @inject ILogger<UploadMyVideo> logger
 @inject NavigationManager navigationManager
 

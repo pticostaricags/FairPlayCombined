@@ -29,6 +29,7 @@ using OpenTelemetry.Metrics;
 using FairPlayCombined.Services.Extensions;
 using System.Reflection;
 using FairPlayCombined.Interfaces.FairPlayTube;
+using FairPlayCombined.Interfaces.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -264,7 +265,7 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
         ClientId = googleAuthClientSecretInfo.installed!.client_id,
         ClientSecret = googleAuthClientSecretInfo.installed.client_secret
     });
-    builder.Services.AddTransient<YouTubeClientService>();
+    builder.Services.AddTransient<IYouTubeClientService, YouTubeClientService>();
     builder.Services.AddTransient<VideoCaptionsService>();
     builder.Services.AddTransient<VideoDigitalMarketingPlanService>();
     builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();

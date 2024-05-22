@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Models.GoogleAuth;
+﻿using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Models.GoogleAuth;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Upload;
@@ -13,7 +14,7 @@ namespace FairPlayCombined.Services.Common
 {
     public class YouTubeClientService(
         YouTubeClientServiceConfiguration youTubeClientServiceConfiguration,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor) : IYouTubeClientService
     {
         public async Task<SearchListResponse> SearchMyVideosAsync(string searchTerm,CancellationToken cancellationToken)
         {
@@ -71,7 +72,7 @@ namespace FairPlayCombined.Services.Common
             return youtubeService;
         }
 
-        public static async Task<UploadStatus> UploadCaptionsAsync(string youtubeVideoId, string language,
+        public async Task<UploadStatus> UploadCaptionsAsync(string youtubeVideoId, string language,
             YouTubeService youTubeService,
             MemoryStream captionsStream,
             Action<IUploadProgress> progressChanged,
