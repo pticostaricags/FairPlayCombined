@@ -267,7 +267,7 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
     });
     builder.Services.AddTransient<IYouTubeClientService, YouTubeClientService>();
     builder.Services.AddTransient<IVideoCaptionsService, VideoCaptionsService>();
-    builder.Services.AddTransient<VideoDigitalMarketingPlanService>();
+    builder.Services.AddTransient<IVideoDigitalMarketingPlanService, VideoDigitalMarketingPlanService>();
     builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
     builder.Services.AddTransient<VideoPlanService>();
     builder.Services.AddTransient<PromptGeneratorService>();
