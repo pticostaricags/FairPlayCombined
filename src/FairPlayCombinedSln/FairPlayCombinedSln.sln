@@ -70,6 +70,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Services.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.Migrations", "FairPlayCombined.Migrations\FairPlayCombined.Migrations.csproj", "{1BAEDFA1-2B3A-4C18-9C38-BFAF2C95D94F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConfigurationTemplates", "ConfigurationTemplates", "{4E91149A-8BA9-45CE-942A-290F4563E402}"
+	ProjectSection(SolutionItems) = preProject
+		ConfigurationTemplates\AutomatedTestsUserSecretsTemplate.json = ConfigurationTemplates\AutomatedTestsUserSecretsTemplate.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Enable_Paid_Tests|Any CPU = Debug_Enable_Paid_Tests|Any CPU
@@ -284,6 +289,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4E91149A-8BA9-45CE-942A-290F4563E402} = {123F2EE1-42C9-418B-89DE-1B1809B3CC8A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6652B1E5-088F-4C5A-AEC4-4D3FBFE4E474}
