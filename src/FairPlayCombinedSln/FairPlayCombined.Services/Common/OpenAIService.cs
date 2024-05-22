@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.OpenAI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,7 @@ public class OpenAIService(
     HttpClient genericHttpClient,
     OpenAIServiceConfiguration openAIServiceConfiguration,
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-    ILogger<OpenAIService> logger)
+    ILogger<OpenAIService> logger): IOpenAIService
 {
     public async Task<AnalyzeImageResponseModel?> AnalyzeImageAsync(
         string[] imagesBase64Strings, string prompt, CancellationToken cancellationToken)

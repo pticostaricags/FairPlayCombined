@@ -3,6 +3,7 @@
 
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
@@ -14,7 +15,7 @@
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
-@inject OpenAIService openAIService
+@inject IOpenAIService openAIService
 @inject IVideoCaptionsService videoCaptionsService
 @inject PromptGeneratorService promptGeneratorService
 

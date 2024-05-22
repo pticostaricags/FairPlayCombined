@@ -1,4 +1,4 @@
-﻿namespace FairPlayCombined.Services.Common;
+﻿namespace FairPlayCombined.Models.OpenAI;
 
 public class GenerateDallE3ResponseDatumModel
 {
