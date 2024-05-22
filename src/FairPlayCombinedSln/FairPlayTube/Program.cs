@@ -270,7 +270,7 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
     builder.Services.AddTransient<IVideoDigitalMarketingPlanService, VideoDigitalMarketingPlanService>();
     builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
     builder.Services.AddTransient<VideoPlanService>();
-    builder.Services.AddTransient<PromptGeneratorService>();
+    builder.Services.AddTransient<IPromptGeneratorService, PromptGeneratorService>();
     builder.Services.AddTransient<VideoWatchTimeService>();
     builder.Services.AddTransient<SupportedLanguageService>();
     builder.Services.AddTransient<VideoViewerService>();

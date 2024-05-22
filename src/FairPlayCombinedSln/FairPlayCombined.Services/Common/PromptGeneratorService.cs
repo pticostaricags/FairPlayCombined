@@ -1,5 +1,6 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.Common.Promp;
 using FairPlayCombined.Models.Common.PromptVariable;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 namespace FairPlayCombined.Services.Common
 {
     public class PromptGeneratorService(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        ILogger<PromptGeneratorService> logger)
+        ILogger<PromptGeneratorService> logger) : IPromptGeneratorService
     {
         public async Task<PromptModel[]> GetAllPromptsAsync(CancellationToken cancellationToken)
         {

@@ -2,12 +2,13 @@
 @implements IAsyncDisposable
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.Common.ConfigurationSecret
 @using FairPlayCombined.Models.Common.Promp
 @using FairPlayCombined.Services.Common
 
 @inject IToastService toastService
-@inject PromptGeneratorService promptGeneratorService
+@inject IPromptGeneratorService promptGeneratorService
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
