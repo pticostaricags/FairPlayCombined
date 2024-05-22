@@ -1,5 +1,6 @@
 ﻿@using FairPlayTube.Components.Account.Shared
-<Router AppAssembly="@typeof(Program).Assembly">
+@using System.Reflection
+<Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="@FairPlayTube.UIConfiguration.AdditionalSetup.AdditionalAssemblies">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
             <NotAuthorized>

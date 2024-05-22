@@ -75,6 +75,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConfigurationTemplates", "C
 		ConfigurationTemplates\AutomatedTestsUserSecretsTemplate.json = ConfigurationTemplates\AutomatedTestsUserSecretsTemplate.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayTube.SharedUI", "FairPlayTube.SharedUI\FairPlayTube.SharedUI.csproj", "{B55EF9FA-03AD-4D25-9427-B721B18172AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Enable_Paid_Tests|Any CPU = Debug_Enable_Paid_Tests|Any CPU
@@ -286,6 +288,12 @@ Global
 		{1BAEDFA1-2B3A-4C18-9C38-BFAF2C95D94F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BAEDFA1-2B3A-4C18-9C38-BFAF2C95D94F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BAEDFA1-2B3A-4C18-9C38-BFAF2C95D94F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B55EF9FA-03AD-4D25-9427-B721B18172AF}.Debug_Enable_Paid_Tests|Any CPU.ActiveCfg = Debug|Any CPU
+		{B55EF9FA-03AD-4D25-9427-B721B18172AF}.Debug_Enable_Paid_Tests|Any CPU.Build.0 = Debug|Any CPU
+		{B55EF9FA-03AD-4D25-9427-B721B18172AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B55EF9FA-03AD-4D25-9427-B721B18172AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B55EF9FA-03AD-4D25-9427-B721B18172AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B55EF9FA-03AD-4D25-9427-B721B18172AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

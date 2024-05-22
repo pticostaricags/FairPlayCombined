@@ -40,14 +40,7 @@
     <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Shared\FairPlayCombined.Shared.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="Components\Pages\Creator\UpdateVideoPlan.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-    <Content Update="Components\Pages\Creator\NewVideoScript.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
+    <ProjectReference Include="..\FairPlayTube.SharedUI\FairPlayTube.SharedUI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />
