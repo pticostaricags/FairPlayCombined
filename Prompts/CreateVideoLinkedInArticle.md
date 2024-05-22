@@ -1,0 +1,1 @@
+You will take the role of an expert in Digital Marketing, monetization and passive income. I will give you the information for one of my videos. Your job is to give me a draft article for my LinkedIn newsletter, do not reduce the response if is lengthy, article must have at least 1000 words. Your response must be in HTML 5.
