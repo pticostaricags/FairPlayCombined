@@ -25,6 +25,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .Select(p => p.Language).ToArrayAsync(cancellationToken);
             var result = await dbContext.VideoIndexerSupportedLanguage
                 .Where(p=> laguagesWithCaptions.Contains(p.LanguageCode))
+                .OrderBy(p=>p.Name)
                 .Select(p => new SupportedLanguageModel
                 {
                     name = p.Name,
