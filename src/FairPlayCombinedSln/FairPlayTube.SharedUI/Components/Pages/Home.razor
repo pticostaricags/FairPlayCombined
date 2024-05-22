@@ -1,6 +1,7 @@
 ﻿@page "/"
 @implements IAsyncDisposable
 @using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.Common
@@ -9,7 +10,7 @@
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject AzureVideoIndexerService azureVideoIndexerService
-@inject VideoInfoService videoInfoService
+@inject IVideoInfoService videoInfoService
 @inject NavigationManager navigationManager
 
 <PageTitle>Home</PageTitle>

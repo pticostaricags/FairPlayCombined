@@ -28,6 +28,7 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
 using FairPlayCombined.Services.Extensions;
 using System.Reflection;
+using FairPlayCombined.Interfaces.FairPlayTube;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -257,7 +258,7 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
         return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
             new HttpClient());
     });
-    builder.Services.AddTransient<VideoInfoService>();
+    builder.Services.AddTransient<IVideoInfoService, VideoInfoService>();
     builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
     {
         ClientId = googleAuthClientSecretInfo.installed!.client_id,
