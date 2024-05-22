@@ -28,7 +28,9 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
                 .GetAccessTokenForArmAccountAsync(armToken, stoppingToken);
             var supportedLanguages = await azureVideoIndexerService
                 .GetSupportedLanguagesAsync(getViTokenResponse!.AccessToken!, stoppingToken);
-            foreach (var singleSupportedLanguage in supportedLanguages!)
+            string[] defaultLanguageCodes = ["en-US", "es-MX"];
+            foreach (var singleSupportedLanguage in supportedLanguages!.
+                Where(p=>defaultLanguageCodes.Contains(p.languageCode)))
             {
                 await AddLanguageCaptions(dbContext,
                     azureVideoIndexerService,
