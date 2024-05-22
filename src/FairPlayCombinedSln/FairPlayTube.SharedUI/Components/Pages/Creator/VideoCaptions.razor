@@ -2,6 +2,7 @@
 @implements IDisposable
 
 @using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlaySocial.VideoCaptions
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
@@ -13,7 +14,7 @@
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @attribute [StreamRendering(enabled: true)]
 
-@inject VideoCaptionsService videoCaptionsService
+@inject IVideoCaptionsService videoCaptionsService
 @inject IYouTubeClientService youTubeClientService
 @inject IToastService toastService
 

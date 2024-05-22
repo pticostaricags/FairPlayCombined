@@ -266,7 +266,7 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
         ClientSecret = googleAuthClientSecretInfo.installed.client_secret
     });
     builder.Services.AddTransient<IYouTubeClientService, YouTubeClientService>();
-    builder.Services.AddTransient<VideoCaptionsService>();
+    builder.Services.AddTransient<IVideoCaptionsService, VideoCaptionsService>();
     builder.Services.AddTransient<VideoDigitalMarketingPlanService>();
     builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
     builder.Services.AddTransient<VideoPlanService>();
