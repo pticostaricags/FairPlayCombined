@@ -15,9 +15,6 @@ public class OpenAIService(
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
     ILogger<OpenAIService> logger)
 {
-
-    private const string TextGenerationModel = "gpt-4o";
-
     public async Task<AnalyzeImageResponseModel?> AnalyzeImageAsync(
         string[] imagesBase64Strings, string prompt, CancellationToken cancellationToken)
     {
@@ -42,7 +39,7 @@ public class OpenAIService(
         }
         AnalyzeImageRequestModel analyzeImageRequestModel = new()
         {
-            model = TextGenerationModel,
+            model = openAIServiceConfiguration.TextGenerationModel,
             max_tokens = 4000,
             messages =
             [
@@ -74,7 +71,7 @@ public class OpenAIService(
         var requestUrl = openAIServiceConfiguration.ChatCompletionsUrl;
         ChatCompletionRequestModel request = new()
         {
-            model = TextGenerationModel,
+            model = openAIServiceConfiguration.TextGenerationModel,
             messages =
             [
                 new()

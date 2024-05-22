@@ -19,9 +19,26 @@ namespace FairPlayCombined.Services.Extensions
                 IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
                 sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
                 var dbContext = dbContextFactory.CreateDbContext();
-                var openAIKeyEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.OPENAI_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_KEY} in database");
-                var generateDall3ImageUrlEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY} in database");
-                var openAIChatCompletionEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name == Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY} in database");
+                var openAIKeyEntity = dbContext.ConfigurationSecret
+                .SingleOrDefault(p => p.Name == 
+                Constants.ConfigurationSecretsKeys.OPENAI_KEY) ?? 
+                throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_KEY} in database");
+                
+                var generateDall3ImageUrlEntity = dbContext.ConfigurationSecret
+                .SingleOrDefault(p => p.Name == 
+                Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY) 
+                ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.GENERATE_DALL3_IMAGE_URL_KEY} in database");
+                
+                var openAIChatCompletionEntity = dbContext.ConfigurationSecret
+                .SingleOrDefault(p => p.Name == 
+                Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY) 
+                ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_CHAT_COMPLETION_URL_KEY} in database");
+                
+                var openAITextGenerationModelEntity = dbContext.ConfigurationSecret
+                .SingleOrDefault(p=>p.Name == 
+                Constants.ConfigurationSecretsKeys.OPENAI_TEXT_GENERATION_MODEL_KEY)
+                ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.OPENAI_TEXT_GENERATION_MODEL_KEY} in database");
+
                 var timeoutMinutes = 3;
                 HttpClient openAIAuthorizedHttpClient = new()
                 {
@@ -39,7 +56,8 @@ namespace FairPlayCombined.Services.Extensions
                     {
                         Key = openAIKeyEntity.Value,
                         GenerateDall3ImageUrl = generateDall3ImageUrlEntity.Value,
-                        ChatCompletionsUrl = openAIChatCompletionEntity.Value
+                        ChatCompletionsUrl = openAIChatCompletionEntity.Value,
+                        TextGenerationModel = openAITextGenerationModelEntity.Value
                     },
                 dbContextFactory: dbContextFactory, logger);
             });
