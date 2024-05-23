@@ -3,14 +3,13 @@
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.PayPal
-@using FairPlayCombined.Services.Common
 @using Microsoft.Extensions.Localization
 
 @inject IStringLocalizer<PayPalCheckout> Localizer
 @inject IJSRuntime JSRuntime
 @inject IToastService toastService
 @inject IUserFundService userFundService
-@inject PayPalOrderService payPalOrderService
+@inject IPayPalOrderService payPalOrderService
 
 <div>
     <div id="smart-button-container">

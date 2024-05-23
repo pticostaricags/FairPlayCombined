@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Services.Common;
+﻿using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PayPal.Core;
@@ -36,7 +37,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 "1234", 1.2M, "Automated Tests",
                 returnUrl: "https://example.com/returnUrl",
                 cancelUrl: "https://example.com/returnUrl", 
-                PayPalOrderService.CreateOrderIntent.Capture);
+                CreateOrderIntent.Capture);
             Assert.IsNotNull(result);
         }
 
@@ -63,7 +64,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 "1234", 1.2M, "Automated Tests",
                 returnUrl: "https://example.com/returnUrl",
                 cancelUrl: "https://example.com/returnUrl",
-                PayPalOrderService.CreateOrderIntent.Authorize);
+                CreateOrderIntent.Authorize);
             Assert.IsNotNull(createdOrder);
             var accessToken = await payPalOrderService.GetAccessTokenAsync(CancellationToken.None);
             var result = await payPalOrderService

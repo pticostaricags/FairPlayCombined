@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Models.Common.PayPal;
+﻿using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Models.Common.PayPal;
 using Microsoft.Extensions.Logging;
 using PayPal.Core;
 using PayPal.v1.Orders;
@@ -10,13 +11,8 @@ namespace FairPlayCombined.Services.Common
 {
     public class PayPalOrderService(PayPalHttpClient payPalHttpClient,
         ILogger<PayPalOrderService> logger, HttpClient basicHttpClient,
-        PayPalConfiguration payPalConfiguration)
+        PayPalConfiguration payPalConfiguration) : IPayPalOrderService
     {
-        public enum CreateOrderIntent
-        {
-            Capture,
-            Authorize
-        }
 
         public async Task<GetAccessTokenResponse> GetAccessTokenAsync(CancellationToken cancellationToken)
         {

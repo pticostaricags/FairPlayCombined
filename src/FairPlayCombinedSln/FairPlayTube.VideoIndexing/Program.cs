@@ -4,6 +4,7 @@ using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Models.AzureVideoIndexer;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayTube;
 using FairPlayTube.VideoIndexing;

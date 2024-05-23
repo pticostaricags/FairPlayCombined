@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Models.Common.PayPal;
+﻿using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Models.Common.PayPal;
 using FairPlayCombined.Services.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +38,7 @@ namespace FairPlayCombined.Services.Extensions
                     return payPalHttpClient;
                 }
             });
-            builder.Services.AddTransient<PayPalOrderService>(sp =>
+            builder.Services.AddTransient<IPayPalOrderService, PayPalOrderService>(sp =>
             {
                 var payPalHttpClient = sp.GetRequiredService<PayPal.Core.PayPalHttpClient>();
                 var logger = sp.GetRequiredService<ILogger<PayPalOrderService>>();

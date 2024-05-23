@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.Common;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.GoogleGemini;
 using FairPlayCombined.Services.Common;
 using Microsoft.AspNetCore.Builder;
@@ -25,7 +26,7 @@ namespace FairPlayCombined.Services.Extensions
                 };
             });
 
-            builder.Services.AddTransient<GoogleGeminiService>(sp =>
+            builder.Services.AddTransient<IGoogleGeminiService, GoogleGeminiService>(sp =>
             {
                 GoogleGeminiConfiguration googleGeminiConfiguration = sp.GetRequiredService<GoogleGeminiConfiguration>();
                 HttpClient httpClient = new()

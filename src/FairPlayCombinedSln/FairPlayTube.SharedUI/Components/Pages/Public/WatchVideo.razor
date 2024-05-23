@@ -7,14 +7,11 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoComment
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
-@using FairPlayCombined.Services.Common
-@using FairPlayCombined.Services.FairPlayTube
 @using FairPlayTube.SharedUI.Components.Spinners
-@using MetricsConfiguration
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
-@inject FairPlayTubeMetrics metricsSetup
+@inject IFairPlayTubeMetrics metricsSetup
 @inject IJSRuntime jsRuntime
 @inject IVideoWatchTimeService videoWatchTimeService
 @inject ILogger<WatchVideo> logger;

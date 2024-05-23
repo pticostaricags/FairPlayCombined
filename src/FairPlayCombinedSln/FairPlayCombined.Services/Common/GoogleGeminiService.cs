@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Models.GoogleGemini;
+﻿using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Models.GoogleGemini;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace FairPlayCombined.Services.Common
 {
     public class GoogleGeminiService(GoogleGeminiConfiguration googleGeminiConfiguration,
-        HttpClient httpClient)
+        HttpClient httpClient) : IGoogleGeminiService
     {
         public async Task<GenerateContentResponseModel?> GenerateContentAsync(GenerateContentRequestModel generateContentRequestModel, 
             CancellationToken cancellationToken)

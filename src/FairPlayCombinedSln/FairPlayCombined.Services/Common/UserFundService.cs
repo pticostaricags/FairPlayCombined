@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Common
 {
-    public partial class UserFundService(PayPalOrderService payPalOrderService,
+    public partial class UserFundService(IPayPalOrderService payPalOrderService,
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
         IUserProviderService userProviderService): IUserFundService
     {
