@@ -30,6 +30,7 @@ using FairPlayCombined.Services.Extensions;
 using System.Reflection;
 using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Interfaces.FairPlayDating;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -281,7 +282,6 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
 
 
     builder.Services.AddTransient<IAspNetUsersService, AspNetUsersService>();
-    builder.Services.AddTransient<UserProfileService>();
     builder.Services.AddTransient<UserFundService>();
 }
 
