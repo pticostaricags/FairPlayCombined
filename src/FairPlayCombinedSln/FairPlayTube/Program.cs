@@ -30,6 +30,7 @@ using FairPlayCombined.Services.Extensions;
 using System.Reflection;
 using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Interfaces.FairPlayDating;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -268,21 +269,18 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
     builder.Services.AddTransient<IYouTubeClientService, YouTubeClientService>();
     builder.Services.AddTransient<IVideoCaptionsService, VideoCaptionsService>();
     builder.Services.AddTransient<IVideoDigitalMarketingPlanService, VideoDigitalMarketingPlanService>();
-    builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
-    builder.Services.AddTransient<VideoPlanService>();
+    builder.Services.AddTransient<IVideoDigitalMarketingDailyPostsService, VideoDigitalMarketingDailyPostsService>();
+    builder.Services.AddTransient<IVideoPlanService, VideoPlanService>();
     builder.Services.AddTransient<IPromptGeneratorService, PromptGeneratorService>();
-    builder.Services.AddTransient<VideoWatchTimeService>();
-    builder.Services.AddTransient<SupportedLanguageService>();
-    builder.Services.AddTransient<VideoViewerService>();
-    builder.Services.AddTransient<UserMessageService>();
-    builder.Services.AddTransient<VideoThumbnailService>();
-    builder.Services.AddTransient<PhotoService>();
-    builder.Services.AddTransient<VideoCommentService>();
-
-
-    builder.Services.AddTransient<AspNetUsersService>();
-    builder.Services.AddTransient<UserProfileService>();
-    builder.Services.AddTransient<UserFundService>();
+    builder.Services.AddTransient<IVideoWatchTimeService, VideoWatchTimeService>();
+    builder.Services.AddTransient<ISupportedLanguageService, SupportedLanguageService>();
+    builder.Services.AddTransient<IVideoViewerService, VideoViewerService>();
+    builder.Services.AddTransient<IUserMessageService, UserMessageService>();
+    builder.Services.AddTransient<IVideoThumbnailService, VideoThumbnailService>();
+    builder.Services.AddTransient<IPhotoService, PhotoService>();
+    builder.Services.AddTransient<IVideoCommentService, VideoCommentService>();
+    builder.Services.AddTransient<IAspNetUsersService, AspNetUsersService>();
+    builder.Services.AddTransient<IUserFundService, UserFundService>();
 }
 
 namespace FairPlayTube.UIConfiguration

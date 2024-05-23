@@ -1,6 +1,7 @@
 ﻿@implements IAsyncDisposable
 
 @using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.PayPal
 @using FairPlayCombined.Services.Common
 @using Microsoft.Extensions.Localization
@@ -8,7 +9,7 @@
 @inject IStringLocalizer<PayPalCheckout> Localizer
 @inject IJSRuntime JSRuntime
 @inject IToastService toastService
-@inject UserFundService userFundService
+@inject IUserFundService userFundService
 @inject PayPalOrderService payPalOrderService
 
 <div>

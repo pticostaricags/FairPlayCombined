@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.Common.UserMessage;
 using FairPlayCombined.Models.FairPlayTube.Conversation;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
@@ -18,7 +19,8 @@ namespace FairPlayCombined.Services.FairPlayTube
     public partial class UserMessageService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
         IUserProviderService userProviderService,
-        IHubContext<UserMessageNotificationHub, IUserMessageNotificationHub> hubContext) : BaseService
+        IHubContext<UserMessageNotificationHub, IUserMessageNotificationHub> hubContext) 
+        : BaseService, IUserMessageService
     {
         public async Task<ConversationsUserModel[]?> GetMyConversationsUsersAsync(
             CancellationToken cancellationToken)

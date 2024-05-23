@@ -2,6 +2,7 @@
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
+using FairPlayCombined.Interfaces.FairPlayDating;
 using FairPlayCombined.Models.FairPlayDating.UserProfile;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace FairPlayCombined.Services.FairPlayDating
         PaginationRequest,
         PaginationOfT<UserProfileModel>
         >]
-    public partial class UserProfileService : BaseService
+    public partial class UserProfileService : BaseService, IUserProfileService
     {
         public async Task<long> CreateUserProfileExtendedAsync(
     CreateUserProfileModel createModel,

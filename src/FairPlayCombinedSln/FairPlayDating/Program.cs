@@ -20,6 +20,7 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using FairPlayDating.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Interfaces.FairPlayDating;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -158,8 +159,8 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddTransient<KidStatusService>();
     builder.Services.AddTransient<ReligionService>();
     builder.Services.AddTransient<TattooStatusService>();
-    builder.Services.AddTransient<UserProfileService>();
-    builder.Services.AddTransient<PhotoService>();
+    builder.Services.AddTransient<IUserProfileService, UserProfileService>();
+    builder.Services.AddTransient<IPhotoService, PhotoService>();
     builder.Services.AddTransient<MyMatchesService>();
     builder.Services.AddTransient<GeoNamesService>();
     builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();

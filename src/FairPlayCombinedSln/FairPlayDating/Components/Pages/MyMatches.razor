@@ -6,6 +6,7 @@
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Interfaces.FairPlayDating
 @using FairPlayCombined.Models.FairPlayDating.LikedUserProfile
 @using FairPlayCombined.Models.FairPlayDating.NotLikedUserProfile
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
@@ -20,7 +21,7 @@
 @attribute [Authorize]
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject MyMatchesService myMatchesService
-@inject UserProfileService userProfileService
+@inject IUserProfileService userProfileService
 @inject IUserProviderService userProviderService
 @inject IStringLocalizer<MyMatches> localizer
 @inject GeoNamesService geoNamesService

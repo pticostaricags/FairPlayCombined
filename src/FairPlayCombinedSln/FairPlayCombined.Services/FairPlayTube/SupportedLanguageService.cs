@@ -1,4 +1,5 @@
 ﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.AzureVideoIndexer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,7 @@ namespace FairPlayCombined.Services.FairPlayTube
 {
     public partial class SupportedLanguageService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        ILogger<SupportedLanguageService> logger) : BaseService
+        ILogger<SupportedLanguageService> logger) : BaseService, ISupportedLanguageService
     {
         public async Task<SupportedLanguageModel[]?> GetAllSupportedLanguageForVideoInfoIdAsync(
             long videoInfoId,

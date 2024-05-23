@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.FairPlayTube.VideoPlan;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         PaginationRequest,
         PaginationOfT<VideoPlanModel>
         >]
-    public partial class VideoPlanService : BaseService
+    public partial class VideoPlanService : BaseService, IVideoPlanService
     {
         public async Task UpdateVideoPlanAsync(UpdateVideoPlanModel createModel,
             CancellationToken cancellationToken)

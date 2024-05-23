@@ -4,6 +4,7 @@
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Interfaces.FairPlayDating
 @using FairPlayCombined.Models.Common.Photo
 @using FairPlayCombined.Models.FairPlayDating
 @using FairPlayCombined.Models.FairPlayDating.DateObjective
@@ -34,9 +35,9 @@
 @inject TattooStatusService tattooStatusService
 @inject ProfessionService professionService
 @inject IUserProviderService userProviderService
-@inject UserProfileService userProfileService
+@inject IUserProfileService userProfileService
 @inject IToastService toastService
-@inject PhotoService photoService
+@inject IPhotoService photoService
 @inject IGeoLocationService geolocationService
 @inject GeoNamesService geoNamesService
 @inject AzureContentSafetyService azureContentSafetyService
