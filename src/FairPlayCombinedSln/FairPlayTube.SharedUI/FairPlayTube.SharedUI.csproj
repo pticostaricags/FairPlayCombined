@@ -26,7 +26,10 @@
     <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
-    <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
 </Project>

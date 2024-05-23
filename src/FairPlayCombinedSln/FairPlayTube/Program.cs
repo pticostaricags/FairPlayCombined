@@ -31,6 +31,7 @@ using System.Reflection;
 using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Interfaces.FairPlayDating;
+using FairPlayCombined.Models.AzureVideoIndexer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,9 +41,9 @@ builder.Services.AddHealthChecks().AddCheck<FairPlayTubeHealthCheck>(nameof(Fair
     tags: ["live"]);
 builder.Services.ConfigureOpenTelemetryMeterProvider((sp, meterBuilder) =>
 {
-    meterBuilder.AddMeter(FairPlayTubeMetrics.SESSION_METER_NAME);
+    meterBuilder.AddMeter(IFairPlayTubeMetrics.SESSION_METER_NAME);
 });
-builder.Services.AddTransient<FairPlayTubeMetrics>();
+builder.Services.AddTransient<IFairPlayTubeMetrics, FairPlayTubeMetrics>();
 builder.Services.AddFluentUIComponents();
 builder.Services.AddResponseCompression(opts =>
 {

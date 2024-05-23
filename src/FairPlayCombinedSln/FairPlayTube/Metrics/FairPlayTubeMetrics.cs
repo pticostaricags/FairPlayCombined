@@ -1,13 +1,14 @@
 ﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Metrics;
 
 
 namespace FairPlayTube.MetricsConfiguration
 {
-    public class FairPlayTubeMetrics(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
+    public class FairPlayTubeMetrics(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) 
+        : IFairPlayTubeMetrics
     {
-        public const string SESSION_METER_NAME = $"{nameof(FairPlayTube)}.Videos";
         private Meter? SessionsMeter { get; set; }
         private ObservableGauge<int>? RealtimeVideoSessions { get; set; }
         private ObservableGauge<int>? RealtimeAuthenticatedVideoSessions { get; set; }
@@ -15,7 +16,7 @@ namespace FairPlayTube.MetricsConfiguration
 
         public void Initialize()
         {
-            SessionsMeter = new(SESSION_METER_NAME);
+            SessionsMeter = new(IFairPlayTubeMetrics.SESSION_METER_NAME);
             RealtimeVideoSessions = SessionsMeter!.CreateObservableGauge<int>($"{SessionsMeter!.Name}.RealtimeVideoSessions",
                 observeValue: () => 
                 {
