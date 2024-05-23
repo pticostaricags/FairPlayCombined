@@ -7,6 +7,7 @@
 @using FairPlayCombined.Common.FairPlaySocial.Enums
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.Common.Photo
 @using FairPlayCombined.Models.FairPlaySocial.Notification
 @using FairPlayCombined.Models.FairPlaySocial.Post
@@ -22,7 +23,7 @@
 @inject IToastService toastService
 @inject NavigationManager navigationManager
 @inject IUserProviderService userProviderSerice
-@inject PhotoService photoService
+@inject IPhotoService photoService
 @inject IStringLocalizer<Home> localizer
 <PageTitle>
     @localizer[HomeTextKey]

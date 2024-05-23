@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.Common.Photo;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ namespace FairPlayCombined.Services.Common
         PaginationRequest,
         PaginationOfT<PhotoModel>
         >]
-    public partial class PhotoService : BaseService
+    public partial class PhotoService : BaseService, IPhotoService
     {
         public async Task UpdatePhotoAsync(UpdatePhotoModel updatePhotoModel, 
             CancellationToken cancellationToken)

@@ -276,8 +276,8 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
     builder.Services.AddTransient<IVideoViewerService, VideoViewerService>();
     builder.Services.AddTransient<IUserMessageService, UserMessageService>();
     builder.Services.AddTransient<IVideoThumbnailService, VideoThumbnailService>();
-    builder.Services.AddTransient<PhotoService>();
-    builder.Services.AddTransient<VideoCommentService>();
+    builder.Services.AddTransient<IPhotoService, PhotoService>();
+    builder.Services.AddTransient<IVideoCommentService, VideoCommentService>();
 
 
     builder.Services.AddTransient<AspNetUsersService>();
