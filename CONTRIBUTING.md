@@ -61,7 +61,7 @@ UX & UI Experts Contributors Required
 ---------------
 
 We are looking for UX and UI to collaborate with the design for the system.
-We plan to have a UI that would work for both Desktop and mobile devices, using Blazor and Bootstrap.
+We plan to have a UI that would work for both Desktop and mobile devices, using Blazor and Fluent UI.
 We plan the UI to also look good on MAUI Blazor.
 
 Knowledge Base Maintainters Required
