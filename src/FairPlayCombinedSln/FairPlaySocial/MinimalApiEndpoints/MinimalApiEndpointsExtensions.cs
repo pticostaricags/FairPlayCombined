@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.Common;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.Common.Photo;
 using FairPlayCombined.Models.FairPlaySocial.Post;
 using FairPlayCombined.Models.Pagination;
@@ -34,7 +35,7 @@ namespace FairPlaySocial.MinimalApiEndpoints
             });
             var photosGroup = app.MapGroup("/api/photos");
             photosGroup.MapPost("/createPhoto", async (
-                [FromServices] PhotoService photoService,
+                [FromServices] IPhotoService photoService,
                 CreatePhotoModel createPhotoModel,
                 CancellationToken cancellationToken) =>
             {
