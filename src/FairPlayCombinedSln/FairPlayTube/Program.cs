@@ -272,7 +272,7 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
     builder.Services.AddTransient<IVideoPlanService, VideoPlanService>();
     builder.Services.AddTransient<IPromptGeneratorService, PromptGeneratorService>();
     builder.Services.AddTransient<IVideoWatchTimeService, VideoWatchTimeService>();
-    builder.Services.AddTransient<SupportedLanguageService>();
+    builder.Services.AddTransient<ISupportedLanguageService, SupportedLanguageService>();
     builder.Services.AddTransient<VideoViewerService>();
     builder.Services.AddTransient<UserMessageService>();
     builder.Services.AddTransient<VideoThumbnailService>();
