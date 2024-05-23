@@ -1,5 +1,6 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Interfaces.Common;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,7 +14,7 @@ namespace FairPlayCombined.Services.Common
 {
     public partial class UserFundService(PayPalOrderService payPalOrderService,
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IUserProviderService userProviderService)
+        IUserProviderService userProviderService): IUserFundService
     {
         public async Task<decimal> GetMyAvailableFundsAsync(CancellationToken cancellationToken)
         {

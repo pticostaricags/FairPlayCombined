@@ -160,7 +160,7 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddTransient<ReligionService>();
     builder.Services.AddTransient<TattooStatusService>();
     builder.Services.AddTransient<IUserProfileService, UserProfileService>();
-    builder.Services.AddTransient<PhotoService>();
+    builder.Services.AddTransient<IPhotoService, PhotoService>();
     builder.Services.AddTransient<MyMatchesService>();
     builder.Services.AddTransient<GeoNamesService>();
     builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();

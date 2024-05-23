@@ -279,10 +279,8 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
     builder.Services.AddTransient<IVideoThumbnailService, VideoThumbnailService>();
     builder.Services.AddTransient<IPhotoService, PhotoService>();
     builder.Services.AddTransient<IVideoCommentService, VideoCommentService>();
-
-
     builder.Services.AddTransient<IAspNetUsersService, AspNetUsersService>();
-    builder.Services.AddTransient<UserFundService>();
+    builder.Services.AddTransient<IUserFundService, UserFundService>();
 }
 
 namespace FairPlayTube.UIConfiguration
