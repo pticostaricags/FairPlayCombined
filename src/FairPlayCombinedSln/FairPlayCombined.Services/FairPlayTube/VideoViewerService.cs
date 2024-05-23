@@ -1,4 +1,5 @@
 ﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.FairPlayTube.VideoViewer;
 using FairPlayCombined.Models.Pagination;
@@ -15,7 +16,7 @@ namespace FairPlayCombined.Services.FairPlayTube
 {
     public partial class VideoViewerService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        ILogger<VideoViewerService> logger) : BaseService
+        ILogger<VideoViewerService> logger) : BaseService, IVideoViewerService
     {
         public async Task<PaginationOfT<VideoViewerModel>> GetPaginatedVideoViewerInfoForUserIdAsync(
             PaginationRequest paginationRequest,

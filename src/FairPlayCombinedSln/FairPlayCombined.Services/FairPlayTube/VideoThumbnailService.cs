@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.FairPlayTube.VideoThumbnail;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace FairPlayCombined.Services.FairPlayTube
     PaginationRequest,
     PaginationOfT<VideoThumbnailModel>
     >]
-    public partial class VideoThumbnailService : BaseService
+    public partial class VideoThumbnailService : BaseService, IVideoThumbnailService
     {
         public async Task<PaginationOfT<VideoThumbnailModel>>
             GetPaginatedVideoThumbnailByVideoInfoIdAsync(long videoInfoId,

@@ -3,6 +3,7 @@
 
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.FairPlayTube.VideoViewer
 @using FairPlayCombined.Models.Pagination
@@ -11,7 +12,7 @@
 @using FairPlayTube.SharedUI.Components.Spinners
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
-@inject VideoViewerService videoViewerService
+@inject IVideoViewerService videoViewerService
 @inject IUserProviderService userProviderService
 <PageTitle>My Video Viewers</PageTitle>
 
