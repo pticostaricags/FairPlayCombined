@@ -1,6 +1,7 @@
 ﻿@page "/User/MyConversations"
 @implements IDisposable
 
+@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.Common.AspNetUsers
 @using FairPlayCombined.Models.FairPlayTube.Conversation
@@ -16,7 +17,7 @@
 
 @inject IUserMessageService userMessageService
 @inject IToastService toastService
-@inject AspNetUsersService aspNetUsersService
+@inject IAspNetUsersService aspNetUsersService
 
 <PageTitle>MyConversations</PageTitle>
 

@@ -280,7 +280,7 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
     builder.Services.AddTransient<IVideoCommentService, VideoCommentService>();
 
 
-    builder.Services.AddTransient<AspNetUsersService>();
+    builder.Services.AddTransient<IAspNetUsersService, AspNetUsersService>();
     builder.Services.AddTransient<UserProfileService>();
     builder.Services.AddTransient<UserFundService>();
 }
