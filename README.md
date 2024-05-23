@@ -33,9 +33,9 @@ Check the following link: [FairPlayCombined Pricing](/PRICING.md)
 <img width="272" alt="FairPlayCombined - NET Aspire - Solution Explorer" src="https://github.com/pticostaricags/FairPlayCombined/assets/3481899/6f5861ff-c549-4faa-ab52-8da0a733a1ec">
 
 ### Code of Conduct
-Check this page: [CODING STANDSRDS](/CODE_OF_CONDUCT.md)
+Check this page: [CODE_OF_CONDUCT](/CODE_OF_CONDUCT.md)
 ### How To contribute
-Check this page: [CONTRIBUTING.md](/CONTRIBUTING.md)
+Check this page: [CONTRIBUTING](/CONTRIBUTING.md)
 
 ### Coding Standards
 Check this page: [CODING STANDARDS](/CODING-STANDARDS.md)
