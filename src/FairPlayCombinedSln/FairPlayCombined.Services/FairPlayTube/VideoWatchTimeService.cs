@@ -1,5 +1,6 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.FairPlayTube.VideoWatchTime;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,7 @@ namespace FairPlayCombined.Services.FairPlayTube
 {
     public partial class VideoWatchTimeService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        ILogger<VideoWatchTimeService> logger) : BaseService
+        ILogger<VideoWatchTimeService> logger) : BaseService, IVideoWatchTimeService
     {
         public async Task CreateVideoWatchTimeAsync(string videoId,
             VideoWatchTimeModel videoWatchTimeModel,
