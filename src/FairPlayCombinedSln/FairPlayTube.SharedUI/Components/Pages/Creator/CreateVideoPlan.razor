@@ -15,7 +15,7 @@
 @attribute [Authorize]
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
-@inject AzureContentSafetyService azureContentSafetyService
+@inject IAzureContentSafetyService azureContentSafetyService
 @inject IPromptGeneratorService promptGeneratorService
 @inject IOpenAIService openAIService
 @inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration

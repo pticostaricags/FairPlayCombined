@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.Models.AzureContentSafety;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using FairPlayCombined.Interfaces.Common;
 
 namespace FairPlayCombined.Services.Extensions
 {
@@ -39,7 +40,7 @@ namespace FairPlayCombined.Services.Extensions
                             new AzureKeyCredential(azureContentSafetyConfiguration.Key!));
                 return contentSafetyClient;
             });
-            builder.Services.AddTransient<AzureContentSafetyService>(sp =>
+            builder.Services.AddTransient<IAzureContentSafetyService, AzureContentSafetyService>(sp =>
             {
                 AzureContentSafetyConfiguration azureContentSafetyConfiguration =
                 sp.GetRequiredService<AzureContentSafetyConfiguration>();

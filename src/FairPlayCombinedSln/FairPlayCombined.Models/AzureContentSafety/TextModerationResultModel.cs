@@ -1,4 +1,4 @@
-﻿namespace FairPlayCombined.Services.Common
+﻿namespace FairPlayCombined.Models.AzureContentSafety
 {
     public class TextModerationResultModel
     {
