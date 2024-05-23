@@ -1,4 +1,5 @@
 ﻿using Azure.AI.ContentSafety;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.AzureContentSafety;
 using System.Net.Http.Json;
 using System.Text;
@@ -8,7 +9,7 @@ namespace FairPlayCombined.Services.Common
 {
     public class AzureContentSafetyService(ContentSafetyClient contentSafetyClient,
         HttpClient authorizedHttpClient,
-        AzureContentSafetyConfiguration azureContentSafetyConfiguration)
+        AzureContentSafetyConfiguration azureContentSafetyConfiguration) : IAzureContentSafetyService
     {
         public async Task<ImageModerationResultModel> AnalyzeImageAsync(byte[] imageBytes,
             CancellationToken cancellationToken)
