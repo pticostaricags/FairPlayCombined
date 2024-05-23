@@ -1,5 +1,6 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +17,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
             .GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
         var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
         var azureVideoIndexerService =
-            scope.ServiceProvider.GetRequiredService<AzureVideoIndexerService>();
+            scope.ServiceProvider.GetRequiredService<IAzureVideoIndexerService>();
         while (!stoppingToken.IsCancellationRequested)
         {
             if (logger.IsEnabled(LogLevel.Information))
@@ -45,7 +46,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
 
     private async Task AddLanguageCaptions(
         FairPlayCombinedDbContext dbContext,
-        AzureVideoIndexerService azureVideoIndexerService,
+        IAzureVideoIndexerService azureVideoIndexerService,
         string viAccessToken,
         string language,
         CancellationToken stoppingToken)

@@ -4,6 +4,9 @@
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.FairPlayTube.Enums
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.AzureVideoIndexer
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Services.Common
 @using FairPlayCombined.Services.FairPlayTube
@@ -14,11 +17,11 @@
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 @inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
-@inject AzureVideoIndexerService azureVideoIndexerService
-@inject VideoInfoService videoInfoService
+@inject IAzureVideoIndexerService azureVideoIndexerService
+@inject IVideoInfoService videoInfoService
 @inject IToastService toastService
 @inject IUserProviderService userProviderService
-@inject YouTubeClientService youTubeClientService
+@inject IYouTubeClientService youTubeClientService
 @inject ILogger<UploadMyVideo> logger
 @inject NavigationManager navigationManager
 
@@ -69,7 +72,7 @@
               PreventScroll="false">
     <FluentDialogHeader Visible="false"></FluentDialogHeader>
     <SearchYouTubeVideo OnYouTubeVideoSelected="OnYouTubeVideoSelected"></SearchYouTubeVideo>
-    <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" OnClick="CloseSearchYouTubeVideoDialog">Close</FluentButton>
+    <FluentButton Type="ButtonType.Button" Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent" OnClick="CloseSearchYouTubeVideoDialog">Close</FluentButton>
 </FluentDialog>
 
 @code {
@@ -122,7 +125,7 @@
             var accountAccessToken = await this.azureVideoIndexerService.GetAccessTokenForArmAccountAsync(authToken, this.cancellationTokenSource.Token);
             var indexVideoResult = await this.azureVideoIndexerService
             .IndexVideoFromUriAsync(
-                new AzureVideoIndexerService.IndexVideoFromUriParameters()
+                new IndexVideoFromUriParameters()
                     {
                         ArmAccessToken = accountAccessToken!.AccessToken!,
                         Description = this.createVideoInfoModel.Description!,
@@ -163,7 +166,7 @@
             }
             var fileBytes = await new HttpClient().GetByteArrayAsync(this.createVideoInfoModel.ExternalVideoSourceUrl);
             MemoryStream stream = new MemoryStream(fileBytes);
-            Video video = new();
+            Google.Apis.YouTube.v3.Data.Video video = new();
             video.Snippet = new VideoSnippet();
             video.Snippet.Title = this.createVideoInfoModel.Name;
             video.Snippet.Description = this.createVideoInfoModel.Description;

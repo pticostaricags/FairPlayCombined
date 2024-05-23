@@ -1,9 +1,12 @@
 ﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using Microsoft.EntityFrameworkCore;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
-    public class VideoDigitalMarketingPlanService(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) : BaseService
+    public class VideoDigitalMarketingPlanService(
+        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) 
+        : BaseService, IVideoDigitalMarketingPlanService
     {
         public async Task<string?> GetVideoDigitalMarketingPlanAsync(
             long videoInfoId,

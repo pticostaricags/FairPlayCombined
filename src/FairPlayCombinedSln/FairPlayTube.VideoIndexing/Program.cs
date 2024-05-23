@@ -3,6 +3,7 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayTube;
 using FairPlayTube.VideoIndexing;
@@ -32,7 +33,7 @@ builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp,builder) =>
 }, contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Transient);
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
-builder.Services.AddTransient(sp =>
+builder.Services.AddTransient<IAzureVideoIndexerService, AzureVideoIndexerService>(sp =>
 {
     var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
     var azureVideoIndexerAccountIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==

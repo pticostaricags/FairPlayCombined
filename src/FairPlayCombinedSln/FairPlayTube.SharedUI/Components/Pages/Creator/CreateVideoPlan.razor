@@ -4,6 +4,7 @@
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.FairPlayTube.Enums
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.FairPlayTube.VideoPlan
 @using FairPlayCombined.Services.Common
@@ -14,14 +15,14 @@
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 @inject AzureContentSafetyService azureContentSafetyService
-@inject PromptGeneratorService promptGeneratorService
-@inject OpenAIService openAIService
+@inject IPromptGeneratorService promptGeneratorService
+@inject IOpenAIService openAIService
 @inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
-@inject AzureVideoIndexerService azureVideoIndexerService
+@inject IAzureVideoIndexerService azureVideoIndexerService
 @inject VideoPlanService videoPlanService
 @inject IToastService toastService
 @inject IUserProviderService userProviderService
-@inject YouTubeClientService youTubeClientService
+@inject IYouTubeClientService youTubeClientService
 @inject ILogger<CreateVideoPlan> logger
 @inject NavigationManager navigationManager
 

@@ -6,6 +6,7 @@ using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayDating;
 using FairPlayCombined.Shared.CustomLocalization.EF;
@@ -78,7 +79,7 @@ builder.Services.AddTransient<ApplicationUserVouchService>();
 builder.Services.AddTransient<ResourceService>();
 builder.Services.AddTransient<ConfigurationSecretService>();
 builder.Services.AddTransient<OpenAIPromptService>();
-builder.Services.AddTransient<PromptGeneratorService>();
+builder.Services.AddTransient<IPromptGeneratorService, PromptGeneratorService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

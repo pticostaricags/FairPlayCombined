@@ -19,6 +19,7 @@ using FairPlayCombined.Services.Extensions;
 using Microsoft.FluentUI.AspNetCore.Components;
 using FairPlayDating.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using FairPlayCombined.Interfaces.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -162,7 +163,7 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddTransient<MyMatchesService>();
     builder.Services.AddTransient<GeoNamesService>();
     builder.Services.AddTransient<IGeoLocationService, BlazorGeoLocationService>();
-    builder.Services.AddTransient<PromptGeneratorService>();
+    builder.Services.AddTransient<IPromptGeneratorService, PromptGeneratorService>();
     builder.Services.AddTransient<ProfessionService>();
     builder.Services.AddTransient<FrequencyService>();
     builder.Services.AddTransient<ActivityService>();

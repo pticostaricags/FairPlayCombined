@@ -5,6 +5,7 @@
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.FairPlayDating.LikedUserProfile
 @using FairPlayCombined.Models.FairPlayDating.NotLikedUserProfile
 @using FairPlayCombined.Models.FairPlayDating.UserProfile
@@ -26,13 +27,13 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 @inject IToastService toastService
-@inject OpenAIService openAIService
+@inject IOpenAIService openAIService
 @inject ActivityService activityService
 @inject ReligionService religionService
 @inject DateObjectiveService dateObjectiveService
 @inject KidStatusService kidStatusService
 @inject ProfessionService professionService
-@inject PromptGeneratorService promptGeneratorService
+@inject IPromptGeneratorService promptGeneratorService
 @inject LikedUserProfileService likedUserProfileService
 @inject NotLikedUserProfileService notLikedUserProfileService
 

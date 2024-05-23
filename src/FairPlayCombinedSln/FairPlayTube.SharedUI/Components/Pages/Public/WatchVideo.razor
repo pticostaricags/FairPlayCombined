@@ -2,6 +2,7 @@
 @implements IAsyncDisposable
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.AzureVideoIndexer
 @using FairPlayCombined.Models.FairPlayTube.VideoComment
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
@@ -19,7 +20,7 @@
 @inject ILogger<WatchVideo> logger;
 @inject IUserProviderService userProviderService
 @inject SupportedLanguageService supportedLanguageService
-@inject VideoInfoService videoInfoService
+@inject IVideoInfoService videoInfoService
 @inject VideoCommentService videoCommentService
 @inject IToastService toastService
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>

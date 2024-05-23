@@ -1,10 +1,12 @@
 ﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.FairPlaySocial.VideoCaptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
-    public class VideoCaptionsService(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
+    public class VideoCaptionsService(
+        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) : IVideoCaptionsService
     {
         public async Task<string?> GetVideoCaptionsByVideoInfoIdAndLanguageAsync(
             long videoInfoId, string language, CancellationToken cancellationToken)

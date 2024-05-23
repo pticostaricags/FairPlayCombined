@@ -3,6 +3,7 @@
 
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.Common.Photo
 @using FairPlayCombined.Models.FairPlayDating
 @using FairPlayCombined.Models.FairPlayDating.DateObjective
@@ -41,8 +42,8 @@
 @inject AzureContentSafetyService azureContentSafetyService
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
-@inject PromptGeneratorService promptGeneratorService
-@inject OpenAIService openAIService
+@inject IPromptGeneratorService promptGeneratorService
+@inject IOpenAIService openAIService
 @inject FrequencyService frequencyService
 @inject ActivityService activityService
 

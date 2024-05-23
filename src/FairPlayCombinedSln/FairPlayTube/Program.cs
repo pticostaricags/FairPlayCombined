@@ -29,6 +29,7 @@ using OpenTelemetry.Metrics;
 using FairPlayCombined.Services.Extensions;
 using System.Reflection;
 using FairPlayCombined.Interfaces.FairPlayTube;
+using FairPlayCombined.Interfaces.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -252,7 +253,7 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
         };
         return azureVideoIndexerServiceConfiguration;
     });
-    builder.Services.AddTransient(sp =>
+    builder.Services.AddTransient<IAzureVideoIndexerService, AzureVideoIndexerService>(sp =>
     {
         var azureVideoIndexerServiceConfiguration = sp.GetRequiredService<AzureVideoIndexerServiceConfiguration>();
         return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
@@ -264,12 +265,12 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
         ClientId = googleAuthClientSecretInfo.installed!.client_id,
         ClientSecret = googleAuthClientSecretInfo.installed.client_secret
     });
-    builder.Services.AddTransient<YouTubeClientService>();
-    builder.Services.AddTransient<VideoCaptionsService>();
-    builder.Services.AddTransient<VideoDigitalMarketingPlanService>();
+    builder.Services.AddTransient<IYouTubeClientService, YouTubeClientService>();
+    builder.Services.AddTransient<IVideoCaptionsService, VideoCaptionsService>();
+    builder.Services.AddTransient<IVideoDigitalMarketingPlanService, VideoDigitalMarketingPlanService>();
     builder.Services.AddTransient<VideoDigitalMarketingDailyPostsService>();
     builder.Services.AddTransient<VideoPlanService>();
-    builder.Services.AddTransient<PromptGeneratorService>();
+    builder.Services.AddTransient<IPromptGeneratorService, PromptGeneratorService>();
     builder.Services.AddTransient<VideoWatchTimeService>();
     builder.Services.AddTransient<SupportedLanguageService>();
     builder.Services.AddTransient<VideoViewerService>();

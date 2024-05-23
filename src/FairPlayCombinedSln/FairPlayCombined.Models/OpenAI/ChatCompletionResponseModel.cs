@@ -1,4 +1,4 @@
-﻿namespace FairPlayCombined.Services.Common;
+﻿namespace FairPlayCombined.Models.OpenAI;
 #pragma warning disable IDE1006 // Naming Styles
 public class ChatCompletionResponseModel
 {

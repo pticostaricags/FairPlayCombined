@@ -3,6 +3,8 @@
 
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayCombined.Services.Common
@@ -11,12 +13,12 @@
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject IJSRuntime jsRuntime
-@inject VideoInfoService videoInfoService
+@inject IVideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
-@inject OpenAIService openAIService
-@inject VideoCaptionsService videoCaptionsService
-@inject VideoDigitalMarketingPlanService videoDigitalMarketingPlanService
-@inject PromptGeneratorService promptGeneratorService
+@inject IOpenAIService openAIService
+@inject IVideoCaptionsService videoCaptionsService
+@inject IVideoDigitalMarketingPlanService videoDigitalMarketingPlanService
+@inject IPromptGeneratorService promptGeneratorService
 <PageTitle>
     Video Digital Marketing Strategy
 </PageTitle>

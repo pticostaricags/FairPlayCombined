@@ -1,0 +1,3 @@
+{
+  "microsoft.net.sdk.aspire": "8.0.1/8.0.100"
+}
