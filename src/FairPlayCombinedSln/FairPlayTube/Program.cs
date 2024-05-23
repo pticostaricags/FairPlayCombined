@@ -253,7 +253,7 @@ static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientS
         };
         return azureVideoIndexerServiceConfiguration;
     });
-    builder.Services.AddTransient(sp =>
+    builder.Services.AddTransient<IAzureVideoIndexerService, AzureVideoIndexerService>(sp =>
     {
         var azureVideoIndexerServiceConfiguration = sp.GetRequiredService<AzureVideoIndexerServiceConfiguration>();
         return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,

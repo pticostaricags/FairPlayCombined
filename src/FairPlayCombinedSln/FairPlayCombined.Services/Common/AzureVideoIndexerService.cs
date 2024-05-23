@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Azure.Identity;
 using FairPlayCombined.Common.CustomExceptions;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.AzureVideoIndexer;
 using Microsoft.Identity.Client;
 using NetTopologySuite.Geometries;
@@ -10,15 +11,12 @@ using System.Web;
 
 namespace FairPlayCombined.Services.Common
 {
-#pragma warning disable IDE1006 // Naming Styles
-    public class AzureVideoIndexerService(
+    public partial class AzureVideoIndexerService(
         AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration,
-        HttpClient httpClient)
+        HttpClient httpClient) : IAzureVideoIndexerService
     {
         private const string BEARER_SCHEME = "Bearer";
-#pragma warning disable CA1822 // Mark members as static
         public async Task<string> AuthenticateToAzureArmAsync()
-#pragma warning restore CA1822 // Mark members as static
         {
             var tokenRequestContext = new TokenRequestContext(["https://management.azure.com/.default"]);
             var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, CancellationToken.None);
@@ -84,17 +82,6 @@ namespace FairPlayCombined.Services.Common
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
                 throw new AzureVideoIndexerException($"Error: {reasonPhrase} - Details:{responseContent}");
             }
-        }
-        public class IndexVideoFromUriParameters
-        {
-
-            public Uri? VideoUri { get; set; }
-            public string? ArmAccessToken { get; set; }
-            public string? Name { get; set; }
-            public string? Description { get; set; }
-            public string? FileName { get; set; }
-            public string? Language { get; set; } = "auto";
-            public string? IndexingPreset { get; set; } = "Default";
         }
 
         public async Task<bool> DeleteVideoByIdAsync(string videoId, string viAccessToken,
@@ -289,7 +276,7 @@ namespace FairPlayCombined.Services.Common
         /// <param name="language"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<string> GetVideoStreamingUrlAsync(string videoId,string viAccessToken,
+        public async Task<string> GetVideoStreamingUrlAsync(string videoId, string viAccessToken,
             CancellationToken cancellationToken = default)
         {
             try
@@ -325,7 +312,7 @@ namespace FairPlayCombined.Services.Common
         /// <param name="thumbnailId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<byte[]?> GetVideoThumbnailAsync(string videoId, string thumbnailId, 
+        public async Task<byte[]?> GetVideoThumbnailAsync(string videoId, string thumbnailId,
             string viAccessToken,
             CancellationToken cancellationToken = default)
         {
@@ -350,18 +337,6 @@ namespace FairPlayCombined.Services.Common
     }
 
 
-    public class GetAccessTokenRequestModel
-    {
-        public string? PermissionType { get; set; }
-        public string? Scope { get; set; }
-    }
-
-    public class GetAccessTokenResponseModel
-    {
-        public string? AccessToken { get; set; }
-    }
-
-
     public class AzureVideoIndexerServiceConfiguration
     {
         public string? AccountId { get; set; }
@@ -372,43 +347,4 @@ namespace FairPlayCombined.Services.Common
         public string? ResourceName { get; set; }
         public string? ApiVersion { get; set; } = "2024-01-01";
     }
-
-    public class IndexVideoFromBytesFormatModel
-    {
-        public byte[]? FileBytes { get; set; }
-        public string? Name { get; set; }
-    }
-
-    public class UploadVideoResponseModel
-    {
-        public string? accountId { get; set; }
-        public string? id { get; set; }
-        public object? partition { get; set; }
-        public object? externalId { get; set; }
-        public object? metadata { get; set; }
-        public string? name { get; set; }
-        public string? description { get; set; }
-        public DateTime created { get; set; }
-        public DateTime lastModified { get; set; }
-        public DateTime lastIndexed { get; set; }
-        public string? privacyMode { get; set; }
-        public string? userName { get; set; }
-        public bool isOwned { get; set; }
-        public bool isBase { get; set; }
-        public bool hasSourceVideoFile { get; set; }
-        public string? state { get; set; }
-        public string? moderationState { get; set; }
-        public string? reviewState { get; set; }
-        public object? processingProgress { get; set; }
-        public int durationInSeconds { get; set; }
-        public string? thumbnailVideoId { get; set; }
-        public string? thumbnailId { get; set; }
-        public object[]? searchMatches { get; set; }
-        public string? indexingPreset { get; set; }
-        public string? streamingPreset { get; set; }
-        public string? sourceLanguage { get; set; }
-        public string[]? sourceLanguages { get; set; }
-        public string? personModelId { get; set; }
-    }
 }
-#pragma warning restore IDE1006 // Naming Styles
