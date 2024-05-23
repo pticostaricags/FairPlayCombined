@@ -4,6 +4,7 @@
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.FairPlayTube.Enums
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.FairPlayTube.VideoPlan
 @using FairPlayCombined.Services.Common
@@ -14,7 +15,7 @@
 @attribute [Authorize]
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
-@inject VideoPlanService videoPlanService
+@inject IVideoPlanService videoPlanService
 @inject IToastService toastService
 @inject IUserProviderService userProviderService
 @inject ILogger<MyVideoPlans> logger
