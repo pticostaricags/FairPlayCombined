@@ -3,6 +3,7 @@ using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlaySocial;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
@@ -94,7 +95,7 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<HttpClientService>();
 builder.Services.AddTransient<PostService>();
-builder.Services.AddTransient<PhotoService>();
+builder.Services.AddTransient<IPhotoService, PhotoService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
