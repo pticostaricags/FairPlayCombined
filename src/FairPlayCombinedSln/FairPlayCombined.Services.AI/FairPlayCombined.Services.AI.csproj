@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FairPlayCombined.DataAccess\FairPlayCombined.DataAccess.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
   </ItemGroup>
 
