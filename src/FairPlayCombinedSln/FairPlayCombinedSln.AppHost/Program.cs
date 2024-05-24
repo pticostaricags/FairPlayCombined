@@ -4,6 +4,9 @@ using Microsoft.Extensions.Configuration;
 var builder = DistributedApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 
+//Check: https://learn.microsoft.com/en-us/dotnet/aspire/extensibility/custom-resources?tabs=windows
+var mailDev = builder.AddMailDev("maildev");
+
 var googleAuthClientId = builder.Configuration["GoogleAuthClientId"] ??
         throw new InvalidOperationException("'GoogleAuthClientId' not found");
 
