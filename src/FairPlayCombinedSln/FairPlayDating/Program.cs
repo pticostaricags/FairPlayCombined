@@ -1,3 +1,4 @@
+using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
@@ -25,6 +26,7 @@ using System.Net.Mime;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
 builder.Services.AddHealthChecks().AddCheck<FairPlayDatingHealthCheck>(nameof(FairPlayDatingHealthCheck),
     failureStatus: HealthStatus.Unhealthy,
     tags: ["live"]);
@@ -150,7 +152,7 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddAzureOpenAIService();
     builder.AddOpenAI();
     builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
-    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+    builder.AddIdentityEmailSender();
     builder.Services.AddTransient<ICultureService, CultureService>();
     builder.Services.AddTransient<GenderService>();
     builder.Services.AddTransient<DateObjectiveService>();

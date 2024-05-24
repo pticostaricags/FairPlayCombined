@@ -1,10 +1,12 @@
 using Blazored.Toast;
+using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Services.Common;
+using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
@@ -18,10 +20,12 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
 
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
@@ -91,7 +95,7 @@ builder.Services.AddSignalR(hubOptions =>
 
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddBlazoredToast();
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.AddIdentityEmailSender();
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<HttpClientService>();
 builder.Services.AddTransient<PostService>();

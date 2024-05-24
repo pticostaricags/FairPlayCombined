@@ -2,6 +2,10 @@
 {
     public static class Constants
     {
+        public static class ConnectionStringNames
+        {
+            public const string MailDev = "mailDev";
+        }
         public static class PromptsNames
         {
             public const string CreateYouTubeThumbnail = "YouTubeThumbnail";
