@@ -5,7 +5,6 @@ using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.Common.Photo;
 using FairPlayCombined.Models.FairPlaySocial.Post;
 using FairPlayCombined.Models.Pagination;
-using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlaySocial;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

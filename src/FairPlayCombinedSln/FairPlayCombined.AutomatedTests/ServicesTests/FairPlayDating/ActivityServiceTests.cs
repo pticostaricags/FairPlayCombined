@@ -2,7 +2,6 @@
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.FairPlayDating;
 using FairPlayCombined.Models.Pagination;
-using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayDating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,7 +44,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 });
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<ActivityService>();
-            services.AddTransient<ILogger<ActivityService>>(p => 
+            services.AddTransient<ILogger<ActivityService>>(p =>
             {
                 return logger;
             });

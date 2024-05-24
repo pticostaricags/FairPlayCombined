@@ -4,7 +4,7 @@ namespace FairPlayCombined.Interfaces.Common
 {
     public interface IOpenAIService
     {
-        Task<AnalyzeImageResponseModel?> AnalyzeImageAsync(string[] imagesBase64Strings, string prompt, 
+        Task<AnalyzeImageResponseModel?> AnalyzeImageAsync(string[] imagesBase64Strings, string prompt,
             CancellationToken cancellationToken);
         Task<ChatCompletionResponseModel?> GenerateChatCompletionAsync(
         string systemMessage, string prompt, CancellationToken cancellationToken);

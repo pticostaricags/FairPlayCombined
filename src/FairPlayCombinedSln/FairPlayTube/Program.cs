@@ -2,20 +2,19 @@ using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
-using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Services.Common;
-using FairPlayCombined.Services.FairPlayDating;
+using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
-using FairPlayCombined.Services.FairPlayTube;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayTube.Components;
 using FairPlayTube.Components.Account;
 using FairPlayTube.Data;
+using FairPlayTube.Extensions;
 using FairPlayTube.HealthChecks;
 using FairPlayTube.MetricsConfiguration;
-using Google.Apis.Auth.OAuth2;
 using Google.Apis.YouTube.v3;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -26,12 +25,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
-using FairPlayCombined.Services.Extensions;
 using System.Reflection;
-using FairPlayCombined.Interfaces.FairPlayTube;
-using FairPlayCombined.Interfaces.Common;
-using FairPlayCombined.Interfaces.FairPlayDating;
-using FairPlayCombined.Models.AzureVideoIndexer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -141,7 +135,7 @@ builder.Services.AddSignalR(hubOptions =>
 
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-AddPlatformServices(builder, googleAuthClientSecretInfo);
+builder.AddPlatformServices(googleAuthClientSecretInfo);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -227,62 +221,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 await app.RunAsync();
-
-static void AddPlatformServices(WebApplicationBuilder builder, GoogleAuthClientSecretInfo googleAuthClientSecretInfo)
-{
-    builder.Services.AddTransient<ICultureService, CultureService>();
-    builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp =>
-    {
-        var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
-        var azureVideoIndexerAccountIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-        Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_ACCOUNT_ID_KEY} in database");
-        var azureVideoIndexerLocationEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-        Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_LOCATION_KEY} in database");
-        var azureVideoIndexerResourceGroupEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-        Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_GROUP_KEY} in database");
-        var azureVideoIndexerResourceNameEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-        Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_RESOURCE_NAME_KEY} in database");
-        var azureVideoIndexerSubscriptionIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==
-        Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY) ?? throw new InvalidOperationException($"Unable to find {nameof(ConfigurationSecret)} = {Constants.ConfigurationSecretsKeys.AZURE_VIDEOINDEXER_SUBSCRIPTION_ID_KEY} in database");
-        AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration = new()
-        {
-            AccountId = azureVideoIndexerAccountIdEntity.Value,
-            IsArmAccount = true,
-            Location = azureVideoIndexerLocationEntity.Value,
-            ResourceGroup = azureVideoIndexerResourceGroupEntity.Value,
-            ResourceName = azureVideoIndexerResourceNameEntity.Value,
-            SubscriptionId = azureVideoIndexerSubscriptionIdEntity.Value
-        };
-        return azureVideoIndexerServiceConfiguration;
-    });
-    builder.Services.AddTransient<IAzureVideoIndexerService, AzureVideoIndexerService>(sp =>
-    {
-        var azureVideoIndexerServiceConfiguration = sp.GetRequiredService<AzureVideoIndexerServiceConfiguration>();
-        return new AzureVideoIndexerService(azureVideoIndexerServiceConfiguration,
-            new HttpClient());
-    });
-    builder.Services.AddTransient<IVideoInfoService, VideoInfoService>();
-    builder.Services.AddSingleton<ClientSecrets>(new ClientSecrets()
-    {
-        ClientId = googleAuthClientSecretInfo.installed!.client_id,
-        ClientSecret = googleAuthClientSecretInfo.installed.client_secret
-    });
-    builder.Services.AddTransient<IYouTubeClientService, YouTubeClientService>();
-    builder.Services.AddTransient<IVideoCaptionsService, VideoCaptionsService>();
-    builder.Services.AddTransient<IVideoDigitalMarketingPlanService, VideoDigitalMarketingPlanService>();
-    builder.Services.AddTransient<IVideoDigitalMarketingDailyPostsService, VideoDigitalMarketingDailyPostsService>();
-    builder.Services.AddTransient<IVideoPlanService, VideoPlanService>();
-    builder.Services.AddTransient<IPromptGeneratorService, PromptGeneratorService>();
-    builder.Services.AddTransient<IVideoWatchTimeService, VideoWatchTimeService>();
-    builder.Services.AddTransient<ISupportedLanguageService, SupportedLanguageService>();
-    builder.Services.AddTransient<IVideoViewerService, VideoViewerService>();
-    builder.Services.AddTransient<IUserMessageService, UserMessageService>();
-    builder.Services.AddTransient<IVideoThumbnailService, VideoThumbnailService>();
-    builder.Services.AddTransient<IPhotoService, PhotoService>();
-    builder.Services.AddTransient<IVideoCommentService, VideoCommentService>();
-    builder.Services.AddTransient<IAspNetUsersService, AspNetUsersService>();
-    builder.Services.AddTransient<IUserFundService, UserFundService>();
-}
 
 namespace FairPlayTube.UIConfiguration
 {

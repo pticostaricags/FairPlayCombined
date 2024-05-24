@@ -7,19 +7,13 @@ using FairPlayCombined.Models.FairPlayTube.Conversation;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
     public partial class UserMessageService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
         IUserProviderService userProviderService,
-        IHubContext<UserMessageNotificationHub, IUserMessageNotificationHub> hubContext) 
+        IHubContext<UserMessageNotificationHub, IUserMessageNotificationHub> hubContext)
         : BaseService, IUserMessageService
     {
         public async Task<ConversationsUserModel[]?> GetMyConversationsUsersAsync(
@@ -43,16 +37,16 @@ namespace FairPlayCombined.Services.FairPlayTube
             var result = receivedMessagesUsers
                 .Union(sentMessagesUsers)
                 .Distinct()
-                .Select(p=>new ConversationsUserModel() 
+                .Select(p => new ConversationsUserModel()
                 {
                     ApplicationUserId = p.Id,
                     FullName = p.UserName
                 })
                 .ToArray();
-            if (result.Length == 0 )
+            if (result.Length == 0)
             {
                 result = await dbContext.AspNetUsers.Where(p => p.Id != currentUser.Id)
-                    .Select(p=> new ConversationsUserModel()
+                    .Select(p => new ConversationsUserModel()
                     {
                         ApplicationUserId = p.Id,
                         FullName = p.UserName
@@ -79,7 +73,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 p.ToApplicationUserId == currentUser.Id)
                 )
                 .OrderByDescending(p => p.RowCreationDateTime)
-                .Select(p=>new UserMessageModel()
+                .Select(p => new UserMessageModel()
                 {
                     FromApplicationUserFullName = p.FromApplicationUser.UserName,
                     Message = p.Message,

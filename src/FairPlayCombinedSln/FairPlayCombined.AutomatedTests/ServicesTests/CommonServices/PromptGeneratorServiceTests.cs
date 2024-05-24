@@ -2,7 +2,6 @@
 using FairPlayCombined.AutomatedTests.ServicesTests.Providers;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
-using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
 {
     [TestClass]
-    public class PromptGeneratorServiceTests: ServicesBase
+    public class PromptGeneratorServiceTests : ServicesBase
     {
         [TestMethod]
         public async Task Test_PromptGeneratorService()
@@ -26,7 +25,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                         );
                     optionsAction.UseSqlServer(cs, sqlServerOptionsAction => sqlServerOptionsAction.UseNetTopologySuite());
                 });
-            services.AddTransient<ILogger<PromptGeneratorService>>(sp => 
+            services.AddTransient<ILogger<PromptGeneratorService>>(sp =>
             {
                 var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
                 var logger = loggerFactory!.CreateLogger<PromptGeneratorService>();
@@ -59,7 +58,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             await dbContext.SaveChangesAsync();
             var promptGeneratorService = sp.GetRequiredService<PromptGeneratorService>();
             var result = await promptGeneratorService.GetPromptCompleteInfoAsync(
-                promptName,CancellationToken.None);
+                promptName, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual(expected: promptName, result.PromptName);
         }

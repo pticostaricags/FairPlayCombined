@@ -1,9 +1,5 @@
 ﻿using FairPlayCombined.Interfaces;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Identity.Client;
 
 namespace FairPlayCombined.Services.Common
 {

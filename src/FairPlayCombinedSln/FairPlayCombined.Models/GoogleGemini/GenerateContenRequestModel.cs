@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FairPlayCombined.Models.GoogleGemini
+﻿namespace FairPlayCombined.Models.GoogleGemini
 {
 #pragma warning disable IDE1006 // Naming Styles
     public class GenerateContentRequestModel
@@ -21,14 +15,14 @@ namespace FairPlayCombined.Models.GoogleGemini
         public static readonly GenerateContentRequestModel DefaultGenerateContentRequestModel =
             new()
             {
-                generationConfig=new()
+                generationConfig = new()
                 {
                     temperature = 0.9f,
-                    topK=1,
-                    topP=1,
-                    maxOutputTokens=2048
+                    topK = 1,
+                    topP = 1,
+                    maxOutputTokens = 2048
                 },
-                safetySettings=
+                safetySettings =
                 [
                     new()
                     {

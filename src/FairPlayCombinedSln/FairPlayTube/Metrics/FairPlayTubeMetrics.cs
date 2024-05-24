@@ -6,7 +6,7 @@ using System.Diagnostics.Metrics;
 
 namespace FairPlayTube.MetricsConfiguration
 {
-    public class FairPlayTubeMetrics(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) 
+    public class FairPlayTubeMetrics(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
         : IFairPlayTubeMetrics
     {
         private Meter? SessionsMeter { get; set; }
@@ -18,11 +18,11 @@ namespace FairPlayTube.MetricsConfiguration
         {
             SessionsMeter = new(IFairPlayTubeMetrics.SESSION_METER_NAME);
             RealtimeVideoSessions = SessionsMeter!.CreateObservableGauge<int>($"{SessionsMeter!.Name}.RealtimeVideoSessions",
-                observeValue: () => 
+                observeValue: () =>
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
                     var result = dbContext.VideoWatchTime
-                    .Where(p=>p.LastUpdateDatetime >= 
+                    .Where(p => p.LastUpdateDatetime >=
                     DateTimeOffset.UtcNow.AddSeconds(-10))
                     .Count();
                     return result;
@@ -33,7 +33,7 @@ namespace FairPlayTube.MetricsConfiguration
                     var dbContext = dbContextFactory.CreateDbContext();
                     var result = dbContext.VideoWatchTime
                     .Where(p => p.LastUpdateDatetime >=
-                    DateTimeOffset.UtcNow.AddSeconds(-10) && 
+                    DateTimeOffset.UtcNow.AddSeconds(-10) &&
                     p.WatchedByApplicationUserId != null)
                     .Count();
                     return result;

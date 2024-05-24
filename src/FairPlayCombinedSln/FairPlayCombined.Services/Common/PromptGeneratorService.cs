@@ -1,15 +1,8 @@
 ﻿using FairPlayCombined.DataAccess.Data;
-using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.Common.Promp;
-using FairPlayCombined.Models.Common.PromptVariable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -28,7 +21,7 @@ namespace FairPlayCombined.Services.Common
             return result;
         }
 
-        public async Task<bool> UpdateAllPromptsAsync(List<PromptModel> prompts, 
+        public async Task<bool> UpdateAllPromptsAsync(List<PromptModel> prompts,
             CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
@@ -52,15 +45,15 @@ namespace FairPlayCombined.Services.Common
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             var result = await dbContext.Prompt
                 .TagWith($"TAG: {nameof(GetPromptCompleteInfoAsync)}")
-                .Include(p=>p.PromptVariable)
-                .Where(p=>p.PromptName == promptName)
-                .Select(p=>new PromptModel()
+                .Include(p => p.PromptVariable)
+                .Where(p => p.PromptName == promptName)
+                .Select(p => new PromptModel()
                 {
                     PromptName = promptName,
                     BaseText = p.BaseText,
                     PromptId = p.PromptId
                 })
-                .SingleOrDefaultAsync(cancellationToken:cancellationToken);
+                .SingleOrDefaultAsync(cancellationToken: cancellationToken);
             return result;
         }
     }

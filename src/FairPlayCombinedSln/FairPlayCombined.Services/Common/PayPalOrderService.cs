@@ -3,7 +3,6 @@ using FairPlayCombined.Models.Common.PayPal;
 using Microsoft.Extensions.Logging;
 using PayPal.Core;
 using PayPal.v1.Orders;
-using PayPal.v1.Payments;
 using System.Net.Http.Json;
 using System.Text;
 

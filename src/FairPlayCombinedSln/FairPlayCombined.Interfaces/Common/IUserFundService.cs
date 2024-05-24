@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FairPlayCombined.Interfaces.Common
+﻿namespace FairPlayCombined.Interfaces.Common
 {
     public interface IUserFundService
     {

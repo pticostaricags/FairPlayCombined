@@ -5,7 +5,6 @@ using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.Models.FairPlaySocial.Post;
 using FairPlayCombined.Models.Pagination;
-using FairPlayCombined.Services.FairPlayDating;
 using FairPlayCombined.Services.FairPlaySocial;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

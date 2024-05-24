@@ -3,7 +3,6 @@ using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.FairPlayDating.Religion;
 using FairPlayCombined.Models.Pagination;
 using FairPlayCombined.Services.FairPlayDating;
-using FairPlayCombined.Services.FairPlaySocial;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

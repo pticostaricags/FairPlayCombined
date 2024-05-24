@@ -2,7 +2,6 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.AzureVideoIndexer;
-using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -61,7 +60,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
         }
     }
 
-    private static async Task UpdateVideoIndexingTransactionAsync(FairPlayCombinedDbContext dbContext, 
+    private static async Task UpdateVideoIndexingTransactionAsync(FairPlayCombinedDbContext dbContext,
         IAzureVideoIndexerService azureVideoIndexerService, GetAccessTokenResponseModel? getviTokenResult, SearchVideosResponseModel? videosIndex, IEnumerable<Result>? indexCompleteVideos, CancellationToken stoppingToken)
     {
         if (indexCompleteVideos?.Any() == true)
@@ -110,10 +109,10 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
         }
     }
 
-    private static async Task UpdateProcessingPercentageAsync(ILogger<VideoIndexStatusBackgroundService> logger, 
+    private static async Task UpdateProcessingPercentageAsync(ILogger<VideoIndexStatusBackgroundService> logger,
         FairPlayCombinedDbContext dbContext, IAzureVideoIndexerService azureVideoIndexerService, GetAccessTokenResponseModel? getviTokenResult, IEnumerable<Result>? processingVideos, CancellationToken stoppingToken)
     {
-        foreach (var singleProcessingVideoId in processingVideos!.Select(p=>p.id!))
+        foreach (var singleProcessingVideoId in processingVideos!.Select(p => p.id!))
         {
             var singleVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
                 singleProcessingVideoId, getviTokenResult!.AccessToken!,
@@ -136,7 +135,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
         }
     }
 
-    private static async Task PrepareSupportedLanguagesAsync(FairPlayCombinedDbContext dbContext, 
+    private static async Task PrepareSupportedLanguagesAsync(FairPlayCombinedDbContext dbContext,
         IAzureVideoIndexerService azureVideoIndexerService, GetAccessTokenResponseModel? getviTokenResult, CancellationToken stoppingToken)
     {
         var viSupportedLanguages = await azureVideoIndexerService

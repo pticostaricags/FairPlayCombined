@@ -19,7 +19,7 @@ var connectionString = builder.Configuration.GetConnectionString("FairPlayCombin
 Extensions.EnhanceConnectionString(nameof(FairPlayTube.VideoIndexing), ref connectionString);
 
 builder.Services.AddTransient<IUserProviderService, VideoIndexingUserProviderService>();
-builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp,builder) =>
+builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp, builder) =>
 {
     IUserProviderService userProviderService = sp.GetRequiredService<IUserProviderService>();
     builder.AddInterceptors(new SaveChangesInterceptor(userProviderService));

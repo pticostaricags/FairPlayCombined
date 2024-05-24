@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FairPlayCombined.Models.FairPlayTube.VideoViewer
+﻿namespace FairPlayCombined.Models.FairPlayTube.VideoViewer
 {
     public class VideoViewerModel
     {

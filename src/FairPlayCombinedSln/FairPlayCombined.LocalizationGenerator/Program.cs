@@ -1,7 +1,7 @@
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.LocalizationGenerator;
-using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.Services.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 var builder = Host.CreateApplicationBuilder(args);
 

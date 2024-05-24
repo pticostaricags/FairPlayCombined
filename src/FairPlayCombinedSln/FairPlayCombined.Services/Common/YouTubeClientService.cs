@@ -16,7 +16,7 @@ namespace FairPlayCombined.Services.Common
         YouTubeClientServiceConfiguration youTubeClientServiceConfiguration,
         IHttpContextAccessor httpContextAccessor) : IYouTubeClientService
     {
-        public async Task<SearchListResponse> SearchMyVideosAsync(string searchTerm,CancellationToken cancellationToken)
+        public async Task<SearchListResponse> SearchMyVideosAsync(string searchTerm, CancellationToken cancellationToken)
         {
             var youtubeService = await AuthorizeAsync();
             var searchVideosRequest =

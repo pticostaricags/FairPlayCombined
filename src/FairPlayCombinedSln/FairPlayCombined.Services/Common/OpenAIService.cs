@@ -14,7 +14,7 @@ public class OpenAIService(
     HttpClient genericHttpClient,
     OpenAIServiceConfiguration openAIServiceConfiguration,
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-    ILogger<OpenAIService> logger): IOpenAIService
+    ILogger<OpenAIService> logger) : IOpenAIService
 {
     public async Task<AnalyzeImageResponseModel?> AnalyzeImageAsync(
         string[] imagesBase64Strings, string prompt, CancellationToken cancellationToken)

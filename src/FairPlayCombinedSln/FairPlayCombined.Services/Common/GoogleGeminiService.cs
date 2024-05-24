@@ -1,18 +1,13 @@
 ﻿using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.GoogleGemini;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Common
 {
     public class GoogleGeminiService(GoogleGeminiConfiguration googleGeminiConfiguration,
         HttpClient httpClient) : IGoogleGeminiService
     {
-        public async Task<GenerateContentResponseModel?> GenerateContentAsync(GenerateContentRequestModel generateContentRequestModel, 
+        public async Task<GenerateContentResponseModel?> GenerateContentAsync(GenerateContentRequestModel generateContentRequestModel,
             CancellationToken cancellationToken)
         {
             string version = "v1beta"; //or v1beta
@@ -22,7 +17,7 @@ namespace FairPlayCombined.Services.Common
             var response = await httpClient.PostAsJsonAsync<GenerateContentRequestModel>(
                 requestUrl, generateContentRequestModel, cancellationToken: cancellationToken);
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<GenerateContentResponseModel>(cancellationToken:cancellationToken);
+            var result = await response.Content.ReadFromJsonAsync<GenerateContentResponseModel>(cancellationToken: cancellationToken);
             return result;
         }
     }
