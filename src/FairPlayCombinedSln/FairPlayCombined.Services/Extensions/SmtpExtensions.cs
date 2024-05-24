@@ -24,7 +24,7 @@ namespace FairPlayCombined.Services.Extensions
 
                 var smtpClient = new SmtpClient(smtpUri.Host, smtpUri.Port)
                 {
-                    EnableSsl = builder.Environment.IsDevelopment() ? false : true,
+                    EnableSsl = !builder.Environment.IsDevelopment()
                 };
 
                 return smtpClient;
