@@ -35,16 +35,16 @@ namespace FairPlayCombined.Services.FairPlayTube
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.VideoComment
-                .Include(p=>p.VideoInfo)
+                .Include(p => p.VideoInfo)
                 .Where(p => p.VideoInfo.VideoId == videoId)
                 .Select(p => new VideoCommentModel
                 {
                     ApplicationUserId = p.ApplicationUserId,
                     Comment = p.Comment,
-                    RowCreationDateTime=p.RowCreationDateTime,
-                    RowCreationUser=p.RowCreationUser,
-                    VideoCommentId=p.VideoCommentId,
-                    VideoInfoId=p.VideoInfoId
+                    RowCreationDateTime = p.RowCreationDateTime,
+                    RowCreationUser = p.RowCreationUser,
+                    VideoCommentId = p.VideoCommentId,
+                    VideoInfoId = p.VideoInfoId
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);

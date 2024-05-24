@@ -19,7 +19,7 @@ namespace FairPlayCombined.Services.Common
         >]
     public partial class PhotoService : BaseService, IPhotoService
     {
-        public async Task UpdatePhotoAsync(UpdatePhotoModel updatePhotoModel, 
+        public async Task UpdatePhotoAsync(UpdatePhotoModel updatePhotoModel,
             CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);

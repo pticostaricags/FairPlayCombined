@@ -133,7 +133,7 @@ public static class Extensions
         // app.MapPrometheusScrapingEndpoint();
 
         // All health checks must pass for app to be considered ready to accept traffic after starting
-        app.MapHealthChecks("/health", new HealthCheckOptions() 
+        app.MapHealthChecks("/health", new HealthCheckOptions()
         {
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });

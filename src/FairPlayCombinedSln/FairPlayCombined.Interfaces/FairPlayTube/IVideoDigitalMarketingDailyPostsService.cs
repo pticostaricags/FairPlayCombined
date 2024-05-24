@@ -5,7 +5,7 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
         Task<string?> GetVideoDigitalMarketingDailyPostsAsync(long videoInfoId, string socialNetworkName,
             CancellationToken cancellationToken);
         Task SaveVideoDigitalMarketingDailyPostsAsync(long videoInfoId,
-            string htmlVideoDigitalMarketingDailyPostsIdeas, string socialNetworkName, 
+            string htmlVideoDigitalMarketingDailyPostsIdeas, string socialNetworkName,
             CancellationToken cancellationToken);
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FairPlayCombined.Models.Common.PayPal
+﻿namespace FairPlayCombined.Models.Common.PayPal
 {
 #pragma warning disable S101 // Types should be named in PascalCase
 #pragma warning disable S2094 // Classes should not be empty

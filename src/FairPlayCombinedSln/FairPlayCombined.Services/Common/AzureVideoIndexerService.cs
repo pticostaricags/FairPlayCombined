@@ -3,8 +3,6 @@ using Azure.Identity;
 using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.AzureVideoIndexer;
-using Microsoft.Identity.Client;
-using NetTopologySuite.Geometries;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Web;

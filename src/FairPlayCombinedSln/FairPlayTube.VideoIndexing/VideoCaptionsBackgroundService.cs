@@ -1,7 +1,6 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Interfaces.Common;
-using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace FairPlayTube.VideoIndexing;
@@ -31,7 +30,7 @@ public class VideoCaptionsBackgroundService(ILogger<VideoCaptionsBackgroundServi
                 .GetSupportedLanguagesAsync(getViTokenResponse!.AccessToken!, stoppingToken);
             string[] defaultLanguageCodes = ["en-US", "es-MX"];
             foreach (var singleSupportedLanguage in supportedLanguages!.
-                Where(p=>defaultLanguageCodes.Contains(p.languageCode)))
+                Where(p => defaultLanguageCodes.Contains(p.languageCode)))
             {
                 await AddLanguageCaptions(dbContext,
                     azureVideoIndexerService,

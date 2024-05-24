@@ -2,8 +2,6 @@
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.AzureContentSafety;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 
 namespace FairPlayCombined.Services.Common
 {

@@ -67,17 +67,17 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 await Task.Delay(1000, stoppingToken);
             }
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
             logger.LogError(exception: ex, message: "Error: {ErrorMessage}", ex.Message);
         }
     }
 
 #pragma warning disable S107 // Methods should not have too many parameters
-    private static async Task AddUserAsync(ILogger<TestDataGenerator> logger, 
-        FairPlayCombinedDbContext dbContext, EyesColor[] allEyesColors, 
-        DateObjective[] allDateObjectives, HairColor[] allHairColor, KidStatus[] allKidStatus, 
-        Religion[] allReligions, TattooStatus[] allTattooStatuses, Profession[] allProfessions, 
+    private static async Task AddUserAsync(ILogger<TestDataGenerator> logger,
+        FairPlayCombinedDbContext dbContext, EyesColor[] allEyesColors,
+        DateObjective[] allDateObjectives, HairColor[] allHairColor, KidStatus[] allKidStatus,
+        Religion[] allReligions, TattooStatus[] allTattooStatuses, Profession[] allProfessions,
         Frequency[] allfrequencies, Activity[] allActivities,
         int itemsCount, int i, geodata randomGeoLocation, Point currentGeoLocation, Photo photo,
         int biologicalGenderId, CancellationToken stoppingToken)
@@ -176,7 +176,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         string[]? allFemalesPhotosPaths = null;
         if (!String.IsNullOrWhiteSpace(humansPhotosDirectory))
         {
-            allMalesPhotosPaths = Directory.GetFiles(Path.Combine(humansPhotosDirectory,"Male"),"*.jpg", SearchOption.AllDirectories);
+            allMalesPhotosPaths = Directory.GetFiles(Path.Combine(humansPhotosDirectory, "Male"), "*.jpg", SearchOption.AllDirectories);
             allFemalesPhotosPaths = Directory.GetFiles(Path.Combine(humansPhotosDirectory, "Female"), "*.jpg", SearchOption.AllDirectories);
         }
 
@@ -193,13 +193,13 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             {
                 randomGeoLocation = await geoNamesService.GeoRandomLocationAsync(CancellationToken.None);
                 randomGeoLocation ??= new geodata()
+                {
+                    nearest = new geodataNearest()
                     {
-                        nearest = new geodataNearest()
-                        {
-                            latt = 3.5158M,
-                            longt = -74.37231M
-                        }
-                    };
+                        latt = 3.5158M,
+                        longt = -74.37231M
+                    }
+                };
             }
             catch (Exception)
             {
@@ -220,7 +220,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         Gender[] allGenders, EyesColor[] allEyesColors, DateObjective[] allDateObjectives,
         HairColor[] allHairColor, KidStatus[] allKidStatus, Religion[] allReligions,
         TattooStatus[] allTattooStatuses, Profession[] allProfessions,
-        Frequency[] allFrequencies, Activity[] allActivities)> 
+        Frequency[] allFrequencies, Activity[] allActivities)>
         GetAllEntitiesListsAsync(FairPlayCombinedDbContext dbContext,
         CancellationToken stoppingToken)
     {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FairPlayCombined.Services.FairPlayTube
 {
     public class VideoDigitalMarketingPlanService(
-        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) 
+        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
         : BaseService, IVideoDigitalMarketingPlanService
     {
         public async Task<string?> GetVideoDigitalMarketingPlanAsync(

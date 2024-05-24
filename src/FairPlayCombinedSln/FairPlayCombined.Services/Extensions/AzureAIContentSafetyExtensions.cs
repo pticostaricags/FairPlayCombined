@@ -1,14 +1,13 @@
-﻿using Azure.AI.ContentSafety;
-using Azure;
+﻿using Azure;
+using Azure.AI.ContentSafety;
+using FairPlayCombined.Common;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
-using FairPlayCombined.Services.Common;
-using FairPlayCombined.Common;
-using Microsoft.EntityFrameworkCore;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.AzureContentSafety;
+using FairPlayCombined.Services.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using FairPlayCombined.Interfaces.Common;
 
 namespace FairPlayCombined.Services.Extensions
 {

@@ -1,14 +1,9 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Models.FairPlayTube.VideoComment
 {
-    public class CreateVideoCommentModel: ICreateModel
+    public class CreateVideoCommentModel : ICreateModel
     {
         [DeniedValues(default(long))]
         public long VideoInfoId { get; set; }

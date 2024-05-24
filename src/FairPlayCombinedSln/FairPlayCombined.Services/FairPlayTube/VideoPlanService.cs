@@ -26,8 +26,8 @@ namespace FairPlayCombined.Services.FairPlayTube
             logger.LogInformation(message: "Start of method: {MethodName}", nameof(UpdateVideoPlanAsync));
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             VideoPlan entity = await dbContext.VideoPlan
-                .SingleAsync(p=>p.VideoPlanId == createModel.VideoPlanId,
-                cancellationToken:cancellationToken);
+                .SingleAsync(p => p.VideoPlanId == createModel.VideoPlanId,
+                cancellationToken: cancellationToken);
 
             entity.ApplicationUserId = createModel.ApplicationUserId;
             entity.VideoName = createModel.VideoName;

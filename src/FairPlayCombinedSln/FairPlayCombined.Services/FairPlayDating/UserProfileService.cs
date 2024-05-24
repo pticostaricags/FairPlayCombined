@@ -1,6 +1,5 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
-using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Interfaces.FairPlayDating;
 using FairPlayCombined.Models.FairPlayDating.UserProfile;

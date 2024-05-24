@@ -3,7 +3,6 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.Models.FairPlayDating.Profession;
 using FairPlayCombined.Models.Pagination;
-using System.Linq.Dynamic.Core;
 
 namespace FairPlayCombined.Services.FairPlayDating
 {

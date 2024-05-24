@@ -1,12 +1,5 @@
 ﻿using FairPlayCombined.Models.FairPlayTube.VideoPlan;
 using FairPlayCombined.Models.Pagination;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Interfaces.FairPlayTube
 {

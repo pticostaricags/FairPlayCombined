@@ -35,7 +35,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.VideoThumbnail
-                .Where(p=>p.VideoInfoId == videoInfoId)
+                .Where(p => p.VideoInfoId == videoInfoId)
                 .Select(p => new FairPlayCombined.Models.FairPlayTube.VideoThumbnail.VideoThumbnailModel
                 {
                     VideoThumbnailId = p.VideoThumbnailId,

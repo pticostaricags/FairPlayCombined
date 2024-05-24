@@ -1,15 +1,9 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Models.OpenAIPrompt
 {
-    public class UpdateOpenAIPromptModel: IUpdateModel
+    public class UpdateOpenAIPromptModel : IUpdateModel
     {
         [Required]
         [DeniedValues(default(long))]

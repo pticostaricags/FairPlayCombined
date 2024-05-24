@@ -1,10 +1,5 @@
 ﻿using FairPlayCombined.Models.Common.UserMessage;
 using FairPlayCombined.Models.FairPlayTube.Conversation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Interfaces.FairPlayTube
 {

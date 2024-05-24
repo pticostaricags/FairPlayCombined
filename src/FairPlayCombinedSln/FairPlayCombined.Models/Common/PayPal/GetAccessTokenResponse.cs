@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FairPlayCombined.Models.Common.PayPal
+﻿namespace FairPlayCombined.Models.Common.PayPal
 {
 #pragma warning disable IDE1006 // Naming Styles
     public class GetAccessTokenResponse

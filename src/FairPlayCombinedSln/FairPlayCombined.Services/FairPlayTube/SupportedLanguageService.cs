@@ -3,11 +3,6 @@ using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.AzureVideoIndexer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
@@ -25,8 +20,8 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .Where(p => p.VideoInfoId == videoInfoId)
                 .Select(p => p.Language).ToArrayAsync(cancellationToken);
             var result = await dbContext.VideoIndexerSupportedLanguage
-                .Where(p=> laguagesWithCaptions.Contains(p.LanguageCode))
-                .OrderBy(p=>p.Name)
+                .Where(p => laguagesWithCaptions.Contains(p.LanguageCode))
+                .OrderBy(p => p.Name)
                 .Select(p => new SupportedLanguageModel
                 {
                     name = p.Name,
@@ -42,7 +37,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             logger.LogInformation(message: "Start of method: {MethodName}", nameof(GetAllSupportedLanguageAsync));
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var result = await dbContext.VideoIndexerSupportedLanguage
-                .Select(p => new SupportedLanguageModel 
+                .Select(p => new SupportedLanguageModel
                 {
                     name = p.Name,
                     languageCode = p.LanguageCode

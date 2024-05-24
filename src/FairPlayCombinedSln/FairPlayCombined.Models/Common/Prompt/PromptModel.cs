@@ -1,5 +1,4 @@
-﻿using FairPlayCombined.Models.Common.PromptVariable;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FairPlayCombined.Models.Common.Promp
 {

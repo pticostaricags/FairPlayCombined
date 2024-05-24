@@ -3,16 +3,11 @@ using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PayPal.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
 {
     [TestClass]
-    public class PayPalOrderServiceTests: ServicesBase
+    public class PayPalOrderServiceTests : ServicesBase
     {
         [TestMethod]
         public async Task Test_CreateOrderAsync()
@@ -36,7 +31,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var result = await payPalOrderService.CreateOrderAsync(
                 "1234", 1.2M, "Automated Tests",
                 returnUrl: "https://example.com/returnUrl",
-                cancelUrl: "https://example.com/returnUrl", 
+                cancelUrl: "https://example.com/returnUrl",
                 CreateOrderIntent.Capture);
             Assert.IsNotNull(result);
         }
@@ -57,8 +52,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 new HttpClient(),
                 new Models.Common.PayPal.PayPalConfiguration()
                 {
-                    ClientId= clientId,
-                    Secret= clientSecret
+                    ClientId = clientId,
+                    Secret = clientSecret
                 });
             var createdOrder = await payPalOrderService.CreateOrderAsync(
                 "1234", 1.2M, "Automated Tests",

@@ -1,16 +1,10 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces.FairPlayTube;
-using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.FairPlayTube.VideoViewer;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
@@ -33,20 +27,20 @@ namespace FairPlayCombined.Services.FairPlayTube
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.VideoWatchTime
-                .Include(p=>p.VideoInfo)
-                .Include(p=>p.WatchedByApplicationUser)
-                .Where(p=>p.VideoInfo.ApplicationUserId == userId && p.VideoInfo.VideoId == videoId)
-                .GroupBy(p=>new 
-                { 
-                    Username=p.WatchedByApplicationUser.UserName,
+                .Include(p => p.VideoInfo)
+                .Include(p => p.WatchedByApplicationUser)
+                .Where(p => p.VideoInfo.ApplicationUserId == userId && p.VideoInfo.VideoId == videoId)
+                .GroupBy(p => new
+                {
+                    Username = p.WatchedByApplicationUser.UserName,
                     p.VideoInfo.VideoId,
                     VideoName = p.VideoInfo.Name
                 })
-                .OrderByDescending(p=>p.Sum(x=>x.WatchTime))
+                .OrderByDescending(p => p.Sum(x => x.WatchTime))
                 .Select(p => new VideoViewerModel
                 {
                     TotalSessions = p.Count(),
-                    TotalTimeWatched = p.Sum(p=>p.WatchTime),
+                    TotalTimeWatched = p.Sum(p => p.WatchTime),
                     Username = p.Key.Username,
                     VideoId = p.Key.VideoId,
                     VideoName = p.Key.VideoName

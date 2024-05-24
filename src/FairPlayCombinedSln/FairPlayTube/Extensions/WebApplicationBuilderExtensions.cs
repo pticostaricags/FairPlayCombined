@@ -1,20 +1,20 @@
-﻿using FairPlayCombined.DataAccess.Data;
+﻿using FairPlayCombined.Common;
+using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Interfaces.FairPlayTube;
-using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.AzureVideoIndexer;
 using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayTube;
 using Google.Apis.Auth.OAuth2;
-using FairPlayCombined.Common;
 
 namespace FairPlayTube.Extensions
 {
     public static class WebApplicationBuilderExtensions
     {
-        internal static void AddPlatformServices(this WebApplicationBuilder builder, 
+        internal static void AddPlatformServices(this WebApplicationBuilder builder,
             GoogleAuthClientSecretInfo googleAuthClientSecretInfo)
         {
             builder.Services.AddTransient<ICultureService, CultureService>();

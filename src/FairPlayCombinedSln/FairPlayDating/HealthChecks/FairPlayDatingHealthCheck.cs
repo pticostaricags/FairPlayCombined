@@ -1,7 +1,6 @@
 ﻿using FairPlayCombined.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System.Collections.ObjectModel;
 
 namespace FairPlayDating.HealthChecks
 {
