@@ -25,11 +25,14 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
+using System.Net.Mail;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
+
 builder.Services.AddHealthChecks().AddCheck<FairPlayTubeHealthCheck>(nameof(FairPlayTubeHealthCheck),
     failureStatus: HealthStatus.Unhealthy,
     tags: ["live"]);
@@ -134,7 +137,7 @@ builder.Services.AddSignalR(hubOptions =>
 });
 
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.AddIdentityEmailSender();
 builder.AddPlatformServices(googleAuthClientSecretInfo);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

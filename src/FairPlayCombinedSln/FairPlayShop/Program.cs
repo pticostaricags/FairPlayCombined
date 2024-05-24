@@ -1,14 +1,18 @@
+using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
+using FairPlayCombined.Services.Extensions;
 using FairPlayShop.Components;
 using FairPlayShop.Components.Account;
 using FairPlayShop.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -38,7 +42,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.AddIdentityEmailSender();
 
 var app = builder.Build();
 

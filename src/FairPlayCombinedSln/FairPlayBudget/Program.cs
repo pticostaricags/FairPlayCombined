@@ -2,21 +2,25 @@ using Blazored.Toast;
 using FairPlayBudget.Components;
 using FairPlayBudget.Components.Account;
 using FairPlayBudget.Data;
+using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
+using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlayBudget;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
 
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
@@ -73,7 +77,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddBlazoredToast();
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.AddIdentityEmailSender();
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<MonthlyBudgetInfoService>();
 builder.Services.AddTransient<CurrencyService>();

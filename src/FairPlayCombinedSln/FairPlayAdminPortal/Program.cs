@@ -2,12 +2,15 @@
 using FairPlayAdminPortal.Components;
 using FairPlayAdminPortal.Components.Account;
 using FairPlayAdminPortal.Data;
+using FairPlayCombined.Common;
+using FairPlayCombined.Common.EmailSenders;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Services.Common;
+using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlayDating;
 using FairPlayCombined.Shared.CustomLocalization.EF;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -15,10 +18,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
+using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
+
 builder.Services.AddFluentUIComponents();
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
@@ -72,7 +78,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 builder.Services.AddMemoryCache();
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.AddIdentityEmailSender();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<ApplicationUserVouchService>();

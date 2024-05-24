@@ -20,6 +20,7 @@
     <ProjectReference Include="..\FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Services.Generators\FairPlayCombined.Services.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="FairPlayShop\" />

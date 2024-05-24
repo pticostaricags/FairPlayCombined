@@ -4,6 +4,9 @@ using Microsoft.Extensions.Configuration;
 var builder = DistributedApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 
+//Check: https://learn.microsoft.com/en-us/dotnet/aspire/extensibility/custom-resources?tabs=windows
+var mailDev = builder.AddMailDev("maildev");
+
 var googleAuthClientId = builder.Configuration["GoogleAuthClientId"] ??
         throw new InvalidOperationException("'GoogleAuthClientId' not found");
 
@@ -39,7 +42,8 @@ bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDat
 if (addFairPlayDating)
 {
     builder.AddProject<Projects.FairPlayDating>(ResourcesNames.FairPlayDating)
-        .WithReference(sqlResourceWithConnectionString);
+        .WithReference(sqlResourceWithConnectionString)
+        .WithReference(mailDev);
 }
 
 if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
@@ -64,7 +68,8 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("PayPal:ClientId", paypalClientId);
         callback.EnvironmentVariables.Add("PayPal:ClientSecret", paypalClientSecret);
     })
-    .WithReference(sqlResourceWithConnectionString);
+    .WithReference(sqlResourceWithConnectionString)
+    .WithReference(mailDev);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>(ResourcesNames.FairPlayTubeVideoIndexing)
         .WithReference(sqlResourceWithConnectionString);
 }
@@ -73,7 +78,8 @@ bool addFairPlayShop = Convert.ToBoolean(builder.Configuration["AddFairPlayShop"
 if (addFairPlayShop)
 {
     builder.AddProject<Projects.FairPlayShop>(ResourcesNames.FairPlayShop)
-    .WithReference(sqlResourceWithConnectionString);
+    .WithReference(sqlResourceWithConnectionString)
+    .WithReference(mailDev);
 }
 
 bool addCitiesImporter = Convert.ToBoolean(builder.Configuration["AddCitiesImporter"]);
@@ -87,14 +93,16 @@ bool addFairPlatAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPl
 if (addFairPlatAdminPortal)
 {
     builder.AddProject<Projects.FairPlayAdminPortal>(ResourcesNames.FairPlayAdminPortal)
-        .WithReference(sqlResourceWithConnectionString);
+        .WithReference(sqlResourceWithConnectionString)
+        .WithReference(mailDev);
 }
 
 bool addFairPlaySocial = Convert.ToBoolean(builder.Configuration["AddFairPlaySocial"]);
 if (addFairPlaySocial)
 {
     builder.AddProject<Projects.FairPlaySocial>(ResourcesNames.FairPlaySocial)
-        .WithReference(sqlResourceWithConnectionString);
+        .WithReference(sqlResourceWithConnectionString)
+        .WithReference(mailDev);
     if (Convert.ToBoolean(builder.Configuration["AddFairPlaySocialTestDataGenerator"]))
     {
         builder.AddProject<Projects.FairPlaySocial_TestDataGenerator>(ResourcesNames.FairPlaySocialTestDataGenerator)
@@ -113,7 +121,8 @@ bool addFairPlayBudget = Convert.ToBoolean(builder.Configuration["AddFairPlayBud
 if (addFairPlayBudget)
 {
     builder.AddProject<Projects.FairPlayBudget>(ResourcesNames.FairPlayBudget)
-        .WithReference(sqlResourceWithConnectionString);
+        .WithReference(sqlResourceWithConnectionString)
+        .WithReference(mailDev);
 }
 
 await builder.Build().RunAsync();
