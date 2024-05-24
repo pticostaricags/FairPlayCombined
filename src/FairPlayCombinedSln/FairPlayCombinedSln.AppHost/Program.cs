@@ -90,7 +90,8 @@ bool addFairPlatAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPl
 if (addFairPlatAdminPortal)
 {
     builder.AddProject<Projects.FairPlayAdminPortal>(ResourcesNames.FairPlayAdminPortal)
-        .WithReference(sqlResourceWithConnectionString);
+        .WithReference(sqlResourceWithConnectionString)
+        .WithReference(mailDev);
 }
 
 bool addFairPlaySocial = Convert.ToBoolean(builder.Configuration["AddFairPlaySocial"]);
