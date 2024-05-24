@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +22,10 @@ namespace FairPlayCombined.Services.Extensions
             {
                 var smtpUri = new Uri(builder.Configuration.GetConnectionString(name)!);
 
-                var smtpClient = new SmtpClient(smtpUri.Host, smtpUri.Port);
+                var smtpClient = new SmtpClient(smtpUri.Host, smtpUri.Port)
+                {
+                    EnableSsl = builder.Environment.IsDevelopment() ? false : true,
+                };
 
                 return smtpClient;
             });
