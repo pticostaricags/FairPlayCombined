@@ -2,6 +2,7 @@
 {
     public static class ResourcesNames
     {
+        public static string DatabaseManager => nameof(DatabaseManager).ToLower();
         public static string FairPlayTube => nameof(Projects.FairPlayTube).ToLower();
         public static string FairPlayAdminPortal => nameof(Projects.FairPlayAdminPortal).ToLower();
         public static string FairPlayDating => nameof(Projects.FairPlayDating).ToLower();

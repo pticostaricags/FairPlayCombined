@@ -61,20 +61,110 @@ namespace FairPlayCombined.DatabaseManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*
-        ///Post-Deployment Script Template							
-        ///--------------------------------------------------------------------------------------
-        /// This file contains SQL statements that will be appended to the build script.		
-        /// Use SQLCMD syntax to include a file in the post-deployment script.			
-        /// Example:      :r .\myfile.sql								
-        /// Use SQLCMD syntax to reference a variable in the post-deployment script.		
-        /// Example:      :setvar TableName MyTable							
-        ///               SELECT * FROM [$(TableName)]					
-        ///----------- [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to BEGIN TRANSACTION
+        ///DECLARE @ADMIN_ROLE_NAME NVARCHAR(256) = &apos;SystemAdmin&apos;
+        ///DECLARE @USER_ROLE_NAME NVARCHAR(256) = &apos;User&apos;
+        ///--START OF DEFAULT ROLES
+        ///IF NOT EXISTS(SELECT * FROM AspNetRoles WHERE Name = @ADMIN_ROLE_NAME)
+        ///BEGIN
+        ///    INSERT INTO AspNetRoles(Id, [Name], NormalizedName) 
+        ///    VALUES (NEWID(), @ADMIN_ROLE_NAME, @ADMIN_ROLE_NAME)
+        ///END
+        ///IF NOT EXISTS(SELECT * FROM AspNetRoles WHERE Name = @USER_ROLE_NAME)
+        ///BEGIN
+        ///    INSERT INTO AspNetRoles(Id, [Name], NormalizedName) 
+        ///    VALUES (NEWID(), @USER_ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string _1_Script_PostDeployment1 {
             get {
-                return ResourceManager.GetString("1-Script.PostDeployment1", resourceCulture);
+                return ResourceManager.GetString("_1_Script_PostDeployment1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BEGIN TRANSACTION
+        ///
+        ///--START OF DEFAULT FREQUENCY
+        ///SET IDENTITY_INSERT [FairPlayDating].[Frequency] ON
+        ///
+        ///DECLARE @Frequency TABLE (FrequencyId INT, Name NVARCHAR(50))
+        ///INSERT INTO @Frequency (FrequencyId, Name) VALUES
+        ///    (1, &apos;Never&apos;),
+        ///    (2, &apos;1 day per week&apos;),
+        ///    (3, &apos;2 days per week&apos;),
+        ///    (4, &apos;3 days per week&apos;),
+        ///    (5, &apos;4 days per week&apos;),
+        ///    (6, &apos;5 days per week&apos;),
+        ///    (7, &apos;6 days per week&apos;),
+        ///    (8, &apos;7 days per week&apos;)
+        ///
+        ///MERGE INTO [FairPlayDating].[Frequency] AS target
+        ///USING @Frequency AS [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string _2_FairPlayDating {
+            get {
+                return ResourceManager.GetString("_2_FairPlayDating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BEGIN TRANSACTION
+        ///--START OF DEFAULT POST VISIBILITY
+        ///SET IDENTITY_INSERT [FairPlaySocial].[PostVisibility] ON
+        ///DECLARE @POST_VISIBILITY_ID SMALLINT = 1
+        ///IF NOT EXISTS (SELECT * FROM [FairPlaySocial].[PostVisibility] PV WHERE [PV].[Name] = &apos;Public&apos;)
+        ///BEGIN
+        ///    INSERT INTO [FairPlaySocial].[PostVisibility]([PostVisibilityId],[Name],[Description])
+        ///    VALUES (@POST_VISIBILITY_ID, &apos;Public&apos;, &apos;Visible to everyone&apos;)
+        ///END
+        ///SET @POST_VISIBILITY_ID = 2
+        ///IF NOT EXISTS (SELECT * FROM [FairPlaySocial].[PostVisibilit [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string _3_FairPlaySocial {
+            get {
+                return ResourceManager.GetString("_3_FairPlaySocial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BEGIN TRANSACTION
+        ///--START OF DEFAULT VIDEO INDEX STATUSES
+        ///DECLARE @VIDEO_INDEX_STATUS NVARCHAR(50) = &apos;Pending&apos;
+        ///IF NOT EXISTS (SELECT * FROM [FairPlayTube].[VideoIndexStatus] VIS WHERE [VIS].[Name] = @VIDEO_INDEX_STATUS)
+        ///BEGIN
+        ///    INSERT INTO [FairPlayTube].[VideoIndexStatus]([VideoIndexStatusId],[Name]) VALUES(0, @VIDEO_INDEX_STATUS)
+        ///END
+        ///SET @VIDEO_INDEX_STATUS = &apos;Processing&apos;
+        ///IF NOT EXISTS (SELECT * FROM [FairPlayTube].[VideoIndexStatus] VIS WHERE [VIS].[Name] = @VIDEO_INDEX_STATUS)
+        ///BEGIN
+        ///    INSE [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string _4_FairPlayTube {
+            get {
+                return ResourceManager.GetString("_4_FairPlayTube", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BEGIN TRANSACTION
+        ///IF NOT EXISTS(
+        ///SELECT * FROM [FairPlayBudget].Currency C WHERE C.CurrencyId = 1
+        ///)
+        ///BEGIN
+        ///    SET IDENTITY_INSERT [FairPlayBudget].Currency ON;
+        ///    INSERT INTO [FairPlayBudget].Currency(CurrencyId, [Description]) VALUES(1,&apos;USD&apos;)
+        ///    SET IDENTITY_INSERT [FairPlayBudget].Currency OFF;
+        ///END
+        ///IF NOT EXISTS(
+        ///SELECT * FROM [FairPlayBudget].Currency C WHERE C.CurrencyId = 2
+        ///)
+        ///BEGIN
+        ///    SET IDENTITY_INSERT [FairPlayBudget].Currency ON;
+        ///    INSERT INTO [FairPlayBudget].Currency(CurrencyId [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string _5_FairPlayBudget {
+            get {
+                return ResourceManager.GetString("_5_FairPlayBudget", resourceCulture);
             }
         }
     }
