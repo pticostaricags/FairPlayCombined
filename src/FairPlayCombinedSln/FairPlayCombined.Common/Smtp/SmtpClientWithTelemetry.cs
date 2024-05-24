@@ -7,7 +7,7 @@ namespace FairPlayCombined.Common.Smtp
     public class SmtpTelemetry
     {
         public const string ActivitySourceName = "Smtp";
-        public ActivitySource ActivitySource = new(ActivitySourceName);
+        public ActivitySource ActivitySource { get; set; }= new(ActivitySourceName);
     }
 
     public interface ISmtpClient

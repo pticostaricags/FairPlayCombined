@@ -37,7 +37,7 @@ namespace FairPlayCombined.Common.EmailSenders
             }
             catch (Exception ex)
             {
-                logger.LogError(exception: ex, message: ex.Message);
+                logger.LogError(exception: ex, message: "Message: {Messaage}", ex.Message);
             }
         }
 
@@ -65,7 +65,7 @@ namespace FairPlayCombined.Common.EmailSenders
             }
             catch (Exception ex)
             {
-                logger.LogError(exception: ex, message: ex.Message);
+                logger.LogError(exception: ex, message: "Message: {Message}", ex.Message);
             }
         }
 
@@ -93,7 +93,7 @@ namespace FairPlayCombined.Common.EmailSenders
             }
             catch (Exception ex)
             {
-                logger.LogError(exception: ex, message: ex.Message);
+                logger.LogError(exception: ex, message: "Message: {Message}", ex.Message);
             }
         }
     }
