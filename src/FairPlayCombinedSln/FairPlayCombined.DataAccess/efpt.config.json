@@ -155,6 +155,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayDating].[PersonalityType]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayDating].[Profession]",
          "ObjectType": 0
       },

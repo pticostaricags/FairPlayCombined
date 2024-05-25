@@ -34,23 +34,30 @@ var paypalClientId = builder.Configuration["PayPal:ClientId"] ??
 var paypalClientSecret = builder.Configuration["PayPal:ClientSecret"] ??
     throw new InvalidOperationException("'PayPal:ClientSecret' not found");
 
-
-IResourceBuilder<IResourceWithConnectionString> sqlResourceWithConnectionString =
-    builder.AddConnectionString("FairPlayCombinedDb");
+IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource;
+if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
+{
+    fairPlayDbResource = builder.AddSqlServer("sqlserver")
+        .AddDatabase("FairPlayCombinedDb");
+}
+else
+{
+    fairPlayDbResource = builder.AddConnectionString("FairPlayCombinedDb");
+}
 builder.AddProject<Projects.FairPlayCombined_DatabaseManager>(ResourcesNames.DatabaseManager)
-    .WithReference(sqlResourceWithConnectionString);
+    .WithReference(fairPlayDbResource);
 
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
 if (addFairPlayDating)
 {
     builder.AddProject<Projects.FairPlayDating>(ResourcesNames.FairPlayDating)
-        .WithReference(sqlResourceWithConnectionString)
+        .WithReference(fairPlayDbResource)
         .WithReference(mailDev);
 }
 
 if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
 {
-    AddTestDataGenerator(builder, sqlResourceWithConnectionString);
+    AddTestDataGenerator(builder, fairPlayDbResource);
 }
 
 bool addFairPlayTube = Convert.ToBoolean(builder.Configuration["AddFairPlayTube"]);
@@ -70,17 +77,17 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("PayPal:ClientId", paypalClientId);
         callback.EnvironmentVariables.Add("PayPal:ClientSecret", paypalClientSecret);
     })
-    .WithReference(sqlResourceWithConnectionString)
+    .WithReference(fairPlayDbResource)
     .WithReference(mailDev);
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>(ResourcesNames.FairPlayTubeVideoIndexing)
-        .WithReference(sqlResourceWithConnectionString);
+        .WithReference(fairPlayDbResource);
 }
 
 bool addFairPlayShop = Convert.ToBoolean(builder.Configuration["AddFairPlayShop"]);
 if (addFairPlayShop)
 {
     builder.AddProject<Projects.FairPlayShop>(ResourcesNames.FairPlayShop)
-    .WithReference(sqlResourceWithConnectionString)
+    .WithReference(fairPlayDbResource)
     .WithReference(mailDev);
 }
 
@@ -88,14 +95,14 @@ bool addCitiesImporter = Convert.ToBoolean(builder.Configuration["AddCitiesImpor
 if (addCitiesImporter)
 {
     builder.AddProject<Projects.FairPlayCombined_CitiesImporter>(ResourcesNames.CitiesImporter)
-        .WithReference(sqlResourceWithConnectionString);
+        .WithReference(fairPlayDbResource);
 }
 
 bool addFairPlatAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPlatAdminPortal"]);
 if (addFairPlatAdminPortal)
 {
     builder.AddProject<Projects.FairPlayAdminPortal>(ResourcesNames.FairPlayAdminPortal)
-        .WithReference(sqlResourceWithConnectionString)
+        .WithReference(fairPlayDbResource)
         .WithReference(mailDev);
 }
 
@@ -103,12 +110,12 @@ bool addFairPlaySocial = Convert.ToBoolean(builder.Configuration["AddFairPlaySoc
 if (addFairPlaySocial)
 {
     builder.AddProject<Projects.FairPlaySocial>(ResourcesNames.FairPlaySocial)
-        .WithReference(sqlResourceWithConnectionString)
+        .WithReference(fairPlayDbResource)
         .WithReference(mailDev);
     if (Convert.ToBoolean(builder.Configuration["AddFairPlaySocialTestDataGenerator"]))
     {
         builder.AddProject<Projects.FairPlaySocial_TestDataGenerator>(ResourcesNames.FairPlaySocialTestDataGenerator)
-            .WithReference(sqlResourceWithConnectionString);
+            .WithReference(fairPlayDbResource);
     }
 }
 
@@ -117,13 +124,13 @@ bool addLocalizationGenerator = Convert.ToBoolean(builder.Configuration["AddLoca
 if (addLocalizationGenerator)
 {
     builder.AddProject<Projects.FairPlayCombined_LocalizationGenerator>(ResourcesNames.FairPlayCombinedLocalizationGenerator)
-        .WithReference(sqlResourceWithConnectionString);
+        .WithReference(fairPlayDbResource);
 }
 bool addFairPlayBudget = Convert.ToBoolean(builder.Configuration["AddFairPlayBudget"]);
 if (addFairPlayBudget)
 {
     builder.AddProject<Projects.FairPlayBudget>(ResourcesNames.FairPlayBudget)
-        .WithReference(sqlResourceWithConnectionString)
+        .WithReference(fairPlayDbResource)
         .WithReference(mailDev);
 }
 
