@@ -31,7 +31,6 @@
     </ProjectReference>
     <ProjectReference Include="..\FairPlayBudget\FairPlayBudget.csproj" />
     <ProjectReference Include="..\FairPlayCombined.CitiesImporter\FairPlayCombined.CitiesImporter.csproj" />
-    <ProjectReference Include="..\FairPlayCombined.DatabaseManager\FairPlayCombined.DatabaseManager.csproj" />
     <ProjectReference Include="..\FairPlayCombined.LocalizationGenerator\FairPlayCombined.LocalizationGenerator.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
@@ -55,13 +54,5 @@
     <ProjectReference Include="..\FairPlayTube\FairPlayTube.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="sqlserverconfig\configure-db.sh">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="sqlserverconfig\entrypoint.sh">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

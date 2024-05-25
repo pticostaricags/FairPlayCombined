@@ -8,7 +8,6 @@
       "FairPlayCombined.CitiesImporter\\FairPlayCombined.CitiesImporter.csproj",
       "FairPlayCombined.Common\\FairPlayCombined.Common.csproj",
       "FairPlayCombined.DataAccess\\FairPlayCombined.DataAccess.csproj",
-      "FairPlayCombined.DatabaseManager\\FairPlayCombined.DatabaseManager.csproj",
       "FairPlayCombined.Interfaces\\FairPlayCombined.Interfaces.csproj",
       "FairPlayCombined.LocalizationGenerator\\FairPlayCombined.LocalizationGenerator.csproj",
       "FairPlayCombined.MailDev.Hosting\\FairPlayCombined.MailDev.Hosting.csproj",
