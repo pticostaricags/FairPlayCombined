@@ -38,14 +38,7 @@ IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource;
 if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
 {
     fairPlayDbResource = builder.AddSqlServer("sqlserver")
-    // Mount the init scripts directory into the container.
-    .WithBindMount("./sqlserverconfig", "/usr/config")
-    // Mount the SQL scripts directory into the container so that the init scripts run.
-    .WithBindMount("../FairPlayAdminPortal/data/sqlserver", "/docker-entrypoint-initdb.d")
-    // Run the custom entrypoint script on startup.
-    .WithEntrypoint("/usr/config/entrypoint.sh")
-    // Add the database to the application model so that it can be referenced by other resources.
-    .AddDatabase("FairPlayCombinedDb");
+        .AddDatabase("FairPlayCombinedDb");
 }
 else
 {

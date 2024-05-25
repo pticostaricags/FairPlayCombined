@@ -109,22 +109,8 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-try
-{
-    using var scope = app.Services.CreateScope();
-    using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbContext>();
-    var supportedCultures = await ctx.Culture.Select(p => p.Name).ToArrayAsync();
-    var localizationOptions = new RequestLocalizationOptions()
-        .SetDefaultCulture(supportedCultures[0])
-        .AddSupportedCultures(supportedCultures)
-        .AddSupportedUICultures(supportedCultures);
 
-    app.UseRequestLocalization(localizationOptions);
-}
-catch (Exception)
-{
-    //Ignore
-}
+await app.UseDatabaseDrivenLocalization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
