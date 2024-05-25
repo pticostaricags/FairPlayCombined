@@ -9,14 +9,13 @@
     </Header>
     <SubHeader>
         <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
-            Your Open Source Video Sharing Platform focused on users and transparency
+            @Constants.ApplicationTitles.FairPlayTube
         </FluentLabel>
     </SubHeader>
     <Body>
         <AuthorizeView>
             <Authorized>
-                <FairPlayTube.Components.SignalR.UserMessageNotification 
-                @rendermode="RenderMode.InteractiveServer"></FairPlayTube.Components.SignalR.UserMessageNotification>
+                <FairPlayTube.Components.SignalR.UserMessageNotification @rendermode="RenderMode.InteractiveServer"></FairPlayTube.Components.SignalR.UserMessageNotification>
             </Authorized>
         </AuthorizeView>
         @Body
