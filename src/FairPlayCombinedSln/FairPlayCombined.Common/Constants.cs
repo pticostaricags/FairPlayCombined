@@ -2,6 +2,10 @@
 {
     public static class Constants
     {
+        public static class ApplicationTitles
+        {
+            public const string FairPlayTube = "Your Open Source Video Sharing Platform focused on users and transparency";
+        }
         public static class ConnectionStringNames
         {
             public const string MailDev = "mailDev";
