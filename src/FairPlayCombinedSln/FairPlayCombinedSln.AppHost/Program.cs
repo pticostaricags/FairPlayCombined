@@ -82,6 +82,10 @@ if (addFairPlayTube)
     })
     .WithReference(fairPlayDbResource)
     .WithReference(mailDev);
+}
+
+if (Convert.ToBoolean(builder.Configuration["AddFairPlayTubeVideoIndexing"]))
+{
     builder.AddProject<Projects.FairPlayTube_VideoIndexing>(ResourcesNames.FairPlayTubeVideoIndexing)
         .WithReference(fairPlayDbResource);
 }
