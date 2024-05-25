@@ -77,6 +77,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayTube.SharedUI", "Fa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.MailDev.Hosting", "FairPlayCombined.MailDev.Hosting\FairPlayCombined.MailDev.Hosting.csproj", "{8AB5053D-FEDF-49B4-9100-47A54F95F430}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.DatabaseManager", "FairPlayCombined.DatabaseManager\FairPlayCombined.DatabaseManager.csproj", "{04CCFE63-6128-46D3-9851-FCC5249119E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Enable_Paid_Tests|Any CPU = Debug_Enable_Paid_Tests|Any CPU
@@ -294,6 +296,12 @@ Global
 		{8AB5053D-FEDF-49B4-9100-47A54F95F430}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AB5053D-FEDF-49B4-9100-47A54F95F430}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AB5053D-FEDF-49B4-9100-47A54F95F430}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04CCFE63-6128-46D3-9851-FCC5249119E3}.Debug_Enable_Paid_Tests|Any CPU.ActiveCfg = Debug_Enable_Paid_Tests|Any CPU
+		{04CCFE63-6128-46D3-9851-FCC5249119E3}.Debug_Enable_Paid_Tests|Any CPU.Build.0 = Debug_Enable_Paid_Tests|Any CPU
+		{04CCFE63-6128-46D3-9851-FCC5249119E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04CCFE63-6128-46D3-9851-FCC5249119E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04CCFE63-6128-46D3-9851-FCC5249119E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04CCFE63-6128-46D3-9851-FCC5249119E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

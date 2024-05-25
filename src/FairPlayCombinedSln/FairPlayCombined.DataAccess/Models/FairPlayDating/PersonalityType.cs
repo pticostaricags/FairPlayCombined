@@ -15,17 +15,14 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 namespace FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 
-[Table("Activity", Schema = "FairPlayDating")]
-[Index("Name", Name = "UI_Activity_Activity", IsUnique = true)]
-public partial class Activity
+[Table("PersonalityType", Schema = "FairPlayDating")]
+[Index("Name", Name = "UI_PersonalityType_Name", IsUnique = true)]
+public partial class PersonalityType
 {
     [Key]
-    public int ActivityId { get; set; }
+    public int PersonalityTypeId { get; set; }
 
     [Required]
     [StringLength(50)]
     public string Name { get; set; }
-
-    [InverseProperty("Activity")]
-    public virtual ICollection<UserActivity> UserActivity { get; set; } = new List<UserActivity>();
 }

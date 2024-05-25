@@ -44,7 +44,8 @@ else
 {
     fairPlayDbResource = builder.AddConnectionString("FairPlayCombinedDb");
 }
-
+builder.AddProject<Projects.FairPlayCombined_DatabaseManager>(ResourcesNames.DatabaseManager)
+    .WithReference(fairPlayDbResource);
 
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
 if (addFairPlayDating)
