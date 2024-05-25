@@ -11,8 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />
     <ProjectReference Include="..\FairPlayCombined.DataAccess\FairPlayCombined.DataAccess.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
 </Project>

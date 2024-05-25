@@ -2,6 +2,13 @@
 {
     public static class Constants
     {
+        public static class MAUI
+        {
+            public static class DefaultApiBindings
+            {
+                public const string FairPlaySocial = "https://localhost:7274/";
+            }
+        }
         public static class ApplicationTitles
         {
             public const string FairPlayTube = "Your Open Source Video Sharing Platform focused on users and transparency";
