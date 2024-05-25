@@ -37,6 +37,8 @@ var paypalClientSecret = builder.Configuration["PayPal:ClientSecret"] ??
 
 IResourceBuilder<IResourceWithConnectionString> sqlResourceWithConnectionString =
     builder.AddConnectionString("FairPlayCombinedDb");
+builder.AddProject<Projects.FairPlayCombined_DatabaseManager>(ResourcesNames.DatabaseManager)
+    .WithReference(sqlResourceWithConnectionString);
 
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
 if (addFairPlayDating)

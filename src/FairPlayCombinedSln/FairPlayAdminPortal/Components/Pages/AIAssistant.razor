@@ -1,0 +1,74 @@
+﻿@page "/AIAssistant"
+@implements IAsyncDisposable
+
+@using FairPlayAdminPortal.Components.Spinners
+@using Microsoft.SemanticKernel
+@using Microsoft.SemanticKernel.ChatCompletion
+@using Microsoft.SemanticKernel.Connectors.OpenAI
+
+@inject Kernel semanticKernel
+@inject IToastService toastService
+
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<h3>AIAssistant</h3>
+@if (this.chatHistory.Count > 0)
+{
+    @foreach (var singleChatMessage in this.chatHistory)
+    {
+        <div style="max-height:200px; width:100%; overflow-y:auto;">
+            @((MarkupString)singleChatMessage.ToString())
+            <FluentDivider></FluentDivider>
+        </div>
+    }
+}
+<div>
+    <FluentTextArea style="width:100%;" Placeholder="Enter your query" @bind-Value="@UserInput"></FluentTextArea>
+    <FluentButton OnClick="SendTextAsync">Send</FluentButton>
+</div>
+
+@code {
+    private IChatCompletionService? chatCompletionService;
+    private readonly ChatHistory chatHistory = new();
+    private string? UserInput { get; set; }
+    private bool IsBusy { get; set; }
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+
+    protected override void OnInitialized()
+    {
+        this.chatCompletionService = this.semanticKernel.Services
+        .GetRequiredService<IChatCompletionService>();
+    }
+
+    private async Task SendTextAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            this.chatHistory.AddUserMessage(this.UserInput!);
+            var response = await chatCompletionService!
+            .GetChatMessageContentAsync(chatHistory: this.chatHistory, kernel: this.semanticKernel,
+            cancellationToken: this.cancellationTokenSource.Token);
+            this.chatHistory.Add(response);
+            this.UserInput = null;
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}

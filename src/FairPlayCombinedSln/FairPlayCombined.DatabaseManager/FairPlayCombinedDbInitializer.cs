@@ -20,12 +20,21 @@ public class FairPlayCombinedDbInitializer(ILogger<FairPlayCombinedDbInitializer
 
                 await dbContext.Database.ExecuteSqlRawAsync(Resources._1_Script_PostDeployment1,
                     cancellationToken);
+                await dbContext.Database.ExecuteSqlRawAsync(Resources._2_FairPlayDating,
+                    cancellationToken);
+                await dbContext.Database.ExecuteSqlRawAsync(Resources._3_FairPlaySocial,
+                    cancellationToken);
+                await dbContext.Database.ExecuteSqlRawAsync(Resources._4_FairPlayTube,
+                    cancellationToken);
+                await dbContext.Database.ExecuteSqlRawAsync(Resources._5_FairPlayBudget,
+                    cancellationToken);
                 await dbContext.SaveChangesAsync(cancellationToken);
             },
             verifySucceeded: async (cancellationToken) =>
             {
                 var rolesCount = await dbContext.AspNetRoles.CountAsync(cancellationToken);
-                return rolesCount > 0;
+                var currenciesCount = await dbContext.Currency.CountAsync(cancellationToken);
+                return rolesCount > 0 && currenciesCount == 2;
             },
             stoppingToken
             );

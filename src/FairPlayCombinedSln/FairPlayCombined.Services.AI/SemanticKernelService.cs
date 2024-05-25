@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Models.AzureOpenAI;
+﻿using Azure.AI.OpenAI;
+using FairPlayCombined.Models.AzureOpenAI;
 using FairPlayCombined.Models.OpenAI;
 using Microsoft.SemanticKernel;
 using System.Text;
@@ -6,10 +7,17 @@ using System.Text;
 namespace FairPlayCombined.Services.AI
 {
     public class SemanticKernelService(AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration,
-        OpenAIServiceConfiguration openAIServiceConfiguration)
+        OpenAIServiceConfiguration openAIServiceConfiguration, OpenAIClient openAIClient)
     {
-        private const string OPENAI_MODEL = "gpt-4o";
+        internal const string OPENAI_MODEL = "gpt-4o";
 
+        public Kernel InitializeChatCompletionService()
+        {
+            var builder = Kernel.CreateBuilder()
+                .AddOpenAIChatCompletion(modelId: OPENAI_MODEL, openAIClient: openAIClient);
+            var kernel = builder.Build();
+            return kernel;
+        }
         public async Task<FunctionResult?> TranslateTextAsync(string text, string fromLanguage, string toLanguage,
             CancellationToken cancellationToken)
         {

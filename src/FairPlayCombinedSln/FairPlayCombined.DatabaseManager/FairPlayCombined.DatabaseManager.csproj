@@ -8,9 +8,6 @@
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\FairPlayCombinedDb\Scripts\1-Script.PostDeployment1.sql" Link="1-Script.PostDeployment1.sql" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0-preview.4.24218.6" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0-preview.4.24266.19" />
   </ItemGroup>
