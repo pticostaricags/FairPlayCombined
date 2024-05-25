@@ -1,5 +1,6 @@
 using FairPlayCombinedSln.AppHost;
 using Microsoft.Extensions.Configuration;
+using System.Reflection.Metadata;
 
 var builder = DistributedApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
@@ -37,7 +38,9 @@ var paypalClientSecret = builder.Configuration["PayPal:ClientSecret"] ??
 IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource;
 if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
 {
-    fairPlayDbResource = builder.AddSqlServer("sqlserver")
+    var sqlPassword = builder.AddParameter("FairPlayCombinedDbServer-password", secret: true);
+    fairPlayDbResource = builder.AddSqlServer("FairPlayCombinedDbServer", password:sqlPassword)
+        .WithDataVolume()
         .AddDatabase("FairPlayCombinedDb");
 }
 else
