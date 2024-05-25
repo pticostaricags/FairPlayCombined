@@ -59,8 +59,10 @@ builder.AddSqlServerDbContext<ApplicationDbContext>(connectionName: "FairPlayCom
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
+    .AddApiEndpoints()
     .AddDefaultTokenProviders();
 
 builder.Services.AddTransient<IUserProviderService, UserProviderService>();
