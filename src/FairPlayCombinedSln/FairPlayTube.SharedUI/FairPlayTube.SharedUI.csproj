@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0-preview.4.24267.6" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.5" />
 	  <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.7.2" />
 	  <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.6.0" />
 	  <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.7.2" />
@@ -26,10 +28,6 @@
     <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-	<FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
 </Project>
