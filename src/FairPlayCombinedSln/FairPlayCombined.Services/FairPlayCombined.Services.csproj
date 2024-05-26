@@ -15,6 +15,7 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FairPlayCombined.AspNetCore.Common\FairPlayCombined.AspNetCore.Common.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />
     <ProjectReference Include="..\FairPlayCombined.DataAccess\FairPlayCombined.DataAccess.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj" />

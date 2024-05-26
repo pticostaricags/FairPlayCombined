@@ -4,6 +4,7 @@
     "projects": [
       "FairPlayAdminPortal\\FairPlayAdminPortal.csproj",
       "FairPlayBudget\\FairPlayBudget.csproj",
+      "FairPlayCombined.AspNetCore.Common\\FairPlayCombined.AspNetCore.Common.csproj",
       "FairPlayCombined.AutomatedTests\\FairPlayCombined.AutomatedTests.csproj",
       "FairPlayCombined.CitiesImporter\\FairPlayCombined.CitiesImporter.csproj",
       "FairPlayCombined.Common\\FairPlayCombined.Common.csproj",

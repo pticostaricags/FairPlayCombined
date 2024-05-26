@@ -2,6 +2,15 @@
 {
     public static class Constants
     {
+#pragma warning disable S101 // Types should be named in PascalCase
+        public static class MAUI
+#pragma warning restore S101 // Types should be named in PascalCase
+        {
+            public static class DefaultApiBindings
+            {
+                public const string FairPlaySocial = "https://localhost:7274/";
+            }
+        }
         public static class ApplicationTitles
         {
             public const string FairPlayTube = "Your Open Source Video Sharing Platform focused on users and transparency";

@@ -1,4 +1,5 @@
-﻿using FairPlaySocial.ClientServices;
+﻿using FairPlayCombined.Common;
+using FairPlaySocial.ClientServices;
 using FairPlaySocial.MAUI.Auth;
 using FairPlaySocial.MAUI.Helpers;
 using Microsoft.Extensions.Configuration;
@@ -26,12 +27,7 @@ namespace FairPlaySocial.MAUI
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
-            var assembly = Assembly.GetExecutingAssembly();
-            string configFileStreamName = $"FairPlaySocial.MAUI.appSettings.local.json";
-            var configFileStream = assembly!.GetManifestResourceStream(
-                configFileStreamName);
-            builder.Configuration.AddJsonStream(configFileStream!);
-            apiBaseUrl = builder.Configuration["ApiBaseUrl"]!;
+            apiBaseUrl = Constants.MAUI.DefaultApiBindings.FairPlaySocial;
 #else
             apiBaseUrl = "[CHANGE TO YOUR URL]";
 #endif
