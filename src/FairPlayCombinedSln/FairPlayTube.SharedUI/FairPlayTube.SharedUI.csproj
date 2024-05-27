@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
+	  <BaseOutputPath>C:\Temp\FairPlayTube.SharedUI</BaseOutputPath>
   </PropertyGroup>
 
 
