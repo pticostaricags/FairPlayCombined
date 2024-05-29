@@ -2,7 +2,9 @@
 using FairPlayCombined.Common;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.AzureOpenAI;
+using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -38,6 +40,14 @@ namespace FairPlayCombined.Services.Extensions
                 OpenAIClient openAIClient = new(endpoint: new Uri(azureOpenAIServiceConfiguration.Endpoint!),
                     keyCredential: new Azure.AzureKeyCredential(azureOpenAIServiceConfiguration.Key!));
                 return openAIClient;
+            });
+            services.AddTransient<IAzureOpenAIService, AzureOpenAIService>(sp => 
+            {
+                OpenAIClient openAIClient = sp.GetRequiredService<OpenAIClient>();
+                AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration =
+                sp.GetRequiredService<AzureOpenAIServiceConfiguration>();
+                AzureOpenAIService azureOpenAIService = new(openAIClient, azureOpenAIServiceConfiguration);
+                return azureOpenAIService;
             });
             return services;
         }

@@ -25,4 +25,5 @@ builder.Services.AddAzureOpenAIService();
 builder.Services.AddHostedService<LocalizationGenerator>();
 
 var host = builder.Build();
+await Task.Delay(TimeSpan.FromSeconds(10));
 host.Run();
