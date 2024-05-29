@@ -1,5 +1,6 @@
 ﻿using Aspire.Hosting.Testing;
 using FairPlayCombinedSln.AppHost;
+using NBomber.CSharp;
 using System.Net;
 
 namespace FairPlayCombined.AutomatedTests.AppHosts
@@ -18,10 +19,27 @@ namespace FairPlayCombined.AutomatedTests.AppHosts
 
             // Act
             var httpClient = app.CreateHttpClient(ResourcesNames.FairPlayTube);
-            var response = await httpClient.GetAsync("/");
+            var scenario =
+            NBomber.CSharp.Scenario.Create("load_home_page", async context =>
+            {
+                var response = await httpClient.GetAsync("/");
 
-            // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                // Assert
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                return Response.Ok();
+            })
+                .WithLoadSimulations(
+                Simulation.Inject(
+                    rate: 10,
+                    interval: TimeSpan.FromSeconds(1),
+                    during: TimeSpan.FromSeconds(30)));
+
+            var stats = NBomberRunner
+                .RegisterScenarios(scenario)
+                .Run();
+
+            var failedStats = stats.ScenarioStats[0].Fail;
+            Assert.AreEqual(0, failedStats.Request.Count);
         }
 
         [TestMethod]
