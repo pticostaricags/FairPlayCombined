@@ -1,15 +1,19 @@
-﻿@inherits LayoutComponentBase
+﻿@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<MainLayout> localizer
+
+@inherits LayoutComponentBase
 
 
 <FluentMainLayout NavMenuWidth="400">
     <Header>
         <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center">
-            @nameof(FairPlayDating)
+            @localizer[AppTitleTextKey]
         </FluentLabel>
     </Header>
     <SubHeader>
         <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
-            Your Open Source Dating Platform focused on users and transparency
+            @localizer[AppSubtitleTextKey]
         </FluentLabel>
     </SubHeader>
     <Body>
@@ -30,3 +34,10 @@
 <FluentDialogProvider />
 <FluentTooltipProvider />
 <FluentMessageBarProvider />
+@code
+{
+    [ResourceKey(defaultValue:nameof(FairPlayDating))]
+    public const string AppTitleTextKey = "AppTitleText";
+    [ResourceKey(defaultValue: "Your Open Source Dating Platform focused on users and transparency")]
+    public const string AppSubtitleTextKey = "AppSubtitleText";
+}
