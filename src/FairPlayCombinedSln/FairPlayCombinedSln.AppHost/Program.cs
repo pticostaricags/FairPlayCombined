@@ -29,17 +29,17 @@ var googleAuthClientSecret = builder.Configuration["GoogleAuthClientSecret"] ??
 var googleAuthRedirectUri = builder.Configuration["GoogleAuthRedirectUri"] ??
         throw new InvalidOperationException("'GoogleAuthRedirectUri' not found");
 
-var paypalClientId = builder.Configuration["PayPal:ClientId"] ??
-    throw new InvalidOperationException("'PayPal:ClientId' not found");
+var paypalClientId = builder.Configuration["PayPalClientId"] ??
+    throw new InvalidOperationException("'PayPalClientId' not found");
 
-var paypalClientSecret = builder.Configuration["PayPal:ClientSecret"] ??
-    throw new InvalidOperationException("'PayPal:ClientSecret' not found");
+var paypalClientSecret = builder.Configuration["PayPalClientSecret"] ??
+    throw new InvalidOperationException("'PayPalClientSecret' not found");
 
 IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource;
 if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
 {
-    var sqlPassword = builder.AddParameter("FairPlayCombinedDbServer-password", secret: true);
-    fairPlayDbResource = builder.AddSqlServer("FairPlayCombinedDbServer", password:sqlPassword)
+    var sqlPassword = builder.AddParameter("db-password", secret: true);
+    fairPlayDbResource = builder.AddSqlServer("dbserver", password:sqlPassword)
         .WithDataVolume()
         .AddDatabase("FairPlayCombinedDb");
 }
@@ -77,8 +77,8 @@ if (addFairPlayTube)
         callback.EnvironmentVariables.Add("GoogleAuthClientSecret", googleAuthClientSecret);
         callback.EnvironmentVariables.Add("GoogleAuthRedirectUri", googleAuthRedirectUri);
 
-        callback.EnvironmentVariables.Add("PayPal:ClientId", paypalClientId);
-        callback.EnvironmentVariables.Add("PayPal:ClientSecret", paypalClientSecret);
+        callback.EnvironmentVariables.Add("PayPalClientId", paypalClientId);
+        callback.EnvironmentVariables.Add("PayPalClientSecret", paypalClientSecret);
     })
     .WithReference(fairPlayDbResource)
     .WithReference(mailDev);

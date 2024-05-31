@@ -12,11 +12,11 @@ namespace FairPlayCombined.Services.Extensions
     {
         public static void AddPayPalCore(this WebApplicationBuilder builder)
         {
-            var paypalClientId = builder.Configuration["PayPal:ClientId"] ??
-                throw new InvalidOperationException("'PayPal:ClientId' not found");
+            var paypalClientId = builder.Configuration["PayPalClientId"] ??
+                throw new InvalidOperationException("'PayPalClientId' not found");
 
-            var paypalClientSecret = builder.Configuration["PayPal:ClientSecret"] ??
-                throw new InvalidOperationException("'PayPal:ClientSecret' not found");
+            var paypalClientSecret = builder.Configuration["PayPalClientSecret"] ??
+                throw new InvalidOperationException("'PayPalClientSecret' not found");
             builder.Services.AddSingleton<PayPalConfiguration>(new PayPalConfiguration()
             {
                 ClientId = paypalClientId,
