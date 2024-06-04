@@ -20,7 +20,7 @@ using System.Net.Mail;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
+builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
 
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();

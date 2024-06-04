@@ -24,7 +24,7 @@ using System.Net.Mail;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
+builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
 
 builder.Services.AddFluentUIComponents();
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();

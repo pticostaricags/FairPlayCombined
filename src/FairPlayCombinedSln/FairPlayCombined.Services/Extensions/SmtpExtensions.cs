@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,11 +23,18 @@ namespace FairPlayCombined.Services.Extensions
             {
                 var smtpUri = new Uri(builder.Configuration.GetConnectionString(name)!);
 
+                var smtpUsername = builder.Configuration["SMTPUsername"];
+                var smtpPassword = builder.Configuration["SMTPPassword"];
+                var useSSLForSMTP = Convert.ToBoolean(builder.Configuration["UseSSLForSMTP"]);
+
                 var smtpClient = new SmtpClient(smtpUri.Host, smtpUri.Port)
                 {
-                    EnableSsl = !builder.Environment.IsDevelopment()
+                    EnableSsl = useSSLForSMTP,
                 };
-
+                if (!String.IsNullOrWhiteSpace(smtpUsername) && !String.IsNullOrWhiteSpace(smtpPassword))
+                {
+                    smtpClient.Credentials = new NetworkCredential(userName: smtpUsername, password: smtpPassword);
+                }
                 return smtpClient;
             });
             builder.Services.AddOpenTelemetry()

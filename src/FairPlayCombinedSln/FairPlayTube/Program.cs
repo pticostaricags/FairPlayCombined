@@ -31,7 +31,7 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
+builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
 
 builder.Services.AddHealthChecks().AddCheck<FairPlayTubeHealthCheck>(nameof(FairPlayTubeHealthCheck),
     failureStatus: HealthStatus.Unhealthy,

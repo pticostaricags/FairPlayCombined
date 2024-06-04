@@ -1,12 +1,13 @@
 using FairPlayCombinedSln.AppHost;
 using Microsoft.Extensions.Configuration;
-using System.Reflection.Metadata;
 
 var builder = DistributedApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 
-//Check: https://learn.microsoft.com/en-us/dotnet/aspire/extensibility/custom-resources?tabs=windows
-var mailDev = builder.AddMailDev("maildev");
+bool useSendGrid = Convert.ToBoolean(builder.Configuration["UseSendGrid"]);
+IResourceBuilder<MailDevResource>? mailDev = null;
+if (useSendGrid == false)
+    mailDev = ConfigureMailDev(builder);
 
 var googleAuthClientId = builder.Configuration["GoogleAuthClientId"] ??
         throw new InvalidOperationException("'GoogleAuthClientId' not found");
@@ -35,27 +36,23 @@ var paypalClientId = builder.Configuration["PayPalClientId"] ??
 var paypalClientSecret = builder.Configuration["PayPalClientSecret"] ??
     throw new InvalidOperationException("'PayPalClientSecret' not found");
 
-IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource;
-if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
-{
-    var sqlPassword = builder.AddParameter("db-password", secret: true);
-    fairPlayDbResource = builder.AddSqlServer("dbserver", password:sqlPassword)
-        .WithDataVolume()
-        .AddDatabase("FairPlayCombinedDb");
-}
-else
-{
-    fairPlayDbResource = builder.AddConnectionString("FairPlayCombinedDb");
-}
-builder.AddProject<Projects.FairPlayCombined_DatabaseManager>(ResourcesNames.DatabaseManager)
-    .WithReference(fairPlayDbResource);
+IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource = ConfigureDatabase(builder);
 
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
 if (addFairPlayDating)
 {
+    var fairPlayDating =
     builder.AddProject<Projects.FairPlayDating>(ResourcesNames.FairPlayDating)
-        .WithReference(fairPlayDbResource)
-        .WithReference(mailDev);
+        .WithReference(fairPlayDbResource);
+    if (useSendGrid == false)
+        fairPlayDating = fairPlayDating.WithReference(mailDev!);
+    else
+    {
+        fairPlayDating = fairPlayDating.WithEnvironment((Action<EnvironmentCallbackContext>)(callback =>
+        {
+            AddSMTPEnvironmentVariables(callback, builder);
+        }));
+    }
 }
 
 if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"]))
@@ -66,6 +63,7 @@ if (Convert.ToBoolean(builder.Configuration["AddFairPlayDatingTestDataGenerator"
 bool addFairPlayTube = Convert.ToBoolean(builder.Configuration["AddFairPlayTube"]);
 if (addFairPlayTube)
 {
+    var fairPlayTube =
     builder.AddProject<Projects.FairPlayTube>(ResourcesNames.FairPlayTube)
     .WithEnvironment(callback =>
     {
@@ -79,9 +77,16 @@ if (addFairPlayTube)
 
         callback.EnvironmentVariables.Add("PayPalClientId", paypalClientId);
         callback.EnvironmentVariables.Add("PayPalClientSecret", paypalClientSecret);
+
     })
-    .WithReference(fairPlayDbResource)
-    .WithReference(mailDev);
+    .WithReference(fairPlayDbResource);
+    if (useSendGrid == false)
+        fairPlayTube = fairPlayTube.WithReference(mailDev!);
+    else
+        fairPlayTube = fairPlayTube.WithEnvironment(callback =>
+        {
+            AddSMTPEnvironmentVariables(callback, builder);
+        });
 }
 
 if (Convert.ToBoolean(builder.Configuration["AddFairPlayTubeVideoIndexing"]))
@@ -93,9 +98,18 @@ if (Convert.ToBoolean(builder.Configuration["AddFairPlayTubeVideoIndexing"]))
 bool addFairPlayShop = Convert.ToBoolean(builder.Configuration["AddFairPlayShop"]);
 if (addFairPlayShop)
 {
+    var fairPlayShop =
     builder.AddProject<Projects.FairPlayShop>(ResourcesNames.FairPlayShop)
-    .WithReference(fairPlayDbResource)
-    .WithReference(mailDev);
+    .WithReference(fairPlayDbResource);
+    if (useSendGrid == false)
+        fairPlayShop = fairPlayShop.WithReference(mailDev!);
+    else
+    {
+        fairPlayShop = fairPlayShop.WithEnvironment(callback =>
+        {
+            AddSMTPEnvironmentVariables(callback, builder);
+        });
+    }
 }
 
 bool addCitiesImporter = Convert.ToBoolean(builder.Configuration["AddCitiesImporter"]);
@@ -108,17 +122,35 @@ if (addCitiesImporter)
 bool addFairPlatAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPlatAdminPortal"]);
 if (addFairPlatAdminPortal)
 {
+    var fairPlatAdminPortal =
     builder.AddProject<Projects.FairPlayAdminPortal>(ResourcesNames.FairPlayAdminPortal)
-        .WithReference(fairPlayDbResource)
-        .WithReference(mailDev);
+        .WithReference(fairPlayDbResource);
+    if (useSendGrid == false)
+        fairPlatAdminPortal = fairPlatAdminPortal.WithReference(mailDev!);
+    else
+    {
+        fairPlatAdminPortal = fairPlatAdminPortal.WithEnvironment(callback => 
+        {
+            AddSMTPEnvironmentVariables(callback, builder);
+        });
+    }
 }
 
 bool addFairPlaySocial = Convert.ToBoolean(builder.Configuration["AddFairPlaySocial"]);
 if (addFairPlaySocial)
 {
+    var fairPlaySocial =
     builder.AddProject<Projects.FairPlaySocial>(ResourcesNames.FairPlaySocial)
-        .WithReference(fairPlayDbResource)
-        .WithReference(mailDev);
+        .WithReference(fairPlayDbResource);
+    if (useSendGrid == false)
+        fairPlaySocial = fairPlaySocial.WithReference(mailDev!);
+    else
+    {
+        fairPlaySocial = fairPlaySocial.WithEnvironment(callback => 
+        {
+            AddSMTPEnvironmentVariables(callback, builder);
+        });
+    }
     if (Convert.ToBoolean(builder.Configuration["AddFairPlaySocialTestDataGenerator"]))
     {
         builder.AddProject<Projects.FairPlaySocial_TestDataGenerator>(ResourcesNames.FairPlaySocialTestDataGenerator)
@@ -136,9 +168,18 @@ if (addLocalizationGenerator)
 bool addFairPlayBudget = Convert.ToBoolean(builder.Configuration["AddFairPlayBudget"]);
 if (addFairPlayBudget)
 {
+    var fairPlayBudget =
     builder.AddProject<Projects.FairPlayBudget>(ResourcesNames.FairPlayBudget)
-        .WithReference(fairPlayDbResource)
-        .WithReference(mailDev);
+        .WithReference(fairPlayDbResource);
+    if (useSendGrid == false)
+        fairPlayBudget = fairPlayBudget.WithReference(mailDev!);
+    else
+    {
+        fairPlayBudget = fairPlayBudget.WithEnvironment(callback => 
+        {
+            AddSMTPEnvironmentVariables(callback, builder);
+        });
+    }
 }
 
 await builder.Build().RunAsync();
@@ -155,4 +196,45 @@ static void AddTestDataGenerator(IDistributedApplicationBuilder builder,
                 callback.EnvironmentVariables.Add("HumansPhotosDirectory", humansPhotosDirectory);
             }
         }).WithReference(sqlServerResource);
+}
+
+static IResourceBuilder<MailDevResource>? ConfigureMailDev(IDistributedApplicationBuilder builder)
+{
+    //Check: https://learn.microsoft.com/en-us/dotnet/aspire/extensibility/custom-resources?tabs=windows
+    IResourceBuilder<MailDevResource>? mailDev = default;
+    mailDev = builder.AddMailDev("smtp");
+    return mailDev;
+}
+
+static IResourceBuilder<IResourceWithConnectionString> ConfigureDatabase(IDistributedApplicationBuilder builder)
+{
+    IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource;
+    if (Convert.ToBoolean(builder.Configuration["UseDatabaseContainer"]))
+    {
+        var sqlPassword = builder.AddParameter("db-password", secret: true);
+        fairPlayDbResource = builder.AddSqlServer("dbserver", password: sqlPassword)
+            .WithDataVolume()
+            .AddDatabase("FairPlayCombinedDb");
+    }
+    else
+    {
+        fairPlayDbResource = builder.AddConnectionString("FairPlayCombinedDb");
+    }
+    builder.AddProject<Projects.FairPlayCombined_DatabaseManager>(ResourcesNames.DatabaseManager)
+        .WithReference(fairPlayDbResource);
+    return fairPlayDbResource;
+}
+
+static void AddSMTPEnvironmentVariables(EnvironmentCallbackContext callback, IDistributedApplicationBuilder builder)
+{
+    var smtpServer = builder.Configuration["SMTPServer"];
+    var smtpPort = builder.Configuration["SMTPPort"];
+    var smtpUsername = builder.Configuration["SMTPUsername"];
+    var smtpPassword = builder.Configuration["SMTPPassword"];
+    var useSSLForSMTP = builder.Configuration["UseSSLForSMTP"];
+    callback.EnvironmentVariables.Add("UseSSLForSMTP", useSSLForSMTP!);
+    callback.EnvironmentVariables.Add("SMTPUsername", smtpUsername!);
+    callback.EnvironmentVariables.Add("SMTPPassword", smtpPassword!);
+    callback.EnvironmentVariables.Add("ConnectionStrings__smtp",
+        $"smtp://{smtpServer}:{smtpPort}");
 }

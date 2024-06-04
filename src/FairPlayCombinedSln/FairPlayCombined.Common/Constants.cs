@@ -17,7 +17,7 @@
         }
         public static class ConnectionStringNames
         {
-            public const string MailDev = "mailDev";
+            public const string SMTP = "smtp";
         }
         public static class PromptsNames
         {
