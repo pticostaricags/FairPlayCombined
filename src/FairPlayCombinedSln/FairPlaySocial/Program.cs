@@ -25,8 +25,10 @@ using System.Net.Mail;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
-
+if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]) == false)
+{
+    builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
+}
 builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
 builder.Services.AddLocalization();

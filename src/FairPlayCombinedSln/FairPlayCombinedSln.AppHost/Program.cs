@@ -232,6 +232,10 @@ static void AddSMTPEnvironmentVariables(EnvironmentCallbackContext callback, IDi
     var smtpUsername = builder.Configuration["SMTPUsername"];
     var smtpPassword = builder.Configuration["SMTPPassword"];
     var useSSLForSMTP = builder.Configuration["UseSSLForSMTP"];
+    var useSendGrid = builder.Configuration["UseSendGrid"];
+    var emailFrom = builder.Configuration["EmailFrom"];
+    callback.EnvironmentVariables.Add("EmailFrom", emailFrom!);
+    callback.EnvironmentVariables.Add("UseSendGrid", useSendGrid!);
     callback.EnvironmentVariables.Add("UseSSLForSMTP", useSSLForSMTP!);
     callback.EnvironmentVariables.Add("SMTPUsername", smtpUsername!);
     callback.EnvironmentVariables.Add("SMTPPassword", smtpPassword!);
