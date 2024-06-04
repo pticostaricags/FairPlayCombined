@@ -155,8 +155,8 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public float confidence { get; set; }
         public string? startTime { get; set; }
         public string? endTime { get; set; }
-        public int startSeconds { get; set; }
-        public int endSeconds { get; set; }
+        public float startSeconds { get; set; }
+        public float endSeconds { get; set; }
     }
 
     public class Topic
