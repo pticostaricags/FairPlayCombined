@@ -26,7 +26,7 @@ using System.Net.Mime;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]) == false)
+if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
 {
     builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
 }

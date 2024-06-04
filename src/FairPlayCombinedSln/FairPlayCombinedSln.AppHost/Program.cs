@@ -6,7 +6,7 @@ builder.Configuration.AddUserSecrets<Program>();
 
 bool useSendGrid = Convert.ToBoolean(builder.Configuration["UseSendGrid"]);
 IResourceBuilder<MailDevResource>? mailDev = null;
-if (useSendGrid == false)
+if (!useSendGrid)
     mailDev = ConfigureMailDev(builder);
 
 var googleAuthClientId = builder.Configuration["GoogleAuthClientId"] ??
@@ -44,7 +44,7 @@ if (addFairPlayDating)
     var fairPlayDating =
     builder.AddProject<Projects.FairPlayDating>(ResourcesNames.FairPlayDating)
         .WithReference(fairPlayDbResource);
-    if (useSendGrid == false)
+    if (useSendGrid)
         fairPlayDating = fairPlayDating.WithReference(mailDev!);
     else
     {
@@ -80,7 +80,7 @@ if (addFairPlayTube)
 
     })
     .WithReference(fairPlayDbResource);
-    if (useSendGrid == false)
+    if (useSendGrid)
         fairPlayTube = fairPlayTube.WithReference(mailDev!);
     else
         fairPlayTube = fairPlayTube.WithEnvironment(callback =>
@@ -101,7 +101,7 @@ if (addFairPlayShop)
     var fairPlayShop =
     builder.AddProject<Projects.FairPlayShop>(ResourcesNames.FairPlayShop)
     .WithReference(fairPlayDbResource);
-    if (useSendGrid == false)
+    if (useSendGrid)
         fairPlayShop = fairPlayShop.WithReference(mailDev!);
     else
     {
@@ -125,7 +125,7 @@ if (addFairPlatAdminPortal)
     var fairPlatAdminPortal =
     builder.AddProject<Projects.FairPlayAdminPortal>(ResourcesNames.FairPlayAdminPortal)
         .WithReference(fairPlayDbResource);
-    if (useSendGrid == false)
+    if (useSendGrid)
         fairPlatAdminPortal = fairPlatAdminPortal.WithReference(mailDev!);
     else
     {
@@ -142,7 +142,7 @@ if (addFairPlaySocial)
     var fairPlaySocial =
     builder.AddProject<Projects.FairPlaySocial>(ResourcesNames.FairPlaySocial)
         .WithReference(fairPlayDbResource);
-    if (useSendGrid == false)
+    if (useSendGrid)
         fairPlaySocial = fairPlaySocial.WithReference(mailDev!);
     else
     {
@@ -171,7 +171,7 @@ if (addFairPlayBudget)
     var fairPlayBudget =
     builder.AddProject<Projects.FairPlayBudget>(ResourcesNames.FairPlayBudget)
         .WithReference(fairPlayDbResource);
-    if (useSendGrid == false)
+    if (useSendGrid)
         fairPlayBudget = fairPlayBudget.WithReference(mailDev!);
     else
     {
