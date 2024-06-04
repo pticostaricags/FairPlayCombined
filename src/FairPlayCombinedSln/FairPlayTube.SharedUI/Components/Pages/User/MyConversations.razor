@@ -1,6 +1,8 @@
 ﻿@page "/User/MyConversations"
 @implements IDisposable
 
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
+
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.Common.AspNetUsers
@@ -9,7 +11,7 @@
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
 
-@attribute [Authorize]
+
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @attribute [StreamRendering(enabled: true)]
 

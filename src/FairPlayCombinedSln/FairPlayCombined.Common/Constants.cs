@@ -82,6 +82,7 @@
         {
             public const string SystemAdmin = nameof(SystemAdmin);
             public const string User = nameof(User);
+            public const string BasicPlanUser = nameof(BasicPlanUser);
         }
         public static class Pagination
         {

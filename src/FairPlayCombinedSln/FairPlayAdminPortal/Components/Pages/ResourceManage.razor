@@ -1,6 +1,8 @@
 ﻿@page "/ResourceManage"
 @implements IDisposable
 
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.SystemAdmin)]
+
 @using FairPlayAdminPortal.Components.Spinners
 @using FairPlayCombined.Models.Common.Resource
 @using FairPlayCombined.Services.Common

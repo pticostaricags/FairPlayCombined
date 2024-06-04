@@ -1,6 +1,8 @@
 ﻿@page "/PromptsEditor"
 @implements IAsyncDisposable
 
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.SystemAdmin)]
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.Common.ConfigurationSecret

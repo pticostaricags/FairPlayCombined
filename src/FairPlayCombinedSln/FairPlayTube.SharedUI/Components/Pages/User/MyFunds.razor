@@ -1,9 +1,11 @@
-﻿@implements IAsyncDisposable
+﻿@page "/User/MyFunds"
+@implements IAsyncDisposable
 
-@page "/User/MyFunds"
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
+
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayTube.SharedUI.Components.PayPal
-@attribute [Authorize]
+
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject IUserFundService userFundService
 

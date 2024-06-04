@@ -1,6 +1,8 @@
 ﻿@page "/RoleCreate"
 @implements IDisposable
 
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.SystemAdmin)]
+
 @using FairPlayCombined.Models.Role
 @using Microsoft.AspNetCore.Identity
 @inject RoleManager<IdentityRole> roleManager

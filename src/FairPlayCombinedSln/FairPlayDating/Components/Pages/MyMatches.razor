@@ -1,6 +1,8 @@
 ﻿@page "/MyMatches"
 @implements IAsyncDisposable
 
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.GeneratorsAttributes
@@ -18,7 +20,7 @@
 @using Microsoft.Extensions.Localization
 @using System.Text
 
-@attribute [Authorize]
+
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject MyMatchesService myMatchesService
 @inject IUserProfileService userProfileService

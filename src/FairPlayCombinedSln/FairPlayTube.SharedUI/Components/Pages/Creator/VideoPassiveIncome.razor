@@ -1,6 +1,8 @@
 ﻿@page "/Creator/VideoPassiveIncome/{VideoInfoId:long}"
 @implements IDisposable
 
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
