@@ -201,9 +201,7 @@ static void AddTestDataGenerator(IDistributedApplicationBuilder builder,
 static IResourceBuilder<MailDevResource>? ConfigureMailDev(IDistributedApplicationBuilder builder)
 {
     //Check: https://learn.microsoft.com/en-us/dotnet/aspire/extensibility/custom-resources?tabs=windows
-    IResourceBuilder<MailDevResource>? mailDev = default;
-    mailDev = builder.AddMailDev("smtp");
-    return mailDev;
+    return builder.AddMailDev("smtp");
 }
 
 static IResourceBuilder<IResourceWithConnectionString> ConfigureDatabase(IDistributedApplicationBuilder builder)
