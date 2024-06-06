@@ -1,8 +1,11 @@
 ﻿@page "/FairPlayDating/ApplicationUserVouchCreate"
 @implements IAsyncDisposable
 
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.SystemAdmin)]
+
 @using FairPlayCombined.Models.FairPlayDating.ApplicationUserVouch
 @using FairPlayCombined.Services.FairPlayDating
+
 @inject ApplicationUserVouchService applicationUserVouchService
 <h3>ApplicationUserVouchCreate</h3>
 

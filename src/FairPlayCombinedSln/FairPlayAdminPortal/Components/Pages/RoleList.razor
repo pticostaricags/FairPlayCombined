@@ -1,4 +1,7 @@
 ﻿@page "/RoleList"
+
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.SystemAdmin)]
+
 @using FairPlayAdminPortal.Components.Spinners
 @using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces

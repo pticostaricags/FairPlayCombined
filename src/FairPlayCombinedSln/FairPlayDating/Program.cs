@@ -26,7 +26,10 @@ using System.Net.Mime;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
+if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
+{
+    builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
+}
 builder.Services.AddHealthChecks().AddCheck<FairPlayDatingHealthCheck>(nameof(FairPlayDatingHealthCheck),
     failureStatus: HealthStatus.Unhealthy,
     tags: ["live"]);

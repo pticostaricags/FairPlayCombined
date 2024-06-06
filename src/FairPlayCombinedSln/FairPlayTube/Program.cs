@@ -31,8 +31,10 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddSmtpClient(Constants.ConnectionStringNames.MailDev);
-
+if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
+{
+    builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
+}
 builder.Services.AddHealthChecks().AddCheck<FairPlayTubeHealthCheck>(nameof(FairPlayTubeHealthCheck),
     failureStatus: HealthStatus.Unhealthy,
     tags: ["live"]);

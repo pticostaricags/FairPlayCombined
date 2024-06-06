@@ -1,6 +1,8 @@
 ﻿@page "/Creator/UpdateVideoPlan/{VideoPlanId:long}"
 @implements IDisposable
 
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
+
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.FairPlayTube.Enums
 @using FairPlayCombined.Interfaces
@@ -11,7 +13,7 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoPlan
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Google.Apis.YouTube.v3.Data
-@attribute [Authorize]
+
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 @inject IPromptGeneratorService promptGeneratorService

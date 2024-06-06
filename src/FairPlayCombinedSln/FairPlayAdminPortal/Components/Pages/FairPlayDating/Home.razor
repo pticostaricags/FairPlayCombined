@@ -1,4 +1,7 @@
 ﻿@page "/FairPlayDating"
+
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.SystemAdmin)]
+
 <h3>Home</h3>
 
 @code {

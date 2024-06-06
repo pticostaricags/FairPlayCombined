@@ -1,6 +1,8 @@
 ﻿@page "/OpenAIPrompts"
 @implements IDisposable
 
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.SystemAdmin)]
+
 @using FairPlayAdminPortal.Components.Spinners
 @using FairPlayAdminPortal.Data
 @using FairPlayCombined.Common
