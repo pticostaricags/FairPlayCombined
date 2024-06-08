@@ -45,11 +45,12 @@ builder.AddAzureAIContentSafety();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(setupAction => 
 {
     setupAction.AddServer(server: new()
     {
-        Url = "https://fairplaycombined-webapi.yellowbay-79306d04.eastus2.azurecontainerapps.io/"
+        Url = "/"
     });
     setupAction.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["controller"]}_{e.HttpMethod}");
     setupAction.SwaggerDoc("v1", new() 
