@@ -81,6 +81,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.DatabaseMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.AspNetCore.Common", "FairPlayCombined.AspNetCore.Common\FairPlayCombined.AspNetCore.Common.csproj", "{5E1ED556-075A-436A-81ED-611E54C9F2DD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.WebApi", "FairPlayCombined.WebApi\FairPlayCombined.WebApi.csproj", "{8B352D58-7D2C-4C22-802B-7C432DA78E90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Enable_Paid_Tests|Any CPU = Debug_Enable_Paid_Tests|Any CPU
@@ -310,6 +312,12 @@ Global
 		{5E1ED556-075A-436A-81ED-611E54C9F2DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E1ED556-075A-436A-81ED-611E54C9F2DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E1ED556-075A-436A-81ED-611E54C9F2DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B352D58-7D2C-4C22-802B-7C432DA78E90}.Debug_Enable_Paid_Tests|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B352D58-7D2C-4C22-802B-7C432DA78E90}.Debug_Enable_Paid_Tests|Any CPU.Build.0 = Debug|Any CPU
+		{8B352D58-7D2C-4C22-802B-7C432DA78E90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B352D58-7D2C-4C22-802B-7C432DA78E90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B352D58-7D2C-4C22-802B-7C432DA78E90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B352D58-7D2C-4C22-802B-7C432DA78E90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -182,6 +182,10 @@ if (addFairPlayBudget)
     }
 }
 
+
+builder.AddProject<Projects.FairPlayCombined_WebApi>(ResourcesNames.FairPlayWebApi)
+    .WithReference(fairPlayDbResource);
+
 await builder.Build().RunAsync();
 
 static void AddTestDataGenerator(IDistributedApplicationBuilder builder,
@@ -218,6 +222,7 @@ static IResourceBuilder<IResourceWithConnectionString> ConfigureDatabase(IDistri
     {
         fairPlayDbResource = builder.AddConnectionString("FairPlayCombinedDb");
     }
+
     builder.AddProject<Projects.FairPlayCombined_DatabaseManager>(ResourcesNames.DatabaseManager)
         .WithReference(fairPlayDbResource);
     return fairPlayDbResource;

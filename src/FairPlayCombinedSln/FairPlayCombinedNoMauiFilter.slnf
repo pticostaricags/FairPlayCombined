@@ -19,6 +19,7 @@
       "FairPlayCombined.Services.Generators\\FairPlayCombined.Services.Generators.csproj",
       "FairPlayCombined.Services\\FairPlayCombined.Services.csproj",
       "FairPlayCombined.Shared\\FairPlayCombined.Shared.csproj",
+      "FairPlayCombined.WebApi\\FairPlayCombined.WebApi.csproj",
       "FairPlayCombinedDb\\FairPlayCombinedDb.sqlproj",
       "FairPlayCombinedSln.AppHost\\FairPlayCombinedSln.AppHost.csproj",
       "FairPlayCombinedSln.ServiceDefaults\\FairPlayCombinedSln.ServiceDefaults.csproj",

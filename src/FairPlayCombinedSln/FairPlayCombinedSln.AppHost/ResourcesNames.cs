@@ -14,5 +14,6 @@
         public static string FairPlaySocialTestDataGenerator => "fairplaysocialtestdatagenerator";
         public static string FairPlayCombinedLocalizationGenerator => "fairplaycombinedlocalizationgenerator";
         public static string FairPlayBudget => nameof(Projects.FairPlayBudget).ToLower();
+        public static string FairPlayWebApi => "fairplaywebapi";
     }
 }
