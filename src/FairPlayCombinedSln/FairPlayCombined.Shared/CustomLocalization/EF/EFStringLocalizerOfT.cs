@@ -3,6 +3,7 @@ using FairPlayCombined.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System.Globalization;
 
 namespace FairPlayCombined.Shared.CustomLocalization.EF
@@ -16,7 +17,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
     /// </remarks>
     /// <param name="dbContextFactory"></param>
     public class EFStringLocalizer<T>(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IMemoryCache memoryCache) : IStringLocalizer<T>
+        IMemoryCache memoryCache, ILogger<EFStringLocalizer> efStringLocalizerLogger) : IStringLocalizer<T>
     {
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
             CultureInfo.DefaultThreadCurrentCulture = culture;
-            return new EFStringLocalizer(dbContextFactory, memoryCache);
+            return new EFStringLocalizer(dbContextFactory, memoryCache, efStringLocalizerLogger);
         }
 
         /// <summary>

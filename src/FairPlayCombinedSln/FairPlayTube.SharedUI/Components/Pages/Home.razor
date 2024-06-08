@@ -1,18 +1,21 @@
 ﻿@page "/"
 @implements IAsyncDisposable
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
+@using Microsoft.Extensions.Localization
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject IAzureVideoIndexerService azureVideoIndexerService
 @inject IVideoInfoService videoInfoService
 @inject NavigationManager navigationManager
+@inject IStringLocalizer<Home> localizer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>@localizer[HomeTextKey]</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
@@ -110,4 +113,9 @@
         this.cancellationTokenSource.Dispose();
         return ValueTask.CompletedTask;
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue:"Home")]
+    public const string HomeTextKey = "HomeText";
+    #endregion
 }

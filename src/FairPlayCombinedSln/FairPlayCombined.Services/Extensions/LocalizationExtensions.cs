@@ -1,7 +1,9 @@
 ﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Shared.CustomLocalization.EF;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,12 @@ namespace FairPlayCombined.Services.Extensions
 {
     public static class LocalizationExtensions
     {
+        public static void AddDatabaseDrivenLocalization(this IServiceCollection services)
+        {
+            services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
+            services.AddTransient<IStringLocalizer, EFStringLocalizer>();
+            services.AddLocalization();
+        }
         public async static Task UseDatabaseDrivenLocalization(this WebApplication app)
         {
             try

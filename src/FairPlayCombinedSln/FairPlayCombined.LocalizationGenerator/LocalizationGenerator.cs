@@ -123,6 +123,12 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
 
     private static List<Type> GetTypesToCheck()
     {
+        var fairplayTubeAssembly = typeof(FairPlayTube.Components.App).Assembly;
+        var fairplayTubeTypes = fairplayTubeAssembly.GetTypes();
+
+        var fairplayTubeSharedUIAssembly = typeof(FairPlayTube.SharedUI._Imports).Assembly;
+        var fairplayTubeSharedUITypes = fairplayTubeSharedUIAssembly.GetTypes();
+
         var adminPortalAssembly = typeof(ApplicationUser).Assembly;
         var adminPortalTypes = adminPortalAssembly.GetTypes();
 
@@ -141,6 +147,8 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         var commonAssembly = typeof(Common.Constants).Assembly;
         var commonTypes = commonAssembly.GetTypes();
         List<Type> typesToCheck = [
+            .. fairplayTubeTypes,
+            .. fairplayTubeSharedUITypes,
             .. adminPortalTypes,
             .. modelsTypes,
             .. serverSideServicesTypes,

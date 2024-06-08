@@ -24,9 +24,7 @@ if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
 {
     builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
 }
-builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
-builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
-builder.Services.AddLocalization();
+builder.Services.AddDatabaseDrivenLocalization();
 builder.Services.AddControllers();
 
 // Add services to the container.

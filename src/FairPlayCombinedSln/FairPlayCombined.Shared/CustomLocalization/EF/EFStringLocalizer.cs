@@ -3,6 +3,7 @@ using FairPlayCombined.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System.Globalization;
 
 namespace FairPlayCombined.Shared.CustomLocalization.EF
@@ -14,8 +15,10 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
     /// Initializes <see cref="EFStringLocalizer"/>
     /// </remarks>
     /// <param name="dbContextFactory"></param>
+    /// <param name="memoryCache"></param>
+    /// <param name="logger"></param>
     public class EFStringLocalizer(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IMemoryCache memoryCache) : IStringLocalizer
+        IMemoryCache memoryCache, ILogger<EFStringLocalizer> logger) : IStringLocalizer
     {
 
         /// <summary>
@@ -56,7 +59,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
             CultureInfo.DefaultThreadCurrentCulture = culture;
-            return new EFStringLocalizer(dbContextFactory, memoryCache);
+            return new EFStringLocalizer(dbContextFactory, memoryCache, logger);
         }
 
         /// <summary>
@@ -71,6 +74,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
             var result = memoryCache.GetOrCreate<IQueryable<LocalizedString>>(cacheKey,
                 factory =>
                 {
+                    logger.LogInformation("Executing method {MethodName}", nameof(GetAllStrings));
                     factory.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
                     return db.Resource
                 .Include(r => r.Culture)
@@ -86,6 +90,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
             var cacheKey = $"{name}-{CultureInfo.CurrentCulture.Name}";
             var result = memoryCache.GetOrCreate<string?>(cacheKey, factory =>
             {
+                logger.LogInformation("Executing method {MethodName} for resourceL {ResourceName}", nameof(GetString), name);
                 factory.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
                 return db.Resource
                 .Include(r => r.Culture)
