@@ -17,7 +17,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
     /// </remarks>
     /// <param name="dbContextFactory"></param>
     public class EFStringLocalizer<T>(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IMemoryCache memoryCache, ILogger<EFStringLocalizer> efStringLocalizerLogger) : IStringLocalizer<T>
+        IMemoryCache memoryCache, ILogger<EFStringLocalizer> logger) : IStringLocalizer<T>
     {
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
             CultureInfo.DefaultThreadCurrentCulture = culture;
-            return new EFStringLocalizer(dbContextFactory, memoryCache, efStringLocalizerLogger);
+            return new EFStringLocalizer(dbContextFactory, memoryCache, logger);
         }
 
         /// <summary>
@@ -74,6 +74,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
             var result = memoryCache.GetOrCreate<IQueryable<LocalizedString>>(
                 cacheKey, factory =>
                 {
+                    logger.LogInformation("Executing method {MethodName}", nameof(GetAllStrings));
                     factory.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
                     return db.Resource
                     .Include(r => r.Culture)
@@ -91,6 +92,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
             var cacheKey = $"{typeFullName}-{nameof(GetString)}-{name}-{CultureInfo.CurrentCulture.Name}";
             var result = memoryCache.GetOrCreate<string?>(cacheKey, factory =>
             {
+                logger.LogInformation("Executing method {MethodName} for resource {ResourceName}", nameof(GetString), name);
                 factory.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
                 return db.Resource
                     .Include(r => r.Culture)

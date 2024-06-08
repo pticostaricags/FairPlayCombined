@@ -90,7 +90,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
             var cacheKey = $"{name}-{CultureInfo.CurrentCulture.Name}";
             var result = memoryCache.GetOrCreate<string?>(cacheKey, factory =>
             {
-                logger.LogInformation("Executing method {MethodName} for resourceL {ResourceName}", nameof(GetString), name);
+                logger.LogInformation("Executing method {MethodName} for resource {ResourceName}", nameof(GetString), name);
                 factory.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
                 return db.Resource
                 .Include(r => r.Culture)

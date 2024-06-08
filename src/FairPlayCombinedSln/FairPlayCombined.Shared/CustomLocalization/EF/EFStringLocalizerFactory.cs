@@ -27,7 +27,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
             var localizerType = typeof(EFStringLocalizer<>)
                 .MakeGenericType(resourceSource);
             var instance = Activator.CreateInstance(localizerType, dbContextFactory,
-                memoryCache) as IStringLocalizer;
+                memoryCache, efStringLocalizerLogger) as IStringLocalizer;
             return instance!;
         }
 

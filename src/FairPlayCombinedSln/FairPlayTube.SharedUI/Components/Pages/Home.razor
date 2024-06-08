@@ -14,8 +14,11 @@
 @inject IVideoInfoService videoInfoService
 @inject NavigationManager navigationManager
 @inject IStringLocalizer<Home> localizer
+@attribute [StreamRendering(enabled:true)]
 
 <PageTitle>@localizer[HomeTextKey]</PageTitle>
+
+<h1>@localizer[HomeTextKey]</h1>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 

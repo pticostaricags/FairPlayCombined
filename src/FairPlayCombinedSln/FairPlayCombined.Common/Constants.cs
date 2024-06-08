@@ -90,7 +90,7 @@
         }
         public static class CacheConfiguration
         {
-            public static readonly TimeSpan LocalizationCacheDuration = TimeSpan.FromSeconds(5);
+            public static readonly TimeSpan LocalizationCacheDuration = TimeSpan.FromMinutes(30);
         }
     }
 }
