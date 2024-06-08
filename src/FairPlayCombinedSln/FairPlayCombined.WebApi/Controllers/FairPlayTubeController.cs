@@ -11,10 +11,9 @@ namespace FairPlayCombined.WebApi.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class FairPlayTubeController(
-    ILogger<FairPlayTubeController> _logger,
+    ILogger<FairPlayTubeController> logger,
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory, 
-    IOpenAIService openAIService, 
-    HttpClient httpClient) : ControllerBase
+    IOpenAIService openAIService) : ControllerBase
 {
 
     [HttpPost("[action]")]
@@ -22,6 +21,8 @@ public class FairPlayTubeController(
         [FromBody] CreateThumbnailRequestModel createThumbnailRequestModel,
         CancellationToken cancellationToken)
     {
+        logger.LogInformation("Executing {MethodName} with {Data}",
+            nameof(CreateThumbnailAsync), createThumbnailRequestModel);
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         var promptInfo = await dbContext.Prompt
             .SingleAsync(p => p.PromptName == Common.Constants.PromptsNames.CreateYouTubeThumbnail,

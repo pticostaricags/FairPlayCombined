@@ -3,7 +3,7 @@
 @inject NavigationManager NavigationManager
 
 <FluentNavLink Href="/">Home</FluentNavLink>
-<AuthorizeView>
+<AuthorizeView Roles="@FairPlayCombined.Common.Constants.RoleName.SystemAdmin">
     <Authorized>
         <FluentNavGroup Title="Accounts">
             <FluentNavLink Href="Account/Manage">Manage Account</FluentNavLink>
@@ -34,6 +34,11 @@
         <FluentNavGroup Title="AI">
             <FluentNavLink Href="/AIAssistant">AI Assistant</FluentNavLink>
         </FluentNavGroup>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView>
+    <Authorized>
         <div class="nav-item px-3">
             <form action="Account/Logout" method="post">
                 <AntiforgeryToken />
