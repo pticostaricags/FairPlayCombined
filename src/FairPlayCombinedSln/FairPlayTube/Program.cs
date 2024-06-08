@@ -75,14 +75,6 @@ builder.Services.AddAuthentication(configureOptions =>
     configureOptions.DefaultScheme = IdentityConstants.ApplicationScheme;
     configureOptions.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
-    .AddGoogle(options =>
-    {
-        options.ClientId = googleAuthClientSecretInfo.installed!.client_id!;
-        options.ClientSecret = googleAuthClientSecretInfo.installed.client_secret!;
-        options.Scope.Add(YouTubeService.Scope.YoutubeUpload);
-        options.Scope.Add(YouTubeService.Scope.YoutubeForceSsl);
-        options.Scope.Add(YouTubeService.Scope.Youtubepartner);
-    })
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
 

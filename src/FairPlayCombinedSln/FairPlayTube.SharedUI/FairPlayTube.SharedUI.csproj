@@ -32,4 +32,10 @@
     <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Components\Pages\Creator\MyProcessingVideos.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
 </Project>
