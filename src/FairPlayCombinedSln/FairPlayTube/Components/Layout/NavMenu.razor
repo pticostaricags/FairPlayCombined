@@ -3,23 +3,11 @@
 @inject NavigationManager NavigationManager
 
 <FluentNavLink Href="/">Home</FluentNavLink>
+
 <AuthorizeView>
     <Authorized>
         <FluentNavGroup Title="Accounts" Expanded="@ShouldExpandAccountsGroup">
             <FluentNavLink Href="/Account/Manage">Manage Account</FluentNavLink>
-        </FluentNavGroup>
-        <FluentNavGroup Title="Users" Expanded="@ShouldExpandUsersGroup">
-            <FluentNavLink Href="/User/MyConversations">My Conversations</FluentNavLink>
-            <FluentNavLink Href="/User/MyFunds">My Funds</FluentNavLink>
-        </FluentNavGroup>
-        <FluentNavGroup Title="Creators" Expanded="@ShouldExpandCreatorsGroup">
-            <FluentNavLink Href="/Creator/UploadMyVideo">Upload My Video</FluentNavLink>
-            <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos">My Videos</FluentNavLink>
-            <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyProcessingVideos">My Processing Videos</FluentNavLink>
-            <FluentNavLink Href="/Creator/NewVideoRecommendation">Recommendations</FluentNavLink>
-            <FluentNavLink Href="/Creator/NewVideoScript">New Video Script</FluentNavLink>
-            <FluentNavLink Href="/Creator/CreateVideoPlan">Create Video Plan</FluentNavLink>
-            <FluentNavLink Href="/Creator/MyVideoPlans">My Video Plans</FluentNavLink>
         </FluentNavGroup>
         <div class="nav-item px-3">
             <form action="Account/Logout" method="post">
@@ -35,6 +23,22 @@
         <FluentNavLink Href="Account/Register">Register</FluentNavLink>
         <FluentNavLink Href="Account/Login">Login</FluentNavLink>
     </NotAuthorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="@Constants.RoleName.BasicPlanUser">
+    <FluentNavGroup Title="Users" Expanded="@ShouldExpandUsersGroup">
+        <FluentNavLink Href="/User/MyConversations">My Conversations</FluentNavLink>
+        <FluentNavLink Href="/User/MyFunds">My Funds</FluentNavLink>
+    </FluentNavGroup>
+    <FluentNavGroup Title="Creators" Expanded="@ShouldExpandCreatorsGroup">
+        <FluentNavLink Href="/Creator/UploadMyVideo">Upload My Video</FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos">My Videos</FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyProcessingVideos">My Processing Videos</FluentNavLink>
+        <FluentNavLink Href="/Creator/NewVideoRecommendation">Recommendations</FluentNavLink>
+        <FluentNavLink Href="/Creator/NewVideoScript">New Video Script</FluentNavLink>
+        <FluentNavLink Href="/Creator/CreateVideoPlan">Create Video Plan</FluentNavLink>
+        <FluentNavLink Href="/Creator/MyVideoPlans">My Video Plans</FluentNavLink>
+    </FluentNavGroup>
 </AuthorizeView>
 
 
