@@ -13,5 +13,10 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.Providers
         {
             return "AT User";
         }
+
+        public bool IsAuthenticatedWithGoogle()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

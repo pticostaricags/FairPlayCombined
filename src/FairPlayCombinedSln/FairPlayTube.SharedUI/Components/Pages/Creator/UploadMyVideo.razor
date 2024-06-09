@@ -59,7 +59,10 @@
         <FluentLabel Typo="Typography.Subject">Video Id (YouTube)</FluentLabel>
         <InputText class="@ThemeConfiguration.GenericControls.DefaultCss"
                    @bind-Value="this.createVideoInfoModel.YouTubeVideoId" style="width:100%;"></InputText>
-        <FluentButton Type="ButtonType.Button" OnClick="this.OpenSearchYouTubeVideoDialog">Search My YouTube Videos</FluentButton>
+        @if (this.IsAuthenticatedWithGoogle)
+        {
+            <FluentButton Type="ButtonType.Button" OnClick="this.OpenSearchYouTubeVideoDialog">Search My YouTube Videos</FluentButton>
+        }
     </div>
     <div>
         <FluentButton Type="ButtonType.Submit">Save</FluentButton>
@@ -84,9 +87,11 @@
     private long bytesSent { get; set; }
     private bool showSearchYoutubeVideosDialog { get; set; } = false;
     private FluentDialog? searchYoutubeVideosDialog { get; set; }
+    private bool IsAuthenticatedWithGoogle { get; set; }
 
     protected override void OnInitialized()
     {
+        this.IsAuthenticatedWithGoogle = this.userProviderService.IsAuthenticatedWithGoogle();
         this.createVideoInfoModel.AccountId = Guid.Parse(azureVideoIndexerServiceConfiguration.AccountId!);
         this.createVideoInfoModel.Location = azureVideoIndexerServiceConfiguration.Location;
         this.createVideoInfoModel.VideoVisibilityId = 1;

@@ -1,5 +1,6 @@
 ﻿using FairPlayCombined.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -18,6 +19,14 @@ namespace FairPlayCombined.Services.Common
                 var claimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
                 result = httpContextAccessor!.HttpContext!.User.Claims.Single(p => p.Type == claimType)!.Value!;
             }
+            return result;
+        }
+
+        public bool IsAuthenticatedWithGoogle()
+        {
+            var result = httpContextAccessor.HttpContext!.User
+                .HasClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod",
+                "Google");
             return result;
         }
     }

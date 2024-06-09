@@ -15,5 +15,10 @@ namespace FairPlaySocial.TestDataGenerator.Providers
         {
             return UserId;
         }
+
+        public bool IsAuthenticatedWithGoogle()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

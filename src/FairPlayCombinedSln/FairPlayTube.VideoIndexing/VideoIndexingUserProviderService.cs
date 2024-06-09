@@ -12,4 +12,9 @@ internal class VideoIndexingUserProviderService : IUserProviderService
     {
         return nameof(VideoIndexingUserProviderService);
     }
+
+    public bool IsAuthenticatedWithGoogle()
+    {
+        throw new NotImplementedException();
+    }
 }
