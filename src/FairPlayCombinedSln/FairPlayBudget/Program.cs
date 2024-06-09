@@ -10,12 +10,9 @@ using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlayBudget;
-using FairPlayCombined.Shared.CustomLocalization.EF;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -41,7 +41,7 @@ namespace FairPlayCombined.Services.Extensions
                     keyCredential: new Azure.AzureKeyCredential(azureOpenAIServiceConfiguration.Key!));
                 return openAIClient;
             });
-            services.AddTransient<IAzureOpenAIService, AzureOpenAIService>(sp => 
+            services.AddTransient<IAzureOpenAIService, AzureOpenAIService>(sp =>
             {
                 OpenAIClient openAIClient = sp.GetRequiredService<OpenAIClient>();
                 AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration =

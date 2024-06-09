@@ -1,6 +1,5 @@
 ﻿namespace FairPlayCombined.Models.AzureVideoIndexer
 {
-#pragma warning disable IDE1006 // Naming Styles
     public class IndexVideoFromUriParameters
     {
 
@@ -13,4 +12,3 @@
         public string? IndexingPreset { get; set; } = "Default";
     }
 }
-#pragma warning restore IDE1006 // Naming Styles

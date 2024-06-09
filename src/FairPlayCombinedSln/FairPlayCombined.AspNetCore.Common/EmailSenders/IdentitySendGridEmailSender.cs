@@ -3,16 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.AspNetCore.Common.EmailSenders
 {
-    public class IdentitySendGridEmailSender(SendGridClient sendGridClient, 
+    public class IdentitySendGridEmailSender(SendGridClient sendGridClient,
         ILogger<IdentitySendGridEmailSender> logger, string emailFrom) : IEmailSender<ApplicationUser>
     {
         public async Task SendConfirmationLinkAsync(ApplicationUser user, string email, string confirmationLink)
@@ -36,7 +30,7 @@ namespace FairPlayCombined.AspNetCore.Common.EmailSenders
                 """
                 };
                 mailMessage.AddTo(email);
-                var response = 
+                var response =
                 await sendGridClient.SendEmailAsync(mailMessage);
                 var responseStrong = await response.Body.ReadAsStringAsync();
                 logger.LogError("Response: {ResponseMessage}", responseStrong);

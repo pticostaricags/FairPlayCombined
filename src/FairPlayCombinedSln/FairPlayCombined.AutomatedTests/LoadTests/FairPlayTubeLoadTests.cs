@@ -1,9 +1,7 @@
 ﻿using Aspire.Hosting.Testing;
 using FairPlayCombined.Common;
 using FairPlayCombinedSln.AppHost;
-using Microsoft.Playwright;
 using NBomber.CSharp;
-using System.Net;
 
 namespace FairPlayCombined.AutomatedTests.LoadTests
 {
@@ -31,7 +29,7 @@ namespace FairPlayCombined.AutomatedTests.LoadTests
             string url = endpoint.AllocatedEndpoint!.UriString.TrimEnd('/');
 
             using var playwright = await Microsoft.Playwright.Playwright.CreateAsync();
-            await using var browser = await playwright.Chromium.LaunchAsync(options:new()
+            await using var browser = await playwright.Chromium.LaunchAsync(options: new()
             {
                 Headless = false,
                 Timeout = 0
@@ -39,13 +37,13 @@ namespace FairPlayCombined.AutomatedTests.LoadTests
 
             TimeSpan duration = TimeSpan.FromSeconds(30);
             var scenario =
-            NBomber.CSharp.Scenario.Create(nameof(Test_Load_HomePage_Hundred_UsersAsync), 
+            NBomber.CSharp.Scenario.Create(nameof(Test_Load_HomePage_Hundred_UsersAsync),
             async context =>
             {
                 var page = await browser.NewPageAsync();
-                var response = await page.GotoAsync(url, options:new()
+                var response = await page.GotoAsync(url, options: new()
                 {
-                    Timeout=0
+                    Timeout = 0
                 });
                 Assert.AreEqual(url, page.Url.TrimEnd('/'));
                 await page.GetByRole(Microsoft.Playwright.AriaRole.Heading,
@@ -60,7 +58,7 @@ namespace FairPlayCombined.AutomatedTests.LoadTests
             })
                 .WithLoadSimulations(
                 Simulation.KeepConstant(
-                    copies:totalUsers,
+                    copies: totalUsers,
                     during: duration));
 
             var stats = NBomberRunner

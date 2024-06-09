@@ -10,7 +10,6 @@ using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
-using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlaySocial.ClientServices;
 using FairPlaySocial.Components;
 using FairPlaySocial.Components.Account;
@@ -19,8 +18,6 @@ using FairPlaySocial.MinimalApiEndpoints;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 

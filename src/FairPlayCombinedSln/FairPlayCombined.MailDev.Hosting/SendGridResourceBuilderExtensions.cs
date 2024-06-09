@@ -22,7 +22,6 @@ public static class SendGridResourceBuilderExtensions
     public static IResourceBuilder<SendGridResource> AddSendGrid(
         this IDistributedApplicationBuilder builder,
         string name,
-        int? httpPort = null,
         int? smtpPort = null)
     {
         // The AddResource method is a core API within .NET Aspire and is
@@ -38,8 +37,8 @@ public static class SendGridResourceBuilderExtensions
                 var smtpPort = builder.Configuration["SMTPPort"];
                 var smtpUsername = builder.Configuration["STMPUsername"];
                 var smtpPassword = builder.Configuration["SMTPPassword"];
-                callback.EnvironmentVariables.Add("STMPUsername", smtpUsername);
-                callback.EnvironmentVariables.Add("SMTPPassword", smtpPassword);
+                callback.EnvironmentVariables.Add("STMPUsername", smtpUsername!);
+                callback.EnvironmentVariables.Add("SMTPPassword", smtpPassword!);
                 callback.EnvironmentVariables.Add("ConnectionStrings__smtp",
                     $"smtp://{smtpServer}:{smtpPort}");
             })

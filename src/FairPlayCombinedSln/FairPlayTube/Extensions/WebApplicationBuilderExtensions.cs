@@ -18,7 +18,7 @@ namespace FairPlayTube.Extensions
             GoogleAuthClientSecretInfo googleAuthClientSecretInfo)
         {
             builder.Services.AddTransient<ICultureService, CultureService>();
-            builder.Services.AddTransient<AzureVideoIndexerServiceConfiguration>(sp =>
+            builder.Services.AddSingleton<AzureVideoIndexerServiceConfiguration>(sp =>
             {
                 var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
                 var azureVideoIndexerAccountIdEntity = dbContext.ConfigurationSecret.SingleOrDefault(p => p.Name ==

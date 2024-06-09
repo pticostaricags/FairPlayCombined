@@ -6,11 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SendGrid;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Services.Extensions
 {
@@ -20,20 +15,20 @@ namespace FairPlayCombined.Services.Extensions
         {
             if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
             {
-                builder.Services.AddTransient<SendGridClient>(sp => 
+                builder.Services.AddTransient<SendGridClient>(sp =>
                 {
                     var apiKey = builder.Configuration["SMTPPassword"];
                     SendGridClient sendGridClient = new(apiKey: apiKey);
                     return sendGridClient;
                 });
-                builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentitySendGridEmailSender>(sp => 
+                builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentitySendGridEmailSender>(sp =>
                 {
                     SendGridClient sendGridClient = sp.GetRequiredService<SendGridClient>();
-                    ILogger<IdentitySendGridEmailSender> logger = 
+                    ILogger<IdentitySendGridEmailSender> logger =
                     sp.GetRequiredService<ILogger<IdentitySendGridEmailSender>>();
                     string emailFrom = builder.Configuration["EmailFrom"]!;
-                    IdentitySendGridEmailSender identitySendGridEmailSender = 
-                    new(sendGridClient,logger, emailFrom);
+                    IdentitySendGridEmailSender identitySendGridEmailSender =
+                    new(sendGridClient, logger, emailFrom);
                     return identitySendGridEmailSender;
                 });
             }

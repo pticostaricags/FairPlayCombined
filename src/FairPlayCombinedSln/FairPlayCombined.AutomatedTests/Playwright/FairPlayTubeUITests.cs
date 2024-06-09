@@ -2,11 +2,6 @@
 using FairPlayCombined.Common;
 using FairPlayCombinedSln.AppHost;
 using Microsoft.Playwright.MSTest;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.AutomatedTests.Playwright
 {
@@ -20,9 +15,9 @@ namespace FairPlayCombined.AutomatedTests.Playwright
                 .CreateAsync<Projects.FairPlayCombinedSln_AppHost>();
             await using var app = await appHost.BuildAsync();
             await app.StartAsync();
-            
+
             var webResource = appHost.Resources
-                .Single(p =>p.Name == ResourcesNames.FairPlayTube);
+                .Single(p => p.Name == ResourcesNames.FairPlayTube);
             var endpoint = webResource
                 .Annotations
                 .OfType<EndpointAnnotation>()

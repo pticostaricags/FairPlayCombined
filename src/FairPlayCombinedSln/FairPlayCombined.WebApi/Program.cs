@@ -4,7 +4,6 @@ using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,17 +45,17 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen(setupAction => 
+builder.Services.AddSwaggerGen(setupAction =>
 {
     setupAction.AddServer(server: new()
     {
         Url = "/"
     });
     setupAction.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["controller"]}_{e.HttpMethod}");
-    setupAction.SwaggerDoc("v1", new() 
+    setupAction.SwaggerDoc("v1", new()
     {
-        Version="v1",
-        Title=nameof(FairPlayCombined.WebApi)
+        Version = "v1",
+        Title = nameof(FairPlayCombined.WebApi)
 
     });
 });

@@ -7,7 +7,6 @@ using FairPlayShop.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
