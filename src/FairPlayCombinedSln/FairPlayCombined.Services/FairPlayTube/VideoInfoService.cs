@@ -149,6 +149,8 @@ namespace FairPlayCombined.Services.FairPlayTube
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.VideoInfo
+                .AsNoTracking()
+                .AsSplitQuery()
                 .Where(p => p.VideoIndexStatusId == (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed)
                 .Select(p => new VideoInfoModel
                 {
