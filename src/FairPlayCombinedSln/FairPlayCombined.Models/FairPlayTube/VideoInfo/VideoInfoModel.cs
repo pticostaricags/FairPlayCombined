@@ -32,5 +32,6 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
         public string? PublishedUrl { get; set; }
         public string? PublishedOnString { get; set; }
         public int? VideoIndexingProcessingPercentage { get; set; }
+        public DateTimeOffset RowCreationDateTime { get; set; }
     }
 }
