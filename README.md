@@ -1,7 +1,5 @@
 # FairPlayCombined
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+## Quality
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pticostaricags_FairPlayCombined&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined)
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=pticostaricags_FairPlayCombined)
 
@@ -51,6 +49,11 @@ FairPlayCombined is a project evaluating technologies in preview, for that reaso
 **Technologies in preview(or using experimental functionality):**
 * .NET 9
 * Semantic Kernel
+
+## Contributions 
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## Contributors ✨
 
