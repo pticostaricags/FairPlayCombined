@@ -65,24 +65,31 @@ bool addFairPlayTube = Convert.ToBoolean(builder.Configuration["AddFairPlayTube"
 if (addFairPlayTube)
 {
     var fairPlayTube =
-    builder.AddProject<Projects.FairPlayTube>(ResourcesNames.FairPlayTube)
-    .WithExternalHttpEndpoints()
-    .WithEndpoint(port: 19390, targetPort: 19390, scheme: "tcp")
-    .WithEnvironment(callback =>
+    builder.AddProject<Projects.FairPlayTube>(ResourcesNames.FairPlayTube);
+
+    if (builder.ExecutionContext.IsPublishMode)
     {
-        callback.EnvironmentVariables.Add("GoogleAuthClientId", googleAuthClientId);
-        callback.EnvironmentVariables.Add("GoogleAuthProjectId", googleAuthProjectId);
-        callback.EnvironmentVariables.Add("GoogleAuthUri", googleAuthUri);
-        callback.EnvironmentVariables.Add("GoogleAuthTokenUri", googleAuthTokenUri);
-        callback.EnvironmentVariables.Add("GoogleAuthProviderCertUri", googleAuthProviderCertUri);
-        callback.EnvironmentVariables.Add("GoogleAuthClientSecret", googleAuthClientSecret);
-        callback.EnvironmentVariables.Add("GoogleAuthRedirectUri", googleAuthRedirectUri);
+        fairPlayTube = fairPlayTube
+            .WithExternalHttpEndpoints()
+            .WithEndpoint(port: 19390, targetPort: 19390, scheme: "tcp");
+    }
+    fairPlayTube = fairPlayTube
+        .WithEnvironment(callback =>
+        {
+            callback.EnvironmentVariables.Add("GoogleAuthClientId", googleAuthClientId);
+            callback.EnvironmentVariables.Add("GoogleAuthProjectId", googleAuthProjectId);
+            callback.EnvironmentVariables.Add("GoogleAuthUri", googleAuthUri);
+            callback.EnvironmentVariables.Add("GoogleAuthTokenUri", googleAuthTokenUri);
+            callback.EnvironmentVariables.Add("GoogleAuthProviderCertUri", googleAuthProviderCertUri);
+            callback.EnvironmentVariables.Add("GoogleAuthClientSecret", googleAuthClientSecret);
+            callback.EnvironmentVariables.Add("GoogleAuthRedirectUri", googleAuthRedirectUri);
 
-        callback.EnvironmentVariables.Add("PayPalClientId", paypalClientId);
-        callback.EnvironmentVariables.Add("PayPalClientSecret", paypalClientSecret);
+            callback.EnvironmentVariables.Add("PayPalClientId", paypalClientId);
+            callback.EnvironmentVariables.Add("PayPalClientSecret", paypalClientSecret);
 
-    })
+        })
     .WithReference(fairPlayDbResource);
+
     if (!useSendGrid)
         fairPlayTube = fairPlayTube.WithReference(mailDev!);
     else
