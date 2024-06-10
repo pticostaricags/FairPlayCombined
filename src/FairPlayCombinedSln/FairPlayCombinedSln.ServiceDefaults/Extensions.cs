@@ -31,13 +31,6 @@ public static class Extensions
             // Turn on service discovery by default
             http.AddServiceDiscovery();
         });
-#pragma warning disable S125 
-        // Uncomment the following to restrict the allowed schemes for service discovery.
-        // builder.Services.Configure<ServiceDiscoveryOptions>(options =>
-        // {
-        //     options.AllowedSchemes = ["https"];
-        // });
-#pragma warning restore S125 
         builder.Services.AddMemoryCache();
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
@@ -101,20 +94,6 @@ public static class Extensions
                 tracing => tracing.AddOtlpExporter());
         }
 
-        // Uncomment the following lines to enable the Prometheus exporter
-        // (requires the OpenTelemetry.Exporter.Prometheus.AspNetCore package)
-        // builder.Services.AddOpenTelemetry()
-        //    .WithMetrics(metrics => metrics.AddPrometheusExporter());
-
-        // Uncomment the following lines to enable the Azure Monitor exporter 
-        // (requires the Azure.Monitor.OpenTelemetry.AspNetCore package)
-        //if (!string.IsNullOrEmpty(
-        //    builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
-        //{
-        //    builder.Services.AddOpenTelemetry()
-        //       .UseAzureMonitor();
-        //}
-
         return builder;
     }
 
@@ -129,8 +108,6 @@ public static class Extensions
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        // Uncomment the following line to enable the Prometheus endpoint (requires the OpenTelemetry.Exporter.Prometheus.AspNetCore package)
-        // app.MapPrometheusScrapingEndpoint();
 
         // All health checks must pass for app to be considered ready to accept traffic after starting
         app.MapHealthChecks("/health", new HealthCheckOptions()
