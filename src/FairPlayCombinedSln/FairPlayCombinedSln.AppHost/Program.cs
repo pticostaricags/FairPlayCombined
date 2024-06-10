@@ -67,6 +67,7 @@ if (addFairPlayTube)
     var fairPlayTube =
     builder.AddProject<Projects.FairPlayTube>(ResourcesNames.FairPlayTube)
     .WithExternalHttpEndpoints()
+    .WithEndpoint(port: 19390, targetPort: 19390, scheme: "tcp")
     .WithEnvironment(callback =>
     {
         callback.EnvironmentVariables.Add("GoogleAuthClientId", googleAuthClientId);
