@@ -132,7 +132,7 @@ namespace FairPlayCombined.Services.Common
                     new ChatRequestSystemMessage("You are an expert translator. Your jobs is to translate the text I give you." +
                     "My requests will be in json format with the following properties:" +
                     $"{nameof(TranslationRequest.OriginalText)}, {nameof(TranslationRequest.SourceLocale)}, {nameof(TranslationRequest.DestLocale)}" +
-                    "Your responses must be in json format with the properties I'll give you. Return the json only, avoid adding your system messages or separators. JSON properties:" +
+                    "Your responses must be in json format, in UTF-8, with the properties I'll give you. Return the json only, avoid adding the code block indicator ```json. JSON properties:" +
                     $"{nameof(TranslationResponse.SourceLocale)}, {nameof(TranslationResponse.DestLocale)}, {nameof(TranslationResponse.TranslatedText)}"),
                     new ChatRequestUserMessage(JsonSerializer.Serialize(translationRequest))
                 }
