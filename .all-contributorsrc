@@ -1,0 +1,28 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "efonsecab",
+      "name": "Eduardo Fonseca",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3481899?v=4",
+      "profile": "https://allmylinks.com/efonsecabcr",
+      "contributions": [
+        "infra",
+        "test",
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "FairPlayCombined",
+  "projectOwner": "pticostaricags"
+}
