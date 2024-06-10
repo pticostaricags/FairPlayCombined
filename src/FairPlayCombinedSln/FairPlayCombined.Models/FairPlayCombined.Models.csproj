@@ -22,7 +22,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="6.0.0-preview.4.21253.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="9.0.0-preview.4.24267.1" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.25.1.91650">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.26.0.92422">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
