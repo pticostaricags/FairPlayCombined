@@ -1,12 +1,15 @@
 ﻿using Azure.AI.OpenAI;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.AzureOpenAI;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry.Logs;
 using System.Text.Json;
 
 namespace FairPlayCombined.Services.Common
 {
     public class AzureOpenAIService(OpenAIClient openAIClient,
-        AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration) : IAzureOpenAIService
+        AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration,
+        ILogger<AzureOpenAIService> logger) : IAzureOpenAIService
     {
         public enum ArticleMood
         {
@@ -138,6 +141,7 @@ namespace FairPlayCombined.Services.Common
                 chatCompletionsOptions, cancellationToken: cancellationToken);
             var contentResponse =
             response.Value.Choices[0].Message.Content;
+            logger.LogInformation("Content Response: {ContentResponse}", contentResponse);
             TranslationResponse? translationResponse =
                 JsonSerializer.Deserialize<TranslationResponse>(contentResponse);
             return translationResponse;
