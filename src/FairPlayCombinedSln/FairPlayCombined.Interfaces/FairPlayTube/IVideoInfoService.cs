@@ -16,6 +16,11 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
             PaginationRequest paginationRequest,
             string userId,
             CancellationToken cancellationToken);
+
+        Task<PaginationOfT<VideoInfoModel>> GetPaginatedNotCompletedVideoInfobyUserIdAsync(
+            PaginationRequest paginationRequest,
+            string userId,
+            CancellationToken cancellationToken);
         Task<PaginationOfT<VideoInfoModel>> GetPaginatedCompletedVideoInfoAsync(
             PaginationRequest paginationRequest,
             CancellationToken cancellationToken);

@@ -4,5 +4,6 @@
     {
         string? GetCurrentUserId();
         string? GetAccessToken();
+        bool IsAuthenticatedWithGoogle();
     }
 }

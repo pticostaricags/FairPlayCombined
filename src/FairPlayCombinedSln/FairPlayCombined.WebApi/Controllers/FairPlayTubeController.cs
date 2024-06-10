@@ -1,6 +1,5 @@
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces.Common;
-using FairPlayCombined.Models.OpenAI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -12,7 +11,7 @@ namespace FairPlayCombined.WebApi.Controllers;
 [Route("[controller]")]
 public class FairPlayTubeController(
     ILogger<FairPlayTubeController> logger,
-    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory, 
+    IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
     IOpenAIService openAIService) : ControllerBase
 {
 
@@ -26,16 +25,16 @@ public class FairPlayTubeController(
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         var promptInfo = await dbContext.Prompt
             .SingleAsync(p => p.PromptName == Common.Constants.PromptsNames.CreateYouTubeThumbnail,
-            cancellationToken:cancellationToken);
-        StringBuilder fullPrompt=new();
+            cancellationToken: cancellationToken);
+        StringBuilder fullPrompt = new();
         fullPrompt.AppendLine(promptInfo.BaseText);
         fullPrompt.AppendLine("**** USER INPUT ****");
         fullPrompt.AppendLine($"Video Title: {createThumbnailRequestModel.VideoTitle}");
         fullPrompt.AppendLine($"Video Captions: {createThumbnailRequestModel.VideoCaptions}");
         fullPrompt.AppendLine("**** USER INPUT ****");
         var result = await openAIService.GenerateDallE3ImageAsync(fullPrompt.ToString(),
-            cancellationToken:cancellationToken);
-        return Ok(new 
+            cancellationToken: cancellationToken);
+        return Ok(new
         {
             Image_Url = result!.data![0].url
         });

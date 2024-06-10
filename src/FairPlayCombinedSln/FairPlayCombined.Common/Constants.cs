@@ -44,6 +44,7 @@
                 {
                     public const string MyVideos = $"/Creator/{nameof(MyVideos)}";
                     public const string MyVideoViewers = $"/Creator/{nameof(MyVideoViewers)}";
+                    public const string MyProcessingVideos = $"/Creator/{nameof(MyProcessingVideos)}";
                 }
             }
         }
@@ -90,7 +91,7 @@
         }
         public static class CacheConfiguration
         {
-            public static readonly TimeSpan LocalizationCacheDuration = TimeSpan.FromSeconds(5);
+            public static readonly TimeSpan LocalizationCacheDuration = TimeSpan.FromMinutes(30);
         }
     }
 }

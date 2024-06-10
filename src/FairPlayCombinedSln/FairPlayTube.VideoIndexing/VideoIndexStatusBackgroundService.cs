@@ -14,7 +14,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
     {
         try
         {
-            TimeSpan timeToWait = TimeSpan.FromMinutes(1);
+            TimeSpan timeToWait = TimeSpan.FromMinutes(5);
             var scope = serviceScopeFactory.CreateScope();
             var dbContextFactory = scope.ServiceProvider
                 .GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();

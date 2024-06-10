@@ -8,7 +8,6 @@ using FairPlayCombined.Interfaces.FairPlayDating;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlayDating;
-using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayDating.Components;
 using FairPlayDating.Components.Account;
 using FairPlayDating.Data;
@@ -19,7 +18,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using System.Net.Mime;
 
@@ -34,9 +32,7 @@ builder.Services.AddHealthChecks().AddCheck<FairPlayDatingHealthCheck>(nameof(Fa
     failureStatus: HealthStatus.Unhealthy,
     tags: ["live"]);
 builder.Services.AddFluentUIComponents();
-builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
-builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
-builder.Services.AddLocalization();
+builder.Services.AddDatabaseDrivenLocalization();
 builder.Services.AddControllers();
 
 // Add services to the container.

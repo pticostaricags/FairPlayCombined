@@ -4,6 +4,7 @@
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
@@ -12,6 +13,8 @@
 @using FairPlayTube.SharedUI.Components.Spinners
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
+@attribute [StreamRendering(enabled:true)]
+
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
@@ -25,6 +28,8 @@
 
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
     <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+        <PropertyColumn Title="Published Date" Property="@(p=>p.RowCreationDateTime)" IsDefaultSortColumn="true" 
+            InitialSortDirection="@SortDirection.Descending"></PropertyColumn>
         <PropertyColumn Class="multiline-text" Property="@(p=>p.Name)"></PropertyColumn>
         <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
@@ -90,23 +95,32 @@
 
     protected override void OnInitialized()
     {
-        this.IsBusy = true;
         ItemsProvider = async req =>
         {
+            this.IsBusy = true;
             StateHasChanged();
             PaginationRequest paginationRequest = new()
                 {
                     PageSize = paginationState.ItemsPerPage,
-                    StartIndex = req.StartIndex
+                    StartIndex = req.StartIndex,
+                    SortingItems = req.GetSortByProperties()
+                                                .Select(p => new SortingItem()
+                                                {
+                                                    PropertyName = p.PropertyName,
+                                                    SortType = (p.Direction == SortDirection.Ascending) ?
+                                                    SortType.Ascending
+                                                    :
+                                                    SortType.Descending
+                                                }).ToArray()
                 };
             var items = await videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(paginationRequest,
                 userId: this.userProviderService!.GetCurrentUserId()!,
             this.cancellationTokenSource.Token);
+            this.IsBusy = false;
             StateHasChanged();
             var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
             return result;
         };
-        this.IsBusy = false;
     }
 
     private void OnViewMyVideoViewersClicked(VideoInfoModel videoInfoModel)

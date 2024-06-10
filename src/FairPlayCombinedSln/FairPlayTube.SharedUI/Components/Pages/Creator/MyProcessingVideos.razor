@@ -1,0 +1,88 @@
+﻿@attribute [Route(Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyProcessingVideos)]
+@implements IDisposable
+
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
+
+@using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.Pagination
+@using FairPlayTube.SharedUI.Components.Spinners
+
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+@attribute [StreamRendering(enabled:true)]
+
+@inject IJSRuntime jsRuntime
+@inject IVideoInfoService videoInfoService
+@inject IUserProviderService userProviderService
+@inject NavigationManager navigationManager
+@inject IOpenAIService openAIService
+@inject IVideoCaptionsService videoCaptionsService
+@inject IVideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
+<PageTitle>Home</PageTitle>
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<div class="@ThemeConfiguration.Grids.GridContainerCss">
+    <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+        <PropertyColumn Class="multiline-text" Property="@(p=>p.Name)"></PropertyColumn>
+        <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
+        <PropertyColumn Title="Processing %" Property="@(p=>p.VideoIndexingProcessingPercentage)"></PropertyColumn>
+    </FluentDataGrid>
+</div>
+<FluentPaginator State="this.paginationState"></FluentPaginator>
+
+@code
+{
+    private bool IsBusy { get; set; }
+    private GridItemsProvider<VideoInfoModel>? ItemsProvider;
+    private readonly PaginationState paginationState = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private readonly System.Timers.Timer timer = new()
+        {
+            AutoReset = false,
+            Interval = TimeSpan.FromMinutes(1).TotalMilliseconds
+        };
+
+    protected override void OnInitialized()
+    {
+        this.IsBusy = true;
+        ItemsProvider = async req =>
+        {
+            StateHasChanged();
+            PaginationRequest paginationRequest = new()
+                {
+                    PageSize = paginationState.ItemsPerPage,
+                    StartIndex = req.StartIndex
+                };
+            var items = await videoInfoService.GetPaginatedNotCompletedVideoInfobyUserIdAsync(paginationRequest,
+                userId: this.userProviderService!.GetCurrentUserId()!,
+            this.cancellationTokenSource.Token);
+            StateHasChanged();
+            var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
+            return result;
+        };
+        this.IsBusy = false;
+        timer.Elapsed += async (sender, args) =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
+            });
+        };
+        timer.Start();
+    }
+
+    void IDisposable.Dispose()
+    {
+        timer.Stop();
+        timer.Dispose();
+        this.cancellationTokenSource.Dispose();
+    }
+}

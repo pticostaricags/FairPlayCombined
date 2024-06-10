@@ -3,7 +3,6 @@ using FairPlayAdminPortal.Components;
 using FairPlayAdminPortal.Components.Account;
 using FairPlayAdminPortal.Data;
 using FairPlayCombined.Common;
-using FairPlayCombined.Common.EmailSenders;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
@@ -13,13 +12,10 @@ using FairPlayCombined.Services.AI.Extensions;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlayDating;
-using FairPlayCombined.Shared.CustomLocalization.EF;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
-using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,9 +25,7 @@ if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
     builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
 }
 builder.Services.AddFluentUIComponents();
-builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
-builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
-builder.Services.AddLocalization();
+builder.Services.AddDatabaseDrivenLocalization();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

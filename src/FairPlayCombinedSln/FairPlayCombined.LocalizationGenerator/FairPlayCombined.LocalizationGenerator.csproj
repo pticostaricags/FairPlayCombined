@@ -15,5 +15,7 @@
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
     <ProjectReference Include="..\FairPlayDating\FairPlayDating.csproj" />
     <ProjectReference Include="..\FairPlaySocial\FairPlaySocial.csproj" />
+    <ProjectReference Include="..\FairPlayTube.SharedUI\FairPlayTube.SharedUI.csproj" />
+    <ProjectReference Include="..\FairPlayTube\FairPlayTube.csproj" />
   </ItemGroup>
 </Project>

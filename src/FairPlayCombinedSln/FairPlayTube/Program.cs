@@ -8,7 +8,6 @@ using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
-using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayTube.Components;
 using FairPlayTube.Components.Account;
 using FairPlayTube.Data;
@@ -22,10 +21,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
-using System.Net.Mail;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,9 +47,7 @@ builder.Services.AddResponseCompression(opts =>
           ["application/octet-stream"]);
 });
 builder.Services.AddSignalR();
-builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
-builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
-builder.Services.AddLocalization();
+builder.Services.AddDatabaseDrivenLocalization();
 builder.Services.AddControllers();
 // Add services to the container.
 builder.Services.AddRazorComponents()

@@ -1,5 +1,6 @@
 ﻿namespace FairPlayCombined.Models.AzureVideoIndexer
 {
+#pragma warning disable IDE1006 // Naming Styles
     public class UploadVideoResponseModel
     {
         public string? accountId { get; set; }

@@ -10,12 +10,9 @@ using FairPlayCombined.Interfaces;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlayBudget;
-using FairPlayCombined.Shared.CustomLocalization.EF;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,9 +21,7 @@ if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
 {
     builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);
 }
-builder.Services.AddTransient<IStringLocalizerFactory, EFStringLocalizerFactory>();
-builder.Services.AddTransient<IStringLocalizer, EFStringLocalizer>();
-builder.Services.AddLocalization();
+builder.Services.AddDatabaseDrivenLocalization();
 builder.Services.AddControllers();
 
 // Add services to the container.
