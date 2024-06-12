@@ -50,6 +50,9 @@ FairPlayCombined is a project evaluating technologies in preview, for that reaso
 * .NET 9
 * Semantic Kernel
 
+### Survey
+Are you an entrepreneur exploring Open-Source platforms foro your startup? Let us know about you in the following [Survey](https://us11.list-manage.com/survey?u=8b82a1556651be6b90abb39cb&id=9f3b59683c&attribution=false)
+
 ## Contributions 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
