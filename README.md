@@ -51,7 +51,7 @@ FairPlayCombined is a project evaluating technologies in preview, for that reaso
 * Semantic Kernel
 
 ### Survey
-Are you an entrepreneur exploring Open-Source platforms foro your startup? Let us know about you in the following [Survey](https://us11.list-manage.com/survey?u=8b82a1556651be6b90abb39cb&id=9f3b59683c&attribution=false)
+Are you an entrepreneur exploring Open-Source platforms for your startup? Let us know about you in the following [Survey](https://us11.list-manage.com/survey?u=8b82a1556651be6b90abb39cb&id=9f3b59683c&attribution=false)
 
 ## Contributions 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
