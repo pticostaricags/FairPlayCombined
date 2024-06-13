@@ -11,7 +11,7 @@ Click the links to help improve quality
 
 ### Repository Objective
 FairPlayCombined is a suite of Open-Source Enterprise-Grade High-Quality software focused on helping entrepreneurs reduce costs in Software Development.
-**We build the software, you build your buisness with it**
+**We build the software, you build your business with it**
 
 FairPlayCombined make use of cutting edge technologies that faciliate Software Development, including .NET Aspire a cloud-raedy stack which helps you build high-quality distributed platforms easier than ever before.
 You can check more about .NET Aspire here: https://learn.microsoft.com/en-us/dotnet/aspire/
