@@ -218,7 +218,9 @@ namespace FairPlayCombined.Services.FairPlayTube
                 VideoVisibilityId = p.VideoVisibilityId,
                 ThumbnailUrl = p.ThumbnailUrl,
                 YouTubeVideoId = p.YouTubeVideoId,
-                PublishedUrl = p.PublishedUrl
+                PublishedUrl = p.PublishedUrl,
+                VideoTopics = p.VideoTopic.Select(p=>p.Topic).ToArray(),
+                VideoKeywords = p.VideoKeyword.Select(p=>p.Keyword).ToArray()
             })
             .SingleOrDefaultAsync(cancellationToken);
             return result;
