@@ -7,6 +7,7 @@ using FairPlayCombined.Models.AzureOpenAI;
 using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.Services.Extensions
 {
@@ -46,7 +47,9 @@ namespace FairPlayCombined.Services.Extensions
                 OpenAIClient openAIClient = sp.GetRequiredService<OpenAIClient>();
                 AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration =
                 sp.GetRequiredService<AzureOpenAIServiceConfiguration>();
-                AzureOpenAIService azureOpenAIService = new(openAIClient, azureOpenAIServiceConfiguration);
+                var logger = sp.GetRequiredService<ILogger<AzureOpenAIService>>();
+                AzureOpenAIService azureOpenAIService = new(openAIClient, 
+                    azureOpenAIServiceConfiguration, logger);
                 return azureOpenAIService;
             });
             return services;

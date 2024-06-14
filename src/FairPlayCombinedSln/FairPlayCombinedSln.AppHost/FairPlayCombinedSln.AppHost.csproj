@@ -18,8 +18,9 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Azure" Version="8.0.1" />
     <PackageReference Include="Aspire.Hosting.SqlServer" Version="8.0.1" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.25.1.91650">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.27.0.93347">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
