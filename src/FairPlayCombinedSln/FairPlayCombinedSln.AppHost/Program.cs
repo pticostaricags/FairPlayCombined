@@ -204,7 +204,7 @@ builder.AddProject<Projects.FairPlayCombined_WebApi>(ResourcesNames.FairPlayWebA
 
 if (Convert.ToBoolean(builder.Configuration["DeployAzureVideoIndexer"]))
 {
-    builder.AddAzureVideoIndexer(name:"tstvi2900");
+    builder.AddAzureVideoIndexer(name:"mainvideoindexer");
 }
 
 await builder.Build().RunAsync();
