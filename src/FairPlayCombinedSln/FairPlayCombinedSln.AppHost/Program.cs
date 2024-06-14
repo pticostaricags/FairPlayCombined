@@ -1,4 +1,5 @@
 using FairPlayCombinedSln.AppHost;
+using FairPlayCombinedSln.AppHost.Extensions.AzureVideoIndexer;
 using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -200,6 +201,11 @@ if (addFairPlayBudget)
 builder.AddProject<Projects.FairPlayCombined_WebApi>(ResourcesNames.FairPlayWebApi)
 .WithExternalHttpEndpoints()
 .WithReference(fairPlayDbResource);
+
+if (Convert.ToBoolean(builder.Configuration["DeployAzureVideoIndexer"]))
+{
+    builder.AddAzureVideoIndexer(name:"tstvi2900");
+}
 
 await builder.Build().RunAsync();
 
