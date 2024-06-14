@@ -7,8 +7,24 @@ let player = null;
 let dotNetHelper = null;
 let currentSessionGuid = null
 function initializeVideoJsPlayer(playerElementId, sessionGuid, dotNetObjectReference) {
+    timer = null;
+    totalTime = 0;
+    lastPlayerTime = null;
+    player = null;
+    dotNetHelper = null;
+    currentSessionGuid = null
+
     dotNetHelper = dotNetObjectReference;
-    player = videojs(playerElementId, {});
+
+    player = videojs.getPlayer(playerElementId);
+    if (player) {
+        player.dispose();
+    }
+    player = videojs(playerElementId,
+        {
+            controls: true,
+            autoplay: true
+        });
     lastPlayerTime = player.currentTime();
     currentSessionGuid = sessionGuid;
     player.on('play', startPlaying);
