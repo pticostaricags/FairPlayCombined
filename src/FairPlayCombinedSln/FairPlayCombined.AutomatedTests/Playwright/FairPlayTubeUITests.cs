@@ -23,7 +23,8 @@ namespace FairPlayCombined.AutomatedTests.Playwright
                 .OfType<EndpointAnnotation>()
                 .Single(p => p.Name == "http");
             await this.Page.GotoAsync(endpoint.AllocatedEndpoint!.UriString);
-            await Expect(this.Page).ToHaveURLAsync(endpoint.AllocatedEndpoint.UriString);
+            await Expect(this.Page)
+                .ToHaveURLAsync($"{endpoint.AllocatedEndpoint!.UriString}/");
             await this.Page.GetByRole(Microsoft.Playwright.AriaRole.Heading,
                 new()
                 {
