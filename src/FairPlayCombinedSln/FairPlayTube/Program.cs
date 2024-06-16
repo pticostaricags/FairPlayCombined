@@ -178,6 +178,20 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
 app.MapHub<UserMessageNotificationHub>(Constants.Routes.SignalRHubs.UserMessageHub);
+app.MapGet("/api/photo/{photoId}",
+    async (
+        [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        [FromRoute] long photoId,
+        CancellationToken cancellationToken) =>
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await dbContext.Photo
+        .AsNoTracking()
+        .AsSplitQuery()
+        .Where(p => p.PhotoId == photoId)
+        .SingleOrDefaultAsync(cancellationToken);
+        return TypedResults.File(result!.PhotoBytes, System.Net.Mime.MediaTypeNames.Image.Png);
+    });
 app.MapGet("/api/video/{videoId}/thumbnail",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,

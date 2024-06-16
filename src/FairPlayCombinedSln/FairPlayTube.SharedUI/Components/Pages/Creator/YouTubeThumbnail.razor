@@ -47,7 +47,7 @@
             @foreach (var singleItem in this.Items.Items)
             {
                 <div>
-                    <img width="400" src="@($"data:image/png;base64, {Convert.ToBase64String(singleItem.PhotoBytes!)}")" />
+                    <img src="@($"/api/photo/{singleItem.PhotoId}")" width="400" />
                 </div>
             }
         </FluentStack>
