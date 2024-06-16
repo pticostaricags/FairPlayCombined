@@ -47,7 +47,7 @@
             @foreach (var singleItem in this.Items.Items)
             {
                 <div>
-                    <img src="@($"/api/photo/{singleItem.PhotoId}")" width="400" />
+                    <img loading="lazy" src="@($"/api/photo/{singleItem.PhotoId}")" width="400" />
                 </div>
             }
         </FluentStack>
@@ -110,6 +110,7 @@
             var items = await videoThumbnailService.GetPaginatedVideoThumbnailByVideoInfoIdAsync(
                 this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
             this.Items = items;
+            await this.paginationState.SetTotalItemCountAsync(items.TotalItems);
         }
         catch (Exception ex)
         {
@@ -159,6 +160,7 @@
                         VideoInfoId = this.VideoInfoId.Value
                     }, this.cancellationTokenSource.Token
             );
+            this.paginationRequest.StartIndex = 0;
             await LoadDataAsync();
         }
         catch (Exception ex)
@@ -174,7 +176,7 @@
 
     private async Task OnCurrentPageIndexChangedAsync(int pageNumber)
     {
-        this.paginationRequest.StartIndex = pageNumber;
+        this.paginationRequest.StartIndex = pageNumber * this.paginationRequest.PageSize;
         await LoadDataAsync();
     }
 
