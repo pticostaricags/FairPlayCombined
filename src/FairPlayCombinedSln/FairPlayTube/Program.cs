@@ -23,6 +23,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
+using System.IO.Compression;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -190,7 +194,23 @@ app.MapGet("/api/photo/{photoId}",
         .AsSplitQuery()
         .Where(p => p.PhotoId == photoId)
         .SingleOrDefaultAsync(cancellationToken);
-        return TypedResults.File(result!.PhotoBytes, System.Net.Mime.MediaTypeNames.Image.Png);
+        using MemoryStream inputStream = new(result!.PhotoBytes);
+        using var image = await Image.LoadAsync(inputStream, cancellationToken);
+        image.Mutate(operation => 
+        {
+            operation.Resize(options:new()
+            {
+                Size=new(width:1024, height:768),
+                Mode = ResizeMode.Max
+            });
+        });
+        using MemoryStream outputStream = new();
+        PngEncoder pngEncoder = new()
+        {
+            CompressionLevel = PngCompressionLevel.BestCompression
+        };
+        await image.SaveAsPngAsync(outputStream, pngEncoder, cancellationToken);
+        return TypedResults.File(outputStream.ToArray(), System.Net.Mime.MediaTypeNames.Image.Png);
     });
 app.MapGet("/api/video/{videoId}/thumbnail",
     async (
