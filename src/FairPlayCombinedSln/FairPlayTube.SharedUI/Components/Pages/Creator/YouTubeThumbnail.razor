@@ -14,7 +14,7 @@
 @using FairPlayTube.SharedUI.Components.Spinners
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
-@attribute [StreamRendering(enabled:true)]
+@attribute [StreamRendering(enabled: true)]
 
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
@@ -41,12 +41,18 @@
                   OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
 </div>
 <div>
-    <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-        <TemplateColumn>
-            <img width="400" src="@($"data:image/png;base64, {Convert.ToBase64String(context.PhotoBytes!)}")" />
-        </TemplateColumn>
-    </FluentDataGrid>
-    <FluentPaginator State="this.paginationState"></FluentPaginator>
+    @if (this.Items?.Items?.Length > 0)
+    {
+        <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
+            @foreach (var singleItem in this.Items.Items)
+            {
+                <div>
+                    <img width="400" src="@($"data:image/png;base64, {Convert.ToBase64String(singleItem.PhotoBytes!)}")" />
+                </div>
+            }
+        </FluentStack>
+    }
+    <FluentPaginator State="this.paginationState" CurrentPageIndexChanged="OnCurrentPageIndexChangedAsync"></FluentPaginator>
 </div>
 <FluentDivider Role="DividerRole.Separator"></FluentDivider>
 <div>
@@ -68,26 +74,16 @@
     [Parameter]
     public long? VideoInfoId { get; set; }
     private bool IsBusy { get; set; }
-    private GridItemsProvider<VideoThumbnailModel>? ItemsProvider;
+    private PaginationOfT<VideoThumbnailModel>? Items;
     private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private string? GeneratedYouTubeThumbnailUri { get; set; }
-    private string? RevisedPrompt { get; set; }
-
-    protected override void OnInitialized()
-    {
-        ItemsProvider = async req =>
+    PaginationRequest paginationRequest = new()
         {
-            this.IsBusy = true;
-            StateHasChanged();
-            PaginationRequest paginationRequest = new()
-                {
-                    PageSize = paginationState.ItemsPerPage,
-                    StartIndex = req.StartIndex,
-                    SortingItems = new SortingItem[]
+            PageSize = Constants.Pagination.PageSize,
+            StartIndex = 0,
+            SortingItems = new SortingItem[]
                     {
                         new SortingItem()
                         {
@@ -95,14 +91,35 @@
                             SortType = SortType.Descending
                         }
                     }
-                };
+        };
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private string? GeneratedYouTubeThumbnailUri { get; set; }
+    private string? RevisedPrompt { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
             var items = await videoThumbnailService.GetPaginatedVideoThumbnailByVideoInfoIdAsync(
                 this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
-            var result = GridItemsProviderResult.From<VideoThumbnailModel>(items!.Items!, items.TotalItems);
+            this.Items = items;
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
             this.IsBusy = false;
             StateHasChanged();
-            return result;
-        };
+        }
     }
 
     private async Task OnCreateNewThumbnailClickedAsync()
@@ -133,7 +150,7 @@
                     Filename = $"Video-{this.VideoInfoId}-thumbnail.jpg",
                     Name = $"Video-{this.VideoInfoId}-thumbnail",
                     PhotoBytes = await this.httpClient.GetByteArrayAsync(this.GeneratedYouTubeThumbnailUri,
-                                                        this.cancellationTokenSource.Token)
+                                                                    this.cancellationTokenSource.Token)
                 }, this.cancellationTokenSource.Token);
             await this.videoThumbnailService.CreateVideoThumbnailAsync(
                 new FairPlayCombined.Models.FairPlayTube.VideoThumbnail.CreateVideoThumbnailModel()
@@ -142,7 +159,7 @@
                         VideoInfoId = this.VideoInfoId.Value
                     }, this.cancellationTokenSource.Token
             );
-            await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
+            await LoadDataAsync();
         }
         catch (Exception ex)
         {
@@ -153,6 +170,12 @@
             this.IsBusy = false;
             StateHasChanged();
         }
+    }
+
+    private async Task OnCurrentPageIndexChangedAsync(int pageNumber)
+    {
+        this.paginationRequest.StartIndex = pageNumber;
+        await LoadDataAsync();
     }
 
     void IDisposable.Dispose()
