@@ -12,6 +12,7 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoThumbnail
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
+@using System.Collections.Concurrent
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @attribute [StreamRendering(enabled: true)]
@@ -26,6 +27,7 @@
 @inject IToastService toastService
 @inject IPhotoService photoService
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
 <PageTitle>
     Video Thumbnail
 </PageTitle>
@@ -47,7 +49,17 @@
             @foreach (var singleItem in this.Items.Items)
             {
                 <div>
-                    <img loading="lazy" src="@($"/api/photo/{singleItem.PhotoId}")" width="400" />
+                    @if (!this.PagePhotos.ContainsKey(singleItem.PhotoId))
+                    {
+                        <FluentCard class="card-padding">
+                            <FluentSkeleton Shape="SkeletonShape.Circle"></FluentSkeleton>
+                        <FluentProgressRing></FluentProgressRing>
+                        </FluentCard>
+                    }
+                    else
+                    {
+                        <img loading="lazy" src="@(this.PagePhotos[singleItem.PhotoId])" width="400" />
+                    }
                 </div>
             }
         </FluentStack>
@@ -75,6 +87,7 @@
     public long? VideoInfoId { get; set; }
     private bool IsBusy { get; set; }
     private PaginationOfT<VideoThumbnailModel>? Items;
+    private ConcurrentDictionary<long, string> PagePhotos = new();
     private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
@@ -119,7 +132,19 @@
         finally
         {
             this.IsBusy = false;
+            this.PagePhotos.Clear();
             StateHasChanged();
+            if (this.Items?.Items?.Length > 0)
+            {
+                foreach (var singleItem in this.Items.Items)
+                {
+                    string requestUrl = $"{navigationManager.BaseUri}api/photo/{singleItem.PhotoId}";
+                    var result = await httpClient.GetByteArrayAsync(requestUrl, this.cancellationTokenSource.Token);
+                    string base64String = Convert.ToBase64String(result);
+                    this.PagePhotos.TryAdd(singleItem.PhotoId, $"data:image/png;base64, {base64String}");
+                    StateHasChanged();
+                }
+            }
         }
     }
 
@@ -151,7 +176,7 @@
                     Filename = $"Video-{this.VideoInfoId}-thumbnail.jpg",
                     Name = $"Video-{this.VideoInfoId}-thumbnail",
                     PhotoBytes = await this.httpClient.GetByteArrayAsync(this.GeneratedYouTubeThumbnailUri,
-                                                                    this.cancellationTokenSource.Token)
+                                                                        this.cancellationTokenSource.Token)
                 }, this.cancellationTokenSource.Token);
             await this.videoThumbnailService.CreateVideoThumbnailAsync(
                 new FairPlayCombined.Models.FairPlayTube.VideoThumbnail.CreateVideoThumbnailModel()
