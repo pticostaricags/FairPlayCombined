@@ -1,5 +1,5 @@
 ﻿@page "/Creator/YouTubeThumbnail/{VideoInfoId:long}"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -134,16 +134,21 @@
             this.IsBusy = false;
             this.PagePhotos.Clear();
             StateHasChanged();
-            if (this.Items?.Items?.Length > 0)
+            await LoadImagesBase64Async();
+        }
+    }
+
+    private async Task LoadImagesBase64Async()
+    {
+        if (this.Items?.Items?.Length > 0)
+        {
+            foreach (var singleItem in this.Items.Items)
             {
-                foreach (var singleItem in this.Items.Items)
-                {
-                    string requestUrl = $"{navigationManager.BaseUri}api/photo/{singleItem.PhotoId}";
-                    var result = await httpClient.GetByteArrayAsync(requestUrl, this.cancellationTokenSource.Token);
-                    string base64String = Convert.ToBase64String(result);
-                    this.PagePhotos.TryAdd(singleItem.PhotoId, $"data:image/png;base64, {base64String}");
-                    StateHasChanged();
-                }
+                string requestUrl = $"{navigationManager.BaseUri}api/photo/{singleItem.PhotoId}";
+                var result = await httpClient.GetByteArrayAsync(requestUrl, this.cancellationTokenSource.Token);
+                string base64String = Convert.ToBase64String(result);
+                this.PagePhotos.TryAdd(singleItem.PhotoId, $"data:image/png;base64, {base64String}");
+                StateHasChanged();
             }
         }
     }
@@ -205,8 +210,9 @@
         await LoadDataAsync();
     }
 
-    void IDisposable.Dispose()
+    public async ValueTask DisposeAsync()
     {
+        await this.cancellationTokenSource.CancelAsync();
         this.cancellationTokenSource.Dispose();
     }
 }
