@@ -48,12 +48,12 @@
         <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
             @foreach (var singleItem in this.Items.Items)
             {
-                <div>
+                <div style="width:400px;">
                     @if (!this.PagePhotos.ContainsKey(singleItem.PhotoId))
                     {
-                        <FluentCard class="card-padding">
+                        <FluentCard class="card-padding" Width="400">
                             <FluentSkeleton Shape="SkeletonShape.Circle"></FluentSkeleton>
-                        <FluentProgressRing></FluentProgressRing>
+                            <FluentProgressRing></FluentProgressRing>
                         </FluentCard>
                     }
                     else
@@ -176,7 +176,7 @@
                     Filename = $"Video-{this.VideoInfoId}-thumbnail.jpg",
                     Name = $"Video-{this.VideoInfoId}-thumbnail",
                     PhotoBytes = await this.httpClient.GetByteArrayAsync(this.GeneratedYouTubeThumbnailUri,
-                                                                        this.cancellationTokenSource.Token)
+                                                                            this.cancellationTokenSource.Token)
                 }, this.cancellationTokenSource.Token);
             await this.videoThumbnailService.CreateVideoThumbnailAsync(
                 new FairPlayCombined.Models.FairPlayTube.VideoThumbnail.CreateVideoThumbnailModel()
