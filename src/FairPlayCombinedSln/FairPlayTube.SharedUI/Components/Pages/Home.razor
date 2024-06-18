@@ -33,7 +33,11 @@
                     <img src="@($"/api/video/{singleItem.VideoId}/thumbnail")" width="300" />
                 </div>
                 <div>
-                    <FluentLabel Typo="Typography.Subject">@singleItem.Name</FluentLabel>
+                    <FluentLabel Alignment="HorizontalAlignment.Center"
+                                 Typo="Typography.Subject"
+                                 Class="multiline-text" style="width:250px; height:50px;">
+                        @singleItem.Name
+                    </FluentLabel>
                     <FluentLabel Typo="Typography.Body"><strong>Lifetime Sessions:</strong> @singleItem.LifetimeSessions</FluentLabel>
                     <FluentLabel Typo="Typography.Body"><strong>Lifetime Viewers:</strong> @singleItem.LifetimeViewers</FluentLabel>
                     <FluentLabel Typo="Typography.Body"><strong>Watch Time(hh:mm:ss):</strong> @singleItem.LifetimeWatchTime</FluentLabel>
@@ -119,7 +123,7 @@
     }
 
     #region Resource Keys
-    [ResourceKey(defaultValue:"Home")]
+    [ResourceKey(defaultValue: "Home")]
     public const string HomeTextKey = "HomeText";
     #endregion
 }
