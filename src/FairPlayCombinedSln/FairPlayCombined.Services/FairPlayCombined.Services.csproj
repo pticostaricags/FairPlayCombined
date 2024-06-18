@@ -30,7 +30,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.AI.ContentSafety" Version="1.0.0" />
     <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.17" />
-    <PackageReference Include="CsvHelper" Version="32.0.3" />
+    <PackageReference Include="CsvHelper" Version="33.0.0" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.68.0.3421" />
     <PackageReference Include="PayoutsSdk" Version="1.1.1" />
     <PackageReference Include="PayPal" Version="2.0.0-rc2" />
