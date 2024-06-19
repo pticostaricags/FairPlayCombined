@@ -26,6 +26,9 @@ public partial class VideoFaceThumbnail
 
     public long PhotoId { get; set; }
 
+    [StringLength(100)]
+    public string FaceName { get; set; }
+
     [ForeignKey("PhotoId")]
     [InverseProperty("VideoFaceThumbnail")]
     public virtual Photo Photo { get; set; }

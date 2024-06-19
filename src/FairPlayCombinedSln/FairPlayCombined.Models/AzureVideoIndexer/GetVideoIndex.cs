@@ -664,15 +664,13 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         {
             var result = new List<(string PersonName, string ThumbnailFilename)>();
 
-            if (response?.summarizedInsights?.faces != null)
+            if (response?.videos?[0]?.insights?.faces?.Length > 0)
             {
-                foreach (var face in response.summarizedInsights.faces)
+                foreach (var face in response.videos[0].insights!.faces!)
                 {
                     if (!string.IsNullOrEmpty(face?.name) && !string.IsNullOrEmpty(face.thumbnailId))
                     {
-                        // Assuming the thumbnail filename can be derived from thumbnailId
-                        string thumbnailFilename = $"{face.thumbnailId}.jpg"; // Adjust this if the actual filename format is different
-                        result.Add((face.name, thumbnailFilename));
+                        result.Add((face.name, face.thumbnails![0].fileName!));
                     }
                 }
             }

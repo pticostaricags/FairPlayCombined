@@ -107,6 +107,8 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     await azureVideoIndexerService
                     .GetFacesThumbnailsDownloadUrlAsync(completedVideoIndex.id!, 
                     getviTokenResult.AccessToken!, stoppingToken);
+                List<(string PersonName, string ThumbnailFilename)> pairs =
+                        completedVideoIndex!.GetPersonThumbnailPairs();
                 if (!String.IsNullOrWhiteSpace(facesThumbnailsDownloadUrl))
                 {
                     facesThumbnailsDownloadUrl =
@@ -122,15 +124,27 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     MemoryStream entryMemoryStream = new();
                     await entryStream.CopyToAsync(entryMemoryStream, stoppingToken);
                     byte[] fileBytes = entryMemoryStream.ToArray();
-                    singleVideoEntity.VideoFaceThumbnail.Add(new()
+                    string faceName = string.Empty;
+                    foreach (var singlePair in pairs)
                     {
-                        Photo = new()
+                        if (entry.FullName == singlePair.ThumbnailFilename)
                         {
-                            Filename = entry.Name,
-                            Name = Path.GetFileNameWithoutExtension(entry.Name),
-                            PhotoBytes = fileBytes
+                            faceName = singlePair.ThumbnailFilename;
                         }
-                    });
+                    }
+                    if (!String.IsNullOrWhiteSpace(faceName))
+                    {
+                        singleVideoEntity.VideoFaceThumbnail.Add(new()
+                        {
+                            FaceName = faceName,
+                            Photo = new()
+                            {
+                                Filename = entry.Name,
+                                Name = Path.GetFileNameWithoutExtension(entry.Name),
+                                PhotoBytes = fileBytes
+                            }
+                        });
+                    }
                 }
                 InsertInsights(singleVideoEntity, completedVideoIndex);
             }
@@ -194,13 +208,6 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
     private static void InsertInsights(VideoInfo? singleVideoEntity, 
         GetVideoIndexResponseModel? completedVideoIndex)
     {
-        List<(string PersonName, string ThumbnailFilename)> pairs =
-                        completedVideoIndex!.GetPersonThumbnailPairs();
-
-        foreach (var (personName, personFileName) in pairs)
-        {
-            Console.WriteLine($"Person: {personName}, Thumbnail: {personFileName}");
-        }
         if (completedVideoIndex?.summarizedInsights?.topics?.Length > 0)
             foreach (var singleTopic in completedVideoIndex.summarizedInsights.topics)
             {
