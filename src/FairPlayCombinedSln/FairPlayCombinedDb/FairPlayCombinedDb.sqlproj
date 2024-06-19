@@ -47,19 +47,19 @@
     <WarningLevel>4</WarningLevel>
     <TreatTSqlWarningsAsErrors>True</TreatTSqlWarningsAsErrors>
   </PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Enable_Paid_Tests|AnyCPU' ">
-		<OutputPath>bin\Debug_Enable_Paid_Tests\</OutputPath>
-		<BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-		<Optimize>false</Optimize>
-		<DefineDebug>true</DefineDebug>
-		<DefineTrace>true</DefineTrace>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<TreatTSqlWarningsAsErrors>True</TreatTSqlWarningsAsErrors>
-	</PropertyGroup>	
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Enable_Paid_Tests|AnyCPU' ">
+    <OutputPath>bin\Debug_Enable_Paid_Tests\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatTSqlWarningsAsErrors>True</TreatTSqlWarningsAsErrors>
+  </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
     <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
@@ -177,6 +177,7 @@
     <Build Include="dbo\Tables\UserFunds.sql" />
     <Build Include="FairPlayDating\Profession.sql" />
     <Build Include="FairPlayDating\PersonalityType.sql" />
+    <Build Include="FairPlayTube\Tables\VideoFaceThumbnail.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
@@ -184,8 +185,5 @@
   <ItemGroup>
     <None Include="Scripts\3-FairPlaySocial.sql" />
     <None Include="Scripts\4-FairPlayTube.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <RefactorLog Include="FairPlayCombinedDb.refactorlog" />
   </ItemGroup>
 </Project>

@@ -16,7 +16,7 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public bool isOwned { get; set; }
         public bool isEditable { get; set; }
         public bool isBase { get; set; }
-        public int durationInSeconds { get; set; }
+        public float durationInSeconds { get; set; }
         public string? duration { get; set; }
         public Summarizedinsights? summarizedInsights { get; set; }
         public Video[]? videos { get; set; }
@@ -31,15 +31,15 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public Duration? duration { get; set; }
         public string? thumbnailVideoId { get; set; }
         public string? thumbnailId { get; set; }
-        public object[]? faces { get; set; }
+        public Face[]? faces { get; set; }
         public Keyword[]? keywords { get; set; }
         public Sentiment[]? sentiments { get; set; }
-        public Emotion[]? emotions { get; set; }
+        public object[]? emotions { get; set; }
         public Audioeffect[]? audioEffects { get; set; }
         public Label[]? labels { get; set; }
-        public object[]? framePatterns { get; set; }
+        public Framepattern[]? framePatterns { get; set; }
         public object[]? brands { get; set; }
-        public object[]? namedLocations { get; set; }
+        public Namedlocation[]? namedLocations { get; set; }
         public object[]? namedPeople { get; set; }
         public Statistics? statistics { get; set; }
         public Topic[]? topics { get; set; }
@@ -62,27 +62,37 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
 
     public class Speakertalktolistenratio
     {
-        public int _1 { get; set; }
+        public float _1 { get; set; }
+        public float _2 { get; set; }
     }
 
     public class Speakerlongestmonolog
     {
         public int _1 { get; set; }
+        public int _2 { get; set; }
     }
 
     public class Speakernumberoffragments
     {
         public int _1 { get; set; }
+        public int _2 { get; set; }
     }
 
     public class Speakerwordcount
     {
         public int _1 { get; set; }
+        public int _2 { get; set; }
     }
 
-    public class Keyword
+    public class Face
     {
-        public bool isTranscript { get; set; }
+        public string? videoId { get; set; }
+        public float confidence { get; set; }
+        public object? description { get; set; }
+        public object? title { get; set; }
+        public string? thumbnailId { get; set; }
+        public float seenDuration { get; set; }
+        public float seenDurationRatio { get; set; }
         public int id { get; set; }
         public string? name { get; set; }
         public Appearance[]? appearances { get; set; }
@@ -96,10 +106,11 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public float endSeconds { get; set; }
     }
 
-    public class Sentiment
+    public class Keyword
     {
-        public string? sentimentKey { get; set; }
-        public float seenDurationRatio { get; set; }
+        public bool isTranscript { get; set; }
+        public int id { get; set; }
+        public string? name { get; set; }
         public Appearance1[]? appearances { get; set; }
     }
 
@@ -111,9 +122,9 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public float endSeconds { get; set; }
     }
 
-    public class Emotion
+    public class Sentiment
     {
-        public string? type { get; set; }
+        public string? sentimentKey { get; set; }
         public float seenDurationRatio { get; set; }
         public Appearance2[]? appearances { get; set; }
     }
@@ -159,6 +170,43 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public float endSeconds { get; set; }
     }
 
+    public class Framepattern
+    {
+        public object? displayName { get; set; }
+        public int id { get; set; }
+        public string? name { get; set; }
+        public Appearance5[]? appearances { get; set; }
+    }
+
+    public class Appearance5
+    {
+        public float confidence { get; set; }
+        public string? startTime { get; set; }
+        public string? endTime { get; set; }
+        public float startSeconds { get; set; }
+        public float endSeconds { get; set; }
+    }
+
+    public class Namedlocation
+    {
+        public object? referenceId { get; set; }
+        public object? referenceUrl { get; set; }
+        public float confidence { get; set; }
+        public object? description { get; set; }
+        public float seenDuration { get; set; }
+        public int id { get; set; }
+        public string? name { get; set; }
+        public Appearance6[]? appearances { get; set; }
+    }
+
+    public class Appearance6
+    {
+        public string? startTime { get; set; }
+        public string? endTime { get; set; }
+        public float startSeconds { get; set; }
+        public float endSeconds { get; set; }
+    }
+
     public class Topic
     {
         public object? referenceUrl { get; set; }
@@ -167,10 +215,10 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public float confidence { get; set; }
         public int id { get; set; }
         public string? name { get; set; }
-        public Appearance5[]? appearances { get; set; }
+        public Appearance7[]? appearances { get; set; }
     }
 
-    public class Appearance5
+    public class Appearance7
     {
         public string? startTime { get; set; }
         public string? endTime { get; set; }
@@ -207,9 +255,10 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public string? personModelId { get; set; }
         public object? logoGroupId { get; set; }
         public bool isAdult { get; set; }
+        public object[]? excludedAIs { get; set; }
         public string? publishedUrl { get; set; }
         public object? publishedProxyUrl { get; set; }
-        public string? viewToken { get; set; }
+        public object? viewToken { get; set; }
     }
 
     public class Insights
@@ -224,17 +273,21 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public Ocr[]? ocr { get; set; }
         public Keyword1[]? keywords { get; set; }
         public Topic1[]? topics { get; set; }
+        public Face1[]? faces { get; set; }
         public Label1[]? labels { get; set; }
         public Scene[]? scenes { get; set; }
         public Shot[]? shots { get; set; }
+        public Namedlocation1[]? namedLocations { get; set; }
         public Audioeffect1[]? audioEffects { get; set; }
+        public Detectedobject[]? detectedObjects { get; set; }
         public Sentiment1[]? sentiments { get; set; }
-        public Emotion1[]? emotions { get; set; }
+        public Visualcontentmoderation[]? visualContentModeration { get; set; }
         public Block[]? blocks { get; set; }
+        public Framepattern1[]? framePatterns { get; set; }
         public Speaker[]? speakers { get; set; }
         public Textualcontentmoderation? textualContentModeration { get; set; }
         public Statistics1? statistics { get; set; }
-        public decimal sourceLanguageConfidence { get; set; }
+        public int sourceLanguageConfidence { get; set; }
     }
 
     public class Textualcontentmoderation
@@ -256,22 +309,26 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
 
     public class Speakertalktolistenratio1
     {
-        public int _1 { get; set; }
+        public float _1 { get; set; }
+        public float _2 { get; set; }
     }
 
     public class Speakerlongestmonolog1
     {
         public int _1 { get; set; }
+        public int _2 { get; set; }
     }
 
     public class Speakernumberoffragments1
     {
         public int _1 { get; set; }
+        public int _2 { get; set; }
     }
 
     public class Speakerwordcount1
     {
         public int _1 { get; set; }
+        public int _2 { get; set; }
     }
 
     public class Transcript
@@ -352,16 +409,54 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public string? end { get; set; }
     }
 
+    public class Face1
+    {
+        public int id { get; set; }
+        public string? name { get; set; }
+        public float confidence { get; set; }
+        public object? description { get; set; }
+        public string? thumbnailId { get; set; }
+        public object? title { get; set; }
+        public object? imageUrl { get; set; }
+        public bool highQuality { get; set; }
+        public Thumbnail[]? thumbnails { get; set; }
+        public Instance5[]? instances { get; set; }
+    }
+
+    public class Thumbnail
+    {
+        public string? id { get; set; }
+        public string? fileName { get; set; }
+        public Instance4[]? instances { get; set; }
+    }
+
+    public class Instance4
+    {
+        public string? adjustedStart { get; set; }
+        public string? adjustedEnd { get; set; }
+        public string? start { get; set; }
+        public string? end { get; set; }
+    }
+
+    public class Instance5
+    {
+        public string[]? thumbnailsIds { get; set; }
+        public string? adjustedStart { get; set; }
+        public string? adjustedEnd { get; set; }
+        public string? start { get; set; }
+        public string? end { get; set; }
+    }
+
     public class Label1
     {
         public int id { get; set; }
         public string? name { get; set; }
         public string? referenceId { get; set; }
         public string? language { get; set; }
-        public Instance4[]? instances { get; set; }
+        public Instance6[]? instances { get; set; }
     }
 
-    public class Instance4
+    public class Instance6
     {
         public float confidence { get; set; }
         public string? adjustedStart { get; set; }
@@ -373,10 +468,10 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
     public class Scene
     {
         public int id { get; set; }
-        public Instance5[]? instances { get; set; }
+        public Instance7[]? instances { get; set; }
     }
 
-    public class Instance5
+    public class Instance7
     {
         public string? adjustedStart { get; set; }
         public string? adjustedEnd { get; set; }
@@ -388,16 +483,17 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
     {
         public int id { get; set; }
         public Keyframe[]? keyFrames { get; set; }
-        public Instance7[]? instances { get; set; }
+        public Instance9[]? instances { get; set; }
+        public string[]? tags { get; set; }
     }
 
     public class Keyframe
     {
         public int id { get; set; }
-        public Instance6[]? instances { get; set; }
+        public Instance8[]? instances { get; set; }
     }
 
-    public class Instance6
+    public class Instance8
     {
         public string? thumbnailId { get; set; }
         public string? adjustedStart { get; set; }
@@ -406,8 +502,30 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public string? end { get; set; }
     }
 
-    public class Instance7
+    public class Instance9
     {
+        public string? adjustedStart { get; set; }
+        public string? adjustedEnd { get; set; }
+        public string? start { get; set; }
+        public string? end { get; set; }
+    }
+
+    public class Namedlocation1
+    {
+        public int id { get; set; }
+        public string? name { get; set; }
+        public object? referenceId { get; set; }
+        public object? referenceUrl { get; set; }
+        public object? description { get; set; }
+        public object[]? tags { get; set; }
+        public float confidence { get; set; }
+        public bool isCustom { get; set; }
+        public Instance10[]? instances { get; set; }
+    }
+
+    public class Instance10
+    {
+        public string? instanceSource { get; set; }
         public string? adjustedStart { get; set; }
         public string? adjustedEnd { get; set; }
         public string? start { get; set; }
@@ -418,10 +536,29 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
     {
         public int id { get; set; }
         public string? type { get; set; }
-        public Instance8[]? instances { get; set; }
+        public Instance11[]? instances { get; set; }
     }
 
-    public class Instance8
+    public class Instance11
+    {
+        public float confidence { get; set; }
+        public string? adjustedStart { get; set; }
+        public string? adjustedEnd { get; set; }
+        public string? start { get; set; }
+        public string? end { get; set; }
+    }
+
+    public class Detectedobject
+    {
+        public int id { get; set; }
+        public string? type { get; set; }
+        public string? thumbnailId { get; set; }
+        public string? displayName { get; set; }
+        public string? wikiDataId { get; set; }
+        public Instance12[]? instances { get; set; }
+    }
+
+    public class Instance12
     {
         public float confidence { get; set; }
         public string? adjustedStart { get; set; }
@@ -435,10 +572,10 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public int id { get; set; }
         public float averageScore { get; set; }
         public string? sentimentType { get; set; }
-        public Instance9[]? instances { get; set; }
+        public Instance13[]? instances { get; set; }
     }
 
-    public class Instance9
+    public class Instance13
     {
         public string? adjustedStart { get; set; }
         public string? adjustedEnd { get; set; }
@@ -446,16 +583,16 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public string? end { get; set; }
     }
 
-    public class Emotion1
+    public class Visualcontentmoderation
     {
         public int id { get; set; }
-        public string? type { get; set; }
-        public Instance10[]? instances { get; set; }
+        public float adultScore { get; set; }
+        public float racyScore { get; set; }
+        public Instance14[]? instances { get; set; }
     }
 
-    public class Instance10
+    public class Instance14
     {
-        public float confidence { get; set; }
         public string? adjustedStart { get; set; }
         public string? adjustedEnd { get; set; }
         public string? start { get; set; }
@@ -465,10 +602,27 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
     public class Block
     {
         public int id { get; set; }
-        public Instance11[]? instances { get; set; }
+        public Instance15[]? instances { get; set; }
     }
 
-    public class Instance11
+    public class Instance15
+    {
+        public string? adjustedStart { get; set; }
+        public string? adjustedEnd { get; set; }
+        public string? start { get; set; }
+        public string? end { get; set; }
+    }
+
+    public class Framepattern1
+    {
+        public int id { get; set; }
+        public string? patternType { get; set; }
+        public float confidence { get; set; }
+        public object? displayName { get; set; }
+        public Instance16[]? instances { get; set; }
+    }
+
+    public class Instance16
     {
         public string? adjustedStart { get; set; }
         public string? adjustedEnd { get; set; }
@@ -480,10 +634,10 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
     {
         public int id { get; set; }
         public string? name { get; set; }
-        public Instance12[]? instances { get; set; }
+        public Instance17[]? instances { get; set; }
     }
 
-    public class Instance12
+    public class Instance17
     {
         public string? adjustedStart { get; set; }
         public string? adjustedEnd { get; set; }
@@ -503,5 +657,28 @@ namespace FairPlayCombined.Models.AzureVideoIndexer
         public string? end { get; set; }
     }
 
+
+    public static class VideoIndexerExtensions
+    {
+        public static List<(string PersonName, string ThumbnailFilename)> GetPersonThumbnailPairs(this GetVideoIndexResponseModel response)
+        {
+            var result = new List<(string PersonName, string ThumbnailFilename)>();
+
+            if (response?.summarizedInsights?.faces != null)
+            {
+                foreach (var face in response.summarizedInsights.faces)
+                {
+                    if (!string.IsNullOrEmpty(face?.name) && !string.IsNullOrEmpty(face.thumbnailId))
+                    {
+                        // Assuming the thumbnail filename can be derived from thumbnailId
+                        string thumbnailFilename = $"{face.thumbnailId}.jpg"; // Adjust this if the actual filename format is different
+                        result.Add((face.name, thumbnailFilename));
+                    }
+                }
+            }
+
+            return result;
+        }
+    }
 }
 #pragma warning restore IDE1006 // Naming Styles

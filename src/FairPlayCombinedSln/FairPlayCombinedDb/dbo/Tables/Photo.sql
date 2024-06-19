@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Photo]
 (
 	[PhotoId] BIGINT NOT NULL CONSTRAINT PK_Photo PRIMARY KEY IDENTITY, 
-    [Name] NVARCHAR(50) NOT NULL, 
-    [Filename] NVARCHAR(50) NOT NULL, 
+    [Name] NVARCHAR(100) NOT NULL, 
+    [Filename] NVARCHAR(100) NOT NULL, 
     [PhotoBytes] VARBINARY(MAX) NOT NULL
 )

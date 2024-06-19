@@ -242,6 +242,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoFaceThumbnail]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoIndexerSupportedLanguage]",
          "ObjectType": 0
       },

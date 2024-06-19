@@ -3,6 +3,7 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.AzureVideoIndexer;
 using Microsoft.EntityFrameworkCore;
+using System.IO.Compression;
 using System.Text.Json;
 
 namespace FairPlayTube.VideoIndexing;
@@ -102,6 +103,35 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     stoppingToken);
                 singleVideoEntity.PublishedUrl = completedVideoIndex!.videos![0].publishedUrl;
                 singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
+                var facesThumbnailsDownloadUrl =
+                    await azureVideoIndexerService
+                    .GetFacesThumbnailsDownloadUrlAsync(completedVideoIndex.id!, 
+                    getviTokenResult.AccessToken!, stoppingToken);
+                if (!String.IsNullOrWhiteSpace(facesThumbnailsDownloadUrl))
+                {
+                    facesThumbnailsDownloadUrl =
+                        facesThumbnailsDownloadUrl.Trim('"');
+                }
+                HttpClient httpClient = new();
+                var stream = await httpClient!
+                    .GetStreamAsync(facesThumbnailsDownloadUrl, stoppingToken);
+                ZipArchive archive = new(stream);
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    var entryStream = entry.Open();
+                    MemoryStream entryMemoryStream = new();
+                    await entryStream.CopyToAsync(entryMemoryStream, stoppingToken);
+                    byte[] fileBytes = entryMemoryStream.ToArray();
+                    singleVideoEntity.VideoFaceThumbnail.Add(new()
+                    {
+                        Photo = new()
+                        {
+                            Filename = entry.Name,
+                            Name = Path.GetFileNameWithoutExtension(entry.Name),
+                            PhotoBytes = fileBytes
+                        }
+                    });
+                }
                 InsertInsights(singleVideoEntity, completedVideoIndex);
             }
 
@@ -117,6 +147,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
             var singleVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
                 singleProcessingVideoId, getviTokenResult!.AccessToken!,
                 cancellationToken: stoppingToken);
+
             var videoEntity = await dbContext.VideoInfo.SingleAsync(p => p.VideoId == singleProcessingVideoId,
                 cancellationToken: stoppingToken);
             if (!String.IsNullOrWhiteSpace(singleVideoIndex!.videos![0].processingProgress))
@@ -160,8 +191,16 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
         }
     }
 
-    private static void InsertInsights(VideoInfo? singleVideoEntity, GetVideoIndexResponseModel? completedVideoIndex)
+    private static void InsertInsights(VideoInfo? singleVideoEntity, 
+        GetVideoIndexResponseModel? completedVideoIndex)
     {
+        List<(string PersonName, string ThumbnailFilename)> pairs =
+                        completedVideoIndex!.GetPersonThumbnailPairs();
+
+        foreach (var (personName, personFileName) in pairs)
+        {
+            Console.WriteLine($"Person: {personName}, Thumbnail: {personFileName}");
+        }
         if (completedVideoIndex?.summarizedInsights?.topics?.Length > 0)
             foreach (var singleTopic in completedVideoIndex.summarizedInsights.topics)
             {
