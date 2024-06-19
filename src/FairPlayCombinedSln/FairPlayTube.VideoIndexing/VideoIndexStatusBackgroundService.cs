@@ -132,7 +132,9 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                             faceName = singlePair.ThumbnailFilename;
                         }
                     }
-                    if (!String.IsNullOrWhiteSpace(faceName))
+                    if (!String.IsNullOrWhiteSpace(faceName) && 
+                        !singleVideoEntity.VideoFaceThumbnail
+                        .Any(p=>p.FaceName == faceName))
                     {
                         singleVideoEntity.VideoFaceThumbnail.Add(new()
                         {
