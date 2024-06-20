@@ -16,7 +16,7 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 [Table("VideoDigitalMarketingDailyPosts", Schema = "FairPlayTube")]
-[Index("VideoInfoId", "SocialNetworkName", Name = "IX_VideoDigitalMarketingDailyPosts_SocialNetworkPlan", IsUnique = true)]
+[Index("VideoInfoId", "SocialNetworkName", Name = "IX_VideoDigitalMarketingDailyPosts_SocialNetworkPlan")]
 public partial class VideoDigitalMarketingDailyPosts
 {
     [Key]

@@ -9,4 +9,4 @@
 
 GO
 
-CREATE UNIQUE INDEX [IX_VideoDigitalMarketingDailyPosts_SocialNetworkPlan] ON [FairPlayTube].[VideoDigitalMarketingDailyPosts] ([VideoInfoId], [SocialNetworkName])
+CREATE INDEX [IX_VideoDigitalMarketingDailyPosts_SocialNetworkPlan] ON [FairPlayTube].[VideoDigitalMarketingDailyPosts] ([VideoInfoId], [SocialNetworkName])

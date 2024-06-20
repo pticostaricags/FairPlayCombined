@@ -49,7 +49,7 @@
                           OnClick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
                 <i class="bi bi-list-task"></i>
             </FluentButton>
-            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get New LinkedIn Daily Posts Ideas"
                           OnClick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
                 <i class="bi bi-linkedin"></i>
             </FluentButton>
@@ -167,7 +167,7 @@
 
     private void OnGetLinkedInDailyPostsClicked(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/Creator/VideoDailyPosts/{videoInfoModel.VideoInfoId}");
+        this.navigationManager.NavigateTo($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.CreateVideoDailyPosts}/{videoInfoModel.VideoInfoId}");
     }
 
     private void OnCreateLinkedInArticleClicked(VideoInfoModel videoInfoModel)
