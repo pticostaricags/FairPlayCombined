@@ -1,12 +1,14 @@
-﻿@attribute [Route($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.CreateVideoDailyPosts}/{{VideoInfoId:long}}")]
+﻿@attribute [Route($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.VideoDailyPosts}/{{VideoInfoId:long}}")]
 @implements IDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.FairPlayTube.VideoDigitalMarketingDailyPosts
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
@@ -33,6 +35,24 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
+<div>
+    <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
+                  OnClick="OnCreateVideoDailyPostAsync">Create Video Daily Posts</FluentButton>
+</div>
+
+@if(this.ItemsProvider != null)
+{
+    <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
+        <TemplateColumn Class="multiline-text" Title="Posts">
+            <FluentAccordion>
+                <FluentAccordionItem Expanded="false" Heading="Expand to see the content">
+                    @((MarkupString)context.HtmlVideoDigitalMarketingDailyPostsIdeas!)
+                </FluentAccordionItem>
+            </FluentAccordion>
+        </TemplateColumn>
+    </FluentDataGrid>
+    <FluentPaginator State="@this.paginationState"></FluentPaginator>
+}
 
 <div>
     @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingDailyPostsIdeas))
@@ -51,8 +71,47 @@
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private string? DigitalMarketingDailyPostsIdeas { get; set; }
     private string? RevisedPrompt { get; set; }
+    private GridItemsProvider<VideoDigitalMarketingDailyPostsModel>? ItemsProvider { get; set; }
+    private readonly PaginationState paginationState = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (ItemsProvider is null)
+        {
+            ItemsProvider = async req =>
+            {
+                this.IsBusy = true;
+                StateHasChanged();
+                PaginationRequest paginationRequest = new()
+                {
+                    PageSize = Constants.Pagination.PageSize,
+                    StartIndex = req.StartIndex,
+                    SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName=nameof(VideoDigitalMarketingDailyPostsModel.VideoDigitalMarketingDailyPostsId),
+                            SortType= SortType.Descending
+                        }
+                    }
+                };
+                var items = await this.videoDigitalMarketingDailyPostsService
+                .GetPaginatedVideoDigitalMarketingDailyPostsAsync(paginationRequest,
+                this.cancellationTokenSource.Token);
+                var result = GridItemsProviderResult.From(items!.Items!,
+                items.TotalItems);
+                this.IsBusy = false;
+                StateHasChanged();
+                return result;
+            };
+        }
+    }
+
+    private async Task OnCreateVideoDailyPostAsync()
     {
         try
         {
@@ -78,6 +137,8 @@
                     htmlVideoDigitalMarketingDailyPostsIdeas: this.DigitalMarketingDailyPostsIdeas,
                     socialNetworkName: "LinkedIn",
                     cancellationToken: this.cancellationTokenSource.Token);
+                    await this.paginationState.SetCurrentPageIndexAsync(
+                        this.paginationState.CurrentPageIndex);
             }
         }
         catch (Exception ex)

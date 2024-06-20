@@ -1,11 +1,23 @@
-﻿using FairPlayCombined.DataAccess.Data;
+﻿using FairPlayCombined.Common.GeneratorsAttributes;
+using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Interfaces.FairPlayTube;
+using FairPlayCombined.Models.FairPlayTube.VideoDigitalMarketingDailyPosts;
+using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
-    public class VideoDigitalMarketingDailyPostsService(
-        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory) : BaseService, IVideoDigitalMarketingDailyPostsService
+    [ServiceOfT<
+        CreateVideoDigitalMarketingDailyPostsModel,
+        UpdateVideoDigitalMarketingDailyPostsModel,
+        VideoDigitalMarketingDailyPostsModel,
+        FairPlayCombinedDbContext,
+        VideoDigitalMarketingDailyPosts,
+        PaginationRequest,
+        PaginationOfT<VideoDigitalMarketingDailyPostsModel>
+        >]
+    public partial class VideoDigitalMarketingDailyPostsService : BaseService, IVideoDigitalMarketingDailyPostsService
     {
         public async Task<string?> GetVideoDigitalMarketingDailyPostsAsync(
             long videoInfoId,
