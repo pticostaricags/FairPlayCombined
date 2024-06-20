@@ -15,6 +15,11 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="FairPlayShop\**" />
+    <EmbeddedResource Remove="FairPlayShop\**" />
+    <None Remove="FairPlayShop\**" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\FairPlayCombined.AspNetCore.Common\FairPlayCombined.AspNetCore.Common.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />
     <ProjectReference Include="..\FairPlayCombined.DataAccess\FairPlayCombined.DataAccess.csproj" />
@@ -23,9 +28,6 @@
     <ProjectReference Include="..\FairPlayCombined.Services.Generators\FairPlayCombined.Services.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\FairPlayCombined.Shared\FairPlayCombined.Shared.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FairPlayShop\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.AI.ContentSafety" Version="1.0.0" />

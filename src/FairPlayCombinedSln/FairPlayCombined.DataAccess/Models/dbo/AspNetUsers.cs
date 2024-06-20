@@ -86,6 +86,9 @@ public partial class AspNetUsers
     [InverseProperty("Owner")]
     public virtual ICollection<MonthlyBudgetInfo> MonthlyBudgetInfo { get; set; } = new List<MonthlyBudgetInfo>();
 
+    [InverseProperty("ApplicationUser")]
+    public virtual ICollection<NewVideoRecommendation> NewVideoRecommendation { get; set; } = new List<NewVideoRecommendation>();
+
     [InverseProperty("NotLikedApplicationUser")]
     public virtual ICollection<NotLikedUserProfile> NotLikedUserProfileNotLikedApplicationUser { get; set; } = new List<NotLikedUserProfile>();
 

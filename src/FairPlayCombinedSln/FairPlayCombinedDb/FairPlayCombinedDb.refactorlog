@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="feec6f6f-b2e3-437b-a1cc-59a48abf43e0" ChangeDateTime="06/20/2024 18:50:56">
+    <Property Name="ElementName" Value="[FairPlayTube].[NewVideoRecommendation].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[NewVideoRecommendation]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="NewVideoRecommendationId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="52180108-6a36-4fde-9953-d83e8a407f79" ChangeDateTime="06/20/2024 19:27:45">
+    <Property Name="ElementName" Value="[FairPlayTube].[NewVideoRecommendation].[ApplicationUserID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[NewVideoRecommendation]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ApplicationUserId" />
+  </Operation>
+</Operations>

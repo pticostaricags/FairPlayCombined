@@ -178,6 +178,7 @@
     <Build Include="FairPlayDating\Profession.sql" />
     <Build Include="FairPlayDating\PersonalityType.sql" />
     <Build Include="FairPlayTube\Tables\VideoFaceThumbnail.sql" />
+    <Build Include="FairPlayTube\Tables\NewVideoRecommendation.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
@@ -185,5 +186,8 @@
   <ItemGroup>
     <None Include="Scripts\3-FairPlaySocial.sql" />
     <None Include="Scripts\4-FairPlayTube.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="FairPlayCombinedDb.refactorlog" />
   </ItemGroup>
 </Project>

@@ -8,8 +8,8 @@ using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayBudgetSchema;
 using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
-using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 
 namespace FairPlayCombined.DataAccess.Data;
 
@@ -69,6 +69,8 @@ public partial class FairPlayCombinedDbContext : DbContext
     public virtual DbSet<LikedUserProfile> LikedUserProfile { get; set; }
 
     public virtual DbSet<MonthlyBudgetInfo> MonthlyBudgetInfo { get; set; }
+
+    public virtual DbSet<NewVideoRecommendation> NewVideoRecommendation { get; set; }
 
     public virtual DbSet<NotLikedUserProfile> NotLikedUserProfile { get; set; }
 
@@ -264,6 +266,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.Owner).WithMany(p => p.MonthlyBudgetInfo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_MonthlyBudgetInfo_AspNetUsers");
+        });
+
+        modelBuilder.Entity<NewVideoRecommendation>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.NewVideoRecommendation)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NewVideoRecommendation_AspNetUsers");
         });
 
         modelBuilder.Entity<NotLikedUserProfile>(entity =>
