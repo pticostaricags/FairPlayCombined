@@ -42,7 +42,7 @@
 @if (this.ItemsProvider != null)
 {
     <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
-        <TemplateColumn Class="multiline-text" Title="Posts">
+        <TemplateColumn Class="multiline-text" Title="New Video Recommendation">
             <FluentAccordion>
                 <FluentAccordionItem Expanded="false" Heading="Expand to see the content">
                     @((MarkupString)context.HtmlNewVideoRecommendation!)
@@ -95,8 +95,8 @@
                     }
                     };
                 var items = await this.newVideoRecommendationService
-                .GetPaginatedNewVideoRecommendationAsync(
-                    paginationRequest, this.cancellationTokenSource.Token);
+                .GetPaginatedNewVideoRecommendationForUserIdAsync(
+                    paginationRequest, this.userProviderService.GetCurrentUserId()!, this.cancellationTokenSource.Token);
                 var result = GridItemsProviderResult.From(items!.Items!, items.TotalItems);
                 this.IsBusy = false;
                 StateHasChanged();
@@ -119,7 +119,7 @@
                 {
                     PageSize = 5,
                     SortingItems = new[]
-                                                            {
+                                                                {
                     new SortingItem()
                     {
                         PropertyName=nameof(VideoInfoModel.VideoInfoId),

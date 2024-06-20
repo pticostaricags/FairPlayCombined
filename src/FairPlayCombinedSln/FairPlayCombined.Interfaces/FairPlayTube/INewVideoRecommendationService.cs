@@ -22,5 +22,7 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
         Task DeleteNewVideoRecommendationByIdAsync(long id, CancellationToken cancellationToken);
         Task<PaginationOfT<NewVideoRecommendationModel>> GetPaginatedNewVideoRecommendationAsync(
         PaginationRequest paginationRequest, CancellationToken cancellationToken);
+        Task<PaginationOfT<NewVideoRecommendationModel>> GetPaginatedNewVideoRecommendationForUserIdAsync(
+        PaginationRequest paginationRequest, string userId, CancellationToken cancellationToken);
     }
 }
