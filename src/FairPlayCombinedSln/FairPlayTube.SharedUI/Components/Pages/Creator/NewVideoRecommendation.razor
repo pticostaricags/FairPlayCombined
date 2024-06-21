@@ -42,9 +42,9 @@
 @if (this.ItemsProvider != null)
 {
     <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
-        <TemplateColumn Class="multiline-text" Title="New Video Recommendation">
+        <TemplateColumn Class="multiline-text" Title="New Video Recommendations">
             <FluentAccordion>
-                <FluentAccordionItem Expanded="false" Heading="Expand to see the content">
+                <FluentAccordionItem Expanded="false" Heading="@($"{context.NewVideoRecommendationId} - Expand to see the content")">
                     @((MarkupString)context.HtmlNewVideoRecommendation!)
                 </FluentAccordionItem>
             </FluentAccordion>
