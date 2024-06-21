@@ -12,8 +12,9 @@ Click the links to help improve quality
 ### How the "FairPlay" initiative was born?
 
 Check the following article:
-["FairPlay"​ software. What is it?]
-(https://www.linkedin.com/pulse/fairplay-software-what-eduardo-fonseca?utm_source=share&utm_medium=member_android&utm_campaign=share_via)
+
+"FairPlay"​ software. What is it?
+https://www.linkedin.com/pulse/fairplay-software-what-eduardo-fonseca?utm_source=share&utm_medium=member_android&utm_campaign=share_via
 
 ### Repository Objective
 FairPlayCombined is a suite of Open-Source Enterprise-Grade High-Quality software focused on helping entrepreneurs reduce costs in Software Development.
