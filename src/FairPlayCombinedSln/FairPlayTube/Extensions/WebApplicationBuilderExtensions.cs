@@ -70,6 +70,7 @@ namespace FairPlayTube.Extensions
             builder.Services.AddTransient<IAspNetUsersService, AspNetUsersService>();
             builder.Services.AddTransient<IUserFundService, UserFundService>();
             builder.Services.AddTransient<INewVideoRecommendationService, NewVideoRecommendationService>();
+            builder.Services.AddTransient<IVideoInfographicService, VideoInfographicService>();
         }
     }
 }

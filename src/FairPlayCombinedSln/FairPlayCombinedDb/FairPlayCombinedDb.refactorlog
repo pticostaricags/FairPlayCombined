@@ -14,4 +14,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="ApplicationUserId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="085b5674-1348-491b-a26f-ed7618bf6692" ChangeDateTime="06/25/2024 14:36:58">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoInfographic].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoInfographic]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoInfographicId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5c0718bb-eebf-41c6-9c3d-a7ce051e1f41" ChangeDateTime="06/25/2024 14:41:18">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoInfographic].[ImageBytes]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoInfographic]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PhotoId" />
+  </Operation>
 </Operations>

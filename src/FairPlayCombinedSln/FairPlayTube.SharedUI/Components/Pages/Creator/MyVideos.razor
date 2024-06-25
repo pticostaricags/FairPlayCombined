@@ -152,7 +152,7 @@
 
     private void OnCreateInfographicClicked(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/Creator/VideoInfographic/{videoInfoModel.VideoInfoId}");
+        this.navigationManager.NavigateTo($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.VideoInfographic}/{videoInfoModel.VideoInfoId}");
     }
 
     private void OnGetLinkedInDigitalMarketingIdeasClicked(VideoInfoModel videoInfoModel)

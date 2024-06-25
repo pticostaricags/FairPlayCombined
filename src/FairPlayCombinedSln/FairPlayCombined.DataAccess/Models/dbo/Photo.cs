@@ -47,5 +47,8 @@ public partial class Photo
     public virtual ICollection<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
 
     [InverseProperty("Photo")]
+    public virtual ICollection<VideoInfographic> VideoInfographic { get; set; } = new List<VideoInfographic>();
+
+    [InverseProperty("Photo")]
     public virtual ICollection<VideoThumbnail> VideoThumbnail { get; set; } = new List<VideoThumbnail>();
 }

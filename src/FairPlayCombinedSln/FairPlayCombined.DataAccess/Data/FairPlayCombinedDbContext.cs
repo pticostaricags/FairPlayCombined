@@ -581,8 +581,9 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<VideoInfographic>(entity =>
         {
-            entity.Property(e => e.VideoInfographicId).ValueGeneratedNever();
-            entity.Property(e => e.VideoInfoId).ValueGeneratedOnAdd();
+            entity.HasOne(d => d.Photo).WithMany(p => p.VideoInfographic)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoInfographic_Photo");
 
             entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoInfographic)
                 .OnDelete(DeleteBehavior.ClientSetNull)

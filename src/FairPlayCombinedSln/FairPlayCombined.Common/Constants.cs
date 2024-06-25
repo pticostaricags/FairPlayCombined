@@ -46,6 +46,7 @@
                     public const string MyVideoViewers = $"/Creator/{nameof(MyVideoViewers)}";
                     public const string MyProcessingVideos = $"/Creator/{nameof(MyProcessingVideos)}";
                     public const string VideoDailyPosts = $"/Creator/{nameof(VideoDailyPosts)}";
+                    public const string VideoInfographic = $"/Creator/{nameof(VideoInfographic)}";
                 }
             }
         }
