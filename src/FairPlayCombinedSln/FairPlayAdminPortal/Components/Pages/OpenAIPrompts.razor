@@ -1,5 +1,5 @@
 ﻿@page "/OpenAIPrompts"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.SystemAdmin)]
 
@@ -15,8 +15,8 @@
 @using FairPlayCombined.Common.GeneratorsAttributes
 @inject OpenAIPromptService openAIPromptService
 @inject IServiceScopeFactory serviceScopeFactory
+@inject IToastService toastService
 @rendermode NoPreRender
-@attribute [StreamRendering(enabled: true)]
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
@@ -24,22 +24,15 @@
     OpenAIPrompts
 </FluentLabel>
 
-@if (this.RetrievalDuration != null)
+@if (this.Items?.Items?.Length > 0)
 {
-    <p>
-        <FluentLabel Typo="Typography.Body">
-            Retrieval Duration: @this.RetrievalDuration
-        </FluentLabel>
-    </p>
-}
-<FluentHorizontalScroll Easing="ScrollEasing.EaseInOut">
-    <FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
-        <PropertyColumn Property="@(p=>p.OpenAipromptId)" 
-            style="width:200px;"
-            IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Descending"></PropertyColumn>
+    <FluentDataGrid Items="this.Items.Items.AsQueryable()">
+        <PropertyColumn Property="@(p=>p.OpenAipromptId)"
+                        style="width:200px;"
+                        IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Descending"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.RevisedPrompt)"
                         style="width:200px;"
-            Sortable="true" Class="multiline-text"></PropertyColumn>
+                        Sortable="true" Class="multiline-text"></PropertyColumn>
         <TemplateColumn style="width:500px;">
             @if (context.GeneratedImageBytes != null)
             {
@@ -47,59 +40,71 @@
             }
         </TemplateColumn>
     </FluentDataGrid>
-</FluentHorizontalScroll>
+}
 
-<FluentPaginator State="@pagination">
+<FluentPaginator State="@pagination" CurrentPageIndexChanged="OnCurrentPageIndexChangedAsync">
 </FluentPaginator>
 
 @code {
     private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    private GridItemsProvider<OpenAIPromptModel>? ItemsProvider;
     private readonly PaginationState pagination = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
-    private TimeSpan? RetrievalDuration;
-    private bool IsBusy { get; set; }
-
-    protected override void OnInitialized()
-    {
-        ItemsProvider ??= async req =>
-            {
-                this.IsBusy = true;
-                StateHasChanged();
-                PaginationRequest paginationRequest = new PaginationRequest()
+    PaginationRequest paginationRequest = new()
+        {
+            PageSize = Constants.Pagination.PageSize,
+            StartIndex = 0,
+            SortingItems = new SortingItem[]
                     {
-                        PageSize=pagination.ItemsPerPage,
-                        StartIndex = req.StartIndex,
-                        SortingItems = req.GetSortByProperties()
-                                            .Select(p => new SortingItem()
-                                            {
-                                                PropertyName = p.PropertyName,
-                                                SortType = (p.Direction == SortDirection.Ascending) ?
-                                                SortType.Ascending
-                                                :
-                                                SortType.Descending
-                                            }).ToArray()
-                    };
-                System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
-                var paginationResult = await this.openAIPromptService!.GetPaginatedOpenAipromptAsync(
-                    paginationRequest, this.cancellationTokenSource.Token);
-                stopwatch.Stop();
-                this.RetrievalDuration = stopwatch.Elapsed;
-                var result = GridItemsProviderResult.From(
-                items: paginationResult.Items!,
-                totalItemCount: paginationResult!.TotalItems);
-                this.IsBusy = false;
-                StateHasChanged();
-                return result;
-            };
+                        new SortingItem()
+                        {
+                            PropertyName = nameof(OpenAIPromptModel.OpenAipromptId),
+                            SortType = SortType.Descending
+                        }
+                    }
+        };
+    private bool IsBusy { get; set; }
+    private PaginationOfT<OpenAIPromptModel>? Items { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
     }
 
-    void IDisposable.Dispose()
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            this.Items = await this.openAIPromptService
+            .GetPaginatedOpenAipromptAsync(this.paginationRequest, this.cancellationTokenSource.Token);
+            await this.pagination.SetTotalItemCountAsync(this.Items.TotalItems);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnCurrentPageIndexChangedAsync(int pageNumber)
+    {
+        this.paginationRequest.StartIndex = pageNumber * this.paginationRequest.PageSize;
+        await LoadDataAsync();
+    }
+
+    public ValueTask DisposeAsync()
     {
         this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 
 }

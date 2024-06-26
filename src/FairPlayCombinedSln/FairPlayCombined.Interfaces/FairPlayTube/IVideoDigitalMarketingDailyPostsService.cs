@@ -21,5 +21,7 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
             CancellationToken cancellationToken);
         Task<PaginationOfT<VideoDigitalMarketingDailyPostsModel>> GetPaginatedVideoDigitalMarketingDailyPostsAsync(
             PaginationRequest paginationRequest, CancellationToken cancellationToken);
+        Task<PaginationOfT<VideoDigitalMarketingDailyPostsModel>> GetPaginatedVideoDigitalMarketingDailyPostsByVideoInfoIdAsync(
+            long videoInfoId, PaginationRequest paginationRequest, CancellationToken cancellationToken);
     }
 }

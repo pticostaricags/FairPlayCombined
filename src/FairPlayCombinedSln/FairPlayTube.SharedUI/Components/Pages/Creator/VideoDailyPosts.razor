@@ -100,8 +100,8 @@
                     }
                 };
                 var items = await this.videoDigitalMarketingDailyPostsService
-                .GetPaginatedVideoDigitalMarketingDailyPostsAsync(paginationRequest,
-                this.cancellationTokenSource.Token);
+                .GetPaginatedVideoDigitalMarketingDailyPostsByVideoInfoIdAsync(
+                    this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
                 var result = GridItemsProviderResult.From(items!.Items!,
                 items.TotalItems);
                 this.IsBusy = false;
