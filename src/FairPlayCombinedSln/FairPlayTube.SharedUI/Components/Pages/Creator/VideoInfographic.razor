@@ -46,10 +46,10 @@
     @if (this.Items?.Items?.Length > 0)
     {
         <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
-            @foreach (var singleItem in this.Items.Items)
+            @foreach (var singlePhotoId in this.Items.Items.Select(p=>p.PhotoId))
             {
                 <div style="width:400px;">
-                    @if (!this.PagePhotos.ContainsKey(singleItem.PhotoId))
+                    @if (!this.PagePhotos.ContainsKey(singlePhotoId))
                     {
                         <FluentCard class="card-padding" Width="400">
                             <FluentSkeleton Shape="SkeletonShape.Circle"></FluentSkeleton>
@@ -58,7 +58,7 @@
                     }
                     else
                     {
-                        <img @key="@singleItem.PhotoId" loading="lazy" src="@(this.PagePhotos[singleItem.PhotoId])" width="400" />
+                        <img @key="@singlePhotoId" loading="lazy" src="@(this.PagePhotos[singlePhotoId])" width="400" />
                     }
                 </div>
             }
@@ -92,7 +92,7 @@
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
-    PaginationRequest paginationRequest = new()
+    private readonly PaginationRequest paginationRequest = new()
         {
             PageSize = Constants.Pagination.PageSize,
             StartIndex = 0,
@@ -142,12 +142,12 @@
     {
         if (this.Items?.Items?.Length > 0)
         {
-            foreach (var singleItem in this.Items.Items)
+            foreach (var singlePhotoId in this.Items.Items.Select(p=>p.PhotoId))
             {
-                string requestUrl = $"{navigationManager.BaseUri}api/photo/{singleItem.PhotoId}";
+                string requestUrl = $"{navigationManager.BaseUri}api/photo/{singlePhotoId}";
                 var result = await httpClient.GetByteArrayAsync(requestUrl, this.cancellationTokenSource.Token);
                 string base64String = Convert.ToBase64String(result);
-                this.PagePhotos.TryAdd(singleItem.PhotoId, $"data:image/png;base64, {base64String}");
+                this.PagePhotos.TryAdd(singlePhotoId, $"data:image/png;base64, {base64String}");
                 StateHasChanged();
             }
         }
