@@ -2,7 +2,9 @@
 using FairPlayCombined.Models.AzureOpenAI;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.AI;
+using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
 {
@@ -36,7 +38,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 Key = openAIKey
             };
             SemanticKernelService semanticKernelService = new(azureOpenAIServiceConfiguration,
-                openAIServiceConfiguration);
+                openAIServiceConfiguration, 
+                openAIClient:new Azure.AI.OpenAI.OpenAIClient(openAIKey));
             var result = await semanticKernelService.TranslateTextAsync("This is a test",
                 fromLanguage: "en-US", toLanguage: "es-CR",
                 cancellationToken: CancellationToken.None);
@@ -68,7 +71,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 Key = openAIKey
             };
             SemanticKernelService semanticKernelService = new(azureOpenAIServiceConfiguration,
-                openAIServiceConfiguration);
+                openAIServiceConfiguration, 
+                openAIClient:new(openAIKey));
             var result = await semanticKernelService.CreateVideoDailyPostsAsync(
                 videoDescription: "Is Blazor Good For Applications That Handle Millions Of Records Of Data",
                 videoEnglishCaptions: VideoCaptions, CancellationToken.None);

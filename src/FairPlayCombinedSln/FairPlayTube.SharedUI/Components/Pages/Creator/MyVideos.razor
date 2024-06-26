@@ -1,5 +1,5 @@
 ﻿@attribute [Route(Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos)]
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -18,10 +18,13 @@
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
-@inject NavigationManager navigationManager
+@inject IToastService toastService
 @inject IOpenAIService openAIService
 @inject IVideoCaptionsService videoCaptionsService
 @inject IVideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
+
+@inject NavigationManager navigationManager
+
 <PageTitle>Home</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -46,7 +49,7 @@
                           OnClick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
                 <i class="bi bi-list-task"></i>
             </FluentButton>
-            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Daily Posts Ideas"
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get New LinkedIn Daily Posts Ideas"
                           OnClick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
                 <i class="bi bi-linkedin"></i>
             </FluentButton>
@@ -97,29 +100,38 @@
     {
         ItemsProvider = async req =>
         {
-            this.IsBusy = true;
-            StateHasChanged();
-            PaginationRequest paginationRequest = new()
+            try
+            {
+                this.IsBusy = true;
+                StateHasChanged();
+                PaginationRequest paginationRequest = new()
                 {
                     PageSize = paginationState.ItemsPerPage,
                     StartIndex = req.StartIndex,
                     SortingItems = req.GetSortByProperties()
-                                                .Select(p => new SortingItem()
-                                                {
-                                                    PropertyName = p.PropertyName,
-                                                    SortType = (p.Direction == SortDirection.Ascending) ?
-                                                    SortType.Ascending
-                                                    :
-                                                    SortType.Descending
-                                                }).ToArray()
+                                                    .Select(p => new SortingItem()
+                                                    {
+                                                        PropertyName = p.PropertyName,
+                                                        SortType = (p.Direction == SortDirection.Ascending) ?
+                                                        SortType.Ascending
+                                                        :
+                                                        SortType.Descending
+                                                    }).ToArray()
                 };
-            var items = await videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(paginationRequest,
-                userId: this.userProviderService!.GetCurrentUserId()!,
-            this.cancellationTokenSource.Token);
-            this.IsBusy = false;
-            StateHasChanged();
-            var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
-            return result;
+                var items = await videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(paginationRequest,
+                    userId: this.userProviderService!.GetCurrentUserId()!,
+                this.cancellationTokenSource.Token);
+                this.IsBusy = false;
+                StateHasChanged();
+                var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                this.toastService.ShowError(ex.Message);
+                return GridItemsProviderResult.From<VideoInfoModel>(
+                    Array.Empty<VideoInfoModel>(), 0);
+            }
         };
     }
 
@@ -140,7 +152,7 @@
 
     private void OnCreateInfographicClicked(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/Creator/VideoInfographic/{videoInfoModel.VideoInfoId}");
+        this.navigationManager.NavigateTo($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.VideoInfographic}/{videoInfoModel.VideoInfoId}");
     }
 
     private void OnGetLinkedInDigitalMarketingIdeasClicked(VideoInfoModel videoInfoModel)
@@ -155,7 +167,7 @@
 
     private void OnGetLinkedInDailyPostsClicked(VideoInfoModel videoInfoModel)
     {
-        this.navigationManager.NavigateTo($"/Creator/VideoDailyPosts/{videoInfoModel.VideoInfoId}");
+        this.navigationManager.NavigateTo($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.VideoDailyPosts}/{videoInfoModel.VideoInfoId}");
     }
 
     private void OnCreateLinkedInArticleClicked(VideoInfoModel videoInfoModel)
@@ -168,8 +180,9 @@
         this.navigationManager.NavigateTo($"/Creator/VideoChapters/{videoInfoModel.VideoInfoId}");
     }
 
-    void IDisposable.Dispose()
+    public async ValueTask DisposeAsync()
     {
+        await this.cancellationTokenSource.CancelAsync();
         this.cancellationTokenSource.Dispose();
     }
 }

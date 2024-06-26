@@ -3,6 +3,7 @@ using Azure.Identity;
 using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.AzureVideoIndexer;
+using Microsoft.Identity.Client;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Web;
@@ -236,6 +237,28 @@ namespace FairPlayCombined.Services.Common
                 httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
                 var result = await httpClient.GetFromJsonAsync<SupportedLanguageModel[]>(requestUrl, cancellationToken: cancellationToken);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new AzureVideoIndexerException(ex.Message);
+            }
+        }
+
+        public async Task<string> GetFacesThumbnailsDownloadUrlAsync(
+            string videoId, string viAccessToken, CancellationToken cancellationToken)
+        {
+            //Check https://api-portal.videoindexer.ai/api-details#api=Operations&operation=Get-Video-Artifact-Download-Url
+            string requestUrl = $"https://api.videoindexer.ai/" +
+                $"{azureVideoIndexerServiceConfiguration.Location}" +
+                $"/Accounts/{azureVideoIndexerServiceConfiguration.AccountId}" +
+                $"/Videos/{videoId}" +
+                $"/ArtifactUrl?type=FacesThumbnails";
+            try
+            {
+                httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(BEARER_SCHEME, viAccessToken);
+                var result = await httpClient.GetStringAsync(requestUrl, cancellationToken: cancellationToken);
                 return result;
             }
             catch (Exception ex)

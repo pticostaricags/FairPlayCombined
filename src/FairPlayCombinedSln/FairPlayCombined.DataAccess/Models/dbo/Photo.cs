@@ -21,11 +21,11 @@ public partial class Photo
     public long PhotoId { get; set; }
 
     [Required]
-    [StringLength(50)]
+    [StringLength(100)]
     public string Name { get; set; }
 
     [Required]
-    [StringLength(50)]
+    [StringLength(100)]
     public string Filename { get; set; }
 
     [Required]
@@ -40,8 +40,14 @@ public partial class Photo
     [InverseProperty("ProfilePhoto")]
     public virtual ICollection<UserProfile> UserProfile { get; set; } = new List<UserProfile>();
 
+    [InverseProperty("Photo")]
+    public virtual ICollection<VideoFaceThumbnail> VideoFaceThumbnail { get; set; } = new List<VideoFaceThumbnail>();
+
     [InverseProperty("VideoThumbnailPhoto")]
     public virtual ICollection<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
+
+    [InverseProperty("Photo")]
+    public virtual ICollection<VideoInfographic> VideoInfographic { get; set; } = new List<VideoInfographic>();
 
     [InverseProperty("Photo")]
     public virtual ICollection<VideoThumbnail> VideoThumbnail { get; set; } = new List<VideoThumbnail>();

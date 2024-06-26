@@ -8,8 +8,8 @@ using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayBudgetSchema;
 using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
-using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayShopSchema;
 
 namespace FairPlayCombined.DataAccess.Data;
 
@@ -70,6 +70,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<MonthlyBudgetInfo> MonthlyBudgetInfo { get; set; }
 
+    public virtual DbSet<NewVideoRecommendation> NewVideoRecommendation { get; set; }
+
     public virtual DbSet<NotLikedUserProfile> NotLikedUserProfile { get; set; }
 
     public virtual DbSet<OpenAiprompt> OpenAiprompt { get; set; }
@@ -129,6 +131,8 @@ public partial class FairPlayCombinedDbContext : DbContext
     public virtual DbSet<VideoDigitalMarketingDailyPosts> VideoDigitalMarketingDailyPosts { get; set; }
 
     public virtual DbSet<VideoDigitalMarketingPlan> VideoDigitalMarketingPlan { get; set; }
+
+    public virtual DbSet<VideoFaceThumbnail> VideoFaceThumbnail { get; set; }
 
     public virtual DbSet<VideoIndexStatus> VideoIndexStatus { get; set; }
 
@@ -262,6 +266,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.Owner).WithMany(p => p.MonthlyBudgetInfo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_MonthlyBudgetInfo_AspNetUsers");
+        });
+
+        modelBuilder.Entity<NewVideoRecommendation>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.NewVideoRecommendation)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NewVideoRecommendation_AspNetUsers");
         });
 
         modelBuilder.Entity<NotLikedUserProfile>(entity =>
@@ -517,6 +528,17 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_VideoDigitalMarketingPlan_VideoInfo");
         });
 
+        modelBuilder.Entity<VideoFaceThumbnail>(entity =>
+        {
+            entity.HasOne(d => d.Photo).WithMany(p => p.VideoFaceThumbnail)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoFaceThumbnail_Photo");
+
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoFaceThumbnail)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoFaceThumbnail_VideoInfo");
+        });
+
         modelBuilder.Entity<VideoIndexStatus>(entity =>
         {
             entity.Property(e => e.VideoIndexStatusId).ValueGeneratedNever();
@@ -559,8 +581,9 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<VideoInfographic>(entity =>
         {
-            entity.Property(e => e.VideoInfographicId).ValueGeneratedNever();
-            entity.Property(e => e.VideoInfoId).ValueGeneratedOnAdd();
+            entity.HasOne(d => d.Photo).WithMany(p => p.VideoInfographic)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoInfographic_Photo");
 
             entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoInfographic)
                 .OnDelete(DeleteBehavior.ClientSetNull)

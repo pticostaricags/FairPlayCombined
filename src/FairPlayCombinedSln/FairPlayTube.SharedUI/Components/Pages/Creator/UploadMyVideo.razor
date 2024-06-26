@@ -34,39 +34,49 @@
                 OnValidSubmit="OnValidSubmitAsync" @ref="frmCreateVideoInfo">
     <div>
         <DataAnnotationsValidator></DataAnnotationsValidator>
-        <FluentValidationSummary></FluentValidationSummary>
     </div>
-    <div>
-        <FluentLabel Typo="Typography.Body">Description</FluentLabel>
-        <FluentTextArea @bind-Value="this.createVideoInfoModel.Description" style="width:100%;"></FluentTextArea>
-    </div>
-    <div>
-        <FluentLabel Typo="Typography.Body">Name</FluentLabel>
-        <FluentTextField @bind-Value="this.createVideoInfoModel.Name" style="width:100%;"></FluentTextField>
-    </div>
-    <div>
-        <FluentLabel Typo="Typography.Body">Video Url</FluentLabel>
-        <FluentTextField @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl" style="width:100%;"></FluentTextField>
-        <FluentButton Type="ButtonType.Button" OnClick="OnProcessFileButtonClickedAsync">Process File</FluentButton>
-        <FluentButton Type="ButtonType.Button" OnClick="UploadToYouTubeAsync">Upload To YouTube</FluentButton>
-        <FluentLabel Typo="Typography.Body">Bytes Sent: @bytesSent</FluentLabel>
-    </div>
-    <div>
-        <FluentLabel Typo="Typography.Body">Video Id (Azure Video Indexer)</FluentLabel>
-        <FluentTextField @bind-Value="this.createVideoInfoModel.VideoId" style="width:100%;"></FluentTextField>
-    </div>
-    <div>
-        <FluentLabel Typo="Typography.Subject">Video Id (YouTube)</FluentLabel>
-        <InputText class="@ThemeConfiguration.GenericControls.DefaultCss"
-                   @bind-Value="this.createVideoInfoModel.YouTubeVideoId" style="width:100%;"></InputText>
-        @if (this.IsAuthenticatedWithGoogle)
-        {
-            <FluentButton Type="ButtonType.Button" OnClick="this.OpenSearchYouTubeVideoDialog">Search My YouTube Videos</FluentButton>
-        }
-    </div>
-    <div>
-        <FluentButton Type="ButtonType.Submit">Save</FluentButton>
-    </div>
+    <FluentWizard DisplayStepNumber="WizardStepStatus.All" StepperPosition="StepperPosition.Top"
+                  OnFinish="PerformSubmitAsync">
+        <Steps>
+            <FluentWizardStep Label="Video Url" OnChange="OnVideoUrlChange">
+                <div>
+                    <FluentLabel Typo="Typography.Body">Video Url</FluentLabel>
+                    <FluentTextField @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl" style="width:100%;"></FluentTextField>
+                    <FluentValidationMessage For="@(()=>this.createVideoInfoModel.ExternalVideoSourceUrl)"></FluentValidationMessage>
+                </div>
+            </FluentWizardStep>
+            <FluentWizardStep>
+                <FluentLabel Typo="Typography.Body">Here you can upload your video to YouTube if you want</FluentLabel>
+                <FluentButton Type="ButtonType.Button" OnClick="UploadToYouTubeAsync">Upload To YouTube</FluentButton>
+                <FluentLabel Typo="Typography.Body">Bytes Sent: @bytesSent</FluentLabel>
+            </FluentWizardStep>
+            <FluentWizardStep OnChange="OnVideoDescriptionStepChange">
+                <div>
+                    <FluentLabel Typo="Typography.Body">Description</FluentLabel>
+                    <FluentTextArea @bind-Value="this.createVideoInfoModel.Description" style="width:100%;"></FluentTextArea>
+                    <FluentValidationMessage For="@(()=>this.createVideoInfoModel.Description)"></FluentValidationMessage>
+                </div>
+            </FluentWizardStep>
+            <FluentWizardStep OnChange="OnVideoNameChange">
+                <div>
+                    <FluentLabel Typo="Typography.Body">Name</FluentLabel>
+                    <FluentTextField @bind-Value="this.createVideoInfoModel.Name" style="width:100%;"></FluentTextField>
+                    <FluentValidationMessage For="@(()=>this.createVideoInfoModel.Name)"></FluentValidationMessage>
+                </div>
+            </FluentWizardStep>
+            <FluentWizardStep>
+                <div>
+                    <FluentLabel Typo="Typography.Subject">Video Id (YouTube)</FluentLabel>
+                    <InputText class="@ThemeConfiguration.GenericControls.DefaultCss"
+                               @bind-Value="this.createVideoInfoModel.YouTubeVideoId" style="width:100%;"></InputText>
+                    @if (this.IsAuthenticatedWithGoogle)
+                    {
+                        <FluentButton Type="ButtonType.Button" OnClick="this.OpenSearchYouTubeVideoDialog">Search My YouTube Videos</FluentButton>
+                    }
+                </div>
+            </FluentWizardStep>
+        </Steps>
+    </FluentWizard>
 </FluentEditForm>
 
 <FluentDialog @ref="searchYoutubeVideosDialog"
@@ -108,8 +118,9 @@
         }
     }
 
-    private async Task OnProcessFileButtonClickedAsync()
+    private async Task<bool> OnProcessFileButtonClickedAsync()
     {
+        bool hasError = false;
         try
         {
             logger.LogInformation(message: "Processing video from url: {Url}", this.createVideoInfoModel.ExternalVideoSourceUrl);
@@ -123,8 +134,10 @@
             !frmCreateVideoInfo.EditContext.IsValid(descriptionField) ||
             !frmCreateVideoInfo.EditContext.IsValid(externalVideoSourceUrl))
             {
+                this.IsBusy = false;
+                StateHasChanged();
                 this.toastService.ShowError("Please make sure to fill all the values and try again");
-                return;
+                hasError = true;
             }
             var authToken = await this.azureVideoIndexerService.AuthenticateToAzureArmAsync();
             var accountAccessToken = await this.azureVideoIndexerService.GetAccessTokenForArmAccountAsync(authToken, this.cancellationTokenSource.Token);
@@ -142,14 +155,17 @@
             this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
             this.frmCreateVideoInfo.EditContext.Validate();
             this.toastService.ShowInfo("Your has been sent to be processed.");
+            hasError = false;
         }
         catch (Exception ex)
         {
+            hasError = true;
             logger.LogError(exception: ex, message: "Failed to process video. {Message}", ex.Message);
             this.toastService.ShowError(ex.Message);
         }
         this.IsBusy = false;
         StateHasChanged();
+        return hasError;
     }
 
     public async Task UploadToYouTubeAsync()
@@ -203,11 +219,15 @@
         {
             this.IsBusy = true;
             StateHasChanged();
-            this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
-            await this.videoInfoService.CreateVideoInfoAsync(this.createVideoInfoModel,
-            this.cancellationTokenSource.Token);
-            this.toastService.ShowSuccess("Your video has been saved. You'll be notified when indexing is ready. It will take a while for your video to become visible.");
-            this.navigationManager.NavigateTo("/");
+            bool hasError = await OnProcessFileButtonClickedAsync();
+            if (!hasError)
+            {
+                this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
+                await this.videoInfoService.CreateVideoInfoAsync(this.createVideoInfoModel,
+                this.cancellationTokenSource.Token);
+                this.toastService.ShowSuccess("Your video has been saved. You'll be notified when indexing is ready. It will take a while for your video to become visible.");
+                this.navigationManager.NavigateTo(Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyProcessingVideos);
+            }
         }
         catch (Exception ex)
         {
@@ -216,6 +236,11 @@
         }
         this.IsBusy = false;
         StateHasChanged();
+    }
+
+    private async Task PerformSubmitAsync()
+    {
+        await this.frmCreateVideoInfo!.OnValidSubmit.InvokeAsync();
     }
 
     private void OpenSearchYouTubeVideoDialog()
@@ -232,6 +257,35 @@
     {
         this.createVideoInfoModel!.YouTubeVideoId = youTubeVideoId;
         CloseSearchYouTubeVideoDialog();
+    }
+
+    private void OnVideoNameChange(FluentWizardStepChangeEventArgs fluentWizardStepChangeEventArgs)
+    {
+        var videonameField = this.frmCreateVideoInfo!.EditContext!
+        .Field(nameof(createVideoInfoModel.Name));
+        this.frmCreateVideoInfo.EditContext.Validate();
+        var isVideonameFieldValid = this.frmCreateVideoInfo.EditContext.IsValid(videonameField);
+        fluentWizardStepChangeEventArgs.IsCancelled = !isVideonameFieldValid;
+    }
+
+    private void OnVideoDescriptionStepChange(FluentWizardStepChangeEventArgs fluentWizardStepChangeEventArgs)
+    {
+        var descriptonField = this.frmCreateVideoInfo!.EditContext!
+        .Field(nameof(CreateVideoInfoModel.Description));
+        this.frmCreateVideoInfo.EditContext.Validate();
+        var isDescriptonFieldValid = this.frmCreateVideoInfo.EditContext.IsValid(descriptonField);
+        fluentWizardStepChangeEventArgs.IsCancelled = !isDescriptonFieldValid;
+    }
+
+    private void OnVideoUrlChange(FluentWizardStepChangeEventArgs fluentWizardStepChangeEventArgs)
+    {
+        var externalVideoSourceUrlField =
+        this.frmCreateVideoInfo!.EditContext!
+        .Field(nameof(CreateVideoInfoModel.ExternalVideoSourceUrl));
+        this.frmCreateVideoInfo.EditContext.Validate();
+        bool isExternalVideoSourceUrlFieldValid =
+        this.frmCreateVideoInfo.EditContext.IsValid(externalVideoSourceUrlField);
+        fluentWizardStepChangeEventArgs.IsCancelled = !isExternalVideoSourceUrlFieldValid;
     }
 
     void IDisposable.Dispose()

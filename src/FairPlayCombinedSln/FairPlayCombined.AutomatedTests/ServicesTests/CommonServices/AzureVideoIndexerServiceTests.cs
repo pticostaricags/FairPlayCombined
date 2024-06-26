@@ -1,6 +1,7 @@
 ﻿#if Debug_Enable_Paid_Tests
 using Azure.Core;
 using Azure.Identity;
+using FairPlayCombined.Models.AzureVideoIndexer;
 using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
@@ -342,7 +343,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 .GetAccessTokenForArmAccountAsync(armAccesstoken, CancellationToken.None);
             Assert.IsNotNull(getAccessTokenResult);
             var result = await azureVideoIndexerService.IndexVideoFromUriAsync(
-                new AzureVideoIndexerService.IndexVideoFromUriParameters()
+                new IndexVideoFromUriParameters()
                 {
                     ArmAccessToken = getAccessTokenResult.AccessToken!,
                     Description = "Test Desc",

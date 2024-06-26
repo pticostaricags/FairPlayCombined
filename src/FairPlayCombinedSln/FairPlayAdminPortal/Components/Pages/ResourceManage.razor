@@ -15,7 +15,7 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 <FluentLabel Typo="Typography.H3">
-    ResourceManage
+    Resource Manager
 </FluentLabel>
 
 
@@ -28,11 +28,11 @@
         </div>
         <div>
             <FluentDataGrid Items="this.resourcesQueryable">
-                <PropertyColumn Property="@( p=> p.CultureName)" Title="@nameof(ResourceModel.CultureName)"></PropertyColumn>
-                <PropertyColumn Property="@( p=> p.Type)" Title="@nameof(ResourceModel.Type)"></PropertyColumn>
-                <PropertyColumn Property="@( p=> p.Key)" Title="@nameof(ResourceModel.Key)"></PropertyColumn>
-                <TemplateColumn Title="@nameof(ResourceModel.Value)">
-                    <FluentTextField @bind-Value="@context.Value"></FluentTextField>
+                <PropertyColumn Property="@( p=> p.CultureName)" Title="@nameof(ResourceModel.CultureName)" Width="150px"></PropertyColumn>
+                <PropertyColumn Property="@( p=> p.Type)" Title="@nameof(ResourceModel.Type)" Class="multiline-text" Width="400px"></PropertyColumn>
+                <PropertyColumn Property="@( p=> p.Key)" Title="@nameof(ResourceModel.Key)" Class="multiline-text"></PropertyColumn>
+                <TemplateColumn Title="@nameof(ResourceModel.Value)" Class="multiline-text">
+                    <FluentTextArea @bind-Value="@context.Value"></FluentTextArea>
                 </TemplateColumn>
             </FluentDataGrid>
         </div>

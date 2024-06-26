@@ -35,13 +35,14 @@ namespace FairPlayCombined.Services.FairPlayTube
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.VideoThumbnail
+                .AsNoTracking()
+                .AsSplitQuery()
                 .Where(p => p.VideoInfoId == videoInfoId)
                 .Select(p => new FairPlayCombined.Models.FairPlayTube.VideoThumbnail.VideoThumbnailModel
                 {
                     VideoThumbnailId = p.VideoThumbnailId,
                     VideoInfoId = p.VideoInfoId,
-                    PhotoId = p.PhotoId,
-                    PhotoBytes = p.Photo.PhotoBytes
+                    PhotoId = p.PhotoId
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);

@@ -16,5 +16,7 @@ namespace FairPlayCombined.Interfaces.Common
         Task<UploadVideoResponseModel?> IndexVideoFromUriAsync(IndexVideoFromUriParameters indexVideoFromUriParameters, CancellationToken cancellationToken = default);
         Task<SearchVideosResponseModel?> SearchVideosByIdsAsync(string viAccessToken, string[] videoIds, CancellationToken cancellationToken = default);
         Task<SearchVideosResponseModel?> SearchVideosByNameAsync(string viAccessToken, string name, CancellationToken cancellationToken = default);
+        Task<string> GetFacesThumbnailsDownloadUrlAsync(
+            string videoId, string viAccessToken, CancellationToken cancellationToken);
     }
 }

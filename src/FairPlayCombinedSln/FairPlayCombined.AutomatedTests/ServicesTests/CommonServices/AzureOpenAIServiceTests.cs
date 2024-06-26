@@ -3,6 +3,7 @@ using Azure.AI.OpenAI;
 using FairPlayCombined.Models.AzureOpenAI;
 using FairPlayCombined.Services.Common;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,8 +36,10 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             OpenAIClient openAIClient = new(endpoint: new(endpoint),
                 keyCredential: new Azure.AzureKeyCredential(key));
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<AzureOpenAIService>();
             AzureOpenAIService azureOpenAIService = new(openAIClient,
-                azureOpenAIServiceConfiguration);
+                azureOpenAIServiceConfiguration, logger);
             var result = await azureOpenAIService.GenerateLinkedInArticleFromVideoCaptionsAsync(
                 videoTitle: "Is Blazor Good For Applications That Handle Millions Of Records Of Data",
                 videoCaptions: "Speaker #1: Is Blazer good for applications that handle millions of records\r\n\r\nSpeaker #1: of data?\r\n\r\nSpeaker #1: Yes it is, especially if you use best practices such\r\n\r\nSpeaker #1: as pagination and in the case of Entity Framework code,\r\n\r\nSpeaker #1: the disabling of the changed tracker when you are going\r\n\r\nSpeaker #1: to retrieve data that is not going to be modified.\r\n\r\nSpeaker #1: As you can see in this example I am showing\r\n\r\nSpeaker #1: a list of records from a table that has 1,000,000\r\n\r\nSpeaker #1: records.\r\n\r\nSpeaker #1: The average duration for the retrieval is around 25 milliseconds.\r\n\r\nSpeaker #1: O Yes, Racer is excellent for alications that handle millions\r\n\r\nSpeaker #1: of records of data, esecially if you use best ractices.",
@@ -73,7 +76,10 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 };
             OpenAIClient openAIClient=new(endpoint:new(endpoint),
                 keyCredential:new Azure.AzureKeyCredential(key));
-            AzureOpenAIService azureOpenAIService = new(openAIClient, azureOpenAIServiceConfiguration);
+            var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+            var logger = loggerFactory!.CreateLogger<AzureOpenAIService>();
+            AzureOpenAIService azureOpenAIService = 
+                new(openAIClient, azureOpenAIServiceConfiguration, logger);
             var result = await azureOpenAIService.ModerateTextContentAsync("My name correo is fulainto at somewhere dot com",
                 CancellationToken.None);
             Assert.IsTrue(result!.HasPersonalIdentifiableInformation, $"Has PII: {result.PersonalIdentifiableInformation}");

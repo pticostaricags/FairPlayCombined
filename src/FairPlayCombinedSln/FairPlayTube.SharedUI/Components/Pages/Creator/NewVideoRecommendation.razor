@@ -1,12 +1,14 @@
 ﻿@page "/Creator/NewVideoRecommendation"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.FairPlayTube.NewVideoRecommendation
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
@@ -19,23 +21,36 @@
 @inject IVideoCaptionsService videoCaptionsService
 @inject IPromptGeneratorService promptGeneratorService
 @inject IToastService toastService
+@inject INewVideoRecommendationService newVideoRecommendationService
 
 <PageTitle>
-    New Video Recommendation
+    New Video Recommendations
 </PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    New Video Recommendation
+    New Video Recommendations
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <div>
     <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" Loading="this.IsBusy"
-                  OnClick="OnRecreateNewVideoRecommendationButtonclickedAsync">
-        Re-Create Recommendation
+                  OnClick="OnCreateNewVideoRecommendationButtonclickedAsync">
+        Create New Recommendation
     </FluentButton>
 </div>
+@if (this.ItemsProvider != null)
+{
+    <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
+        <TemplateColumn Class="multiline-text" Title="New Video Recommendations">
+            <FluentAccordion>
+                <FluentAccordionItem Expanded="false" Heading="@($"{context.NewVideoRecommendationId} - Expand to see the content")">
+                    @((MarkupString)context.HtmlNewVideoRecommendation!)
+                </FluentAccordionItem>
+            </FluentAccordion>
+        </TemplateColumn>
+    </FluentDataGrid>
+}
 <div>
     @if (!String.IsNullOrWhiteSpace(this.NewVideoRecommendationIdea))
     {
@@ -51,66 +66,102 @@
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private string? NewVideoRecommendationIdea { get; set; }
     private string? RevisedPrompt { get; set; }
+    private GridItemsProvider<NewVideoRecommendationModel>? ItemsProvider { get; set; }
+    private readonly PaginationState paginationState = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await LoadDataAsync();
+        base.OnInitialized();
+        if (this.ItemsProvider is null)
+        {
+            ItemsProvider = async req =>
+            {
+                this.IsBusy = true;
+                StateHasChanged();
+                PaginationRequest paginationRequest = new()
+                    {
+                        PageSize = Constants.Pagination.PageSize,
+                        StartIndex = req.StartIndex,
+                        SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName=nameof(NewVideoRecommendationModel.NewVideoRecommendationId),
+                            SortType= SortType.Descending
+                        }
+                    }
+                    };
+                var items = await this.newVideoRecommendationService
+                .GetPaginatedNewVideoRecommendationForUserIdAsync(
+                    paginationRequest, this.userProviderService.GetCurrentUserId()!, this.cancellationTokenSource.Token);
+                var result = GridItemsProviderResult.From(items!.Items!, items.TotalItems);
+                this.IsBusy = false;
+                StateHasChanged();
+                return result;
+            };
+        }
     }
 
-    private async Task OnRecreateNewVideoRecommendationButtonclickedAsync()
-    {
-        await LoadDataAsync();
-    }
-
-    private async Task LoadDataAsync()
+    private async Task OnCreateNewVideoRecommendationButtonclickedAsync()
     {
         try
         {
             this.IsBusy = true;
             StateHasChanged();
-            await this.GenerateNewVideoRecommendationIdeaAsync();
-            this.IsBusy = false;
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-    }
-
-    private async Task GenerateNewVideoRecommendationIdeaAsync()
-    {
-        var promptModel = await this.promptGeneratorService
-            .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateNewVideoRecommendationIdea,
-                this.cancellationTokenSource.Token);
-        var videos = await this.videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(new PaginationRequest()
-            {
-                PageSize = 5,
-                SortingItems = new[]
-                            {
+            var promptModel = await this.promptGeneratorService
+    .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateNewVideoRecommendationIdea,
+        this.cancellationTokenSource.Token);
+            string currentUserId = this.userProviderService.GetCurrentUserId()!;
+            var videos = await this.videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(new PaginationRequest()
+                {
+                    PageSize = 5,
+                    SortingItems = new[]
+                                                                {
                     new SortingItem()
                     {
                         PropertyName=nameof(VideoInfoModel.VideoInfoId),
                         SortType = FairPlayCombined.Common.GeneratorsAttributes.SortType.Descending
                     }
                 },
-                StartIndex = 0
-            },
-            this.userProviderService.GetCurrentUserId()!,
-            this.cancellationTokenSource.Token);
+                    StartIndex = 0
+                },
+                currentUserId,
+                this.cancellationTokenSource.Token);
 
-        var titles = videos!.Items!.Select(p => $"* Title: {p.Name}. Keywords: {String.Join(",", p.VideoKeywords!)}. Topics: {String.Join(",",p.VideoTopics!)}. Video Captions: {String.Join(",",p.EnglishCaptions)}\r\n");
-        var userMessage = $"Video Titles: {String.Join(".", titles)}.";
-        var result = await this.openAIService.GenerateChatCompletionAsync(promptModel!.BaseText!, 
-            userMessage, this.cancellationTokenSource.Token);
-        if (result != null)
+            var titles = videos!.Items!.Select(p => $"* Title: {p.Name}. Keywords: {String.Join(",", p.VideoKeywords!)}. Topics: {String.Join(",", p.VideoTopics!)}. Video Captions: {String.Join(",", p.EnglishCaptions)}\r\n");
+            var userMessage = $"Video Titles: {String.Join(".", titles)}.";
+            var result = await this.openAIService.GenerateChatCompletionAsync(promptModel!.BaseText!,
+                userMessage, this.cancellationTokenSource.Token);
+            if (result != null)
+            {
+                this.NewVideoRecommendationIdea = result!.choices![0]!.message!.content!;
+                await newVideoRecommendationService.CreateNewVideoRecommendationAsync(
+                    createModel: new()
+                        {
+                            ApplicationUserId = currentUserId,
+                            HtmlNewVideoRecommendation = this.NewVideoRecommendationIdea
+                        },
+                    this.cancellationTokenSource.Token);
+                await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
+            }
+        }
+        catch (Exception ex)
         {
-            this.NewVideoRecommendationIdea = result!.choices![0]!.message!.content!;
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
         }
     }
 
-    void IDisposable.Dispose()
+    public async ValueTask DisposeAsync()
     {
+        await this.cancellationTokenSource.CancelAsync();
         this.cancellationTokenSource.Dispose();
     }
 }

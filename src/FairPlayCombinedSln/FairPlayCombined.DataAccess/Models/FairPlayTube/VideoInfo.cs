@@ -120,6 +120,9 @@ public partial class VideoInfo
     [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoDigitalMarketingPlan> VideoDigitalMarketingPlan { get; set; } = new List<VideoDigitalMarketingPlan>();
 
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VideoFaceThumbnail> VideoFaceThumbnail { get; set; } = new List<VideoFaceThumbnail>();
+
     [ForeignKey("VideoIndexStatusId")]
     [InverseProperty("VideoInfo")]
     public virtual VideoIndexStatus VideoIndexStatus { get; set; }

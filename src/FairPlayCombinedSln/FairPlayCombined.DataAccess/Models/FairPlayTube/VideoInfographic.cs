@@ -16,6 +16,7 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 [Table("VideoInfographic", Schema = "FairPlayTube")]
+[Index("VideoInfoId", "PhotoId", Name = "UI_VideoInfographic_VideoPhoto", IsUnique = true)]
 public partial class VideoInfographic
 {
     [Key]
@@ -23,9 +24,11 @@ public partial class VideoInfographic
 
     public long VideoInfoId { get; set; }
 
-    [Required]
-    [MaxLength(50)]
-    public byte[] ImageBytes { get; set; }
+    public long PhotoId { get; set; }
+
+    [ForeignKey("PhotoId")]
+    [InverseProperty("VideoInfographic")]
+    public virtual Photo Photo { get; set; }
 
     [ForeignKey("VideoInfoId")]
     [InverseProperty("VideoInfographic")]

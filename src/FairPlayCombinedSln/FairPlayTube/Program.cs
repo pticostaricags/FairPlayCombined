@@ -23,6 +23,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
+using System.IO.Compression;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -178,6 +182,36 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
 app.MapHub<UserMessageNotificationHub>(Constants.Routes.SignalRHubs.UserMessageHub);
+app.MapGet("/api/photo/{photoId}",
+    async (
+        [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        [FromRoute] long photoId,
+        CancellationToken cancellationToken) =>
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await dbContext.Photo
+        .AsNoTracking()
+        .AsSplitQuery()
+        .Where(p => p.PhotoId == photoId)
+        .SingleOrDefaultAsync(cancellationToken);
+        using MemoryStream inputStream = new(result!.PhotoBytes);
+        using var image = await Image.LoadAsync(inputStream, cancellationToken);
+        image.Mutate(operation => 
+        {
+            operation.Resize(options:new()
+            {
+                Size=new(width:1024, height:768),
+                Mode = ResizeMode.Max
+            });
+        });
+        using MemoryStream outputStream = new();
+        PngEncoder pngEncoder = new()
+        {
+            CompressionLevel = PngCompressionLevel.BestCompression
+        };
+        await image.SaveAsPngAsync(outputStream, pngEncoder, cancellationToken);
+        return TypedResults.File(outputStream.ToArray(), System.Net.Mime.MediaTypeNames.Image.Png);
+    });
 app.MapGet("/api/video/{videoId}/thumbnail",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,

@@ -226,6 +226,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[NewVideoRecommendation]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoCaptions]",
          "ObjectType": 0
       },
@@ -239,6 +243,10 @@
       },
       {
          "Name": "[FairPlayTube].[VideoDigitalMarketingPlan]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayTube].[VideoFaceThumbnail]",
          "ObjectType": 0
       },
       {

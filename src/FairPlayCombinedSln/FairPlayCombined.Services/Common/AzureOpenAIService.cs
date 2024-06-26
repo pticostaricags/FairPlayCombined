@@ -71,7 +71,8 @@ namespace FairPlayCombined.Services.Common
                     "Your jobs is to restrict text containing personal inormaton and any kind of gross content." +
                     "My requests will be in json format with the following properties:" +
                     $"{jsonRequest}" +
-                    "Your responses must be in json format with the following properties:" +
+                    "Your responses must be in json format with the propertie I'll give you." +
+                    "Avoid adding the ```json separators, give me only the json. Properties:" +
                     $"{JsonSerializer.Serialize(textModerationResponseSkeleton)}"),
                     new ChatRequestUserMessage(jsonRequest)
                 }

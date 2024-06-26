@@ -1,24 +1,33 @@
-﻿@page "/Creator/VideoInfographic/{VideoInfoId:long}"
-@implements IDisposable
+﻿@attribute [Route($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.VideoInfographic}/{{VideoInfoId:long}}")]
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.FairPlayTube.VideoInfographic
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
+@using System.Collections.Concurrent
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
+@attribute [StreamRendering(enabled: true)]
+
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
 @inject IOpenAIService openAIService
 @inject IVideoCaptionsService videoCaptionsService
 @inject IPromptGeneratorService promptGeneratorService
-
+@inject IVideoInfographicService videoInfographicService
+@inject IToastService toastService
+@inject IPhotoService photoService
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
 <PageTitle>
     Video Infographic
 </PageTitle>
@@ -29,12 +38,40 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-
 <div>
-    @if (!String.IsNullOrWhiteSpace(this.GeneratedinfographicUri))
+    <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
+                  OnClick="OnCreateNewInfographicClickedAsync">Create New Infographic</FluentButton>
+</div>
+<div>
+    @if (this.Items?.Items?.Length > 0)
     {
-        <a data-enhance-nav="false" href="@this.GeneratedinfographicUri" target="_blank">
-            <img width="400" class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedinfographicUri" />
+        <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
+            @foreach (var singlePhotoId in this.Items.Items.Select(p=>p.PhotoId))
+            {
+                <div style="width:400px;">
+                    @if (!this.PagePhotos.ContainsKey(singlePhotoId))
+                    {
+                        <FluentCard class="card-padding" Width="400">
+                            <FluentSkeleton Shape="SkeletonShape.Circle"></FluentSkeleton>
+                            <FluentProgressRing></FluentProgressRing>
+                        </FluentCard>
+                    }
+                    else
+                    {
+                        <img @key="@singlePhotoId" loading="lazy" src="@(this.PagePhotos[singlePhotoId])" width="400" />
+                    }
+                </div>
+            }
+        </FluentStack>
+    }
+    <FluentPaginator State="this.paginationState" CurrentPageIndexChanged="OnCurrentPageIndexChangedAsync"></FluentPaginator>
+</div>
+<FluentDivider Role="DividerRole.Separator"></FluentDivider>
+<div>
+    @if (!String.IsNullOrWhiteSpace(this.GeneratedInfographicUri))
+    {
+        <a data-enhance-nav="false" href="@this.GeneratedInfographicUri" target="_blank">
+            <img width="400" class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedInfographicUri" />
         </a>
         <p>
             <FluentLabel Typo="Typography.Body">
@@ -49,37 +86,133 @@
     [Parameter]
     public long? VideoInfoId { get; set; }
     private bool IsBusy { get; set; }
+    private PaginationOfT<VideoInfographicModel>? Items;
+    private readonly ConcurrentDictionary<long, string> PagePhotos = new();
+    private readonly PaginationState paginationState = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
+    private readonly PaginationRequest paginationRequest = new()
+        {
+            PageSize = Constants.Pagination.PageSize,
+            StartIndex = 0,
+            SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName = nameof(VideoInfographicModel.PhotoId),
+                            SortType = SortType.Descending
+                        }
+                    }
+        };
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    private string? GeneratedinfographicUri { get; set; }
+    private string? GeneratedInfographicUri { get; set; }
     private string? RevisedPrompt { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        this.IsBusy = true;
-        StateHasChanged();
-        var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        var englishCaptions = await this.videoCaptionsService
-        .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-        language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        var promptModel = await this.promptGeneratorService
-            .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateVideoInfographic,
-                this.cancellationTokenSource.Token);
-        string prompt = $"{promptModel!.BaseText!}. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        if (prompt.Length > 4000)
-            prompt = prompt.Substring(0, 4000);
-        var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
-        if (result != null)
-        {
-            this.GeneratedinfographicUri = result!.data![0]!.url!;
-            this.RevisedPrompt = result!.data[0]!.revised_prompt;
-        }
-        this.IsBusy = false;
-        StateHasChanged();
+        await LoadDataAsync();
     }
 
-    void IDisposable.Dispose()
+    private async Task LoadDataAsync()
     {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var items = await videoInfographicService.GetPaginatedVideoInfographicByVideoInfoIdAsync(
+                this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
+            this.Items = items;
+            await this.paginationState.SetTotalItemCountAsync(items.TotalItems);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            this.PagePhotos.Clear();
+            StateHasChanged();
+            await LoadImagesBase64Async();
+        }
+    }
+
+    private async Task LoadImagesBase64Async()
+    {
+        if (this.Items?.Items?.Length > 0)
+        {
+            foreach (var singlePhotoId in this.Items.Items.Select(p=>p.PhotoId))
+            {
+                string requestUrl = $"{navigationManager.BaseUri}api/photo/{singlePhotoId}";
+                var result = await httpClient.GetByteArrayAsync(requestUrl, this.cancellationTokenSource.Token);
+                string base64String = Convert.ToBase64String(result);
+                this.PagePhotos.TryAdd(singlePhotoId, $"data:image/png;base64, {base64String}");
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task OnCreateNewInfographicClickedAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
+            Constants.PromptsNames.CreateVideoInfographic, cancellationToken: this.cancellationTokenSource.Token);
+            var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
+            cancellationToken: this.cancellationTokenSource.Token);
+            var englishCaptions = await this.videoCaptionsService
+            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
+            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
+            string prompt = $"{promptInfo!.BaseText}. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
+            if (prompt.Length > 4000)
+                prompt = prompt.Substring(0, 4000);
+            var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
+            if (result != null)
+            {
+                this.GeneratedInfographicUri = result!.data![0]!.url!;
+                this.RevisedPrompt = result!.data[0]!.revised_prompt;
+            }
+            var photoId = await photoService.CreatePhotoAsync(
+            new FairPlayCombined.Models.Common.Photo.CreatePhotoModel()
+                {
+                    Filename = $"Video-{this.VideoInfoId}-Infographic.jpg",
+                    Name = $"Video-{this.VideoInfoId}-Infographic",
+                    PhotoBytes = await this.httpClient.GetByteArrayAsync(this.GeneratedInfographicUri,
+                                                                                this.cancellationTokenSource.Token)
+                }, this.cancellationTokenSource.Token);
+            await this.videoInfographicService.CreateVideoInfographicAsync(
+                new FairPlayCombined.Models.FairPlayTube.VideoInfographic.CreateVideoInfographicModel()
+                    {
+                        PhotoId = photoId,
+                        VideoInfoId = this.VideoInfoId.Value
+                    }, this.cancellationTokenSource.Token
+            );
+            this.paginationRequest.StartIndex = 0;
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnCurrentPageIndexChangedAsync(int pageNumber)
+    {
+        this.paginationRequest.StartIndex = pageNumber * this.paginationRequest.PageSize;
+        await LoadDataAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.cancellationTokenSource.CancelAsync();
         this.cancellationTokenSource.Dispose();
     }
 }
