@@ -87,12 +87,12 @@
     public long? VideoInfoId { get; set; }
     private bool IsBusy { get; set; }
     private PaginationOfT<VideoThumbnailModel>? Items;
-    private ConcurrentDictionary<long, string> PagePhotos = new();
+    private readonly ConcurrentDictionary<long, string> PagePhotos = new();
     private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
-    PaginationRequest paginationRequest = new()
+    private readonly PaginationRequest paginationRequest = new()
         {
             PageSize = Constants.Pagination.PageSize,
             StartIndex = 0,

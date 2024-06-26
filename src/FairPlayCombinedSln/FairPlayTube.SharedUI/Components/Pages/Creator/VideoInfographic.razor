@@ -87,7 +87,7 @@
     public long? VideoInfoId { get; set; }
     private bool IsBusy { get; set; }
     private PaginationOfT<VideoInfographicModel>? Items;
-    private ConcurrentDictionary<long, string> PagePhotos = new();
+    private readonly ConcurrentDictionary<long, string> PagePhotos = new();
     private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize

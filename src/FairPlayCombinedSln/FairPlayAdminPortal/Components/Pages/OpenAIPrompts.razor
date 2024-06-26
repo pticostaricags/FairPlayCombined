@@ -52,7 +52,7 @@
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
-    PaginationRequest paginationRequest = new()
+    private readonly PaginationRequest paginationRequest = new()
         {
             PageSize = Constants.Pagination.PageSize,
             StartIndex = 0,

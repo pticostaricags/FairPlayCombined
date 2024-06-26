@@ -67,7 +67,7 @@
     private string? NewVideoRecommendationIdea { get; set; }
     private string? RevisedPrompt { get; set; }
     private GridItemsProvider<NewVideoRecommendationModel>? ItemsProvider { get; set; }
-    private PaginationState paginationState = new()
+    private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
