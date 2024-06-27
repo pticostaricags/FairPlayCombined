@@ -122,7 +122,8 @@ namespace FairPlayCombined.Services.FairPlayTube
                     EnglishCaptions = p.VideoCaptions.Where(p => p.Language == "en-US")
                     .Select(p => p.Content).SingleOrDefault(),
                     VideoIndexingProcessingPercentage = p.VideoIndexingProcessingPercentage,
-                    RowCreationDateTime = p.RowCreationDateTime
+                    RowCreationDateTime = p.RowCreationDateTime,
+                    IndexingCost = p.VideoIndexingTransaction.Sum(it=>it.IndexingCost)
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);

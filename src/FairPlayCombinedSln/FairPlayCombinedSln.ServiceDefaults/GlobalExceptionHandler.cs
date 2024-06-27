@@ -16,7 +16,7 @@ namespace FairPlayCombinedSln.ServiceDefaults
             Exception exception,
             CancellationToken cancellationToken)
         {
-            long? errorId = default;
+            long? errorId = null;
             try
             {
                 FairPlayCombinedDbContext fairPlayCombinedDbContext =
