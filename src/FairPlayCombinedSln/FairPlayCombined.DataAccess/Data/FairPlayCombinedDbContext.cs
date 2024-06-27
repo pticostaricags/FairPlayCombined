@@ -76,6 +76,10 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<OpenAiprompt> OpenAiprompt { get; set; }
 
+    public virtual DbSet<OpenAipromptCost> OpenAipromptCost { get; set; }
+
+    public virtual DbSet<OpenAipromptMargin> OpenAipromptMargin { get; set; }
+
     public virtual DbSet<PersonalityType> PersonalityType { get; set; }
 
     public virtual DbSet<Photo> Photo { get; set; }
@@ -284,6 +288,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.NotLikingApplicationUser).WithMany(p => p.NotLikedUserProfileNotLikingApplicationUser)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_NotLikedUserProfile_NotLikingApplicactionUser");
+        });
+
+        modelBuilder.Entity<OpenAiprompt>(entity =>
+        {
+            entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.OpenAiprompt)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OpenAIPrompt_AspNetUsers");
         });
 
         modelBuilder.Entity<Post>(entity =>

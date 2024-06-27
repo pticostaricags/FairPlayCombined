@@ -28,4 +28,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="PhotoId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="515702df-8461-4b8f-8914-78bd4323a4b6" ChangeDateTime="06/27/2024 23:03:41">
+    <Property Name="ElementName" Value="[dbo].[OpenAIPrompt].[ApplicationUserId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[OpenAIPrompt]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="OwnerApplicationUserId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e8f78d5e-e05c-45c7-9e36-26387b61d340" ChangeDateTime="06/27/2024 23:20:20">
+    <Property Name="ElementName" Value="[dbo].[OpenAIPromptCost].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[OpenAIPromptCost]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="OpenAIPromptCost" />
+  </Operation>
 </Operations>

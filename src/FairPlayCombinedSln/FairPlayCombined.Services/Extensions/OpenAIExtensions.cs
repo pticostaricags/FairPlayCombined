@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.Common;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.Common;
@@ -51,6 +52,7 @@ namespace FairPlayCombined.Services.Extensions
                 {
                     Timeout = TimeSpan.FromMinutes(timeoutMinutes)
                 };
+                var userProviderService = sp.GetRequiredService<IUserProviderService>();
                 var logger = sp.GetRequiredService<ILogger<OpenAIService>>();
                 return new OpenAIService(openAIAuthorizedHttpClient,
                     genericHttpClient: genericHttpClient, new OpenAIServiceConfiguration()
@@ -60,7 +62,7 @@ namespace FairPlayCombined.Services.Extensions
                         ChatCompletionsUrl = openAIChatCompletionEntity.Value,
                         TextGenerationModel = openAITextGenerationModelEntity.Value
                     },
-                dbContextFactory: dbContextFactory, logger);
+                dbContextFactory: dbContextFactory, logger, userProviderService);
             });
         }
     }

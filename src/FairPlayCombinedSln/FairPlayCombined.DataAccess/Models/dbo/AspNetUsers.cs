@@ -96,6 +96,9 @@ public partial class AspNetUsers
     public virtual ICollection<NotLikedUserProfile> NotLikedUserProfileNotLikingApplicationUser { get; set; } = new List<NotLikedUserProfile>();
 
     [InverseProperty("OwnerApplicationUser")]
+    public virtual ICollection<OpenAiprompt> OpenAiprompt { get; set; } = new List<OpenAiprompt>();
+
+    [InverseProperty("OwnerApplicationUser")]
     public virtual ICollection<Post> Post { get; set; } = new List<Post>();
 
     [InverseProperty("Owner")]

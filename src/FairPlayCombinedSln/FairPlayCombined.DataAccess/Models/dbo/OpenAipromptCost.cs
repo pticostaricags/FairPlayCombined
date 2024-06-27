@@ -15,32 +15,15 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
-[Table("OpenAIPrompt")]
-public partial class OpenAiprompt
+[Table("OpenAIPromptCost")]
+public partial class OpenAipromptCost
 {
     [Key]
-    [Column("OpenAIPromptId")]
-    public long OpenAipromptId { get; set; }
-
-    [Required]
-    [StringLength(450)]
-    public string OwnerApplicationUserId { get; set; }
+    [Column("OpenAIPromptCostId")]
+    public int OpenAipromptCostId { get; set; }
 
     [Column(TypeName = "money")]
-    public decimal OperationCost { get; set; }
-
-    [Required]
-    public string OriginalPrompt { get; set; }
-
-    [Required]
-    public string RevisedPrompt { get; set; }
-
-    [Required]
-    [StringLength(50)]
-    public string Model { get; set; }
-
-    [Required]
-    public byte[] GeneratedImageBytes { get; set; }
+    public decimal CostPerPrompt { get; set; }
 
     public DateTimeOffset RowCreationDateTime { get; set; }
 
@@ -56,8 +39,4 @@ public partial class OpenAiprompt
     [Column("OriginatorIPAddress")]
     [StringLength(100)]
     public string OriginatorIpaddress { get; set; }
-
-    [ForeignKey("OwnerApplicationUserId")]
-    [InverseProperty("OpenAiprompt")]
-    public virtual AspNetUsers OwnerApplicationUser { get; set; }
 }
