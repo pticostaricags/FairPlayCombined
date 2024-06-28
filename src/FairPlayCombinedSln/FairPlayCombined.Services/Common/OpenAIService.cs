@@ -120,11 +120,15 @@ public class OpenAIService(
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             var promptMarginEntity = await dbContext.OpenAipromptMargin.SingleAsync(cancellationToken: cancellationToken);
             var promptCostEntity = await dbContext.OpenAipromptCost.SingleAsync(cancellationToken: cancellationToken);
-            var prompCost = promptCostEntity.CostPerPrompt + 
+            var promptCost = promptCostEntity.CostPerPrompt + 
                 (promptCostEntity.CostPerPrompt * promptMarginEntity.Margin);
+            var userFundsEntity = await dbContext.UserFunds.
+                SingleAsync(p=>p.ApplicationUserId == userId,
+                cancellationToken: cancellationToken);
+            userFundsEntity.AvailableFunds -= promptCost;
             await dbContext.OpenAiprompt.AddAsync(new OpenAiprompt()
             {
-                OperationCost = prompCost,
+                OperationCost = promptCost,
                 OriginalPrompt = prompt,
                 Model = model,
                 OwnerApplicationUserId = userId,
