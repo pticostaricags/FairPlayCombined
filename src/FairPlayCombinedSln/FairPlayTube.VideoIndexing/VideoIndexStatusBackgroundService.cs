@@ -91,10 +91,14 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                 var completedVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
                     singleVideoEntity.VideoId, getviTokenResult.AccessToken!,
                     stoppingToken);
-                var videoIndexingMarginEntity = 
+                var userFundsEntity = await dbContext.UserFunds
+                    .SingleAsync(p => p.ApplicationUserId ==
+                    singleVideoEntity.ApplicationUserId, stoppingToken);
+                var videoIndexingMarginEntity =
                     await dbContext.VideoIndexingMargin.SingleAsync(stoppingToken);
                 var indexingCost = costPerMinute * ((decimal)completedVideoIndex!.durationInSeconds / 60);
                 var indexingCostWithMargin = indexingCost + (indexingCost * videoIndexingMarginEntity.Margin);
+                userFundsEntity.AvailableFunds -= indexingCostWithMargin;
                 await dbContext.VideoIndexingTransaction.AddAsync(new VideoIndexingTransaction()
                 {
                     VideoInfoId = singleVideoEntity.VideoInfoId,
@@ -107,7 +111,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                 singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
                 var facesThumbnailsDownloadUrl =
                     await azureVideoIndexerService
-                    .GetFacesThumbnailsDownloadUrlAsync(completedVideoIndex.id!, 
+                    .GetFacesThumbnailsDownloadUrlAsync(completedVideoIndex.id!,
                     getviTokenResult.AccessToken!, stoppingToken);
                 List<(string PersonName, string ThumbnailFilename)> pairs =
                         completedVideoIndex!.GetPersonThumbnailPairs();
@@ -134,9 +138,9 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                             faceName = singlePair.ThumbnailFilename;
                         }
                     }
-                    if (!String.IsNullOrWhiteSpace(faceName) && 
+                    if (!String.IsNullOrWhiteSpace(faceName) &&
                         !singleVideoEntity.VideoFaceThumbnail
-                        .Any(p=>p.FaceName == faceName))
+                        .Any(p => p.FaceName == faceName))
                     {
                         singleVideoEntity.VideoFaceThumbnail.Add(new()
                         {
@@ -209,7 +213,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
         }
     }
 
-    private static void InsertInsights(VideoInfo? singleVideoEntity, 
+    private static void InsertInsights(VideoInfo? singleVideoEntity,
         GetVideoIndexResponseModel? completedVideoIndex)
     {
         if (completedVideoIndex?.summarizedInsights?.topics?.Length > 0)
