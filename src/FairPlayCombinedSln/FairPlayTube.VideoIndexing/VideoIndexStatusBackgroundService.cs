@@ -115,55 +115,60 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                 singleVideoEntity.VideoDurationInSeconds = completedVideoIndex.durationInSeconds;
                 singleVideoEntity.PublishedUrl = completedVideoIndex!.videos![0].publishedUrl;
                 singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
-                var facesThumbnailsDownloadUrl =
-                    await azureVideoIndexerService
-                    .GetFacesThumbnailsDownloadUrlAsync(completedVideoIndex.id!,
-                    getviTokenResult.AccessToken!, stoppingToken);
-                List<(string PersonName, string ThumbnailFilename)> pairs =
-                        completedVideoIndex!.GetPersonThumbnailPairs();
-                if (!String.IsNullOrWhiteSpace(facesThumbnailsDownloadUrl))
-                {
-                    facesThumbnailsDownloadUrl =
-                        facesThumbnailsDownloadUrl.Trim('"');
-                }
-                HttpClient httpClient = new();
-                var stream = await httpClient!
-                    .GetStreamAsync(facesThumbnailsDownloadUrl, stoppingToken);
-                ZipArchive archive = new(stream);
-                foreach (ZipArchiveEntry entry in archive.Entries)
-                {
-                    var entryStream = entry.Open();
-                    MemoryStream entryMemoryStream = new();
-                    await entryStream.CopyToAsync(entryMemoryStream, stoppingToken);
-                    byte[] fileBytes = entryMemoryStream.ToArray();
-                    string faceName = string.Empty;
-                    foreach (var singlePair in pairs)
-                    {
-                        if (entry.FullName == singlePair.ThumbnailFilename)
-                        {
-                            faceName = singlePair.ThumbnailFilename;
-                        }
-                    }
-                    if (!String.IsNullOrWhiteSpace(faceName) &&
-                        !singleVideoEntity.VideoFaceThumbnail
-                        .Any(p => p.FaceName == faceName))
-                    {
-                        singleVideoEntity.VideoFaceThumbnail.Add(new()
-                        {
-                            FaceName = faceName,
-                            Photo = new()
-                            {
-                                Filename = entry.Name,
-                                Name = Path.GetFileNameWithoutExtension(entry.Name),
-                                PhotoBytes = fileBytes
-                            }
-                        });
-                    }
-                }
+                await InsertVideoFaceThumbnailsAsync(azureVideoIndexerService, getviTokenResult, singleVideoEntity, completedVideoIndex, stoppingToken);
                 InsertInsights(singleVideoEntity, completedVideoIndex);
             }
 
             await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);
+        }
+    }
+
+    private static async Task InsertVideoFaceThumbnailsAsync(IAzureVideoIndexerService azureVideoIndexerService, GetAccessTokenResponseModel getviTokenResult, VideoInfo? singleVideoEntity, GetVideoIndexResponseModel? completedVideoIndex, CancellationToken stoppingToken)
+    {
+        var facesThumbnailsDownloadUrl =
+                            await azureVideoIndexerService
+                            .GetFacesThumbnailsDownloadUrlAsync(completedVideoIndex.id!,
+                            getviTokenResult.AccessToken!, stoppingToken);
+        List<(string PersonName, string ThumbnailFilename)> pairs =
+                completedVideoIndex!.GetPersonThumbnailPairs();
+        if (!String.IsNullOrWhiteSpace(facesThumbnailsDownloadUrl))
+        {
+            facesThumbnailsDownloadUrl =
+                facesThumbnailsDownloadUrl.Trim('"');
+        }
+        HttpClient httpClient = new();
+        var stream = await httpClient!
+            .GetStreamAsync(facesThumbnailsDownloadUrl, stoppingToken);
+        ZipArchive archive = new(stream);
+        foreach (ZipArchiveEntry entry in archive.Entries)
+        {
+            var entryStream = entry.Open();
+            MemoryStream entryMemoryStream = new();
+            await entryStream.CopyToAsync(entryMemoryStream, stoppingToken);
+            byte[] fileBytes = entryMemoryStream.ToArray();
+            string faceName = string.Empty;
+            foreach (var singlePair in pairs)
+            {
+                if (entry.FullName == singlePair.ThumbnailFilename)
+                {
+                    faceName = singlePair.ThumbnailFilename;
+                }
+            }
+            if (!String.IsNullOrWhiteSpace(faceName) &&
+                !singleVideoEntity.VideoFaceThumbnail
+                .Any(p => p.FaceName == faceName))
+            {
+                singleVideoEntity.VideoFaceThumbnail.Add(new()
+                {
+                    FaceName = faceName,
+                    Photo = new()
+                    {
+                        Filename = entry.Name,
+                        Name = Path.GetFileNameWithoutExtension(entry.Name),
+                        PhotoBytes = fileBytes
+                    }
+                });
+            }
         }
     }
 
