@@ -47,5 +47,18 @@ namespace FairPlayCombined.Services.Common
             }
             await dbContext.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task InitializeUserFundsAsync(string userId,
+            CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            await dbContext.UserFunds.AddAsync(new() 
+            {
+                ApplicationUserId = userId,
+                AvailableFunds=0
+            },
+                cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }
