@@ -88,19 +88,21 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     Name = $"Thumbnail-{singleVideoEntity.VideoId}",
                     PhotoBytes = thumbnailBytes
                 };
-                await dbContext.VideoIndexingTransaction.AddAsync(new VideoIndexingTransaction()
-                {
-                    VideoInfoId = singleVideoEntity.VideoInfoId,
-                    IndexingCost = costPerMinute * ((decimal)singleVideoEntity.VideoDurationInSeconds / 60)
-                }, stoppingToken);
-                singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
-                singleVideoEntity.VideoIndexingProcessingPercentage = 100;
-                singleVideoEntity.VideoDurationInSeconds =
-                    videosIndex!.results!
-                    .Single(p => p.id == singleVideoEntity.VideoId).durationInSeconds;
                 var completedVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
                     singleVideoEntity.VideoId, getviTokenResult.AccessToken!,
                     stoppingToken);
+                var videoIndexingMarginEntity = 
+                    await dbContext.VideoIndexingMargin.SingleAsync(stoppingToken);
+                var indexingCost = costPerMinute * ((decimal)completedVideoIndex!.durationInSeconds / 60);
+                var indexingCostWithMargin = indexingCost + (indexingCost * videoIndexingMarginEntity.Margin);
+                await dbContext.VideoIndexingTransaction.AddAsync(new VideoIndexingTransaction()
+                {
+                    VideoInfoId = singleVideoEntity.VideoInfoId,
+                    IndexingCost = indexingCostWithMargin
+                }, stoppingToken);
+                singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
+                singleVideoEntity.VideoIndexingProcessingPercentage = 100;
+                singleVideoEntity.VideoDurationInSeconds = completedVideoIndex.durationInSeconds;
                 singleVideoEntity.PublishedUrl = completedVideoIndex!.videos![0].publishedUrl;
                 singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
                 var facesThumbnailsDownloadUrl =
