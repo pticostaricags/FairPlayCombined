@@ -1,4 +1,5 @@
 ﻿@page "/Account/ConfirmEmail"
+@implements IAsyncDisposable
 
 @using System.Text
 @using FairPlayCombined.Interfaces.Common
@@ -51,5 +52,11 @@
                 await this.userFundService.InitializeUserFundsAsync(user.Id, this.cancellationTokenSource.Token);
             }
         }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 }

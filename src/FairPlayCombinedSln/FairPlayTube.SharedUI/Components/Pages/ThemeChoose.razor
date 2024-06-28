@@ -32,6 +32,6 @@
     </FluentGridItem>
 </FluentGrid>
 @code {
-    private DesignThemeModes Mode { get; set; }
-    private OfficeColor? OfficeColor { get; set; }
+    private DesignThemeModes Mode { get; set; } = DesignThemeModes.System;
+    private OfficeColor? OfficeColor { get; set; } = Microsoft.FluentUI.AspNetCore.Components.OfficeColor.Default;
 }
