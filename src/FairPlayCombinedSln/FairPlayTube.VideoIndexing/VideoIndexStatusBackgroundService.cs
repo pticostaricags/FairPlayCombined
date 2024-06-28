@@ -127,7 +127,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
     {
         var facesThumbnailsDownloadUrl =
                             await azureVideoIndexerService
-                            .GetFacesThumbnailsDownloadUrlAsync(completedVideoIndex.id!,
+                            .GetFacesThumbnailsDownloadUrlAsync(completedVideoIndex!.id!,
                             getviTokenResult.AccessToken!, stoppingToken);
         List<(string PersonName, string ThumbnailFilename)> pairs =
                 completedVideoIndex!.GetPersonThumbnailPairs();
@@ -155,7 +155,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                 }
             }
             if (!String.IsNullOrWhiteSpace(faceName) &&
-                !singleVideoEntity.VideoFaceThumbnail
+                !singleVideoEntity!.VideoFaceThumbnail
                 .Any(p => p.FaceName == faceName))
             {
                 singleVideoEntity.VideoFaceThumbnail.Add(new()
