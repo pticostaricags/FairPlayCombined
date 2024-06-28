@@ -34,7 +34,7 @@
         <PropertyColumn Title="Published Date" Property="@(p=>p.RowCreationDateTime)" IsDefaultSortColumn="true" 
             InitialSortDirection="@SortDirection.Descending"></PropertyColumn>
         <PropertyColumn Class="multiline-text" Property="@(p=>p.Name)"></PropertyColumn>
-        <PropertyColumn Property="@(P=>P.VideoId)"></PropertyColumn>
+        <PropertyColumn Property="@(P=>P.IndexingCost)" Format="c"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
         <TemplateColumn Class="multiline-text">
             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"

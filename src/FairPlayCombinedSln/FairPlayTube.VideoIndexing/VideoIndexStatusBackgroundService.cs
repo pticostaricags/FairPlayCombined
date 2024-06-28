@@ -49,7 +49,9 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     }
                     var indexCompleteVideos = videosIndex?.results?.Where(p => p.state ==
                     FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed.ToString());
-                    await UpdateVideoIndexingTransactionAsync(dbContext, azureVideoIndexerService, getviTokenResult, videosIndex, indexCompleteVideos, stoppingToken);
+                    await UpdateVideoIndexingTransactionAsync(dbContext, 
+                        azureVideoIndexerService, getviTokenResult, indexCompleteVideos, 
+                        stoppingToken);
                 }
                 logger.LogInformation("Current Iteration finished at: {Time}. Next Iteration at {Time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
                 await Task.Delay(timeToWait, stoppingToken);
@@ -61,8 +63,12 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
         }
     }
 
-    private static async Task UpdateVideoIndexingTransactionAsync(FairPlayCombinedDbContext dbContext,
-        IAzureVideoIndexerService azureVideoIndexerService, GetAccessTokenResponseModel? getviTokenResult, SearchVideosResponseModel? videosIndex, IEnumerable<Result>? indexCompleteVideos, CancellationToken stoppingToken)
+    private static async Task UpdateVideoIndexingTransactionAsync(
+        FairPlayCombinedDbContext dbContext,
+        IAzureVideoIndexerService azureVideoIndexerService, 
+        GetAccessTokenResponseModel? getviTokenResult,  
+        IEnumerable<Result>? indexCompleteVideos, 
+        CancellationToken stoppingToken)
     {
         if (indexCompleteVideos?.Any() == true)
         {
@@ -88,70 +94,81 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     Name = $"Thumbnail-{singleVideoEntity.VideoId}",
                     PhotoBytes = thumbnailBytes
                 };
-                await dbContext.VideoIndexingTransaction.AddAsync(new VideoIndexingTransaction()
-                {
-                    VideoInfoId = singleVideoEntity.VideoInfoId,
-                    IndexingCost = costPerMinute * ((decimal)singleVideoEntity.VideoDurationInSeconds / 60)
-                }, stoppingToken);
-                singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
-                singleVideoEntity.VideoIndexingProcessingPercentage = 100;
-                singleVideoEntity.VideoDurationInSeconds =
-                    videosIndex!.results!
-                    .Single(p => p.id == singleVideoEntity.VideoId).durationInSeconds;
                 var completedVideoIndex = await azureVideoIndexerService.GetVideoIndexAsync(
                     singleVideoEntity.VideoId, getviTokenResult.AccessToken!,
                     stoppingToken);
+                var userFundsEntity = await dbContext.UserFunds
+                    .SingleAsync(p => p.ApplicationUserId ==
+                    singleVideoEntity.ApplicationUserId, stoppingToken);
+                var videoIndexingMarginEntity =
+                    await dbContext.VideoIndexingMargin.SingleAsync(stoppingToken);
+                var indexingCost = costPerMinute * ((decimal)completedVideoIndex!.durationInSeconds / 60);
+                var indexingCostWithMargin = indexingCost + (indexingCost * videoIndexingMarginEntity.Margin);
+                userFundsEntity.AvailableFunds -= indexingCostWithMargin;
+                await dbContext.VideoIndexingTransaction.AddAsync(new VideoIndexingTransaction()
+                {
+                    VideoInfoId = singleVideoEntity.VideoInfoId,
+                    IndexingCost = indexingCostWithMargin
+                }, stoppingToken);
+                singleVideoEntity.VideoIndexStatusId = (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed;
+                singleVideoEntity.VideoIndexingProcessingPercentage = 100;
+                singleVideoEntity.VideoDurationInSeconds = completedVideoIndex.durationInSeconds;
                 singleVideoEntity.PublishedUrl = completedVideoIndex!.videos![0].publishedUrl;
                 singleVideoEntity.VideoIndexJson = JsonSerializer.Serialize(completedVideoIndex);
-                var facesThumbnailsDownloadUrl =
-                    await azureVideoIndexerService
-                    .GetFacesThumbnailsDownloadUrlAsync(completedVideoIndex.id!, 
-                    getviTokenResult.AccessToken!, stoppingToken);
-                List<(string PersonName, string ThumbnailFilename)> pairs =
-                        completedVideoIndex!.GetPersonThumbnailPairs();
-                if (!String.IsNullOrWhiteSpace(facesThumbnailsDownloadUrl))
-                {
-                    facesThumbnailsDownloadUrl =
-                        facesThumbnailsDownloadUrl.Trim('"');
-                }
-                HttpClient httpClient = new();
-                var stream = await httpClient!
-                    .GetStreamAsync(facesThumbnailsDownloadUrl, stoppingToken);
-                ZipArchive archive = new(stream);
-                foreach (ZipArchiveEntry entry in archive.Entries)
-                {
-                    var entryStream = entry.Open();
-                    MemoryStream entryMemoryStream = new();
-                    await entryStream.CopyToAsync(entryMemoryStream, stoppingToken);
-                    byte[] fileBytes = entryMemoryStream.ToArray();
-                    string faceName = string.Empty;
-                    foreach (var singlePair in pairs)
-                    {
-                        if (entry.FullName == singlePair.ThumbnailFilename)
-                        {
-                            faceName = singlePair.ThumbnailFilename;
-                        }
-                    }
-                    if (!String.IsNullOrWhiteSpace(faceName) && 
-                        !singleVideoEntity.VideoFaceThumbnail
-                        .Any(p=>p.FaceName == faceName))
-                    {
-                        singleVideoEntity.VideoFaceThumbnail.Add(new()
-                        {
-                            FaceName = faceName,
-                            Photo = new()
-                            {
-                                Filename = entry.Name,
-                                Name = Path.GetFileNameWithoutExtension(entry.Name),
-                                PhotoBytes = fileBytes
-                            }
-                        });
-                    }
-                }
+                await InsertVideoFaceThumbnailsAsync(azureVideoIndexerService, getviTokenResult, singleVideoEntity, completedVideoIndex, stoppingToken);
                 InsertInsights(singleVideoEntity, completedVideoIndex);
             }
 
             await dbContext.SaveChangesAsync(cancellationToken: stoppingToken);
+        }
+    }
+
+    private static async Task InsertVideoFaceThumbnailsAsync(IAzureVideoIndexerService azureVideoIndexerService, GetAccessTokenResponseModel getviTokenResult, VideoInfo? singleVideoEntity, GetVideoIndexResponseModel? completedVideoIndex, CancellationToken stoppingToken)
+    {
+        var facesThumbnailsDownloadUrl =
+                            await azureVideoIndexerService
+                            .GetFacesThumbnailsDownloadUrlAsync(completedVideoIndex!.id!,
+                            getviTokenResult.AccessToken!, stoppingToken);
+        List<(string PersonName, string ThumbnailFilename)> pairs =
+                completedVideoIndex!.GetPersonThumbnailPairs();
+        if (!String.IsNullOrWhiteSpace(facesThumbnailsDownloadUrl))
+        {
+            facesThumbnailsDownloadUrl =
+                facesThumbnailsDownloadUrl.Trim('"');
+        }
+        HttpClient httpClient = new();
+        var stream = await httpClient!
+            .GetStreamAsync(facesThumbnailsDownloadUrl, stoppingToken);
+        ZipArchive archive = new(stream);
+        foreach (ZipArchiveEntry entry in archive.Entries)
+        {
+            var entryStream = entry.Open();
+            MemoryStream entryMemoryStream = new();
+            await entryStream.CopyToAsync(entryMemoryStream, stoppingToken);
+            byte[] fileBytes = entryMemoryStream.ToArray();
+            string faceName = string.Empty;
+            foreach (var singlePair in pairs)
+            {
+                if (entry.FullName == singlePair.ThumbnailFilename)
+                {
+                    faceName = singlePair.ThumbnailFilename;
+                }
+            }
+            if (!String.IsNullOrWhiteSpace(faceName) &&
+                !singleVideoEntity!.VideoFaceThumbnail
+                .Any(p => p.FaceName == faceName))
+            {
+                singleVideoEntity.VideoFaceThumbnail.Add(new()
+                {
+                    FaceName = faceName,
+                    Photo = new()
+                    {
+                        Filename = entry.Name,
+                        Name = Path.GetFileNameWithoutExtension(entry.Name),
+                        PhotoBytes = fileBytes
+                    }
+                });
+            }
         }
     }
 
@@ -207,7 +224,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
         }
     }
 
-    private static void InsertInsights(VideoInfo? singleVideoEntity, 
+    private static void InsertInsights(VideoInfo? singleVideoEntity,
         GetVideoIndexResponseModel? completedVideoIndex)
     {
         if (completedVideoIndex?.summarizedInsights?.topics?.Length > 0)

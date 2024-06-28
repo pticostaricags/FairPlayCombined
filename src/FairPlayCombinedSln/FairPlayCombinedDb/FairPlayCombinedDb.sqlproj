@@ -179,6 +179,8 @@
     <Build Include="FairPlayDating\PersonalityType.sql" />
     <Build Include="FairPlayTube\Tables\VideoFaceThumbnail.sql" />
     <Build Include="FairPlayTube\Tables\NewVideoRecommendation.sql" />
+    <Build Include="dbo\Tables\OpenAIPromptCost.sql" />
+    <Build Include="dbo\Tables\OpenAIPromptMargin.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />

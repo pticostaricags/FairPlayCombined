@@ -67,6 +67,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[OpenAIPromptCost]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[OpenAIPromptMargin]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Photo]",
          "ObjectType": 0
       },

@@ -1,6 +1,7 @@
 ﻿using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.OpenAI;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,8 @@ public class OpenAIService(
     HttpClient genericHttpClient,
     OpenAIServiceConfiguration openAIServiceConfiguration,
     IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-    ILogger<OpenAIService> logger) : IOpenAIService
+    ILogger<OpenAIService> logger, 
+    IUserProviderService userProviderService) : IOpenAIService
 {
     public async Task<AnalyzeImageResponseModel?> AnalyzeImageAsync(
         string[] imagesBase64Strings, string prompt, CancellationToken cancellationToken)
@@ -114,11 +116,22 @@ public class OpenAIService(
         var result = await response.Content.ReadFromJsonAsync<GenerateDallE3ResponseModel>(cancellationToken: cancellationToken);
         try
         {
+            var userId = userProviderService.GetCurrentUserId()!;
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
+            var promptMarginEntity = await dbContext.OpenAipromptMargin.SingleAsync(cancellationToken: cancellationToken);
+            var promptCostEntity = await dbContext.OpenAipromptCost.SingleAsync(cancellationToken: cancellationToken);
+            var promptCost = promptCostEntity.CostPerPrompt + 
+                (promptCostEntity.CostPerPrompt * promptMarginEntity.Margin);
+            var userFundsEntity = await dbContext.UserFunds.
+                SingleAsync(p=>p.ApplicationUserId == userId,
+                cancellationToken: cancellationToken);
+            userFundsEntity.AvailableFunds -= promptCost;
             await dbContext.OpenAiprompt.AddAsync(new OpenAiprompt()
             {
+                OperationCost = promptCost,
                 OriginalPrompt = prompt,
                 Model = model,
+                OwnerApplicationUserId = userId,
                 RevisedPrompt = result!.data![0].revised_prompt,
                 GeneratedImageBytes = await genericHttpClient
                 .GetByteArrayAsync(requestUri: result.data[0].url, cancellationToken: cancellationToken)

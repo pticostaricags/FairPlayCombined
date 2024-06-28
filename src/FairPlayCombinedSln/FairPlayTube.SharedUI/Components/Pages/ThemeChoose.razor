@@ -1,0 +1,37 @@
+﻿@page "/ThemeChoose"
+@using Microsoft.FluentUI.AspNetCore.Components.Extensions
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+<h3>ThemeChoose</h3>
+
+<FluentDesignTheme StorageName="theme" Mode="@Mode" OfficeColor="@OfficeColor"></FluentDesignTheme>
+
+<FluentGrid>
+    <FluentGridItem>
+        <FluentSelect Label="Theme"
+                      Width="250px"
+                      Items="@(Enum.GetValues<DesignThemeModes>())"
+                      @bind-SelectedOption="@Mode" />
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <FluentSelect Label="Color"
+                      Items="@(Enum.GetValues<OfficeColor>().Select(i => (OfficeColor?)i))"
+                      Height="200px"
+                      Width="250px"
+                      @bind-SelectedOption="@OfficeColor">
+            <OptionTemplate>
+                <FluentStack>
+                    <FluentIcon Value="@(new Icons.Filled.Size20.RectangleLandscape())"
+                                Color="Color.Custom"
+                                CustomColor="@(@context.ToAttributeValue() != "default" ? context.ToAttributeValue() : "#036ac4" )" />
+                    <FluentLabel>@context</FluentLabel>
+                </FluentStack>
+            </OptionTemplate>
+        </FluentSelect>
+    </FluentGridItem>
+</FluentGrid>
+@code {
+    private DesignThemeModes Mode { get; set; } = DesignThemeModes.System;
+    private OfficeColor? OfficeColor { get; set; } = Microsoft.FluentUI.AspNetCore.Components.OfficeColor.Default;
+}

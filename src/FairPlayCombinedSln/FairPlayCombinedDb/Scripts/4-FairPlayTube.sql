@@ -85,4 +85,26 @@ BEGIN
     INSERT INTO FairPlayTube.VideoJobApplicationStatus([VideoJobApplicationStatusId],[Name],[Description]) VALUES(5, @VIDEOJOBAPPLICATIONSTATUSNAME, 'Work has been performed and it is already paid')
 END
 --END OF VIDEO JOB APPLICATION STATUS
+
+--START OF DEFAULT OPENAI PROMPT COSTS
+SET IDENTITY_INSERT [dbo].[OpenAIPromptCost] ON
+DECLARE @COST_PER_PROMPT MONEY = 0.21
+IF NOT EXISTS (SELECT 1 FROM [dbo].[OpenAIPromptCost])
+BEGIN 
+    INSERT INTO [dbo].[OpenAIPromptCost]([OpenAIPromptCostId],[CostPerPrompt],[RowCreationDateTime],[RowCreationUser],[SourceApplication],[OriginatorIPAddress]) 
+    VALUES(1, @COST_PER_PROMPT, SYSUTCDATETIME(), @ROWCREATIONUSER, @SOURCEAPPLICATION, @ORIGINATORIPADDRESS)
+END
+SET IDENTITY_INSERT [dbo].[OpenAIPromptCost] OFF
+--END OF DEFAULT OPENAI PROMPT COSTS
+
+--START OF DEFAULT OPENAI PROMPT MARGINS
+SET IDENTITY_INSERT [dbo].[OpenAIPromptMargin] ON
+DECLARE @PROMPT_MARGIN DECIMAL(5,4) = 0.5
+IF NOT EXISTS (SELECT 1 FROM [dbo].[OpenAIPromptMargin])
+BEGIN 
+    INSERT INTO [dbo].[OpenAIPromptMargin]([OpenAIPromptMarginId],[Margin],[RowCreationDateTime],[RowCreationUser],[SourceApplication],[OriginatorIPAddress]) 
+    VALUES(1, @PROMPT_MARGIN, SYSUTCDATETIME(), @ROWCREATIONUSER, @SOURCEAPPLICATION, @ORIGINATORIPADDRESS)
+END
+SET IDENTITY_INSERT [dbo].[OpenAIPromptMargin] OFF
+--END OF DEFAULT OPENAI PROMPT MARGINS
 COMMIT

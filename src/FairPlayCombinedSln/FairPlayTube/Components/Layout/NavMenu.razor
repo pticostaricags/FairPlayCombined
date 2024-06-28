@@ -2,16 +2,20 @@
 
 @inject NavigationManager NavigationManager
 
-<FluentNavLink Href="/">Home</FluentNavLink>
+<FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.Home())">Home</FluentNavLink>
 <FluentNavLink Href="https://github.com/pticostaricags/FairPlayCombined/wiki/FairPlayTube"
-               Target="_blank">
+               Target="_blank"
+               Icon="@(new Icons.Regular.Size20.Document())">
     User Manual
 </FluentNavLink>
+<FluentNavLink Href="/ThemeChoose" Icon="@(new Icons.Regular.Size20.DesignIdeas())">Theme</FluentNavLink>
 
 <AuthorizeView>
     <Authorized>
-        <FluentNavGroup Title="Accounts" Expanded="@ShouldExpandAccountsGroup">
-            <FluentNavLink Href="/Account/Manage">Manage Account</FluentNavLink>
+        <FluentNavGroup Title="Accounts" Expanded="@ShouldExpandAccountsGroup"
+                        Icon="@(new Icons.Regular.Size20.PeopleCommunity())">
+            <FluentNavLink Href="/Account/Manage"
+                           Icon="@(new Icons.Regular.Size20.Edit())">Manage Account</FluentNavLink>
         </FluentNavGroup>
         <div class="nav-item px-3">
             <form action="Account/Logout" method="post">
@@ -30,18 +34,18 @@
 </AuthorizeView>
 
 <AuthorizeView Roles="@Constants.RoleName.BasicPlanUser">
-    <FluentNavGroup Title="Users" Expanded="@ShouldExpandUsersGroup">
-        <FluentNavLink Href="/User/MyConversations">My Conversations</FluentNavLink>
-        <FluentNavLink Href="/User/MyFunds">My Funds</FluentNavLink>
+    <FluentNavGroup Title="Users" Expanded="@ShouldExpandUsersGroup" Icon="@(new Icons.Regular.Size20.PeopleAudience())">
+        <FluentNavLink Href="/User/MyConversations" Icon="@(new Icons.Regular.Size20.ChatMultiple())">My Conversations</FluentNavLink>
+        <FluentNavLink Href="/User/MyFunds" Icon="@(new Icons.Regular.Size20.Money())">My Funds</FluentNavLink>
     </FluentNavGroup>
-    <FluentNavGroup Title="Creators" Expanded="@ShouldExpandCreatorsGroup">
-        <FluentNavLink Href="/Creator/UploadMyVideo">Upload My Video</FluentNavLink>
-        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos">My Videos</FluentNavLink>
-        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyProcessingVideos">My Processing Videos</FluentNavLink>
-        <FluentNavLink Href="/Creator/NewVideoRecommendation">Recommendations</FluentNavLink>
-        <FluentNavLink Href="/Creator/NewVideoScript">New Video Script</FluentNavLink>
-        <FluentNavLink Href="/Creator/CreateVideoPlan">Create Video Plan</FluentNavLink>
-        <FluentNavLink Href="/Creator/MyVideoPlans">My Video Plans</FluentNavLink>
+    <FluentNavGroup Title="Creators" Expanded="@ShouldExpandCreatorsGroup" Icon="@(new Icons.Regular.Size20.Video())">
+        <FluentNavLink Href="/Creator/UploadMyVideo" Icon="@(new Icons.Regular.Size20.ArrowUpload())">Upload My Video</FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos" Icon="@(new Icons.Regular.Size20.Video())">My Videos</FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyProcessingVideos" Icon="@(new Icons.Regular.Size20.DocumentQueue())">My Processing Videos</FluentNavLink>
+        <FluentNavLink Href="/Creator/NewVideoRecommendation" Icon="@(new Icons.Regular.Size20.DesignIdeas())">Recommendations</FluentNavLink>
+        <FluentNavLink Href="/Creator/NewVideoScript" Icon="@(new Icons.Regular.Size20.Script())">New Video Script</FluentNavLink>
+        <FluentNavLink Href="/Creator/CreateVideoPlan" Icon="@(new Icons.Regular.Size20.DocumentImage())">Create Video Plan</FluentNavLink>
+        <FluentNavLink Href="/Creator/MyVideoPlans" Icon="@(new Icons.Regular.Size20.DocumentBulletList())">My Video Plans</FluentNavLink>
     </FluentNavGroup>
 </AuthorizeView>
 
