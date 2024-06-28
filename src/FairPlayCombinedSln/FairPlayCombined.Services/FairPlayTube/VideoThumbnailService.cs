@@ -1,9 +1,15 @@
-﻿using FairPlayCombined.Common.GeneratorsAttributes;
+﻿using FairPlayCombined.Common;
+using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Interfaces.FairPlayTube;
+using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.FairPlayTube.VideoThumbnail;
+using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Models.Pagination;
+using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
@@ -21,6 +27,50 @@ namespace FairPlayCombined.Services.FairPlayTube
     >]
     public partial class VideoThumbnailService : BaseService, IVideoThumbnailService
     {
+        public async Task<GenerateDallE3ResponseModel?> GenerateVideoThumbnailAsync(
+            long videoInfoId,
+            IOpenAIService openAIService,
+            HttpClient httpClient,
+            CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var promptEntity = await dbContext.Prompt
+                .AsNoTracking()
+                .SingleAsync(p => p.PromptName ==
+                Constants.PromptsNames.CreateYouTubeThumbnail, cancellationToken);
+            var videoDataEntity = await dbContext.VideoInfo
+                .AsNoTracking()
+                .Where(p => p.VideoInfoId == videoInfoId)
+                .Select(p => new
+                {
+                    p.Description,
+                    EnglishCaptions = p.VideoCaptions.Single(p => p.Language == "en-US").Content
+                })
+                .SingleAsync(cancellationToken);
+            string prompt =
+                $"{promptEntity!.BaseText}. " +
+                $"Video Title: {videoDataEntity.Description}. Video Captions: {videoDataEntity.EnglishCaptions}";
+            if (prompt.Length > 4000)
+                prompt = prompt.Substring(0, 4000);
+            var result = await openAIService.GenerateDallE3ImageAsync(prompt, cancellationToken);
+            Photo photoEntity = new()
+            {
+                Filename = $"Video-{videoInfoId}-thumbnail.jpg",
+                Name = $"Video-{videoInfoId}-thumbnail",
+                PhotoBytes = await httpClient
+                .GetByteArrayAsync(result!.data![0].url, cancellationToken)
+            };
+            await dbContext.VideoThumbnail
+                .AddAsync(new() 
+                {
+                    OpenAipromptId = result.OpenAIPromptId,
+                    VideoInfoId=videoInfoId,
+                    Photo = photoEntity,
+                }, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+            return result;
+        }
+
         public async Task<PaginationOfT<VideoThumbnailModel>>
             GetPaginatedVideoThumbnailByVideoInfoIdAsync(long videoInfoId,
             PaginationRequest paginationRequest,
@@ -42,7 +92,8 @@ namespace FairPlayCombined.Services.FairPlayTube
                 {
                     VideoThumbnailId = p.VideoThumbnailId,
                     VideoInfoId = p.VideoInfoId,
-                    PhotoId = p.PhotoId
+                    PhotoId = p.PhotoId,
+                    ThumbnailCost = p.OpenAiprompt.OperationCost
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);
