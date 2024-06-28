@@ -8,10 +8,11 @@
 
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject IUserFundService userFundService
+@inject IToastService toastService
 
 @if (this.AvailableFunds != null)
 {
-    <FluentLabel Typo="Typography.Header">Available Funds: @this.AvailableFunds</FluentLabel>
+    <FluentLabel Typo="Typography.Header">Available Funds: @(this.AvailableFunds.Value.ToString("c"))</FluentLabel>
 }
 <PayPalCheckout OnFundsAdded="OnFundsAdded"></PayPalCheckout>
 @code
@@ -20,7 +21,14 @@
     private readonly CancellationTokenSource cancellationTokenSource = new();
     protected override async Task OnInitializedAsync()
     {
-        await LoadDataAsync();
+        try
+        {
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
     }
 
     private async Task LoadDataAsync()
