@@ -57,6 +57,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0-preview.4.24266.19" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FairPlayTube.ClientServices\FairPlayTube.ClientServices.csproj" />
     <ProjectReference Include="..\FairPlayTube.SharedUI\FairPlayTube.SharedUI.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\Pages\" />
   </ItemGroup>
 </Project>

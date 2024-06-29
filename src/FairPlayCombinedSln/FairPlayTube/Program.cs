@@ -4,6 +4,8 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.FairPlayTube;
+using FairPlayCombined.Models.Common.Localization;
+using FairPlayCombined.Models.Common.Resource;
 using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
@@ -26,6 +28,7 @@ using OpenTelemetry.Metrics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
+using System.Globalization;
 using System.IO.Compression;
 using System.Reflection;
 
@@ -182,6 +185,8 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
 app.MapHub<UserMessageNotificationHub>(Constants.Routes.SignalRHubs.UserMessageHub);
+app.AddLocalizationEndpoints();
+app.AddVideoInfoEndpoints();
 app.MapGet("/api/photo/{photoId}",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
@@ -196,11 +201,11 @@ app.MapGet("/api/photo/{photoId}",
         .SingleOrDefaultAsync(cancellationToken);
         using MemoryStream inputStream = new(result!.PhotoBytes);
         using var image = await Image.LoadAsync(inputStream, cancellationToken);
-        image.Mutate(operation => 
+        image.Mutate(operation =>
         {
-            operation.Resize(options:new()
+            operation.Resize(options: new()
             {
-                Size=new(width:1024, height:768),
+                Size = new(width: 1024, height: 768),
                 Mode = ResizeMode.Max
             });
         });
