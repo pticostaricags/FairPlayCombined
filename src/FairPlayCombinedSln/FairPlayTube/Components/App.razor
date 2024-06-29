@@ -56,7 +56,7 @@
 {
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
-
+    private static IComponentRenderMode ServerNoPrerender = new InteractiveServerRenderMode(prerender: false);
     private IComponentRenderMode? PageRenderMode =>
-        HttpContext.AcceptsInteractiveRouting() ? InteractiveServer : null;
+        HttpContext.AcceptsInteractiveRouting() ? ServerNoPrerender : null;
 }
