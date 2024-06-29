@@ -1,27 +1,76 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">FairPlayTube.MAUI</a>
-    </div>
-</div>
+﻿@implements IDisposable
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+@inject NavigationManager NavigationManager
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
+<FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.Home())">Home</FluentNavLink>
+<FluentNavLink Href="https://github.com/pticostaricags/FairPlayCombined/wiki/FairPlayTube"
+               Target="_blank"
+               Icon="@(new Icons.Regular.Size20.Document())">
+    User Manual
+</FluentNavLink>
+<FluentNavLink Href="/ThemeChoose" Icon="@(new Icons.Regular.Size20.DesignIdeas())">Theme</FluentNavLink>
+
+<AuthorizeView>
+    <Authorized>
+        <FluentNavGroup Title="Accounts" Expanded="@ShouldExpandAccountsGroup"
+                        Icon="@(new Icons.Regular.Size20.PeopleCommunity())">
+            <FluentNavLink Href="/Account/Manage"
+                           Icon="@(new Icons.Regular.Size20.Edit())">Manage Account</FluentNavLink>
+        </FluentNavGroup>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
+            <form action="Account/Logout" method="post">
+                <AntiforgeryToken />
+                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                <button type="submit" class="nav-link">
+                    <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                </button>
+            </form>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <FluentNavLink Href="Account/Register">Register</FluentNavLink>
+        <FluentNavLink Href="Account/Login">Login</FluentNavLink>
+    </NotAuthorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="@Constants.RoleName.BasicPlanUser">
+    <FluentNavGroup Title="Users" Expanded="@ShouldExpandUsersGroup" Icon="@(new Icons.Regular.Size20.PeopleAudience())">
+        <FluentNavLink Href="/User/MyConversations" Icon="@(new Icons.Regular.Size20.ChatMultiple())">My Conversations</FluentNavLink>
+        <FluentNavLink Href="/User/MyFunds" Icon="@(new Icons.Regular.Size20.Money())">My Funds</FluentNavLink>
+    </FluentNavGroup>
+    <FluentNavGroup Title="Creators" Expanded="@ShouldExpandCreatorsGroup" Icon="@(new Icons.Regular.Size20.Video())">
+        <FluentNavLink Href="/Creator/UploadMyVideo" Icon="@(new Icons.Regular.Size20.ArrowUpload())">Upload My Video</FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos" Icon="@(new Icons.Regular.Size20.Video())">My Videos</FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyProcessingVideos" Icon="@(new Icons.Regular.Size20.DocumentQueue())">My Processing Videos</FluentNavLink>
+        <FluentNavLink Href="/Creator/NewVideoRecommendation" Icon="@(new Icons.Regular.Size20.DesignIdeas())">Recommendations</FluentNavLink>
+        <FluentNavLink Href="/Creator/NewVideoScript" Icon="@(new Icons.Regular.Size20.Script())">New Video Script</FluentNavLink>
+        <FluentNavLink Href="/Creator/CreateVideoPlan" Icon="@(new Icons.Regular.Size20.DocumentImage())">Create Video Plan</FluentNavLink>
+        <FluentNavLink Href="/Creator/MyVideoPlans" Icon="@(new Icons.Regular.Size20.DocumentBulletList())">My Video Plans</FluentNavLink>
+    </FluentNavGroup>
+</AuthorizeView>
+
+
+@code {
+    private string? currentUrl;
+    private bool ShouldExpandAccountsGroup => this.NavigationManager.Uri.IndexOf("/Account") >= 0;
+    private bool ShouldExpandUsersGroup => this.NavigationManager.Uri.IndexOf("/User") >= 0;
+    private bool ShouldExpandCreatorsGroup => this.NavigationManager.Uri.IndexOf("/Creator") >= 0;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
+
