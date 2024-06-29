@@ -37,11 +37,11 @@
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
 
 
-    <HeadOutlet />
+    <HeadOutlet @rendermode="PageRenderMode" />
 </head>
 
 <body>
-    <Routes />
+    <Routes @rendermode="PageRenderMode" />
     <script src="_framework/blazor.web.js"></script>
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script src="scripts/videojs.js"></script>
@@ -51,3 +51,12 @@
 </body>
 
 </html>
+
+@code
+{
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private IComponentRenderMode? PageRenderMode =>
+        HttpContext.AcceptsInteractiveRouting() ? InteractiveServer : null;
+}
