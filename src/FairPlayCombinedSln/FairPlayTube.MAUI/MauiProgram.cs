@@ -39,11 +39,24 @@ namespace FairPlayTube.MAUI
             builder.Services.AddCascadingAuthenticationState();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddScoped<LocalizationMessageHandler>();
+            builder.Services.AddSingleton<IAccessTokenProvider, CustomAccessTokenAuthenticationProvider>();
             builder.Services.AddKeyedSingleton<ApiClient>("AnonymousApiClient",
                 (sp, key) =>
                 {
                     AnonymousAuthenticationProvider anonymousAuthenticationProvider = new();
                     HttpClientRequestAdapter httpClientRequestAdapter = new(anonymousAuthenticationProvider);
+                    httpClientRequestAdapter.BaseUrl = apiBaseUrl;
+                    ApiClient apiClient = new(httpClientRequestAdapter);
+                    return apiClient;
+                });
+            builder.Services.AddKeyedSingleton<ApiClient>("AuthenticatedApiClient",
+                (sp, key) =>
+                {
+                    var accesstokenProvider = sp.GetRequiredService<IAccessTokenProvider>();
+                    BaseBearerTokenAuthenticationProvider baseBearerTokenAuthenticationProvider =
+                    new(accesstokenProvider);
+                    HttpClientRequestAdapter httpClientRequestAdapter = 
+                    new(baseBearerTokenAuthenticationProvider);
                     httpClientRequestAdapter.BaseUrl = apiBaseUrl;
                     ApiClient apiClient = new(httpClientRequestAdapter);
                     return apiClient;
@@ -57,6 +70,16 @@ namespace FairPlayTube.MAUI
 #endif
 
             return builder.Build();
+        }
+    }
+
+    public class CustomAccessTokenAuthenticationProvider : IAccessTokenProvider
+    {
+        public AllowedHostsValidator AllowedHostsValidator => new();
+
+        public Task<string> GetAuthorizationTokenAsync(Uri uri, Dictionary<string, object>? additionalAuthenticationContext = null, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(UserContext.AccessToken ?? String.Empty);
         }
     }
 

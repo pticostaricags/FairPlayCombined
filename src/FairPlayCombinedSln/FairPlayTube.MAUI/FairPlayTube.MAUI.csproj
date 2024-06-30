@@ -63,7 +63,4 @@
     <ProjectReference Include="..\FairPlayTube.ClientServices\FairPlayTube.ClientServices.csproj" />
     <ProjectReference Include="..\FairPlayTube.SharedUI\FairPlayTube.SharedUI.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Components\Pages\" />
-  </ItemGroup>
 </Project>

@@ -8,6 +8,7 @@ using FairPlayCombined.Models.AzureVideoIndexer;
 using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayTube;
+using FairPlayTube.Helpers;
 using Google.Apis.Auth.OAuth2;
 
 namespace FairPlayTube.Extensions
@@ -71,6 +72,7 @@ namespace FairPlayTube.Extensions
             builder.Services.AddTransient<IUserFundService, UserFundService>();
             builder.Services.AddTransient<INewVideoRecommendationService, NewVideoRecommendationService>();
             builder.Services.AddTransient<IVideoInfographicService, VideoInfographicService>();
+            builder.Services.AddTransient<IApiResolver, ApiResolver>();
         }
     }
 }

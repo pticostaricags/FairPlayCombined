@@ -107,6 +107,28 @@
         }
       }
     },
+    "/identity/GetMyRoles": {
+      "get": {
+        "tags": [
+          "FairPlayTube"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/photo/{photoId}": {
       "get": {
         "tags": [

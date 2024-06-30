@@ -69,7 +69,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.AspNetCore
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayTube.SharedUI", "FairPlayTube.SharedUI\FairPlayTube.SharedUI.csproj", "{D99F668E-9CF3-499B-9914-603DF4C1B6C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayTube.ClientServices", "FairPlayTube.ClientServices\FairPlayTube.ClientServices.csproj", "{AD5C876D-00C5-457D-9664-BA169FBB0D43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayTube.ClientServices", "FairPlayTube.ClientServices\FairPlayTube.ClientServices.csproj", "{AD5C876D-00C5-457D-9664-BA169FBB0D43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

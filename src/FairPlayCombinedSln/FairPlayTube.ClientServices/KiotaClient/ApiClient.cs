@@ -4,6 +4,7 @@ using FairPlayTube.ClientServices.KiotaClient.Api;
 using FairPlayTube.ClientServices.KiotaClient.ConfirmEmail;
 using FairPlayTube.ClientServices.KiotaClient.Culture;
 using FairPlayTube.ClientServices.KiotaClient.ForgotPassword;
+using FairPlayTube.ClientServices.KiotaClient.Identity;
 using FairPlayTube.ClientServices.KiotaClient.Localization;
 using FairPlayTube.ClientServices.KiotaClient.Login;
 using FairPlayTube.ClientServices.KiotaClient.Manage;
@@ -47,6 +48,10 @@ namespace FairPlayTube.ClientServices.KiotaClient {
         /// <summary>The forgotPassword property</summary>
         public ForgotPasswordRequestBuilder ForgotPassword { get =>
             new ForgotPasswordRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The identity property</summary>
+        public IdentityRequestBuilder Identity { get =>
+            new IdentityRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>The localization property</summary>
         public LocalizationRequestBuilder Localization { get =>

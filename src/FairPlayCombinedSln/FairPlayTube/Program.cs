@@ -4,8 +4,6 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.FairPlayTube;
-using FairPlayCombined.Models.Common.Localization;
-using FairPlayCombined.Models.Common.Resource;
 using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
@@ -28,8 +26,6 @@ using OpenTelemetry.Metrics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
-using System.Globalization;
-using System.IO.Compression;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -187,6 +183,7 @@ app.MapAdditionalIdentityEndpoints();
 app.MapHub<UserMessageNotificationHub>(Constants.Routes.SignalRHubs.UserMessageHub);
 app.AddLocalizationEndpoints();
 app.AddVideoInfoEndpoints();
+app.AddCustomIdentityEndpoints(clientAppsAuthPolicy);
 app.MapGet("/api/photo/{photoId}",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FairPlayTube.Extensions
 {
-    public static class VideoInfoMinimalAPisExtensions
+    public static class VideoInfoMinimalApisExtensions
     {
         public static WebApplication AddVideoInfoEndpoints(this WebApplication app)
         {
