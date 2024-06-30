@@ -1,4 +1,5 @@
-﻿@implements IDisposable
+﻿@using FairPlayCombined.Interfaces.FairPlayTube
+@implements IDisposable
 
 @inject NavigationManager NavigationManager
 
@@ -16,6 +17,8 @@
                         Icon="@(new Icons.Regular.Size20.PeopleCommunity())">
             <FluentNavLink Href="/Account/Manage"
                            Icon="@(new Icons.Regular.Size20.Edit())">Manage Account</FluentNavLink>
+            <FluentNavLink Href="/Account/MyDataExport"
+                           Icon="@(new Icons.Regular.Size20.ArrowExport())">Export My Data</FluentNavLink>
         </FluentNavGroup>
         <div class="nav-item px-3">
             <form action="Account/Logout" method="post">
@@ -55,6 +58,7 @@
     private bool ShouldExpandAccountsGroup => this.NavigationManager.Uri.IndexOf("/Account") >= 0;
     private bool ShouldExpandUsersGroup => this.NavigationManager.Uri.IndexOf("/User") >= 0;
     private bool ShouldExpandCreatorsGroup => this.NavigationManager.Uri.IndexOf("/Creator") >= 0;
+    private CancellationTokenSource cancellationTokenSource = new();
 
     protected override void OnInitialized()
     {

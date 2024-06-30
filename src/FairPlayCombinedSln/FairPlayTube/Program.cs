@@ -184,6 +184,16 @@ app.MapHub<UserMessageNotificationHub>(Constants.Routes.SignalRHubs.UserMessageH
 app.AddLocalizationEndpoints();
 app.AddVideoInfoEndpoints();
 app.AddCustomIdentityEndpoints(clientAppsAuthPolicy);
+app.MapGet("/Account/MyDataExport", 
+    async (
+        [FromServices] IFairPlayTubeUserDataService fairPlayTubeUserDataService,
+        CancellationToken cancellationToken
+    ) => 
+{
+    var data = await fairPlayTubeUserDataService.GetMyUserDataAsync( cancellationToken );
+    return TypedResults.File(data, System.Net.Mime.MediaTypeNames.Application.Octet,
+        "fairplaytubedata.zip");
+});
 app.MapGet("/api/photo/{photoId}",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,

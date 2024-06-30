@@ -73,6 +73,7 @@ namespace FairPlayTube.Extensions
             builder.Services.AddTransient<INewVideoRecommendationService, NewVideoRecommendationService>();
             builder.Services.AddTransient<IVideoInfographicService, VideoInfographicService>();
             builder.Services.AddTransient<IApiResolver, ApiResolver>();
+            builder.Services.AddTransient<IFairPlayTubeUserDataService, FairPlayTubeUserDataService>();
         }
     }
 }
