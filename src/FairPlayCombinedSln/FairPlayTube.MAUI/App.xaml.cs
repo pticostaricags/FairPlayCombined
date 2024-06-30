@@ -1,12 +1,14 @@
-﻿namespace FairPlayTube.MAUI
+﻿using FairPlayTube.ClientServices.KiotaClient;
+
+namespace FairPlayTube.MAUI
 {
     public partial class App : Application
     {
-        public App()
+        public App([FromKeyedServices("AnonymousApiClient")] ApiClient apiClient)
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            MainPage = new MauiPages.Login(apiClient);
         }
     }
 }

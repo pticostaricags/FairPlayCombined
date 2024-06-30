@@ -42,7 +42,7 @@
                 UserContext.AccessTokenExpiresIn = result.ExpiresIn;
                 UserContext.RefreshToken = result.RefreshToken;
                 UserContext.TokenExpiraton = DateTimeOffset.UtcNow.AddMinutes(result!.ExpiresIn!.Value);
-                this.navingationManager!.NavigateTo("/");
+                this.navingationManager!.NavigateTo("/", true);
             }
             else
             {

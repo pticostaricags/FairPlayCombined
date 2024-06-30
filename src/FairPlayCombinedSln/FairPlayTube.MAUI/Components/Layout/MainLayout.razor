@@ -1,33 +1,67 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager navigationManager
 
+@if (!IsReloading)
+{
+    <FluentMainLayout NavMenuWidth="400">
+        <Header>
+            <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center">
+                @nameof(FairPlayTube)
+            </FluentLabel>
+        </Header>
+        <SubHeader>
+            <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
+                @Constants.ApplicationTitles.FairPlayTube
+            </FluentLabel>
+        </SubHeader>
+        <Body>
+            <ErrorBoundary>
+                <ChildContent>
+                    @Body
+                </ChildContent>
+                <ErrorContent>
+                    Error: @context.ToString()
+                    <FluentButton OnClick="OnRefreshClicked"
+                                  Type="ButtonType.Button"
+                                  Appearance="Appearance.Accent">
+                        Refresh
+                    </FluentButton>
+                </ErrorContent>
+            </ErrorBoundary>
+        </Body>
+        <NavMenuContent>
+            <NavMenu></NavMenu>
+        </NavMenuContent>
+    </FluentMainLayout>
 
-<FluentMainLayout NavMenuWidth="400">
-    <Header>
-        <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center">
-            @nameof(FairPlayTube)
-        </FluentLabel>
-    </Header>
-    <SubHeader>
-        <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
-            @Constants.ApplicationTitles.FairPlayTube
-        </FluentLabel>
-    </SubHeader>
-    <Body>
-        @Body
-    </Body>
-    <NavMenuContent>
-        <NavMenu></NavMenu>
-    </NavMenuContent>
-</FluentMainLayout>
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+    <FluentToastProvider />
+    <FluentDialogProvider />
+    <FluentTooltipProvider />
+    <FluentMessageBarProvider />
+    <FluentDesignTheme StorageName="theme" />
+}
+@code
+{
+    private bool IsReloading { get; set; }
 
-<FluentToastProvider />
-<FluentDialogProvider />
-<FluentTooltipProvider />
-<FluentMessageBarProvider />
-<FluentDesignTheme StorageName="theme" />
+    private void OnRefreshClicked()
+    {
+        this.IsReloading = true;
+        StateHasChanged();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (this.IsReloading)
+        {
+            navigationManager.Refresh(true);
+            this.IsReloading = false;
+        }
+    }
+}

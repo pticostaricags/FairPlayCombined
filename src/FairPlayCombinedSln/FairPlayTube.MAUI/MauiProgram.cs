@@ -1,10 +1,12 @@
-﻿using FairPlayCombined.Interfaces.FairPlayTube;
+﻿using FairPlayCombined.Common.Identity;
+using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayTube.ClientServices;
 using FairPlayTube.ClientServices.CustomLocalization;
 using FairPlayTube.ClientServices.KiotaClient;
 using FairPlayTube.MAUI.Authentication;
 using FairPlayTube.MAUI.Helpers;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -35,7 +37,10 @@ namespace FairPlayTube.MAUI
             builder.Services.AddSingleton<IStringLocalizerFactory, ApiLocalizerFactory>();
             builder.Services.AddSingleton<IStringLocalizer, ApiLocalizer>();
             builder.Services.AddLocalization();
+            builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();
+            builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>();
             builder.Services.AddCascadingAuthenticationState();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddScoped<LocalizationMessageHandler>();
