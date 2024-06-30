@@ -636,6 +636,10 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<VideoThumbnail>(entity =>
         {
+            entity.HasOne(d => d.OpenAiprompt).WithMany(p => p.VideoThumbnail)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoThumbnail_OpenAIPrompt");
+
             entity.HasOne(d => d.Photo).WithMany(p => p.VideoThumbnail)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoThumbnail_Photo");

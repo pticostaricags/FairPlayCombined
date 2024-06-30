@@ -15,7 +15,7 @@
     <Body>
         <AuthorizeView>
             <Authorized>
-                <FairPlayTube.Components.SignalR.UserMessageNotification @rendermode="RenderMode.InteractiveServer"></FairPlayTube.Components.SignalR.UserMessageNotification>
+                <FairPlayTube.Components.SignalR.UserMessageNotification></FairPlayTube.Components.SignalR.UserMessageNotification>
             </Authorized>
         </AuthorizeView>
         @Body
@@ -31,7 +31,7 @@
     <a class="dismiss">🗙</a>
 </div>
 
-<FluentToastProvider @rendermode="RenderMode.InteractiveServer" />
+<FluentToastProvider />
 <FluentDialogProvider />
 <FluentTooltipProvider />
 <FluentMessageBarProvider />

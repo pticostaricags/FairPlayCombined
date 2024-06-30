@@ -26,7 +26,6 @@ using OpenTelemetry.Metrics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
-using System.IO.Compression;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -182,6 +181,9 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
 app.MapHub<UserMessageNotificationHub>(Constants.Routes.SignalRHubs.UserMessageHub);
+app.AddLocalizationEndpoints();
+app.AddVideoInfoEndpoints();
+app.AddCustomIdentityEndpoints(clientAppsAuthPolicy);
 app.MapGet("/api/photo/{photoId}",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
@@ -196,11 +198,11 @@ app.MapGet("/api/photo/{photoId}",
         .SingleOrDefaultAsync(cancellationToken);
         using MemoryStream inputStream = new(result!.PhotoBytes);
         using var image = await Image.LoadAsync(inputStream, cancellationToken);
-        image.Mutate(operation => 
+        image.Mutate(operation =>
         {
-            operation.Resize(options:new()
+            operation.Resize(options: new()
             {
-                Size=new(width:1024, height:768),
+                Size = new(width: 1024, height: 768),
                 Mode = ResizeMode.Max
             });
         });

@@ -9,13 +9,12 @@
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Microsoft.Extensions.Localization
 
-@rendermode @(new InteractiveServerRenderMode(prerender:false))
 @attribute [StreamRendering(enabled: true)]
 
-@inject IAzureVideoIndexerService azureVideoIndexerService
 @inject IVideoInfoService videoInfoService
 @inject NavigationManager navigationManager
 @inject IStringLocalizer<Home> localizer
+@inject IApiResolver apiResolver
 
 <PageTitle>@localizer[HomeTextKey]</PageTitle>
 
@@ -30,7 +29,7 @@
         {
             <div>
                 <div>
-                    <img src="@($"/api/video/{singleItem.VideoId}/thumbnail")" width="300" />
+                    <img src="@($"{apiBaseUrl}/api/video/{singleItem.VideoId}/thumbnail")" width="300" />
                 </div>
                 <div>
                     <FluentLabel Alignment="HorizontalAlignment.Center"
@@ -64,7 +63,7 @@
         };
     private GridItemsProviderResult<VideoInfoModel>? PageItems { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
-
+    private string apiBaseUrl => apiResolver.GetBaseUrl();
     protected override async Task OnInitializedAsync()
     {
         ItemsProvider = async req =>

@@ -1,10 +1,16 @@
-﻿using FairPlayCombined.Models.FairPlayTube.VideoThumbnail;
+﻿using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Models.FairPlayTube.VideoThumbnail;
+using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Models.Pagination;
 
 namespace FairPlayCombined.Interfaces.FairPlayTube
 {
     public interface IVideoThumbnailService
     {
+        Task<GenerateDallE3ResponseModel?> GenerateVideoThumbnailAsync(long videoInfoId,
+            IOpenAIService openAIService,
+            HttpClient httpClient,
+            CancellationToken cancellationToken);
         Task<PaginationOfT<VideoThumbnailModel>>
             GetPaginatedVideoThumbnailByVideoInfoIdAsync(long videoInfoId, PaginationRequest paginationRequest,
             CancellationToken cancellationToken);

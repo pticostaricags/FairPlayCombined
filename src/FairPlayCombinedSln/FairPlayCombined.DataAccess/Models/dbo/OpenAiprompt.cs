@@ -60,4 +60,7 @@ public partial class OpenAiprompt
     [ForeignKey("OwnerApplicationUserId")]
     [InverseProperty("OpenAiprompt")]
     public virtual AspNetUsers OwnerApplicationUser { get; set; }
+
+    [InverseProperty("OpenAiprompt")]
+    public virtual ICollection<VideoThumbnail> VideoThumbnail { get; set; } = new List<VideoThumbnail>();
 }

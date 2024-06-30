@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace FairPlayCombined.Services.Common;
 public class OpenAIService(
@@ -112,12 +113,28 @@ public class OpenAIService(
         };
         var response = await openAIAuthorizedHttpClient.PostAsJsonAsync<GenerateDallE3RequestModel>(requestUrl,
             requestModel, cancellationToken: cancellationToken);
-        response.EnsureSuccessStatusCode();
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
+        if (response.IsSuccessStatusCode)
+        {
+            var fullError = await response.Content.ReadAsStringAsync(cancellationToken);
+            GenerateDallE3ResponseError? generateDallE3ResponseError = 
+                JsonSerializer.Deserialize<GenerateDallE3ResponseError>(fullError);
+            ErrorLog errorLogEntity = new()
+            {
+                FullException = fullError,
+                StackTrace = System.Environment.StackTrace,
+                Message = generateDallE3ResponseError!.error!.message
+            };
+            await dbContext.ErrorLog.AddAsync(errorLogEntity,cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+            throw new RuleException($"Unable to generat the image, " +
+                $"call your system administrator and give the following code: " +
+                $"'{errorLogEntity.ErrorLogId}'");
+        }
         var result = await response.Content.ReadFromJsonAsync<GenerateDallE3ResponseModel>(cancellationToken: cancellationToken);
         try
         {
             var userId = userProviderService.GetCurrentUserId()!;
-            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             var promptMarginEntity = await dbContext.OpenAipromptMargin.SingleAsync(cancellationToken: cancellationToken);
             var promptCostEntity = await dbContext.OpenAipromptCost.SingleAsync(cancellationToken: cancellationToken);
             var promptCost = promptCostEntity.CostPerPrompt + 
@@ -126,7 +143,7 @@ public class OpenAIService(
                 SingleAsync(p=>p.ApplicationUserId == userId,
                 cancellationToken: cancellationToken);
             userFundsEntity.AvailableFunds -= promptCost;
-            await dbContext.OpenAiprompt.AddAsync(new OpenAiprompt()
+            OpenAiprompt openAiprompt = new()
             {
                 OperationCost = promptCost,
                 OriginalPrompt = prompt,
@@ -135,9 +152,10 @@ public class OpenAIService(
                 RevisedPrompt = result!.data![0].revised_prompt,
                 GeneratedImageBytes = await genericHttpClient
                 .GetByteArrayAsync(requestUri: result.data[0].url, cancellationToken: cancellationToken)
-            },
-                cancellationToken: cancellationToken);
+            };
+            await dbContext.OpenAiprompt.AddAsync(openAiprompt, cancellationToken: cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
+            result.OpenAIPromptId = openAiprompt.OpenAipromptId;
         }
         catch (Exception)
         {

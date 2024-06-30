@@ -12,5 +12,6 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoThumbnail
         [DeniedValues(default(long))]
         public long PhotoId { get; set; }
         public byte[]? PhotoBytes { get; set; }
+        public decimal ThumbnailCost { get; set; }
     }
 }

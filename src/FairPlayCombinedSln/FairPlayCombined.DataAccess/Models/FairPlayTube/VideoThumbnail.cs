@@ -26,6 +26,13 @@ public partial class VideoThumbnail
 
     public long PhotoId { get; set; }
 
+    [Column("OpenAIPromptId")]
+    public long OpenAipromptId { get; set; }
+
+    [ForeignKey("OpenAipromptId")]
+    [InverseProperty("VideoThumbnail")]
+    public virtual OpenAiprompt OpenAiprompt { get; set; }
+
     [ForeignKey("PhotoId")]
     [InverseProperty("VideoThumbnail")]
     public virtual Photo Photo { get; set; }

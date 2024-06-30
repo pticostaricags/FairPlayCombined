@@ -12,8 +12,7 @@
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
 
-@rendermode @(new InteractiveServerRenderMode(prerender:false))
-@attribute [StreamRendering(enabled:true)]
+@attribute [StreamRendering(enabled: true)]
 
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
@@ -29,61 +28,81 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<div class="@ThemeConfiguration.Grids.GridContainerCss">
-    <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-        <PropertyColumn Title="Published Date" Property="@(p=>p.RowCreationDateTime)" IsDefaultSortColumn="true" 
-            InitialSortDirection="@SortDirection.Descending"></PropertyColumn>
-        <PropertyColumn Class="multiline-text" Property="@(p=>p.Name)"></PropertyColumn>
-        <PropertyColumn Property="@(P=>P.IndexingCost)" Format="c"></PropertyColumn>
-        <PropertyColumn Property="@(p=>p.YouTubeVideoId)"></PropertyColumn>
-        <TemplateColumn Class="multiline-text">
-            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
-                          OnClick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
-                <i class="bi bi-image-fill"></i>
-            </FluentButton>
-            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
-                          OnClick="@( ()=> OnCreateInfographicClicked(context))">
-                <i class="bi bi-file-earmark-bar-graph-fill"></i>
-            </FluentButton>
-            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
-                          OnClick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
-                <i class="bi bi-list-task"></i>
-            </FluentButton>
-            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get New LinkedIn Daily Posts Ideas"
-                          OnClick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
-                <i class="bi bi-linkedin"></i>
-            </FluentButton>
-            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
-                          OnClick="@( ()=> OnGetPassiveIncomeIdeas(context))">
-                <i class="bi bi-currency-dollar"></i>
-            </FluentButton>
-            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
-                          OnClick="@( ()=> OnCreateLinkedInArticleClicked(context))">
-                <i class="bi bi-file-richtext-fill"></i>
-            </FluentButton>
-            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="View My Video Viewers"
-                          OnClick="@( () => OnViewMyVideoViewersClicked(context))">
-                <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
-            </FluentButton>
-            @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
-            {
-                <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
-                              OnClick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
-                    <i class="bi bi-badge-cc-fill"></i>
-                </FluentButton>
-                <FluentAnchor data-enhance-nav="false"
-                              data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
-                              Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
-                    <i class="bi bi-youtube"></i>
-                </FluentAnchor>
-            }
-            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Chapters"
-                          OnClick="@( () => OnCreateYouTubeChaptersClicked(context))">
-                <FluentIcon Value="@(new Icons.Regular.Size20.Timeline())"></FluentIcon>
-            </FluentButton>
-        </TemplateColumn>
-    </FluentDataGrid>
-</div>
+<FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
+    <TemplateColumn>
+        <FluentAccordion ExpandMode="AccordionExpandMode.Multi">
+            <FluentAccordionItem Expanded="true">
+                <HeadingTemplate>
+                    <FluentLabel Typo="Typography.Subject">
+                        @context.RowCreationDateTime
+                    </FluentLabel>
+                    <FluentLabel Typo="Typography.Subject">
+                        @context.Name
+                    </FluentLabel>
+                </HeadingTemplate>
+                <ChildContent>
+                    <div>
+                        <FluentLabel Typo="Typography.Body">@nameof(context.IndexingCost): @context.IndexingCost.ToString("c")</FluentLabel>
+                    </div>
+                    @if (context.YouTubeVideoId != null)
+                    {
+                        <div>
+                            <FluentLabel Typo="Typography.Body">@nameof(context.YouTubeVideoId): @context.YouTubeVideoId</FluentLabel>
+                        </div>
+                    }
+                    <div>
+                        <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
+                                          OnClick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
+                                <i class="bi bi-image-fill"></i>
+                            </FluentButton>
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
+                                          OnClick="@( ()=> OnCreateInfographicClicked(context))">
+                                <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                            </FluentButton>
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
+                                          OnClick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
+                                <i class="bi bi-list-task"></i>
+                            </FluentButton>
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get New LinkedIn Daily Posts Ideas"
+                                          OnClick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
+                                <i class="bi bi-linkedin"></i>
+                            </FluentButton>
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
+                                          OnClick="@( ()=> OnGetPassiveIncomeIdeas(context))">
+                                <i class="bi bi-currency-dollar"></i>
+                            </FluentButton>
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
+                                          OnClick="@( ()=> OnCreateLinkedInArticleClicked(context))">
+                                <i class="bi bi-file-richtext-fill"></i>
+                            </FluentButton>
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="View My Video Viewers"
+                                          OnClick="@( () => OnViewMyVideoViewersClicked(context))">
+                                <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
+                            </FluentButton>
+                            @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
+                            {
+                                <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
+                                              OnClick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
+                                    <i class="bi bi-badge-cc-fill"></i>
+                                </FluentButton>
+                                <FluentAnchor data-enhance-nav="false"
+                                              data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
+                                              Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
+                                    <i class="bi bi-youtube"></i>
+                                </FluentAnchor>
+                            }
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Chapters"
+                                          OnClick="@( () => OnCreateYouTubeChaptersClicked(context))">
+                                <FluentIcon Value="@(new Icons.Regular.Size20.Timeline())"></FluentIcon>
+                            </FluentButton>
+                        </FluentStack>
+                    </div>
+                </ChildContent>
+            </FluentAccordionItem>
+        </FluentAccordion>
+    </TemplateColumn>
+</FluentDataGrid>
 <FluentPaginator State="this.paginationState"></FluentPaginator>
 
 @code
@@ -105,19 +124,15 @@
                 this.IsBusy = true;
                 StateHasChanged();
                 PaginationRequest paginationRequest = new()
-                {
-                    PageSize = paginationState.ItemsPerPage,
-                    StartIndex = req.StartIndex,
-                    SortingItems = req.GetSortByProperties()
-                                                    .Select(p => new SortingItem()
-                                                    {
-                                                        PropertyName = p.PropertyName,
-                                                        SortType = (p.Direction == SortDirection.Ascending) ?
-                                                        SortType.Ascending
-                                                        :
-                                                        SortType.Descending
-                                                    }).ToArray()
-                };
+                    {
+                        PageSize = paginationState.ItemsPerPage,
+                        StartIndex = req.StartIndex,
+                        SortingItems = [new SortingItem()
+                    {
+                        PropertyName=nameof(VideoInfoModel.RowCreationDateTime),
+                        SortType= SortType.Descending
+                    }]
+                    };
                 var items = await videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(paginationRequest,
                     userId: this.userProviderService!.GetCurrentUserId()!,
                 this.cancellationTokenSource.Token);
