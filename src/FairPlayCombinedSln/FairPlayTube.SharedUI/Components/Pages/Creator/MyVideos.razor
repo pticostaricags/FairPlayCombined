@@ -96,6 +96,11 @@
                                           OnClick="@( () => OnCreateYouTubeChaptersClicked(context))">
                                 <FluentIcon Value="@(new Icons.Regular.Size20.Timeline())"></FluentIcon>
                             </FluentButton>
+                            <FluentAnchor Href="@($"/Account/MyVideoDataExport/{context.VideoInfoId}")"
+                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Export Video Data"
+                                          Target="_blank">
+                                <FluentIcon Value="@(new Icons.Regular.Size20.ArrowExport())"></FluentIcon>
+                            </FluentAnchor>
                         </FluentStack>
                     </div>
                 </ChildContent>

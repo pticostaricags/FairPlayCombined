@@ -8,6 +8,7 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
 {
     public interface IFairPlayTubeUserDataService
     {
+        Task<byte[]> GetMyVideoDataAsync(long videoInfoId, CancellationToken cancellationToken);
         Task<byte[]> GetMyUserDataAsync(CancellationToken cancellationToken);
     }
 }
