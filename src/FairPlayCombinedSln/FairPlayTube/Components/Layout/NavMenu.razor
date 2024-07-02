@@ -20,15 +20,15 @@
             <FluentNavLink Href="/Account/MyDataExport" Target="_blank"
                            Icon="@(new Icons.Regular.Size20.ArrowExport())">Export My Data</FluentNavLink>
         </FluentNavGroup>
-        <div class="nav-item px-3">
+        <FluentNavLink Icon="@(new Icons.Regular.Size20.ArrowExit())">
             <form action="Account/Logout" method="post">
                 <AntiforgeryToken />
                 <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                <button type="submit" class="nav-link">
-                    <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                </button>
+                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Stealth">
+                    Logout
+                </FluentButton>
             </form>
-        </div>
+        </FluentNavLink>
     </Authorized>
     <NotAuthorized>
         <FluentNavLink Href="Account/Register">Register</FluentNavLink>
