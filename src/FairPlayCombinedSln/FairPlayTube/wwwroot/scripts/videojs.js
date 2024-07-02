@@ -23,7 +23,8 @@ function initializeVideoJsPlayer(playerElementId, sessionGuid, dotNetObjectRefer
     player = videojs(playerElementId,
         {
             controls: true,
-            autoplay: true
+            autoplay: true,
+            responsive: true
         });
     lastPlayerTime = player.currentTime();
     currentSessionGuid = sessionGuid;

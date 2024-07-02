@@ -46,33 +46,40 @@
     </div>
     @if (this.videoInfoModel?.VideoKeywords?.Length > 0)
     {
-        <div>
-            <FluentLabel Typo="Typography.Subject">Keywords</FluentLabel>
-            <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
-                @foreach (var singleKeyword in this.videoInfoModel.VideoKeywords)
-                {
-                    <FluentBadge Circular="true"
-                                 Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
-                        @singleKeyword
-                    </FluentBadge>
-                }
-            </FluentStack>
-        </div>
+        <FluentAccordion>
+            <FluentAccordionItem Expanded="false" Heading="Keywords">
+                <div>
+                    <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
+                        @foreach (var singleKeyword in this.videoInfoModel.VideoKeywords)
+                        {
+                            <FluentBadge Circular="true"
+                                         Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
+                                @singleKeyword
+                            </FluentBadge>
+                        }
+                    </FluentStack>
+                </div>
+            </FluentAccordionItem>
+        </FluentAccordion>
     }
     @if (this.videoInfoModel?.VideoTopics?.Length > 0)
     {
-        <div>
-            <FluentLabel Typo="Typography.Subject">Topics</FluentLabel>
-            <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
-                @foreach (var singleTopic in this.videoInfoModel.VideoTopics)
-                {
-                    <FluentBadge Circular="true"
-                                 Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
-                        @singleTopic
-                    </FluentBadge>
-                }
-            </FluentStack>
-        </div>
+        <FluentAccordion>
+            <FluentAccordionItem Heading="Topics" Expanded="false">
+                <div>
+                    <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
+                        @foreach (var singleTopic in this.videoInfoModel.VideoTopics)
+                        {
+                            <FluentBadge Circular="true"
+                                         Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
+                                         Class="multiline-text">
+                                @singleTopic
+                            </FluentBadge>
+                        }
+                    </FluentStack>
+                </div>
+            </FluentAccordionItem>
+        </FluentAccordion>
     }
 }
 else
