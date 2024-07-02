@@ -52,6 +52,10 @@
                     }
                     <div>
                         <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Video"
+                                          OnClick="@( () => OnDeleteVideoClickedAsync(context))">
+                                <FluentIcon Value="@(new Icons.Regular.Size20.Delete())"></FluentIcon>
+                            </FluentButton>
                             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
                                           OnClick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
                                 <i class="bi bi-image-fill"></i>
@@ -198,6 +202,27 @@
     private void OnCreateYouTubeChaptersClicked(VideoInfoModel videoInfoModel)
     {
         this.navigationManager.NavigateTo($"/Creator/VideoChapters/{videoInfoModel.VideoInfoId}");
+    }
+
+    private async Task OnDeleteVideoClickedAsync(VideoInfoModel videoInfoModel)
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            await this.videoInfoService.DeleteMyVideoAsync(videoInfoId:videoInfoModel.VideoInfoId, cancellationToken:this.cancellationTokenSource.Token);
+            await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
+            this.toastService.ShowSuccess("Your video is now deleted");
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
     }
 
     public async ValueTask DisposeAsync()

@@ -1,5 +1,6 @@
 ﻿using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.Pagination;
+using System.Threading;
 
 namespace FairPlayCombined.Interfaces.FairPlayTube
 {
@@ -26,5 +27,6 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
             CancellationToken cancellationToken);
         Task<VideoInfoModel?> GetVideoInfoByVideoIdAsync(string videoId,
             CancellationToken cancellationToken);
+        Task DeleteMyVideoAsync(long videoInfoId, CancellationToken cancellationToken);
     }
 }
