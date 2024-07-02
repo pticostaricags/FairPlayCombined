@@ -238,146 +238,82 @@ namespace FairPlayCombined.Services.FairPlayTube
         public async Task DeleteMyVideoAsync(long videoInfoId, CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-            var videoInfoQuery = dbContext.VideoInfo
-                .AsNoTracking()
-                .AsSplitQuery()
-                .Include(p => p.VideoCaptions)
-                .Include(p => p.VideoComment)
-                .Include(p => p.VideoDigitalMarketingDailyPosts)
-                .Include(p => p.VideoDigitalMarketingPlan)
-                .Include(p => p.VideoFaceThumbnail).ThenInclude(p => p.Photo)
-                .Include(p => p.VideoIndexingTransaction)
-                .Include(p => p.VideoInfographic).ThenInclude(p => p.Photo)
-                .Include(p => p.VideoJob)
-                .Include(p => p.VideoKeyword)
-                .Include(p => p.VideoTopic)
-                .Include(p => p.VideoThumbnail)
-                .ThenInclude(p => p.Photo)
-                .Include(p => p.VideoWatchTime)
-                .Where(p => p.VideoInfoId == videoInfoId);
-            if (await videoInfoQuery.AnyAsync(cancellationToken))
+            var executionStrategy = dbContext.Database.CreateExecutionStrategy();
+
+            await executionStrategy.ExecuteAsync(async () =>
             {
-                foreach (var singleVideoInfo in videoInfoQuery)
+                await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+                var videoInfoEntity = await dbContext.VideoInfo
+                    .AsNoTracking()
+                    .SingleAsync(p => p.VideoInfoId == videoInfoId, cancellationToken);
+
+                if (videoInfoEntity is not null)
                 {
-                    RemoveVideoCaptions(dbContext, singleVideoInfo);
-                    RemoveVideoComments(dbContext, singleVideoInfo);
-                    RemoveVideoDigitalMarketingDailyPosts(dbContext, singleVideoInfo);
-                    RemoveVideoDigitalMarketingPlans(dbContext, singleVideoInfo);
-                    RemoveVideoFaceThumbnails(dbContext, singleVideoInfo);
-                    RemoveVideoIndexingTransactions(dbContext, singleVideoInfo);
-                    RemoveVideoInfographics(dbContext, singleVideoInfo);
-                    RemoveVideoJobs(dbContext, singleVideoInfo);
-                    RemoveVideoKeywords(dbContext, singleVideoInfo);
-                    RemoveVideoTopics(dbContext, singleVideoInfo);
-                    RemoveVideoWatchTime(dbContext, singleVideoInfo);
-                    RemoveVideoThumbnails(dbContext, singleVideoInfo);
-                    dbContext.VideoInfo.Remove(singleVideoInfo);
-                    await dbContext.SaveChangesAsync(cancellationToken);
+                    // Delete related entities first
+                    await dbContext.VideoCaptions
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoComment
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoDigitalMarketingDailyPosts
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoDigitalMarketingPlan
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoFaceThumbnail
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoIndexingTransaction
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoInfographic
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoJob
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoKeyword
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoTopic
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoWatchTime
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    await dbContext.VideoThumbnail
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    // Delete the main video info
+                    await dbContext.VideoInfo
+                        .Where(p => p.VideoInfoId == videoInfoId)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    // Commit the transaction
+                    await transaction.CommitAsync(cancellationToken);
+
+                    // Call the Azure Video Indexer service to delete the video by ID
                     var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
                     var getAccessTokenResult = await azureVideoIndexerService.GetAccessTokenForArmAccountAsync(armAccessToken, cancellationToken);
-                    await azureVideoIndexerService.DeleteVideoByIdAsync(singleVideoInfo.VideoId,
-                        getAccessTokenResult!.AccessToken!, cancellationToken);
+                    await azureVideoIndexerService.DeleteVideoByIdAsync(videoInfoEntity.VideoId, getAccessTokenResult!.AccessToken!, cancellationToken);
                 }
-            }
+            });
         }
 
-        private static void RemoveVideoThumbnails(FairPlayCombinedDbContext dbContext, VideoInfo? singleVideoInfo)
-        {
-            foreach (var singleVideoThumbnail in singleVideoInfo!.VideoThumbnail)
-            {
-                dbContext.VideoThumbnail.Remove(singleVideoThumbnail);
-                dbContext.Photo.Remove(singleVideoThumbnail.Photo);
-            }
-        }
-
-        private static void RemoveVideoWatchTime(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoWatchTime in singleVideoInfo.VideoWatchTime)
-            {
-                dbContext.VideoWatchTime.Remove(singleVideoWatchTime);
-            }
-        }
-
-        private static void RemoveVideoTopics(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoTopic in singleVideoInfo.VideoTopic)
-            {
-                dbContext.VideoTopic.Remove(singleVideoTopic);
-            }
-        }
-
-        private static void RemoveVideoKeywords(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoKeyword in singleVideoInfo.VideoKeyword)
-            {
-                dbContext.VideoKeyword.Remove(singleVideoKeyword);
-            }
-        }
-
-        private static void RemoveVideoJobs(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoJob in singleVideoInfo.VideoJob)
-            {
-                dbContext.VideoJob.Remove(singleVideoJob);
-            }
-        }
-
-        private static void RemoveVideoInfographics(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoInfographic in singleVideoInfo.VideoInfographic)
-            {
-                dbContext.VideoInfographic.Remove(singleVideoInfographic);
-                dbContext.Photo.Remove(singleVideoInfographic.Photo);
-            }
-        }
-
-        private static void RemoveVideoIndexingTransactions(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoIndexingTransaction in singleVideoInfo.VideoIndexingTransaction)
-            {
-                dbContext.VideoIndexingTransaction.Remove(singleVideoIndexingTransaction);
-            }
-        }
-
-        private static void RemoveVideoFaceThumbnails(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoFaceThumbnail in singleVideoInfo.VideoFaceThumbnail)
-            {
-                dbContext.VideoFaceThumbnail.Remove(singleVideoFaceThumbnail);
-                dbContext.Photo.Remove(singleVideoFaceThumbnail.Photo);
-            }
-        }
-
-        private static void RemoveVideoDigitalMarketingPlans(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoDigitalMarketingPlan in singleVideoInfo.VideoDigitalMarketingPlan)
-            {
-                dbContext.VideoDigitalMarketingPlan.Remove(singleVideoDigitalMarketingPlan);
-            }
-        }
-
-        private static void RemoveVideoDigitalMarketingDailyPosts(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoDigitalMarketingDailyPost in singleVideoInfo.VideoDigitalMarketingDailyPosts)
-            {
-                dbContext.VideoDigitalMarketingDailyPosts.Remove(singleVideoDigitalMarketingDailyPost);
-            }
-        }
-
-        private static void RemoveVideoComments(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoComment in singleVideoInfo.VideoComment)
-            {
-                dbContext.VideoComment.Remove(singleVideoComment);
-            }
-        }
-
-        private static void RemoveVideoCaptions(FairPlayCombinedDbContext dbContext, VideoInfo singleVideoInfo)
-        {
-            foreach (var singleVideoCaption in singleVideoInfo.VideoCaptions)
-            {
-                dbContext.VideoCaptions.Remove(singleVideoCaption);
-            }
-        }
     }
 }

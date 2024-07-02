@@ -21,6 +21,7 @@
 @inject IOpenAIService openAIService
 @inject IVideoCaptionsService videoCaptionsService
 @inject IVideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
+@inject IDialogService dialogService
 
 @inject NavigationManager navigationManager
 
@@ -54,7 +55,7 @@
                         <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
                             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Video"
                                           OnClick="@( () => OnDeleteVideoClickedAsync(context))">
-                                <FluentIcon Value="@(new Icons.Regular.Size20.Delete())"></FluentIcon>
+                                <FluentIcon Value="@(new Icons.Regular.Size20.Delete())" Color="Color.Warning"></FluentIcon>
                             </FluentButton>
                             <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
                                           OnClick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
@@ -208,11 +209,17 @@
     {
         try
         {
-            this.IsBusy = true;
-            StateHasChanged();
-            await this.videoInfoService.DeleteMyVideoAsync(videoInfoId:videoInfoModel.VideoInfoId, cancellationToken:this.cancellationTokenSource.Token);
-            await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
-            this.toastService.ShowSuccess("Your video is now deleted");
+            var dialogReference =
+            await dialogService.ShowConfirmationAsync($"Are you sure you want to delete the video: {videoInfoModel.Name}?");
+            var result = await dialogReference.Result;
+            if (!result.Cancelled)
+            {
+                this.IsBusy = true;
+                StateHasChanged();
+                await this.videoInfoService.DeleteMyVideoAsync(videoInfoId: videoInfoModel.VideoInfoId, cancellationToken: this.cancellationTokenSource.Token);
+                await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
+                this.toastService.ShowSuccess("Your video is now deleted");
+            }
         }
         catch (Exception ex)
         {
