@@ -1,8 +1,12 @@
 ﻿@using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayTube.SharedUI.Components.Layout
 @implements IDisposable
 
 @inject NavigationManager NavigationManager
 
+<div>
+    <CultureSelector RedirectUri="@NavigationManager.Uri"></CultureSelector>
+</div>
 <FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.Home())">Home</FluentNavLink>
 <FluentNavLink Href="https://github.com/pticostaricags/FairPlayCombined/wiki/FairPlayTube"
                Target="_blank"

@@ -1,5 +1,7 @@
-﻿@inherits LayoutComponentBase
-
+﻿@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+@inherits LayoutComponentBase
+@inject IStringLocalizer<MainLayout> localizer
 
 <FluentMainLayout NavMenuWidth="400">
     <Header>
@@ -9,7 +11,7 @@
     </Header>
     <SubHeader>
         <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
-            @Constants.ApplicationTitles.FairPlayTube
+            @localizer[ApplicationSubHeaderTextKey]
         </FluentLabel>
     </SubHeader>
     <Body>
@@ -36,3 +38,11 @@
 <FluentTooltipProvider />
 <FluentMessageBarProvider />
 <FluentDesignTheme StorageName="theme" />
+
+@code
+{
+    #region Resource Keys
+    [ResourceKey(defaultValue: Constants.ApplicationTitles.FairPlayTube)]
+    public const string ApplicationSubHeaderTextKey = "ApplicationSubHeaderText";
+    #endregion Resource Keys
+}
