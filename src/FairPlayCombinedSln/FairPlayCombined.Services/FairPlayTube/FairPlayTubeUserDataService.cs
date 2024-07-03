@@ -38,6 +38,8 @@ namespace FairPlayCombined.Services.FairPlayTube
                     .Include(p => p.VideoDigitalMarketingPlan)
                     .Include(p => p.VideoDigitalMarketingDailyPosts)
                     .Include(p => p.VideoCaptions)
+                    .Include(p => p.VideoKeyword)
+                    .Include (p => p.VideoTopic)
                     .Where(p => p.ApplicationUserId == userId);
 
                 if (await videosQuery.AnyAsync())
@@ -49,6 +51,8 @@ namespace FairPlayCombined.Services.FairPlayTube
                         await AddDigitalMarketingPlanEntriesAsync(archive, video);
                         await AddDigitalMarketingDailyPostsEntriesAsync(archive, video);
                         await AddVideoCaptionsEntriesAsync(archive, video);
+                        await AddVideoKeywordsEntriesAsync(archive, video);
+                        await AddVideoTopicsEntriesAsync(archive, video);
                     }
                 }
             }
@@ -73,6 +77,8 @@ namespace FairPlayCombined.Services.FairPlayTube
                     .Include(p => p.VideoDigitalMarketingPlan)
                     .Include(p => p.VideoDigitalMarketingDailyPosts)
                     .Include(p => p.VideoCaptions)
+                    .Include(p=>p.VideoKeyword)
+                    .Include(p=>p.VideoTopic)
                     .Where(p => p.ApplicationUserId == userId);
 
                 if (await videosQuery.AnyAsync())
@@ -84,6 +90,19 @@ namespace FairPlayCombined.Services.FairPlayTube
                         await AddDigitalMarketingPlanEntriesAsync(archive, video);
                         await AddDigitalMarketingDailyPostsEntriesAsync(archive, video);
                         await AddVideoCaptionsEntriesAsync(archive, video);
+                        await AddVideoKeywordsEntriesAsync(archive, video);
+                        await AddVideoTopicsEntriesAsync(archive, video);
+                    }
+                }
+                if (await dbContext.NewVideoRecommendation.AnyAsync(cancellationToken))
+                {
+                    foreach (var singleNewVideoRecommendation in dbContext.NewVideoRecommendation)
+                    {
+                        string fileName = @$"recommendations\{singleNewVideoRecommendation.NewVideoRecommendationId}.html";
+                        var newVideoRecommendationEntry = archive.CreateEntry(fileName, CompressionLevel.Optimal);
+                        await using var newVideoRecommendationEntryStream = newVideoRecommendationEntry.Open();
+                        using StreamWriter streamWriter = new(newVideoRecommendationEntryStream);
+                        await streamWriter.WriteLineAsync(singleNewVideoRecommendation.HtmlNewVideoRecommendation);
                     }
                 }
             }
@@ -163,6 +182,32 @@ namespace FairPlayCombined.Services.FairPlayTube
                     using StreamWriter streamWriter = new(videoCaptioEntryStream);
                     await streamWriter.WriteLineAsync(singleVideoCaption!.Content);
                 }
+            }
+        }
+
+        private static async Task AddVideoKeywordsEntriesAsync(ZipArchive archive, VideoInfo? video)
+        {
+            if (video!.VideoKeyword.Any())
+            {
+                string keywords = String.Join(",", video.VideoKeyword.Select(p => p.Keyword));
+                string fileName = @$"videos\{video.Name}\keywords.txt";
+                var videoKeywordsEntry = archive.CreateEntry(fileName, CompressionLevel.Optimal);
+                await using var videoKeywordsEntryStream = videoKeywordsEntry.Open();
+                using StreamWriter streamWriter = new(videoKeywordsEntryStream);
+                await streamWriter.WriteLineAsync(keywords);
+            }
+        }
+
+        private static async Task AddVideoTopicsEntriesAsync(ZipArchive archive, VideoInfo? video)
+        {
+            if (video!.VideoTopic.Any())
+            {
+                string topics = String.Join(",", video.VideoTopic.Select(p => p.Topic));
+                string fileName = @$"videos\{video.Name}\topics.txt";
+                var videoTopicsEntry = archive.CreateEntry(fileName, CompressionLevel.Optimal);
+                await using var videoTopicsEntryStream = videoTopicsEntry.Open();
+                using StreamWriter streamWriter = new(videoTopicsEntryStream);
+                await streamWriter.WriteLineAsync(topics);
             }
         }
     }

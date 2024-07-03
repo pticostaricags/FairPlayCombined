@@ -4,6 +4,7 @@
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
@@ -11,9 +12,11 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
+@using Microsoft.Extensions.Localization
 
 @attribute [StreamRendering(enabled: true)]
 
+@inject IStringLocalizer<MyVideos> localizer
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
@@ -25,7 +28,7 @@
 
 @inject NavigationManager navigationManager
 
-<PageTitle>Home</PageTitle>
+<PageTitle>@localizer[MyVideosPageTitleTextKey]</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
@@ -43,66 +46,66 @@
                 </HeadingTemplate>
                 <ChildContent>
                     <div>
-                        <FluentLabel Typo="Typography.Body">@nameof(context.IndexingCost): @context.IndexingCost.ToString("c")</FluentLabel>
+                        <FluentLabel Typo="Typography.Body">@localizer[IndexingCostTextKey]: @context.IndexingCost.ToString("c")</FluentLabel>
                     </div>
                     @if (context.YouTubeVideoId != null)
                     {
                         <div>
-                            <FluentLabel Typo="Typography.Body">@nameof(context.YouTubeVideoId): @context.YouTubeVideoId</FluentLabel>
+                            <FluentLabel Typo="Typography.Body">@localizer[YouTubeVideoIdTextKey]: <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">@context.YouTubeVideoId</a></FluentLabel>
                         </div>
                     }
                     <div>
                         <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
-                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Video"
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[DeleteVideoTextKey]?.Value"
                                           OnClick="@( () => OnDeleteVideoClickedAsync(context))">
                                 <FluentIcon Value="@(new Icons.Regular.Size20.Delete())" Color="Color.Warning"></FluentIcon>
                             </FluentButton>
-                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Thumbnail"
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[CreateYouTubeThumbnailTextKey]?.Value"
                                           OnClick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
                                 <i class="bi bi-image-fill"></i>
                             </FluentButton>
-                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create Infographic"
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[CreateInfographicTextKey]?.Value"
                                           OnClick="@( ()=> OnCreateInfographicClicked(context))">
                                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
                             </FluentButton>
-                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get LinkedIn Marketing Ideas"
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[GetLinkedInMarketingIdeasTextKey]?.Value"
                                           OnClick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
                                 <i class="bi bi-list-task"></i>
                             </FluentButton>
-                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get New LinkedIn Daily Posts Ideas"
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[GetNewLinkedInDailyPostsIdeasTextKey]?.Value"
                                           OnClick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
                                 <i class="bi bi-linkedin"></i>
                             </FluentButton>
-                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get Passive Income Ideas"
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[GetPassiveIncomeIdeasTextKey]?.Value"
                                           OnClick="@( ()=> OnGetPassiveIncomeIdeas(context))">
                                 <i class="bi bi-currency-dollar"></i>
                             </FluentButton>
-                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create LinkedIn Article"
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[CreateLinkedInArticleTextKey]?.Value"
                                           OnClick="@( ()=> OnCreateLinkedInArticleClicked(context))">
                                 <i class="bi bi-file-richtext-fill"></i>
                             </FluentButton>
-                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="View My Video Viewers"
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[ViewMyVideoViewersTextKey]?.Value"
                                           OnClick="@( () => OnViewMyVideoViewersClicked(context))">
                                 <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
                             </FluentButton>
                             @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
                             {
-                                <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage YouTube Captions"
+                                <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[ManageYouTubeCaptionsTextKey]?.Value"
                                               OnClick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
                                     <i class="bi bi-badge-cc-fill"></i>
                                 </FluentButton>
                                 <FluentAnchor data-enhance-nav="false"
-                                              data-bs-toggle="tooltip" data-bs-placement="top" title="Watch on YouTube"
+                                              data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[WatchOnYouTubeTextKey]?.Value"
                                               Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
                                     <i class="bi bi-youtube"></i>
                                 </FluentAnchor>
                             }
-                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Create YouTube Chapters"
+                            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[CreateYouTubeChaptersTextKey]?.Value"
                                           OnClick="@( () => OnCreateYouTubeChaptersClicked(context))">
                                 <FluentIcon Value="@(new Icons.Regular.Size20.Timeline())"></FluentIcon>
                             </FluentButton>
                             <FluentAnchor Href="@($"/Account/MyVideoDataExport/{context.VideoInfoId}")"
-                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Export Video Data"
+                                          data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[ExportVideoDataTextKey]?.Value"
                                           Target="_blank">
                                 <FluentIcon Value="@(new Icons.Regular.Size20.ArrowExport())"></FluentIcon>
                             </FluentAnchor>
@@ -237,4 +240,37 @@
         await this.cancellationTokenSource.CancelAsync();
         this.cancellationTokenSource.Dispose();
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue:"My Videos")]
+    public const string MyVideosPageTitleTextKey = "MyVideosPageTitleText";
+    [ResourceKey(defaultValue:"Indexing Cost")]
+    public const string IndexingCostTextKey = "IndexingCostText";
+    [ResourceKey(defaultValue: "YouTube Video Id")]
+    public const string YouTubeVideoIdTextKey = "YouTubeVideoIdText";
+    [ResourceKey(defaultValue: "Delete Video")]
+    public const string DeleteVideoTextKey = "DeleteVideoText";
+    [ResourceKey(defaultValue: "Create YouTube Thumbnail")]
+    public const string CreateYouTubeThumbnailTextKey = "CreateYouTubeThumbnailText";
+    [ResourceKey(defaultValue: "Create Infographic")]
+    public const string CreateInfographicTextKey = "CreateInfographicText";
+    [ResourceKey(defaultValue: "Get LinkedIn Marketing Ideas")]
+    public const string GetLinkedInMarketingIdeasTextKey = "GetLinkedInMarketingIdeasText";
+    [ResourceKey(defaultValue: "Get New LinkedIn Daily Posts Ideas")]
+    public const string GetNewLinkedInDailyPostsIdeasTextKey = "GetNewLinkedInDailyPostsIdeasText";
+    [ResourceKey(defaultValue: "Get Passive Income Ideas")]
+    public const string GetPassiveIncomeIdeasTextKey = "GetPassiveIncomeIdeasText";
+    [ResourceKey(defaultValue: "Create LinkedIn Article")]
+    public const string CreateLinkedInArticleTextKey = "CreateLinkedInArticleText";
+    [ResourceKey(defaultValue: "View My Video Viewers")]
+    public const string ViewMyVideoViewersTextKey = "ViewMyVideoViewersText";
+    [ResourceKey(defaultValue: "Manage YouTube Captions")]
+    public const string ManageYouTubeCaptionsTextKey = "ManageYouTubeCaptionsText";
+    [ResourceKey(defaultValue: "Watch on YouTube")]
+    public const string WatchOnYouTubeTextKey = "WatchOnYouTubeText";
+    [ResourceKey(defaultValue: "Create YouTube Chapters")]
+    public const string CreateYouTubeChaptersTextKey = "CreateYouTubeChaptersText";
+    [ResourceKey(defaultValue: "Export Video Data")]
+    public const string ExportVideoDataTextKey = "ExportVideoDataText";
+    #endregion Resource Keys
 }

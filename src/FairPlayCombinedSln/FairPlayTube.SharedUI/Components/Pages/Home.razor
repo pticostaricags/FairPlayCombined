@@ -37,10 +37,18 @@
                                  Class="multiline-text" style="width:250px; height:50px;">
                         @singleItem.Name
                     </FluentLabel>
-                    <FluentLabel Typo="Typography.Body"><strong>Lifetime Sessions:</strong> @singleItem.LifetimeSessions</FluentLabel>
-                    <FluentLabel Typo="Typography.Body"><strong>Lifetime Viewers:</strong> @singleItem.LifetimeViewers</FluentLabel>
-                    <FluentLabel Typo="Typography.Body"><strong>Watch Time(hh:mm:ss):</strong> @singleItem.LifetimeWatchTime</FluentLabel>
-                    <FluentLabel Typo="Typography.Body"><strong>Published:</strong> @singleItem.PublishedOnString</FluentLabel>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
+                        <strong>@localizer[LifetimeSessionsTextKey]:</strong> @singleItem.LifetimeSessions</FluentLabel>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.Eye())"></FluentIcon>
+                        <strong>@localizer[LifetimeViewersTextKey]:</strong> @singleItem.LifetimeViewers</FluentLabel>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.Timer())"></FluentIcon>
+                        <strong>@localizer[WatchTimeTextKey]:</strong> @singleItem.LifetimeWatchTime</FluentLabel>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.CalendarDate())"></FluentIcon>
+                        <strong>@localizer[PublishedTextKey]:</strong> @singleItem.PublishedOnString</FluentLabel>
                 </div>
                 <div>
                     <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
@@ -124,5 +132,15 @@
     #region Resource Keys
     [ResourceKey(defaultValue: "Home")]
     public const string HomeTextKey = "HomeText";
+    [ResourceKey(defaultValue: "Lifetime Sessions")]
+    public const string LifetimeSessionsTextKey = "LifetimeSessionsText";
+    [ResourceKey(defaultValue: "Lifetime Viewers")]
+    public const string LifetimeViewersTextKey = "LifetimeViewersText";
+    [ResourceKey(defaultValue: "Watch Time(hh:mm:ss)")]
+    public const string WatchTimeTextKey = "WatchTimeText";
+    [ResourceKey(defaultValue: "Published")]
+    public const string PublishedTextKey = "PublishedText";
+    [ResourceKey(defaultValue: "Play")]
+    public const string PlayTextKey = "PlayText";
     #endregion
 }

@@ -44,6 +44,14 @@
                       Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
                       OnClick="OnUseFallbackMode">Can't see the video? Click here!</FluentButton>
     </div>
+    @if (this.videoInfoModel != null)
+    {
+        <FluentAccordion>
+            <FluentAccordionItem Heading="Description" Expanded="true">
+                <FluentTextArea style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>
+            </FluentAccordionItem>
+        </FluentAccordion>
+    }
     @if (this.videoInfoModel?.VideoKeywords?.Length > 0)
     {
         <FluentAccordion>
