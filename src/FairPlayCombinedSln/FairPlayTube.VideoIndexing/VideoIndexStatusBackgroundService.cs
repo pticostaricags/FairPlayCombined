@@ -38,20 +38,34 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     await GetAllVideosInProcessingStatusAsync(dbContext, stoppingToken);
                 if (allVideosInProcessingStatus.Length != 0)
                 {
-                    var videosIndex = await azureVideoIndexerService.SearchVideosByIdsAsync(
-                        getviTokenResult!.AccessToken!, allVideosInProcessingStatus, stoppingToken);
-                    LogVideoIndexStatus(logger, videosIndex);
-                    var processingVideos = videosIndex?.results?.Where(p => p.state ==
-                    FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processing.ToString());
-                    if (processingVideos?.Any() == true)
+                    try
                     {
-                        await UpdateProcessingPercentageAsync(logger, dbContext, azureVideoIndexerService, getviTokenResult, processingVideos, stoppingToken);
+                        var videosIndex = await azureVideoIndexerService.SearchVideosByIdsAsync(
+                            getviTokenResult!.AccessToken!, allVideosInProcessingStatus, stoppingToken);
+                        LogVideoIndexStatus(logger, videosIndex);
+                        var processingVideos = videosIndex?.results?.Where(p => p.state ==
+                        FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processing.ToString());
+                        if (processingVideos?.Any() == true)
+                        {
+                            await UpdateProcessingPercentageAsync(logger, dbContext, azureVideoIndexerService, getviTokenResult, processingVideos, stoppingToken);
+                        }
+                        var indexCompleteVideos = videosIndex?.results?.Where(p => p.state ==
+                        FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed.ToString());
+                        await UpdateVideoIndexingTransactionAsync(dbContext,
+                            azureVideoIndexerService, getviTokenResult, indexCompleteVideos,
+                            stoppingToken);
                     }
-                    var indexCompleteVideos = videosIndex?.results?.Where(p => p.state ==
-                    FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed.ToString());
-                    await UpdateVideoIndexingTransactionAsync(dbContext, 
-                        azureVideoIndexerService, getviTokenResult, indexCompleteVideos, 
-                        stoppingToken);
+                    catch (Exception ex)
+                    {
+                        await dbContext.ErrorLog.AddAsync(new()
+                        {
+                            FullException=ex.ToString(),
+                            Message=ex.Message,
+                            StackTrace=ex.StackTrace
+                        }, stoppingToken);
+                        await dbContext.SaveChangesAsync(stoppingToken);
+                        logger.LogError(exception: ex, "Error: {ErrorMessage}", ex.Message);
+                    }
                 }
                 logger.LogInformation("Current Iteration finished at: {Time}. Next Iteration at {Time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
                 await Task.Delay(timeToWait, stoppingToken);
