@@ -11,7 +11,7 @@
     <FluentLabel Typo="Typography.Body">
         @Localizer![SelectLocaleTextKey]:
     </FluentLabel>
-    <FluentSelect @bind-SelectedOption="@Culture" Items="@supportedCultures">
+    <FluentSelect @bind-SelectedOption="@Culture" Items="@supportedCultures" Embedded="true">
         <OptionTemplate>@context.DisplayName</OptionTemplate>
     </FluentSelect>
 }

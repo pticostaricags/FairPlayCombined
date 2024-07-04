@@ -7,9 +7,12 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<NavMenu> localizer
 
-<div>
-    <CultureSelector RedirectUri="@NavigationManager.Uri"></CultureSelector>
-</div>
+
+<FluentNavGroup Title="@localizer[LanguageTextKey]" Icon="@(new Icons.Regular.Size20.LocalLanguage())">
+    <div style="height:250px">
+        <CultureSelector RedirectUri="@NavigationManager.Uri"></CultureSelector>
+    </div>
+</FluentNavGroup>
 <FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.Home())">@localizer[HomeTextKey]</FluentNavLink>
 <FluentNavLink Href="https://github.com/pticostaricags/FairPlayCombined/wiki/FairPlayTube"
                Target="_blank"
@@ -125,6 +128,8 @@
     public const string CreateVideoPlanTextKey = "CreateVideoPlanText";
     [ResourceKey(defaultValue: "My Video Plans")]
     public const string MyVideoPlansTextKey = "MyVideoPlansText";
+    [ResourceKey(defaultValue: "Language")]
+    public const string LanguageTextKey = "LanguageText";
     #endregion Resource Keys
 }
 
