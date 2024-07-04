@@ -82,6 +82,7 @@ builder.Services.AddAuthentication(configureOptions =>
         options.Scope.Add(YouTubeService.Scope.YoutubeUpload);
         options.Scope.Add(YouTubeService.Scope.YoutubeForceSsl);
         options.Scope.Add(YouTubeService.Scope.Youtubepartner);
+        options.SaveTokens = true;
     })
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();

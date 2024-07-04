@@ -4,6 +4,7 @@
 @using System.Security.Claims
 @using System.Text
 @using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using FairPlayTube.Data
@@ -98,6 +99,12 @@
 
     private async Task OnLoginCallbackAsync()
     {
+        var userFromManager = await UserManager.FindByLoginAsync(externalLoginInfo.LoginProvider,
+            externalLoginInfo.ProviderKey);
+        if (userFromManager != null)
+        {
+            await this.SignInManager.UpdateExternalAuthenticationTokensAsync(externalLoginInfo);
+        }
         // Sign in the user with this external login provider if the user already has a login.
         var result = await SignInManager.ExternalLoginSignInAsync(
             externalLoginInfo.LoginProvider,
@@ -107,6 +114,8 @@
 
         if (result.Succeeded)
         {
+            var props = new AuthenticationProperties();
+            props.StoreTokens(externalLoginInfo!.AuthenticationTokens!);
             Logger.LogInformation(
                 "{Name} logged in with {LoginProvider} provider.",
                 externalLoginInfo.Principal.Identity?.Name,
