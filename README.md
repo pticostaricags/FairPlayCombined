@@ -16,6 +16,11 @@ Check the following article:
 "FairPlay"​ software. What is it?
 https://www.linkedin.com/pulse/fairplay-software-what-eduardo-fonseca?utm_source=share&utm_medium=member_android&utm_campaign=share_via
 
+### External Resources
+**Open At Microsoft - Real World Apps with Blazor and .NET Aspire:**
+
+https://youtu.be/5v2GNcrEabg?list=PLlrxD0HtieHg8On6t1l5_kj--7PMmyfGi
+
 ### Repository Objective
 FairPlayCombined is a suite of Open-Source Enterprise-Grade High-Quality software focused on helping entrepreneurs reduce costs in Software Development.
 **We build the software, you build your business with it**
