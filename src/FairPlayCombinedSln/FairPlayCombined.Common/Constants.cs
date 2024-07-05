@@ -48,6 +48,10 @@
                     public const string VideoDailyPosts = $"/Creator/{nameof(VideoDailyPosts)}";
                     public const string VideoInfographic = $"/Creator/{nameof(VideoInfographic)}";
                 }
+                public static class UserRoutes
+                {
+                    public const string BillingInfo = $"/User/{nameof(BillingInfo)}";
+                }
             }
         }
         public static class ConfigurationSecretsKeys

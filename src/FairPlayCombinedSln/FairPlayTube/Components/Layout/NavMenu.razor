@@ -50,6 +50,8 @@
     <FluentNavGroup Title="@localizer[UsersTextKey]" Expanded="@ShouldExpandUsersGroup" Icon="@(new Icons.Regular.Size20.PeopleAudience())">
         <FluentNavLink Href="/User/MyConversations" Icon="@(new Icons.Regular.Size20.ChatMultiple())">@localizer[MyConversationsTextKey]</FluentNavLink>
         <FluentNavLink Href="/User/MyFunds" Icon="@(new Icons.Regular.Size20.Money())">@localizer[MyFundsTextKey]</FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.UserRoutes.BillingInfo"
+                       Icon="@(new Icons.Regular.Size20.MoneyCalculator())">@localizer[BillingInfoTextKey]</FluentNavLink>
     </FluentNavGroup>
     <FluentNavGroup Title="@localizer[CreatorsTextKey]" Expanded="@ShouldExpandCreatorsGroup" Icon="@(new Icons.Regular.Size20.Video())">
         <FluentNavLink Href="/Creator/UploadMyVideo" Icon="@(new Icons.Regular.Size20.ArrowUpload())">@localizer[UploadMyVideoTextKey]</FluentNavLink>
@@ -112,6 +114,8 @@
     public const string MyConversationsTextKey = "MyConversationsText";
     [ResourceKey(defaultValue: "My Funds")]
     public const string MyFundsTextKey = "MyFundsText";
+    [ResourceKey(defaultValue: "Billing Info")]
+    public const string BillingInfoTextKey = "BillingInfoText";
     [ResourceKey(defaultValue: "Creators")]
     public const string CreatorsTextKey = "CreatorsText";
     [ResourceKey(defaultValue: "Upload My Video")]
