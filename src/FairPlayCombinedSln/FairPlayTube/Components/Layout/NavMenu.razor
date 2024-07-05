@@ -41,8 +41,11 @@
         </FluentNavLink>
     </Authorized>
     <NotAuthorized>
-        <FluentNavLink Href="Account/Register">@localizer[RegisterTextKey]</FluentNavLink>
-        <FluentNavLink Href="Account/Login">@localizer[LoginTextKey]</FluentNavLink>
+        <FluentNavLink Href="Account/Register"
+        Icon="@(new Icons.Regular.Size20.PersonAdd())">@localizer[RegisterTextKey]</FluentNavLink>
+        <FluentNavLink Href="Account/Login"
+        Icon="@(new Icons.Regular.Size20.PersonArrowRight())"
+        >@localizer[LoginTextKey]</FluentNavLink>
     </NotAuthorized>
 </AuthorizeView>
 

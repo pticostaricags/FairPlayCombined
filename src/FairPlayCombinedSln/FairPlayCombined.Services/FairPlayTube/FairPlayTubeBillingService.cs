@@ -36,7 +36,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .Where(p => p.VideoInfo.ApplicationUserId == userId)
                 .Select(p => new FairPlayTubeBillingModel()
                 {
-                    Details = String.Concat(localizer[IndexingOfVideoTextKey], p.VideoInfo.Name),
+                    Details = String.Concat(indexingOfVideoText, p.VideoInfo.Name),
                     OperationCost =p.IndexingCost,
                     RowCreationDateTime = p.RowCreationDateTime
                 })

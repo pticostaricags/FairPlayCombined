@@ -19,6 +19,12 @@
 @inject IVideoInfoService videoInfoService
 @inject IVideoCommentService videoCommentService
 @inject IToastService toastService
+@inject NavigationManager navigationManager
+@inject IApiResolver apiResolver
+
+<HeadContent>
+    <meta name="thumbnail" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
+</HeadContent>
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -154,6 +160,7 @@ else
         };
     [SupplyParameterFromForm]
     public CreateVideoCommentModel? createVideoCommentModel { get; set; }
+    private string apiBaseUrl => apiResolver.GetBaseUrl();
 
     protected override void OnInitialized()
     {

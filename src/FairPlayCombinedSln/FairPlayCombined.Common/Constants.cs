@@ -2,6 +2,11 @@
 {
     public static class Constants
     {
+        public static class Cultures
+        {
+            public const string CurrencyDefaultCulture = "en-US";
+            public const string CurrencyDefaultFormat = "C4";
+        }
 #pragma warning disable S101 // Types should be named in PascalCase
         public static class MAUI
 #pragma warning restore S101 // Types should be named in PascalCase

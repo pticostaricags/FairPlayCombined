@@ -6,6 +6,7 @@
 @using FairPlayCombined.Models.FairPlayTube.Billing
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Microsoft.Extensions.Localization
+@using System.Globalization
 @attribute [Authorize]
 
 @inject IFairPlayTubeBillingService fairPlayTubeBillingService
@@ -20,21 +21,45 @@
 @if (this.Items != null)
 {
     <div>
-        <FluentLabel Typo="Typography.Subject">@localizer[LifetimeCostTextKey]: @this.Items.Sum(p => p.OperationCost).ToString(CurrencyFormat)</FluentLabel>
-        <FluentLabel Typo="Typography.Subject">@localizer[Last7DaysCostTextKey]: @this.Items.Where(p => p.RowCreationDateTime.Date >= DateTimeOffset.UtcNow.Date.AddDays(-7)).Sum(p => p.OperationCost).ToString(CurrencyFormat)</FluentLabel>
-        <FluentLabel Typo="Typography.Subject">@localizer[TodaysCostTextKey]: @this.Items.Where(p => p.RowCreationDateTime.Date == DateTimeOffset.UtcNow.Date).Sum(p => p.OperationCost).ToString(CurrencyFormat)</FluentLabel>
+        <FluentLabel Typo="Typography.Subject">@localizer[LifetimeCostTextKey]: @this.Items.Sum(p => p.OperationCost).ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
+        <FluentLabel Typo="Typography.Subject">@localizer[Last7DaysCostTextKey]: @this.Items.Where(p => p.RowCreationDateTime.Date >= DateTimeOffset.UtcNow.Date.AddDays(-7)).Sum(p => p.OperationCost).ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
+        <FluentLabel Typo="Typography.Subject">@localizer[TodaysCostTextKey]: @this.Items.Where(p => p.RowCreationDateTime.Date == DateTimeOffset.UtcNow.Date).Sum(p => p.OperationCost).ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
     </div>
     <div>
         <FluentDataGrid Items="@this.Items.AsQueryable()">
-            <PropertyColumn Title="@localizer[OperationCostTextKey]" Property="@(p=>p.OperationCost)" Format="@CurrencyFormat"></PropertyColumn>
-            <PropertyColumn Title="@localizer[RowCreationDateTimeTextKey]" Property="@(p=>p.RowCreationDateTime)" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Descending"></PropertyColumn>
-            <PropertyColumn Title="@localizer[DetailsTextKey]" Property="@(p=>p.Details)" Class="multiline-text"></PropertyColumn>
+            <PropertyColumn Title="@localizer[RowCreationDateTimeTextKey]"
+                            Property="@(p=>p.RowCreationDateTime)"
+                            IsDefaultSortColumn="true"
+                            InitialSortDirection="SortDirection.Descending"
+                            Class="multiline-text" Align="Align.Center">
+                <HeaderCellItemTemplate>
+                    <FluentIcon Value="@(new Icons.Regular.Size20.CalendarDate())"
+                                Title="@localizer[RowCreationDateTimeTextKey]"></FluentIcon>
+                </HeaderCellItemTemplate>
+            </PropertyColumn>
+            <PropertyColumn Title="@localizer[OperationCostTextKey]"
+                            Property="@(p=>p.OperationCost.ToString(CurrencyFormat, CurrencyCulture))"
+                            Class="multiline-text" Align="Align.Center">
+                <HeaderCellItemTemplate>
+                    <FluentIcon Value="@(new Icons.Regular.Size20.MoneyCalculator())"
+                                Title="@localizer[OperationCostTextKey]"></FluentIcon>
+                </HeaderCellItemTemplate>
+            </PropertyColumn>
+            <PropertyColumn Title="@localizer[DetailsTextKey]"
+                            Property="@(p=>p.Details)"
+                            Class="multiline-text" Align="Align.Center">
+                <HeaderCellItemTemplate>
+                    <FluentIcon Value="@(new Icons.Regular.Size20.Document())"
+                                Title="@localizer[DetailsTextKey]"></FluentIcon>
+                </HeaderCellItemTemplate>
+            </PropertyColumn>
         </FluentDataGrid>
     </div>
 }
 
 @code {
-    private const string CurrencyFormat = "C4";
+    private static CultureInfo CurrencyCulture = new(Constants.Cultures.CurrencyDefaultCulture);
+    private const string CurrencyFormat = Constants.Cultures.CurrencyDefaultFormat;
     private FairPlayTubeBillingModel[]? Items { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private bool IsBusy { get; set; } = false;
