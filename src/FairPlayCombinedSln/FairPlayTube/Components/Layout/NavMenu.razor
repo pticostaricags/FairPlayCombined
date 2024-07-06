@@ -53,8 +53,11 @@
 
 <AuthorizeView Roles="@Constants.RoleName.BasicPlanUser">
     <FluentNavGroup Title="@localizer[UsersTextKey]" Expanded="@ShouldExpandUsersGroup" Icon="@(new Icons.Regular.Size20.PeopleAudience())">
-        <FluentNavLink Href="/User/MyConversations" Icon="@(new Icons.Regular.Size20.ChatMultiple())">@localizer[MyConversationsTextKey]</FluentNavLink>
-        <FluentNavLink Href="/User/MyFunds" Icon="@(new Icons.Regular.Size20.Money())">@localizer[MyFundsTextKey]</FluentNavLink>
+        @if (context.User.IsInRole(Constants.RoleName.BasicPlanUser))
+        {
+            <FluentNavLink Href="/User/MyConversations" Icon="@(new Icons.Regular.Size20.ChatMultiple())">@localizer[MyConversationsTextKey]</FluentNavLink>
+            <FluentNavLink Href="/User/MyFunds" Icon="@(new Icons.Regular.Size20.Money())">@localizer[MyFundsTextKey]</FluentNavLink>
+        }
         <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.UserRoutes.BillingInfo"
                        Icon="@(new Icons.Regular.Size20.MoneyCalculator())">@localizer[BillingInfoTextKey]</FluentNavLink>
     </FluentNavGroup>
