@@ -24,6 +24,9 @@
 
 <HeadContent>
     <meta name="thumbnail" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
+    <meta property="og:image" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
+    <meta property="og:title" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/title")" />
+    <meta property="og:description" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")" />
 </HeadContent>
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
 

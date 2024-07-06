@@ -236,6 +236,34 @@ app.MapGet("/api/photo/{photoId}",
         await image.SaveAsPngAsync(outputStream, pngEncoder, cancellationToken);
         return TypedResults.File(outputStream.ToArray(), System.Net.Mime.MediaTypeNames.Image.Png);
     });
+app.MapGet("/api/video/{videoId}/description",
+    async (
+        [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        [FromRoute] string videoId,
+        CancellationToken cancellationToken) =>
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await dbContext.VideoInfo
+        .AsNoTracking()
+        .Where(p => p.VideoId == videoId)
+        .Select(p => p.Description)
+        .SingleOrDefaultAsync(cancellationToken);
+        return TypedResults.Content(result);
+    });
+app.MapGet("/api/video/{videoId}/title",
+    async (
+        [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        [FromRoute] string videoId,
+        CancellationToken cancellationToken) =>
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await dbContext.VideoInfo
+        .AsNoTracking()
+        .Where(p => p.VideoId == videoId)
+        .Select(p=>p.Name)
+        .SingleOrDefaultAsync(cancellationToken);
+        return TypedResults.Content(result);
+    });
 app.MapGet("/api/video/{videoId}/thumbnail",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
@@ -244,6 +272,7 @@ app.MapGet("/api/video/{videoId}/thumbnail",
     {
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         var result = await dbContext.VideoInfo
+        .AsNoTracking()
         .Include(p => p.VideoThumbnailPhoto)
         .Where(p => p.VideoId == videoId)
         .SingleOrDefaultAsync(cancellationToken);
@@ -258,6 +287,7 @@ app.MapGet("/api/video/{videoId}/captions/{language}",
     {
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         var result = await dbContext.VideoCaptions
+        .AsNoTracking()
         .Include(p => p.VideoInfo)
         .Where(p => p.VideoInfo.VideoId == videoId &&
         p.Language == language)
