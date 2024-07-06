@@ -27,8 +27,11 @@
                         Icon="@(new Icons.Regular.Size20.PeopleCommunity())">
             <FluentNavLink Href="/Account/Manage"
                            Icon="@(new Icons.Regular.Size20.Edit())">@localizer[ManageAccountTextKey]</FluentNavLink>
-            <FluentNavLink Href="/Account/MyDataExport" Target="_blank"
-                           Icon="@(new Icons.Regular.Size20.ArrowExport())">@localizer[ExportMyDataTextKey]</FluentNavLink>
+            @if (context.User.IsInRole(Constants.RoleName.BasicPlanUser))
+            {
+                <FluentNavLink Href="/Account/MyDataExport" Target="_blank"
+                               Icon="@(new Icons.Regular.Size20.ArrowExport())">@localizer[ExportMyDataTextKey]</FluentNavLink>
+            }
         </FluentNavGroup>
         <FluentNavLink Icon="@(new Icons.Regular.Size20.ArrowExit())">
             <form action="Account/Logout" method="post">
@@ -42,10 +45,9 @@
     </Authorized>
     <NotAuthorized>
         <FluentNavLink Href="Account/Register"
-        Icon="@(new Icons.Regular.Size20.PersonAdd())">@localizer[RegisterTextKey]</FluentNavLink>
+                       Icon="@(new Icons.Regular.Size20.PersonAdd())">@localizer[RegisterTextKey]</FluentNavLink>
         <FluentNavLink Href="Account/Login"
-        Icon="@(new Icons.Regular.Size20.PersonArrowRight())"
-        >@localizer[LoginTextKey]</FluentNavLink>
+                       Icon="@(new Icons.Regular.Size20.PersonArrowRight())">@localizer[LoginTextKey]</FluentNavLink>
     </NotAuthorized>
 </AuthorizeView>
 
@@ -97,7 +99,7 @@
     public const string HomeTextKey = "HomeText";
     [ResourceKey(defaultValue: "User Manual")]
     public const string UserManualTextKey = "UserManualText";
-    [ResourceKey(defaultValue:"Theme")]
+    [ResourceKey(defaultValue: "Theme")]
     public const string ThemeTextKey = "ThemeText";
     [ResourceKey(defaultValue: "Accounts")]
     public const string AccountsTextKey = "AccountsText";
@@ -105,7 +107,7 @@
     public const string ManageAccountTextKey = "ManageAccountText";
     [ResourceKey(defaultValue: "Export My Data ")]
     public const string ExportMyDataTextKey = "ExportMyDataText";
-    [ResourceKey(defaultValue:"Logout")]
+    [ResourceKey(defaultValue: "Logout")]
     public const string LogoutTextKey = "LogoutText";
     [ResourceKey(defaultValue: "Register")]
     public const string RegisterTextKey = "RegisterText";
