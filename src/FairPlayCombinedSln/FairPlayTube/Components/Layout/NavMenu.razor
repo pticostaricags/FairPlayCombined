@@ -13,6 +13,18 @@
         <CultureSelector RedirectUri="@NavigationManager.Uri"></CultureSelector>
     </div>
 </FluentNavGroup>
+<FluentNavGroup Title="@localizer[HelpTextKey]" Icon="@(new Icons.Regular.Size20.QuestionCircle())">
+    <FluentNavLink Href="https://github.com/pticostaricags/FairPlayCombined/issues/new?assignees=&labels=&projects=&template=feature_request.md&title="
+                   Target="_blank"
+                   Icon="@(new Icons.Regular.Size20.BranchRequest())">
+        @localizer[FeatureRequestTextKey]
+    </FluentNavLink>
+    <FluentNavLink Href="https://github.com/pticostaricags/FairPlayCombined/issues/new?assignees=&labels=&projects=&template=bug_report.md&title="
+                   Target="_blank"
+                   Icon="@(new Icons.Regular.Size20.Bug())">
+        @localizer[ReportIssueTextKey]
+    </FluentNavLink>
+</FluentNavGroup>
 <FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.Home())">@localizer[HomeTextKey]</FluentNavLink>
 <FluentNavLink Href="https://github.com/pticostaricags/FairPlayCombined/wiki/FairPlayTube"
                Target="_blank"
@@ -142,6 +154,12 @@
     public const string MyVideoPlansTextKey = "MyVideoPlansText";
     [ResourceKey(defaultValue: "Language")]
     public const string LanguageTextKey = "LanguageText";
+    [ResourceKey(defaultValue: "Help")]
+    public const string HelpTextKey = "HelpText";
+    [ResourceKey(defaultValue: "Feature Request")]
+    public const string FeatureRequestTextKey = "FeatureRequestText";
+    [ResourceKey(defaultValue: "Report Issue")]
+    public const string ReportIssueTextKey = "ReportIssueText";
     #endregion Resource Keys
 }
 
