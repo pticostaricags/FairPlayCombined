@@ -34,7 +34,7 @@
     public EventCallback OnFundsAdded { get; set; }
     private DotNetObjectReference<PayPalCheckout>? objRef;
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    
+
     protected override void OnInitialized()
     {
         this.objRef = DotNetObjectReference.Create(this);
@@ -42,10 +42,17 @@
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        try
         {
-            await JSRuntime.InvokeVoidAsync("initPayPalButton", objRef);
-            StateHasChanged();
+            if (firstRender)
+            {
+                await JSRuntime.InvokeVoidAsync("initPayPalButton", objRef);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
         }
     }
 
@@ -65,6 +72,12 @@
         }
     }
 
+    [JSInvokable]
+    public void ShowPayPalNotFoundError()
+    {
+        this.toastService.ShowError(Localizer[PayPalNotFoundErrorTextKey]);
+    }
+
     public async ValueTask DisposeAsync()
     {
         await this.cancellationTokenSource.CancelAsync();
@@ -74,5 +87,7 @@
     #region Resource Keys
     [ResourceKey(defaultValue: "Add Funds To FairPlayTube")]
     public const string AddFundsTextKey = "AddFundsText";
+    [ResourceKey(defaultValue: "PayPal script not found")]
+    public const string PayPalNotFoundErrorTextKey = "PayPalNotFoundErrorText";
     #endregion Resource Keys
 }
