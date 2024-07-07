@@ -4,6 +4,7 @@
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.Enums
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
@@ -37,6 +38,9 @@
 <div>
     <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
                   OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
+                  <FluentSelect @bind-SelectedOption="@this.imageStylePreference" 
+                  Items="@(Enum.GetValues<ImageStylePreference>())">
+                  </FluentSelect>
 </div>
 <div>
     @if (this.Items?.Items?.Length > 0)
@@ -105,7 +109,7 @@
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private string? GeneratedYouTubeThumbnailUri { get; set; }
     private string? RevisedPrompt { get; set; }
-
+    private ImageStylePreference imageStylePreference { get; set; } = ImageStylePreference.NoPreference;
     protected override async Task OnInitializedAsync()
     {
         await LoadDataAsync();
@@ -158,6 +162,7 @@
             StateHasChanged();
             var result = await this.videoThumbnailService
             .GenerateVideoThumbnailAsync(this.VideoInfoId!.Value, this.openAIService,
+                this.imageStylePreference,
                 this.httpClient, this.cancellationTokenSource.Token);
             if (result != null)
             {

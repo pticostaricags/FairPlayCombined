@@ -1,18 +1,18 @@
 ﻿using FairPlayCombined.Common;
+using FairPlayCombined.Common.Enums;
 using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Interfaces.FairPlayTube;
-using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.FairPlayTube.VideoThumbnail;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Models.Pagination;
-using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
+using System.Text;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
@@ -30,6 +30,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         public async Task<GenerateDallE3ResponseModel?> GenerateVideoThumbnailAsync(
             long videoInfoId,
             IOpenAIService openAIService,
+            ImageStylePreference imageStylePreference,
             HttpClient httpClient,
             CancellationToken cancellationToken)
         {
@@ -47,9 +48,15 @@ namespace FairPlayCombined.Services.FairPlayTube
                     EnglishCaptions = p.VideoCaptions.Single(p => p.Language == "en-US").Content
                 })
                 .SingleAsync(cancellationToken);
-            string prompt =
-                $"{promptEntity!.BaseText}. " +
-                $"Video Title: {videoDataEntity.Description}. Video Captions: {videoDataEntity.EnglishCaptions}";
+            StringBuilder stringBuilder = new();
+            stringBuilder.AppendLine($"{promptEntity!.BaseText}.");
+            if (imageStylePreference != ImageStylePreference.NoPreference)
+            {
+                stringBuilder.AppendLine($"Image Style: {imageStylePreference.ToString()}.");
+            }
+            stringBuilder.AppendLine($"Video Title: {videoDataEntity.Description}.");
+            stringBuilder.AppendLine($"Video Captions: {videoDataEntity.EnglishCaptions}.");
+            string prompt = stringBuilder.ToString();
             if (prompt.Length > 4000)
                 prompt = prompt.Substring(0, 4000);
             var result = await openAIService.GenerateDallE3ImageAsync(prompt, cancellationToken);
@@ -61,10 +68,10 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .GetByteArrayAsync(result!.data![0].url, cancellationToken)
             };
             await dbContext.VideoThumbnail
-                .AddAsync(new() 
+                .AddAsync(new()
                 {
                     OpenAipromptId = result.OpenAIPromptId,
-                    VideoInfoId=videoInfoId,
+                    VideoInfoId = videoInfoId,
                     Photo = photoEntity,
                 }, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
