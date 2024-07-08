@@ -1,4 +1,5 @@
 ﻿using FairPlayCombined.Common;
+using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.Common.Enums;
 using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
@@ -27,6 +28,14 @@ namespace FairPlayCombined.Services.FairPlayTube
     >]
     public partial class VideoThumbnailService : BaseService, IVideoThumbnailService
     {
+        private readonly IUserFundService userFundService;
+        public VideoThumbnailService(
+            IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+            ILogger<VideoThumbnailService> logger,
+            IUserFundService userFundService):this(dbContextFactory, logger)
+        {
+            this.userFundService = userFundService;
+        }
         public async Task<GenerateDallE3ResponseModel?> GenerateVideoThumbnailAsync(
             long videoInfoId,
             IOpenAIService openAIService,
@@ -34,6 +43,12 @@ namespace FairPlayCombined.Services.FairPlayTube
             HttpClient httpClient,
             CancellationToken cancellationToken)
         {
+            var hasRequiredFunds = await userFundService.HasFundsToCreateThumbnailsAsync(cancellationToken);
+            if (!hasRequiredFunds)
+            {
+                string message = "You don't have available funds left to perform the operation.";
+                throw new RuleException(message);
+            }
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var promptEntity = await dbContext.Prompt
                 .AsNoTracking()

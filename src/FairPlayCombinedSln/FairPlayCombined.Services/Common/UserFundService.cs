@@ -60,5 +60,18 @@ namespace FairPlayCombined.Services.Common
                 cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task<bool> HasFundsToCreateThumbnailsAsync(CancellationToken cancellationToken)
+        {
+            var userId = userProviderService.GetCurrentUserId();
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var promptMarginEntity = await dbContext.OpenAipromptMargin.AsNoTracking().SingleAsync(cancellationToken: cancellationToken);
+            var promptCostEntity = await dbContext.OpenAipromptCost.AsNoTracking().SingleAsync(cancellationToken: cancellationToken);
+            var promptCost = promptCostEntity.CostPerPrompt +
+                (promptCostEntity.CostPerPrompt * promptMarginEntity.Margin);
+            var userAvailableFunds = await dbContext.UserFunds.AsNoTracking()
+                .SingleAsync(p => p.ApplicationUserId == userId, cancellationToken);
+            return userAvailableFunds.AvailableFunds >= promptCost;
+        }
     }
 }

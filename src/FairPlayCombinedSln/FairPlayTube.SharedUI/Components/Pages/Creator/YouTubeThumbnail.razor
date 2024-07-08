@@ -38,9 +38,9 @@
 <div>
     <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
                   OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
-                  <FluentSelect @bind-SelectedOption="@this.imageStylePreference" 
+    <FluentSelect @bind-SelectedOption="@this.imageStylePreference"
                   Items="@(Enum.GetValues<ImageStylePreference>())">
-                  </FluentSelect>
+    </FluentSelect>
 </div>
 <div>
     @if (this.Items?.Items?.Length > 0)
