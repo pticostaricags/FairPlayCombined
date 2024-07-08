@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable S101 // Types should be named in PascalCase
 namespace FairPlayCombined.Models.Common.IpData
 {
     public class GetGeoLocationInfoResponse
@@ -77,3 +78,5 @@ namespace FairPlayCombined.Models.Common.IpData
         public string? code { get; set; }
     }
 }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore S101 // Types should be named in PascalCase

@@ -1,12 +1,10 @@
 ﻿using FairPlayCombined.Models.Common.IpData;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Http.Json;
 
 namespace FairPlayCombined.Services.Common
 {
-    public class IpDataService(IpDataConfiguration ipDataConfiguration, 
-        ILogger<IpDataService> logger, HttpClient httpClient)
+    public class IpDataService(IpDataConfiguration ipDataConfiguration, HttpClient httpClient)
     {
 
         /// <summary>
@@ -20,17 +18,9 @@ namespace FairPlayCombined.Services.Common
         {
             string requestUrl =
                 $"https://api.ipdata.co/{ipAddress}?api-key={ipDataConfiguration.Key}";
-            try
-            {
-                var result = await httpClient
-                    .GetFromJsonAsync<GetGeoLocationInfoResponse>(requestUrl, cancellationToken);
-                return result!;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError("Error: {ErrorMessage}", ex.Message);
-                throw;
-            }
+            var result = await httpClient
+                .GetFromJsonAsync<GetGeoLocationInfoResponse>(requestUrl, cancellationToken);
+            return result!;
         }
     }
 }

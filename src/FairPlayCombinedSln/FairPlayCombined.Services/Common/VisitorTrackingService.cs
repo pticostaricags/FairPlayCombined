@@ -5,13 +5,15 @@ using FairPlayCombined.Models.Common.VisitorTracking;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Data;
+using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.Services.Common
 {
     public class VisitorTrackingService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
         IHttpContextAccessor httpContextAccessor, 
-        IpDataService ipDataService) : IVisitorTrackingService
+        IpDataService ipDataService, 
+        ILogger<VisitorTrackingService> logger) : IVisitorTrackingService
     {
         public async Task<long?> TrackVisitAsync(VisitorTrackingModel visitorTrackingModel, CancellationToken cancellationToken)
         {
@@ -23,13 +25,13 @@ namespace FairPlayCombined.Services.Common
                 if (remoteIpAddress == "::1")
                 {
                     var ipAddresses = await IpAddressProvider.GetCurrentHostIPv4AddressesAsync();
-                    remoteIpAddress = ipAddresses.First();
+                    remoteIpAddress = ipAddresses[0];
                 }
                 var parsedIpAddress = System.Net.IPAddress.Parse(remoteIpAddress);
                 var ipGeoLocationInfo = await ipDataService.GetIpGeoLocationInfoAsync(ipAddress: parsedIpAddress);
                 string? country = ipGeoLocationInfo?.country_name;
                 var host = httpContext.Request.Host.Value;
-                var userAgent = httpContext.Request.Headers["User-Agent"].First();
+                var userAgent = httpContext.Request.Headers["User-Agent"][0];
                 AspNetUsers? userEntity = null;
                 if (!String.IsNullOrWhiteSpace(visitorTrackingModel.ApplicationUserId))
                     userEntity = await dbContext.AspNetUsers
@@ -48,7 +50,7 @@ namespace FairPlayCombined.Services.Common
                 await dbContext.VisitorTracking.AddAsync(visitedPage, cancellationToken);
                 await dbContext.SaveChangesAsync(cancellationToken);
                 var pageUri = new Uri(visitedPage.VisitedUrl!);
-                var lastSegment = pageUri.Segments.Last().TrimEnd('/');
+                var lastSegment = pageUri.Segments[pageUri.Segments.Length - 1].TrimEnd('/');
                 if (!String.IsNullOrWhiteSpace(lastSegment))
                 {
                     var videoInfoEntity = await dbContext.VideoInfo
@@ -63,6 +65,7 @@ namespace FairPlayCombined.Services.Common
             }
             catch (Exception ex)
             {
+                logger.LogError(ex,"Error: {ErrorMessage}", ex.Message);
                 try
                 {
                     await dbContext.ErrorLog.AddAsync(new ErrorLog()
@@ -73,9 +76,9 @@ namespace FairPlayCombined.Services.Common
                     }, cancellationToken);
                     await dbContext.SaveChangesAsync(cancellationToken);
                 }
-                catch (Exception)
+                catch (Exception ex2)
                 {
-                    throw;
+                    logger.LogError(ex2,"Error: {ErrorMessage}", ex2.Message);
                 }
             }
 
