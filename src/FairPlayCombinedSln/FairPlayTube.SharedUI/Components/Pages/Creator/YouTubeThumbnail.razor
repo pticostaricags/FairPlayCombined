@@ -25,6 +25,7 @@
 @inject IToastService toastService
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+@inject IUserFundService userFundService
 <PageTitle>
     Video Thumbnail
 </PageTitle>
@@ -35,13 +36,16 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<div>
-    <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-                  OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
-    <FluentSelect @bind-SelectedOption="@this.imageStylePreference"
-                  Items="@(Enum.GetValues<ImageStylePreference>())">
-    </FluentSelect>
-</div>
+@if (this.HasRequiredFundsToCreate)
+{
+    <div>
+        <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
+        OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
+        <FluentSelect @bind-SelectedOption="@this.imageStylePreference"
+        Items="@(Enum.GetValues<ImageStylePreference>())">
+        </FluentSelect>
+    </div>
+}
 <div>
     @if (this.Items?.Items?.Length > 0)
     {
@@ -87,6 +91,7 @@
     [Parameter]
     public long? VideoInfoId { get; set; }
     private bool IsBusy { get; set; }
+    private bool HasRequiredFundsToCreate { get; set; } = false;
     private PaginationOfT<VideoThumbnailModel>? Items;
     private readonly ConcurrentDictionary<long, string> PagePhotos = new();
     private readonly PaginationState paginationState = new()
@@ -121,6 +126,9 @@
         {
             this.IsBusy = true;
             StateHasChanged();
+            this.HasRequiredFundsToCreate =
+            await this.userFundService
+            .HasFundsToCreateThumbnailsAsync(this.cancellationTokenSource.Token);
             var items = await videoThumbnailService.GetPaginatedVideoThumbnailByVideoInfoIdAsync(
                 this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
             this.Items = items;
