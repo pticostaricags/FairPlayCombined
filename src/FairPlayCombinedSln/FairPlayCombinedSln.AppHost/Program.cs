@@ -37,6 +37,9 @@ var paypalClientId = builder.Configuration["PayPalClientId"] ??
 var paypalClientSecret = builder.Configuration["PayPalClientSecret"] ??
     throw new InvalidOperationException("'PayPalClientSecret' not found");
 
+var ipDataKey = builder.Configuration["IpDataKey"] ??
+    throw new InvalidOperationException("'IpDataKey' not found");
+
 IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource = ConfigureDatabase(builder);
 
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
@@ -88,6 +91,7 @@ if (addFairPlayTube)
             callback.EnvironmentVariables.Add("PayPalClientId", paypalClientId);
             callback.EnvironmentVariables.Add("PayPalClientSecret", paypalClientSecret);
 
+            callback.EnvironmentVariables.Add("IpDataKey", ipDataKey);
         })
     .WithReference(fairPlayDbResource);
 

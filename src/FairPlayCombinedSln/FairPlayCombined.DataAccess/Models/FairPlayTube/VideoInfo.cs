@@ -155,4 +155,7 @@ public partial class VideoInfo
 
     [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoWatchTime> VideoWatchTime { get; set; } = new List<VideoWatchTime>();
+
+    [InverseProperty("VideoInfo")]
+    public virtual ICollection<VisitorTracking> VisitorTracking { get; set; } = new List<VisitorTracking>();
 }

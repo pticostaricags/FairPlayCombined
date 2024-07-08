@@ -134,6 +134,9 @@ public partial class AspNetUsers
     [InverseProperty("WatchedByApplicationUser")]
     public virtual ICollection<VideoWatchTime> VideoWatchTime { get; set; } = new List<VideoWatchTime>();
 
+    [InverseProperty("ApplicationUser")]
+    public virtual ICollection<VisitorTracking> VisitorTracking { get; set; } = new List<VisitorTracking>();
+
     [ForeignKey("UserId")]
     [InverseProperty("User")]
     public virtual ICollection<AspNetRoles> Role { get; set; } = new List<AspNetRoles>();

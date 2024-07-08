@@ -107,6 +107,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[VisitorTracking]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayBudget].[Currency]",
          "ObjectType": 0
       },
