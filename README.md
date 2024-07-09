@@ -32,7 +32,9 @@ You can check more about .NET Aspire here: https://learn.microsoft.com/en-us/dot
 The project is still a work in progress, it started some time after DotNetConf release of .NET 8 and the public reveal of .NET Aspire Preview.
 
 ### Wiki
-https://github.com/pticostaricags/FairPlayCombined/wiki
+
+* General Wiki: https://github.com/pticostaricags/FairPlayCombined/wiki
+* FairPlayTube Wiki: https://github.com/pticostaricags/FairPlayCombined/wiki/FairPlayTube
 
 ### Support Me
 Developing software takes a lot of time and effort(researching, testing, trial and error, programming, etc.), you can help me help yourself and lots of other developers learning by becoming a Sponsor here: https://github.com/sponsors/efonsecab
