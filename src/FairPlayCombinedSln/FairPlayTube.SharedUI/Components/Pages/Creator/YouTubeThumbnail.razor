@@ -129,6 +129,10 @@
             this.HasRequiredFundsToCreate =
             await this.userFundService
             .HasFundsToCreateThumbnailsAsync(this.cancellationTokenSource.Token);
+            if (!this.HasRequiredFundsToCreate)
+            {
+                this.toastService.ShowWarning("You don't have any funds left to create thumbnails");
+            }
             var items = await videoThumbnailService.GetPaginatedVideoThumbnailByVideoInfoIdAsync(
                 this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
             this.Items = items;
