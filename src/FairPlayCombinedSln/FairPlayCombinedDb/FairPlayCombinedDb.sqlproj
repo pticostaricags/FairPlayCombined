@@ -182,6 +182,7 @@
     <Build Include="dbo\Tables\OpenAIPromptCost.sql" />
     <Build Include="dbo\Tables\OpenAIPromptMargin.sql" />
     <Build Include="dbo\Tables\VisitorTracking.sql" />
+    <Build Include="dbo\Tables\UserDataExportQueue.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />

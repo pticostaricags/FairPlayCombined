@@ -111,6 +111,9 @@ public partial class AspNetUsers
     public virtual ICollection<UserActivity> UserActivity { get; set; } = new List<UserActivity>();
 
     [InverseProperty("ApplicationUser")]
+    public virtual ICollection<UserDataExportQueue> UserDataExportQueue { get; set; } = new List<UserDataExportQueue>();
+
+    [InverseProperty("ApplicationUser")]
     public virtual UserFunds UserFunds { get; set; }
 
     [InverseProperty("FromApplicationUser")]

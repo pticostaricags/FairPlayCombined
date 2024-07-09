@@ -8,7 +8,8 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
 {
     public interface IFairPlayTubeUserDataService
     {
+        Task EnqueueMyDataExportAsync(CancellationToken cancellationToken);
         Task<byte[]> GetMyVideoDataAsync(long videoInfoId, CancellationToken cancellationToken);
-        Task<byte[]> GetMyUserDataAsync(CancellationToken cancellationToken);
+        Task<byte[]> GetUserDataAsync(string userId, CancellationToken cancellationToken);
     }
 }

@@ -99,6 +99,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[UserDataExportQueue]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[UserFunds]",
          "ObjectType": 0
       },

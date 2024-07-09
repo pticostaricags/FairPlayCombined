@@ -6,6 +6,8 @@
 
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<NavMenu> localizer
+@inject IFairPlayTubeUserDataService fairPlayTubeUserDataService
+@inject IToastService toastService
 
 
 <FluentNavGroup Title="@localizer[LanguageTextKey]" Icon="@(new Icons.Regular.Size20.LocalLanguage())">
@@ -41,7 +43,7 @@
                            Icon="@(new Icons.Regular.Size20.Edit())">@localizer[ManageAccountTextKey]</FluentNavLink>
             @if (context.User.IsInRole(Constants.RoleName.BasicPlanUser))
             {
-                <FluentNavLink Href="/Account/MyDataExport" Target="_blank"
+                <FluentNavLink OnClick="OnExportMyDataLinkClickedAsync" Target="_blank"
                                Icon="@(new Icons.Regular.Size20.ArrowExport())">@localizer[ExportMyDataTextKey]</FluentNavLink>
             }
         </FluentNavGroup>
@@ -102,6 +104,19 @@
     {
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
+    }
+
+    private async Task OnExportMyDataLinkClickedAsync()
+    {
+        try
+        {
+            await fairPlayTubeUserDataService.EnqueueMyDataExportAsync(this.cancellationTokenSource.Token);
+            toastService.ShowSuccess("Your data will be sent yo your email once it is ready");
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
     }
 
     public void Dispose()

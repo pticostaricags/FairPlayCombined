@@ -122,6 +122,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<UserActivity> UserActivity { get; set; }
 
+    public virtual DbSet<UserDataExportQueue> UserDataExportQueue { get; set; }
+
     public virtual DbSet<UserFunds> UserFunds { get; set; }
 
     public virtual DbSet<UserMessage> UserMessage { get; set; }
@@ -426,6 +428,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.Frequency).WithMany(p => p.UserActivity)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserActivity_Frequency");
+        });
+
+        modelBuilder.Entity<UserDataExportQueue>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.UserDataExportQueue)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserDataExportQueue_AspNetUsers");
         });
 
         modelBuilder.Entity<UserFunds>(entity =>

@@ -1,6 +1,7 @@
 using FairPlayCombinedSln.AppHost;
 using FairPlayCombinedSln.AppHost.Extensions.AzureVideoIndexer;
 using Microsoft.Extensions.Configuration;
+using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
@@ -41,6 +42,10 @@ var ipDataKey = builder.Configuration["IpDataKey"] ??
     throw new InvalidOperationException("'IpDataKey' not found");
 
 IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource = ConfigureDatabase(builder);
+
+var blobs = builder
+    .AddAzureStorage("storage")
+    .AddBlobs("blobs");
 
 bool addFairPlayDating = Convert.ToBoolean(builder.Configuration["AddFairPlayDating"]);
 if (addFairPlayDating)
@@ -208,7 +213,22 @@ builder.AddProject<Projects.FairPlayCombined_WebApi>(ResourcesNames.FairPlayWebA
 
 if (Convert.ToBoolean(builder.Configuration["DeployAzureVideoIndexer"]))
 {
-    builder.AddAzureVideoIndexer(name:"mainvideoindexer");
+    builder.AddAzureVideoIndexer(name: "mainvideoindexer");
+}
+
+var dataExportService =
+    builder.AddProject<Projects.FairPlayCombined_DataExportService>("dataexportservice")
+    .WithReference(fairPlayDbResource)
+    .WithReference(blobs);
+
+if (!useSendGrid)
+    dataExportService = dataExportService.WithReference(mailDev!);
+else
+{
+    dataExportService = dataExportService.WithEnvironment(callback =>
+    {
+        AddSMTPEnvironmentVariables(callback, builder);
+    });
 }
 
 await builder.Build().RunAsync();

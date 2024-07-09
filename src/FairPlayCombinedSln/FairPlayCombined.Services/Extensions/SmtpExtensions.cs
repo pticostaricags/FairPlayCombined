@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Net;
 using System.Net.Mail;
 
@@ -9,7 +10,7 @@ namespace FairPlayCombined.Services.Extensions
 {
     public static class SmtpExtensions
     {
-        public static void AddSmtpClient(this WebApplicationBuilder builder, string name)
+        public static void AddSmtpClient(this IHostApplicationBuilder builder, string name)
         {
             builder.Services.AddSingleton<ISmtpClient, SmtpClientWithTelemetry>();
             builder.Services.AddSingleton<SmtpClient>(sp =>

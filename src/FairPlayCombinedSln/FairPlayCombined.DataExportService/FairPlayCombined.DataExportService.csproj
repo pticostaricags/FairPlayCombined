@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-FairPlayCombined.DataExportService-38139869-554f-49b2-ab41-ac506166ada8</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="8.0.1" />
+    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0-preview.5.24306.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
+    <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
+  </ItemGroup>
+</Project>
