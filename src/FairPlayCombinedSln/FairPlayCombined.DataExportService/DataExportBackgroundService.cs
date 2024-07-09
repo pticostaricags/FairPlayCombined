@@ -15,22 +15,23 @@ public class DataExportBackgroundService(ILogger<DataExportBackgroundService> lo
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        TimeSpan timeToWait = TimeSpan.FromMinutes(1);
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
                 using var scope = serviceScopeFactory.CreateScope();
-                BlobServiceClient blobServiceClient = scope.ServiceProvider.GetRequiredService<BlobServiceClient>();
-                var blobContainerClient = blobServiceClient.GetBlobContainerClient("fairplaydata");
-                await blobContainerClient
-                    .CreateIfNotExistsAsync(PublicAccessType.Blob, cancellationToken: stoppingToken);
                 var fairPlayTubeUserDataService = scope.ServiceProvider.GetRequiredService<IFairPlayTubeUserDataService>();
-                var dbContextFactory =
-                    scope.ServiceProvider.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
                 var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
                 var emailFrom = configuration["EmailFrom"]!;
                 SendGridClient sendGridClient = scope.ServiceProvider.GetRequiredService<SendGridClient>();
+                var dbContextFactory =
+                    scope.ServiceProvider.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
                 var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
+                await dbContext.UserDataExportQueue
+                    .Where(p => p.IsCompleted == true &&
+                    DateTimeOffset.UtcNow > p.RowCreationDateTime.AddHours(24))
+                    .ExecuteDeleteAsync(stoppingToken);
                 if (await dbContext.UserDataExportQueue.AnyAsync(p => p.IsCompleted == false, stoppingToken))
                 {
                     foreach (var singleEnqueuedItem in dbContext.UserDataExportQueue.Include(p => p.ApplicationUser))
@@ -38,6 +39,10 @@ public class DataExportBackgroundService(ILogger<DataExportBackgroundService> lo
                         var fileBytes =
                         await fairPlayTubeUserDataService.GetUserDataAsync(singleEnqueuedItem.ApplicationUserId, stoppingToken);
                         var binaryData = BinaryData.FromBytes(fileBytes);
+                        BlobServiceClient blobServiceClient = scope.ServiceProvider.GetRequiredService<BlobServiceClient>();
+                        var blobContainerClient = blobServiceClient.GetBlobContainerClient("fairplaydata");
+                        await blobContainerClient
+                            .CreateIfNotExistsAsync(PublicAccessType.Blob, cancellationToken: stoppingToken);
                         string blobName = $"DataExports/{singleEnqueuedItem.ApplicationUserId}.zip";
                         var blobClient = blobContainerClient.GetBlobClient(blobName);
                         logger.LogInformation("Uploading blob");
@@ -70,7 +75,7 @@ public class DataExportBackgroundService(ILogger<DataExportBackgroundService> lo
             {
                 logger.LogError(ex, "Error: {ErrorMessage}", ex.Message);
             }
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(timeToWait, stoppingToken);
         }
     }
 }

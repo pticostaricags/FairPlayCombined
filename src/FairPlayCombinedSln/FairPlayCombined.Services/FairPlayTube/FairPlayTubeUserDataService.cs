@@ -238,7 +238,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             if (await dbContext.UserDataExportQueue
                 .AsNoTracking()
                 .Where(p=>p.ApplicationUserId == currentUserId && 
-                p.IsCompleted)
+                !p.IsCompleted)
                 .AnyAsync(cancellationToken))
             {
                 throw new RuleException("There is already a request being processed");
