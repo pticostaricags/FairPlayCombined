@@ -32,9 +32,13 @@ public class DataExportBackgroundService(ILogger<DataExportBackgroundService> lo
                     .Where(p => p.IsCompleted == true &&
                     DateTimeOffset.UtcNow > p.RowCreationDateTime.AddHours(24))
                     .ExecuteDeleteAsync(stoppingToken);
-                if (await dbContext.UserDataExportQueue.AnyAsync(p => p.IsCompleted == false, stoppingToken))
+                if (await dbContext.UserDataExportQueue
+                    .AnyAsync(p => !p.IsCompleted, stoppingToken)
+                    )
                 {
-                    foreach (var singleEnqueuedItem in dbContext.UserDataExportQueue.Include(p => p.ApplicationUser))
+                    foreach (var singleEnqueuedItem in dbContext.UserDataExportQueue
+                        .Where(p=>!p.IsCompleted)
+                        .Include(p => p.ApplicationUser))
                     {
                         var fileBytes =
                         await fairPlayTubeUserDataService.GetUserDataAsync(singleEnqueuedItem.ApplicationUserId, stoppingToken);
