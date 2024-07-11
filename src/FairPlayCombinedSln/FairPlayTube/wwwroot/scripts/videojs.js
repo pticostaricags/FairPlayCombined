@@ -5,7 +5,14 @@ let totalTime = 0;
 let lastPlayerTime = null;
 let player = null;
 let dotNetHelper = null;
-let currentSessionGuid = null
+let currentSessionGuid = null;
+
+function disposePlayer(playerElementId) {
+    let player = videojs.getPlayer(playerElementId);
+    if (player) {
+        player.dispose();
+    }
+}
 function initializeVideoJsPlayer(playerElementId, sessionGuid, dotNetObjectReference) {
     timer = null;
     totalTime = 0;
@@ -16,10 +23,7 @@ function initializeVideoJsPlayer(playerElementId, sessionGuid, dotNetObjectRefer
 
     dotNetHelper = dotNetObjectReference;
 
-    player = videojs.getPlayer(playerElementId);
-    if (player) {
-        player.dispose();
-    }
+    disposePlayer(playerElementId);
     player = videojs(playerElementId,
         {
             controls: true,

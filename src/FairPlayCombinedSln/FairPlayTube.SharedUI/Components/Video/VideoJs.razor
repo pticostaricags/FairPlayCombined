@@ -1,0 +1,85 @@
+﻿@inject IJSRuntime jsRuntime
+@inject IVideoWatchTimeService videoWatchTimeService
+@inject IUserProviderService userProviderService
+@inject ILogger<VideoJs> logger
+
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.AzureVideoIndexer
+<video id="my_video_1" class="video-js vjs-default-skin" controls preload="auto" width="640" height="268"
+       data-setup='{}' autoplay>
+    <source src="@this.VideoUrl" type="application/x-mpegURL">
+    @if (this.SupportedLanguages?.Length > 0)
+    {
+        foreach (var singleSupportedLanguage in this.SupportedLanguages)
+        {
+            <track kind="captions" src="@($"/api/video/{this.VideoId}/captions/{singleSupportedLanguage.languageCode}")"
+                   srclang="@singleSupportedLanguage.languageCode" label="@singleSupportedLanguage.name" />
+        }
+    }
+</video>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public string? VideoId { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? VideoUrl { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public SupportedLanguageModel[]? SupportedLanguages { get; set; }
+    private bool IsSessionCreated { get; set; } = false;
+    private DotNetObjectReference<VideoJs>? dotNetObjectReference;
+    private CancellationTokenSource cancellationTokenSource = new();
+
+    protected override void OnInitialized()
+    {
+        this.dotNetObjectReference = DotNetObjectReference.Create<VideoJs>(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("initializeVideoJsPlayer", "my_video_1", Guid.NewGuid().ToString(), this.dotNetObjectReference);
+        }
+    }
+
+    [JSInvokable]
+    public async Task UpdateWatchTime(double watchTime, string currentSessionGuid)
+    {
+        try
+        {
+            var currentUserId = this.userProviderService.GetCurrentUserId();
+            System.Diagnostics.Debug.WriteLine($"Watch Time (s): {watchTime}. Session: {currentSessionGuid}");
+            if (!IsSessionCreated)
+            {
+                await this.videoWatchTimeService.CreateVideoWatchTimeAsync(
+                    this.VideoId!,
+                    new FairPlayCombined.Models.FairPlayTube.VideoWatchTime.VideoWatchTimeModel()
+                        {
+                            WatchedByApplicationUserId = currentUserId,
+                            SessionId = Guid.Parse(currentSessionGuid),
+                            WatchTime = watchTime
+                        }, cancellationToken: cancellationTokenSource.Token);
+                this.IsSessionCreated = true;
+            }
+            else
+            {
+                await this.videoWatchTimeService.UpdateVideoWatchTimeAsync(
+                    new FairPlayCombined.Models.FairPlayTube.VideoWatchTime.VideoWatchTimeModel()
+                        {
+                            WatchedByApplicationUserId = currentUserId,
+                            SessionId = Guid.Parse(currentSessionGuid),
+                            WatchTime = watchTime
+                        }, cancellationToken: cancellationTokenSource.Token);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(exception: ex, "Error: {Message}", ex.Message);
+        }
+    }
+}

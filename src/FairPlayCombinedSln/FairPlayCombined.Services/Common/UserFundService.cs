@@ -45,6 +45,12 @@ namespace FairPlayCombined.Services.Common
             {
                 userFundsEntity.AvailableFunds += fundsToAdd;
             }
+            await dbContext.PaypalTransaction.AddAsync(new()
+            {
+                OrderId = orderDetails.id,
+                OrderAmount=decimal.Parse(orderDetails.gross_total_amount!.value!),
+                ApplicationUserId = currentUserId
+            }, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 

@@ -98,6 +98,9 @@ public partial class AspNetUsers
     [InverseProperty("OwnerApplicationUser")]
     public virtual ICollection<OpenAiprompt> OpenAiprompt { get; set; } = new List<OpenAiprompt>();
 
+    [InverseProperty("ApplicationUser")]
+    public virtual ICollection<PaypalTransaction> PaypalTransaction { get; set; } = new List<PaypalTransaction>();
+
     [InverseProperty("OwnerApplicationUser")]
     public virtual ICollection<Post> Post { get; set; } = new List<Post>();
 

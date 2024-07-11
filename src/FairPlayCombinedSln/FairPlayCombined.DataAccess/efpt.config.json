@@ -75,6 +75,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[PaypalTransaction]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Photo]",
          "ObjectType": 0
       },

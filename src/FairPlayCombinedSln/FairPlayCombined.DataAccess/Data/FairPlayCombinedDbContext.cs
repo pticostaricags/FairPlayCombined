@@ -80,6 +80,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<OpenAipromptMargin> OpenAipromptMargin { get; set; }
 
+    public virtual DbSet<PaypalTransaction> PaypalTransaction { get; set; }
+
     public virtual DbSet<PersonalityType> PersonalityType { get; set; }
 
     public virtual DbSet<Photo> Photo { get; set; }
@@ -299,6 +301,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.OpenAiprompt)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_OpenAIPrompt_AspNetUsers");
+        });
+
+        modelBuilder.Entity<PaypalTransaction>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.PaypalTransaction)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PaypalTransaction_AspNetUsers");
         });
 
         modelBuilder.Entity<Post>(entity =>
