@@ -1,14 +1,6 @@
-﻿@inject IHostEnvironment env
+﻿@inject IConfiguration configuration
 @{
-    string payPalClientId = String.Empty;
-    if (env.IsDevelopment())
-    {
-        payPalClientId = "AfLF5k_bEHF9I_HCuZQ0U_igieEOzFY8AXUOohWSdFF37CR1-Vl5oUS8cL8A8T4eJOOTsTmrnIB7NpS6";
-    }
-    else
-    {
-        payPalClientId = "NOT_IMPLEMENTED_YET";
-    }
+    string payPalClientId = configuration["PayPalClientId"]!;
     string payPalScriptSrc = $"https://www.paypal.com/sdk/js?client-id={payPalClientId}&enable-funding=venmo&currency=USD";
 }
 <!DOCTYPE html>
@@ -59,9 +51,9 @@
 
 <body>
     <Routes @rendermode="PageRenderMode" />
-    <script src="_framework/blazor.web.js"></script>
     <script src="scripts/videojs/video.min.js"></script>
     <script src="scripts/videojs.js"></script>
+    <script src="_framework/blazor.web.js"></script>
     <!-- Set the default theme -->
     <script src="_content/Microsoft.FluentUI.AspNetCore.Components/js/loading-theme.js" type="text/javascript"></script>
     <loading-theme storage-name="theme"></loading-theme>

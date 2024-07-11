@@ -6,18 +6,20 @@
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.AzureVideoIndexer
-<video id="my_video_1" class="video-js vjs-default-skin" controls preload="auto" width="640" height="268"
-       data-setup='{}' autoplay>
-    <source src="@this.VideoUrl" type="application/x-mpegURL">
-    @if (this.SupportedLanguages?.Length > 0)
-    {
-        foreach (var singleSupportedLanguage in this.SupportedLanguages)
+<div id="video-container" data-permanent>
+    <video  @key="@this.VideoId" id="my_video_1" class="video-js vjs-default-skin" controls preload="auto" width="640" height="268"
+           data-setup='{}' autoplay>
+        <source src="@this.VideoUrl" type="application/x-mpegURL">
+        @if (this.SupportedLanguages?.Length > 0)
         {
-            <track kind="captions" src="@($"/api/video/{this.VideoId}/captions/{singleSupportedLanguage.languageCode}")"
-                   srclang="@singleSupportedLanguage.languageCode" label="@singleSupportedLanguage.name" />
+            foreach (var singleSupportedLanguage in this.SupportedLanguages)
+            {
+                <track kind="captions" src="@($"/api/video/{this.VideoId}/captions/{singleSupportedLanguage.languageCode}")"
+                       srclang="@singleSupportedLanguage.languageCode" label="@singleSupportedLanguage.name" />
+            }
         }
-    }
-</video>
+    </video>
+</div>
 
 @code
 {
