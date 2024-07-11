@@ -2,6 +2,7 @@
 @inject IVideoWatchTimeService videoWatchTimeService
 @inject IUserProviderService userProviderService
 @inject ILogger<VideoJs> logger
+@inject IFairPlayTubeMetrics metricsSetup
 
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.FairPlayTube
@@ -45,6 +46,7 @@
     {
         if (firstRender)
         {
+            metricsSetup.Initialize();
             await jsRuntime.InvokeVoidAsync("initializeVideoJsPlayer", "my_video_1", Guid.NewGuid().ToString(), this.dotNetObjectReference);
         }
     }
