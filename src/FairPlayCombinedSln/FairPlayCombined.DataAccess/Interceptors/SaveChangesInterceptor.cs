@@ -4,6 +4,7 @@ using FairPlayCombined.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.DataAccess.Interceptors
 {
@@ -23,10 +24,13 @@ namespace FairPlayCombined.DataAccess.Interceptors
                     SqlConnectionStringBuilder sqlConnectionStringBuilder = new(connectionString);
                     var applicationName = sqlConnectionStringBuilder.ApplicationName ?? "Unknown App";
                     var userName = userProviderService.GetCurrentUserId() ?? "Unauthenticated User";
-                    entity.SourceApplication = applicationName;
-                    entity.RowCreationDateTime = DateTimeOffset.UtcNow;
-                    entity.RowCreationUser = userName!;
-                    entity.OriginatorIpaddress = String.Join(",", await IpAddressProvider.GetCurrentHostIPv4AddressesAsync());
+                    if (entityEntry.State == EntityState.Added)
+                    {
+                        entity.SourceApplication = applicationName;
+                        entity.RowCreationDateTime = DateTimeOffset.UtcNow;
+                        entity.RowCreationUser = userName!;
+                        entity.OriginatorIpaddress = String.Join(",", await IpAddressProvider.GetCurrentHostIPv4AddressesAsync());
+                    }
                 }
             }
 
