@@ -29,7 +29,7 @@ public class DataExportBackgroundService(ILogger<DataExportBackgroundService> lo
                     scope.ServiceProvider.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
                 var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
                 await dbContext.UserDataExportQueue
-                    .Where(p => p.IsCompleted == true &&
+                    .Where(p => p.IsCompleted &&
                     DateTimeOffset.UtcNow > p.RowCreationDateTime.AddHours(24))
                     .ExecuteDeleteAsync(stoppingToken);
                 if (await dbContext.UserDataExportQueue
@@ -50,7 +50,7 @@ public class DataExportBackgroundService(ILogger<DataExportBackgroundService> lo
                         string blobName = $"DataExports/{singleEnqueuedItem.ApplicationUserId}.zip";
                         var blobClient = blobContainerClient.GetBlobClient(blobName);
                         logger.LogInformation("Uploading blob");
-                        var result = await blobClient.UploadAsync(binaryData, overwrite: true, cancellationToken: stoppingToken);
+                        await blobClient.UploadAsync(binaryData, overwrite: true, cancellationToken: stoppingToken);
                         singleEnqueuedItem.IsCompleted = true;
                         singleEnqueuedItem.FileUrl = blobClient.Uri.ToString();
                         dbContext.Database.SetCommandTimeout(TimeSpan.FromMinutes(20));

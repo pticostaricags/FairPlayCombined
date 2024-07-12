@@ -16,10 +16,11 @@ namespace FairPlayCombined.Services.FairPlayTube
         ILogger<FairPlayTubeUserDataService> logger) : IFairPlayTubeUserDataService
     {
         private const CompressionLevel DefaultCompressionLevel = CompressionLevel.SmallestSize;
+        private const string START_OF_METHOD_MESSAGE = "Start of method: {MethodName}";
 
         public async Task<byte[]> GetMyVideoDataAsync(long videoInfoId, CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {MethodName}", nameof(GetMyVideoDataAsync));
+            logger.LogInformation(message: START_OF_METHOD_MESSAGE, nameof(GetMyVideoDataAsync));
             var userId = userProviderService.GetCurrentUserId();
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var videoInfoEntity =
@@ -44,7 +45,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                     .Include(p => p.VideoTopic)
                     .Where(p => p.ApplicationUserId == userId);
 
-                if (await videosQuery.AnyAsync())
+                if (await videosQuery.AnyAsync(cancellationToken))
                 {
                     foreach (var video in videosQuery)
                     {
@@ -64,7 +65,7 @@ namespace FairPlayCombined.Services.FairPlayTube
 
         public async Task<byte[]> GetUserDataAsync(string userId, CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {MethodName}", nameof(GetUserDataAsync));
+            logger.LogInformation(message: START_OF_METHOD_MESSAGE, nameof(GetUserDataAsync));
             await using MemoryStream memoryStream = new();
             using (ZipArchive archive = new(memoryStream, ZipArchiveMode.Create, true))
             {
@@ -79,7 +80,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                     .Include(p => p.VideoTopic)
                     .Where(p => p.ApplicationUserId == userId);
 
-                if (await videosQuery.AnyAsync())
+                if (await videosQuery.AnyAsync(cancellationToken))
                 {
                     foreach (var video in videosQuery)
                     {
@@ -111,7 +112,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         private async Task AddThumbnailsEntriesAsync(ZipArchive archive, VideoInfo video,
             FairPlayCombinedDbContext dbContext, CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {MethodName}", nameof(AddThumbnailsEntriesAsync));
+            logger.LogInformation(message: START_OF_METHOD_MESSAGE, nameof(AddThumbnailsEntriesAsync));
             var thumbnailsQuery = dbContext.VideoThumbnail
                 .AsNoTracking()
                 .Where(p => p.VideoInfoId == video.VideoInfoId);
@@ -126,7 +127,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                     var thumbnailArchiveEntry = archive.CreateEntry(fileName, DefaultCompressionLevel);
                     await using var thumbnailArchiveEntryStream = thumbnailArchiveEntry.Open();
                     await thumbnailArchiveEntryStream
-                        .WriteAsync(photo.PhotoBytes, 0, photo.PhotoBytes.Length, cancellationToken);
+                        .WriteAsync(photo.PhotoBytes, cancellationToken);
                 }
             }
         }
@@ -135,7 +136,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             VideoInfo video, FairPlayCombinedDbContext dbContext, 
             CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {MethodName}", nameof(AddInfographicsEntriesAsync));
+            logger.LogInformation(message: START_OF_METHOD_MESSAGE, nameof(AddInfographicsEntriesAsync));
             var infographicsQuery = dbContext.VideoInfographic
                 .AsNoTracking()
                 .Where(p => p.VideoInfoId == video.VideoInfoId);
@@ -150,14 +151,14 @@ namespace FairPlayCombined.Services.FairPlayTube
                     var infographicArchiveEntry = archive.CreateEntry(fileName, DefaultCompressionLevel);
                     await using var infographicArchiveEntryStream = infographicArchiveEntry.Open();
                     await infographicArchiveEntryStream
-                        .WriteAsync(photo.PhotoBytes, 0, photo.PhotoBytes.Length, cancellationToken);
+                        .WriteAsync(photo.PhotoBytes, cancellationToken);
                 }
             }
         }
 
         private static async Task AddDigitalMarketingPlanEntriesAsync(ZipArchive archive, VideoInfo? video)
         {
-            if (video!.VideoDigitalMarketingPlan.Any())
+            if (video!.VideoDigitalMarketingPlan.Count == 0)
             {
                 foreach (var singleVideoDigitalMarketingPlan in video.VideoDigitalMarketingPlan)
                 {
@@ -172,8 +173,8 @@ namespace FairPlayCombined.Services.FairPlayTube
 
         private async Task AddDigitalMarketingDailyPostsEntriesAsync(ZipArchive archive, VideoInfo? video)
         {
-            logger.LogInformation(message: "Start of method: {MethodName}", nameof(AddDigitalMarketingDailyPostsEntriesAsync));
-            if (video!.VideoDigitalMarketingDailyPosts.Any())
+            logger.LogInformation(message: START_OF_METHOD_MESSAGE, nameof(AddDigitalMarketingDailyPostsEntriesAsync));
+            if (video!.VideoDigitalMarketingDailyPosts.Count == 0)
             {
                 foreach (var singleVideoDigitalMarketingDailyPost in video.VideoDigitalMarketingDailyPosts)
                 {
@@ -188,8 +189,8 @@ namespace FairPlayCombined.Services.FairPlayTube
 
         private async Task AddVideoCaptionsEntriesAsync(ZipArchive archive, VideoInfo? video)
         {
-            logger.LogInformation(message: "Start of method: {MethodName}", nameof(AddVideoCaptionsEntriesAsync));
-            if (video!.VideoCaptions.Any())
+            logger.LogInformation(message: START_OF_METHOD_MESSAGE, nameof(AddVideoCaptionsEntriesAsync));
+            if (video!.VideoCaptions.Count == 0)
             {
                 foreach (var singleVideoCaption in video.VideoCaptions)
                 {
@@ -204,8 +205,8 @@ namespace FairPlayCombined.Services.FairPlayTube
 
         private async Task AddVideoKeywordsEntriesAsync(ZipArchive archive, VideoInfo? video)
         {
-            logger.LogInformation(message: "Start of method: {MethodName}", nameof(AddVideoKeywordsEntriesAsync));
-            if (video!.VideoKeyword.Any())
+            logger.LogInformation(message: START_OF_METHOD_MESSAGE, nameof(AddVideoKeywordsEntriesAsync));
+            if (video!.VideoKeyword.Count == 0)
             {
                 string keywords = String.Join(",", video.VideoKeyword.Select(p => p.Keyword));
                 string fileName = @$"videos\{video.Name}\keywords.txt";
@@ -218,8 +219,8 @@ namespace FairPlayCombined.Services.FairPlayTube
 
         private async Task AddVideoTopicsEntriesAsync(ZipArchive archive, VideoInfo? video)
         {
-            logger.LogInformation(message: "Start of method: {MethodName}", nameof(AddVideoTopicsEntriesAsync));
-            if (video!.VideoTopic.Any())
+            logger.LogInformation(message: START_OF_METHOD_MESSAGE, nameof(AddVideoTopicsEntriesAsync));
+            if (video!.VideoTopic.Count == 0)
             {
                 string topics = String.Join(",", video.VideoTopic.Select(p => p.Topic));
                 string fileName = @$"videos\{video.Name}\topics.txt";
@@ -232,7 +233,7 @@ namespace FairPlayCombined.Services.FairPlayTube
 
         public async Task EnqueueMyDataExportAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation(message: "Start of method: {MethodName}", nameof(EnqueueMyDataExportAsync));
+            logger.LogInformation(message: START_OF_METHOD_MESSAGE, nameof(EnqueueMyDataExportAsync));
             var currentUserId = userProviderService.GetCurrentUserId();
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             if (await dbContext.UserDataExportQueue

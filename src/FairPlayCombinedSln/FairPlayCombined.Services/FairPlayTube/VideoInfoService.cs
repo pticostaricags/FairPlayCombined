@@ -22,7 +22,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         >]
     public partial class VideoInfoService : BaseService, IVideoInfoService
     {
-        private IAzureVideoIndexerService azureVideoIndexerService;
+        private readonly IAzureVideoIndexerService azureVideoIndexerService;
         public VideoInfoService(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
             ILogger<VideoInfoService> logger, IAzureVideoIndexerService azureVideoIndexerService) :
             this(dbContextFactory, logger)

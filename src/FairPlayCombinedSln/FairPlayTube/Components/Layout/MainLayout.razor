@@ -4,6 +4,9 @@
 @using FairPlayCombined.Models.Common.VisitorTracking
 @using Microsoft.Extensions.Localization
 @using System.Timers
+
+@implements IAsyncDisposable 
+
 @inherits LayoutComponentBase
 @inject IStringLocalizer<MainLayout> localizer
 @inject NavigationManager navigationManager
@@ -50,7 +53,7 @@
 {
     private bool IsBusy { get; set; } = false;
     private System.Timers.Timer? VisitsTimer { get; set; }
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
     private long? VisitorTrackingId { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -124,6 +127,12 @@
         {
             //Ignore
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
     }
 
 

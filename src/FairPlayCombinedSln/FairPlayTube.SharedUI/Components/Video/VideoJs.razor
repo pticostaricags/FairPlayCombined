@@ -1,4 +1,6 @@
-﻿@inject IJSRuntime jsRuntime
+﻿@implements IAsyncDisposable 
+
+@inject IJSRuntime jsRuntime
 @inject IVideoWatchTimeService videoWatchTimeService
 @inject IUserProviderService userProviderService
 @inject ILogger<VideoJs> logger
@@ -35,7 +37,7 @@
     public SupportedLanguageModel[]? SupportedLanguages { get; set; }
     private bool IsSessionCreated { get; set; } = false;
     private DotNetObjectReference<VideoJs>? dotNetObjectReference;
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override void OnInitialized()
     {
@@ -85,5 +87,11 @@
         {
             logger.LogError(exception: ex, "Error: {Message}", ex.Message);
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
     }
 }

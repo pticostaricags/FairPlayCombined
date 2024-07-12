@@ -1,5 +1,7 @@
 ﻿@attribute [Route(Constants.Routes.FairPlayTubeRoutes.UserRoutes.BillingInfo)]
 
+@implements IAsyncDisposable
+
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.FairPlayTube
@@ -7,6 +9,7 @@
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Microsoft.Extensions.Localization
 @using System.Globalization
+
 @attribute [Authorize]
 
 @inject IFairPlayTubeBillingService fairPlayTubeBillingService
@@ -82,6 +85,12 @@
             this.IsBusy = false;
             StateHasChanged();
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
     }
 
     #region Resource Keys

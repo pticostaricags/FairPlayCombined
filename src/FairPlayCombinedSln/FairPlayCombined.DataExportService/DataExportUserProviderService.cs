@@ -1,5 +1,6 @@
 ﻿using FairPlayCombined.Interfaces;
 
+namespace FairPlayCombined.DataExportService;
 internal class DataExportUserProviderService : IUserProviderService
 {
     public string? GetAccessToken()
