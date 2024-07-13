@@ -5,6 +5,7 @@ using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.AzureVideoIndexer;
+using FairPlayCombined.Models.Common.IpData;
 using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.FairPlayTube;
@@ -73,6 +74,19 @@ namespace FairPlayTube.Extensions
             builder.Services.AddTransient<INewVideoRecommendationService, NewVideoRecommendationService>();
             builder.Services.AddTransient<IVideoInfographicService, VideoInfographicService>();
             builder.Services.AddTransient<IApiResolver, ApiResolver>();
+            builder.Services.AddTransient<IFairPlayTubeUserDataService, FairPlayTubeUserDataService>();
+            builder.Services.AddTransient<IFairPlayTubeBillingService, FairPlayTubeBillingService>();
+            builder.Services.AddSingleton<IpDataConfiguration>(sp => 
+            {
+                var ipDataKey = builder.Configuration["IpDataKey"] ??
+                throw new InvalidOperationException("'IpDataKey' not found");
+                return new IpDataConfiguration()
+                {
+                    Key = ipDataKey,
+                };
+            });
+            builder.Services.AddTransient<IpDataService>();
+            builder.Services.AddTransient<IVisitorTrackingService, VisitorTrackingService>();
         }
     }
 }

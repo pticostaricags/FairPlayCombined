@@ -98,6 +98,9 @@ public partial class AspNetUsers
     [InverseProperty("OwnerApplicationUser")]
     public virtual ICollection<OpenAiprompt> OpenAiprompt { get; set; } = new List<OpenAiprompt>();
 
+    [InverseProperty("ApplicationUser")]
+    public virtual ICollection<PaypalTransaction> PaypalTransaction { get; set; } = new List<PaypalTransaction>();
+
     [InverseProperty("OwnerApplicationUser")]
     public virtual ICollection<Post> Post { get; set; } = new List<Post>();
 
@@ -109,6 +112,9 @@ public partial class AspNetUsers
 
     [InverseProperty("ApplicationUser")]
     public virtual ICollection<UserActivity> UserActivity { get; set; } = new List<UserActivity>();
+
+    [InverseProperty("ApplicationUser")]
+    public virtual ICollection<UserDataExportQueue> UserDataExportQueue { get; set; } = new List<UserDataExportQueue>();
 
     [InverseProperty("ApplicationUser")]
     public virtual UserFunds UserFunds { get; set; }
@@ -133,6 +139,9 @@ public partial class AspNetUsers
 
     [InverseProperty("WatchedByApplicationUser")]
     public virtual ICollection<VideoWatchTime> VideoWatchTime { get; set; } = new List<VideoWatchTime>();
+
+    [InverseProperty("ApplicationUser")]
+    public virtual ICollection<VisitorTracking> VisitorTracking { get; set; } = new List<VisitorTracking>();
 
     [ForeignKey("UserId")]
     [InverseProperty("User")]

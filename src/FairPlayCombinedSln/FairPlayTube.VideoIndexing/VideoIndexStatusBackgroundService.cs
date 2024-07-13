@@ -11,25 +11,26 @@ namespace FairPlayTube.VideoIndexing;
 public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroundService> logger,
     IServiceScopeFactory serviceScopeFactory) : BackgroundService
 {
+    private readonly HttpClient httpClient = new();
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        try
+        TimeSpan timeToWait = TimeSpan.FromMinutes(5);
+        var scope = serviceScopeFactory.CreateScope();
+        var dbContextFactory = scope.ServiceProvider
+            .GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
+        var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
+        var azureVideoIndexerService =
+            scope.ServiceProvider.GetRequiredService<IAzureVideoIndexerService>();
+        while (!stoppingToken.IsCancellationRequested)
         {
-            TimeSpan timeToWait = TimeSpan.FromMinutes(5);
-            var scope = serviceScopeFactory.CreateScope();
-            var dbContextFactory = scope.ServiceProvider
-                .GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
-            var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
-            var azureVideoIndexerService =
-                scope.ServiceProvider.GetRequiredService<IAzureVideoIndexerService>();
-            GetAccessTokenResponseModel? getviTokenResult = null;
-            if (!stoppingToken.IsCancellationRequested)
+            try
             {
-                getviTokenResult = await AuthenticateAsync(azureVideoIndexerService, stoppingToken);
-                await PrepareSupportedLanguagesAsync(dbContext, azureVideoIndexerService, getviTokenResult, stoppingToken);
-            }
-            while (!stoppingToken.IsCancellationRequested)
-            {
+                GetAccessTokenResponseModel? getviTokenResult = null;
+                if (!stoppingToken.IsCancellationRequested)
+                {
+                    getviTokenResult = await AuthenticateAsync(azureVideoIndexerService, stoppingToken);
+                    await PrepareSupportedLanguagesAsync(dbContext, azureVideoIndexerService, getviTokenResult, stoppingToken);
+                }
                 if (logger.IsEnabled(LogLevel.Information))
                 {
                     logger.LogInformation("Worker running at: {Time}", DateTimeOffset.Now);
@@ -38,36 +39,50 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
                     await GetAllVideosInProcessingStatusAsync(dbContext, stoppingToken);
                 if (allVideosInProcessingStatus.Length != 0)
                 {
-                    var videosIndex = await azureVideoIndexerService.SearchVideosByIdsAsync(
-                        getviTokenResult!.AccessToken!, allVideosInProcessingStatus, stoppingToken);
-                    LogVideoIndexStatus(logger, videosIndex);
-                    var processingVideos = videosIndex?.results?.Where(p => p.state ==
-                    FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processing.ToString());
-                    if (processingVideos?.Any() == true)
+                    try
                     {
-                        await UpdateProcessingPercentageAsync(logger, dbContext, azureVideoIndexerService, getviTokenResult, processingVideos, stoppingToken);
+                        var videosIndex = await azureVideoIndexerService.SearchVideosByIdsAsync(
+                            getviTokenResult!.AccessToken!, allVideosInProcessingStatus, stoppingToken);
+                        LogVideoIndexStatus(logger, videosIndex);
+                        var processingVideos = videosIndex?.results?.Where(p => p.state ==
+                        FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processing.ToString());
+                        if (processingVideos?.Any() == true)
+                        {
+                            await UpdateProcessingPercentageAsync(logger, dbContext, azureVideoIndexerService, getviTokenResult, processingVideos, stoppingToken);
+                        }
+                        var indexCompleteVideos = videosIndex?.results?.Where(p => p.state ==
+                        FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed.ToString());
+                        await UpdateVideoIndexingTransactionAsync(dbContext,
+                            azureVideoIndexerService, getviTokenResult, indexCompleteVideos,
+                            stoppingToken);
                     }
-                    var indexCompleteVideos = videosIndex?.results?.Where(p => p.state ==
-                    FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed.ToString());
-                    await UpdateVideoIndexingTransactionAsync(dbContext, 
-                        azureVideoIndexerService, getviTokenResult, indexCompleteVideos, 
-                        stoppingToken);
+                    catch (Exception ex)
+                    {
+                        await dbContext.ErrorLog.AddAsync(new()
+                        {
+                            FullException = ex.ToString(),
+                            Message = ex.Message,
+                            StackTrace = ex.StackTrace
+                        }, stoppingToken);
+                        await dbContext.SaveChangesAsync(stoppingToken);
+                        logger.LogError(exception: ex, "Error: {ErrorMessage}", ex.Message);
+                    }
                 }
-                logger.LogInformation("Current Iteration finished at: {Time}. Next Iteration at {Time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
-                await Task.Delay(timeToWait, stoppingToken);
             }
-        }
-        catch (Exception ex)
-        {
-            logger.LogCritical(exception: ex, "Error: {ErrorMessage}", ex.Message);
+            catch (Exception ex)
+            {
+                logger.LogCritical(exception: ex, "Error: {ErrorMessage}", ex.Message);
+            }
+            logger.LogInformation("Current Iteration finished at: {Time}. Next Iteration at {Time2}", DateTimeOffset.Now, DateTimeOffset.Now.Add(timeToWait));
+            await Task.Delay(timeToWait, stoppingToken);
         }
     }
 
-    private static async Task UpdateVideoIndexingTransactionAsync(
+    private async Task UpdateVideoIndexingTransactionAsync(
         FairPlayCombinedDbContext dbContext,
-        IAzureVideoIndexerService azureVideoIndexerService, 
-        GetAccessTokenResponseModel? getviTokenResult,  
-        IEnumerable<Result>? indexCompleteVideos, 
+        IAzureVideoIndexerService azureVideoIndexerService,
+        GetAccessTokenResponseModel? getviTokenResult,
+        IEnumerable<Result>? indexCompleteVideos,
         CancellationToken stoppingToken)
     {
         if (indexCompleteVideos?.Any() == true)
@@ -123,7 +138,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
         }
     }
 
-    private static async Task InsertVideoFaceThumbnailsAsync(IAzureVideoIndexerService azureVideoIndexerService, GetAccessTokenResponseModel getviTokenResult, VideoInfo? singleVideoEntity, GetVideoIndexResponseModel? completedVideoIndex, CancellationToken stoppingToken)
+    private async Task InsertVideoFaceThumbnailsAsync(IAzureVideoIndexerService azureVideoIndexerService, GetAccessTokenResponseModel getviTokenResult, VideoInfo? singleVideoEntity, GetVideoIndexResponseModel? completedVideoIndex, CancellationToken stoppingToken)
     {
         var facesThumbnailsDownloadUrl =
                             await azureVideoIndexerService
@@ -136,7 +151,6 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
             facesThumbnailsDownloadUrl =
                 facesThumbnailsDownloadUrl.Trim('"');
         }
-        HttpClient httpClient = new();
         var stream = await httpClient!
             .GetStreamAsync(facesThumbnailsDownloadUrl, stoppingToken);
         ZipArchive archive = new(stream);
@@ -147,11 +161,11 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
             await entryStream.CopyToAsync(entryMemoryStream, stoppingToken);
             byte[] fileBytes = entryMemoryStream.ToArray();
             string faceName = string.Empty;
-            foreach (var singlePair in pairs)
+            foreach (var (PersonName, ThumbnailFilename) in pairs)
             {
-                if (entry.FullName == singlePair.ThumbnailFilename)
+                if (entry.FullName == ThumbnailFilename)
                 {
-                    faceName = singlePair.ThumbnailFilename;
+                    faceName = ThumbnailFilename;
                 }
             }
             if (!String.IsNullOrWhiteSpace(faceName) &&

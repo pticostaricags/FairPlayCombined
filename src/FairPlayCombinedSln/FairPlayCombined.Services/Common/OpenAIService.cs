@@ -114,7 +114,7 @@ public class OpenAIService(
         var response = await openAIAuthorizedHttpClient.PostAsJsonAsync<GenerateDallE3RequestModel>(requestUrl,
             requestModel, cancellationToken: cancellationToken);
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
-        if (response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
             var fullError = await response.Content.ReadAsStringAsync(cancellationToken);
             GenerateDallE3ResponseError? generateDallE3ResponseError = 

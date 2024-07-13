@@ -36,6 +36,20 @@
     <FluentWizard DisplayStepNumber="WizardStepStatus.All" StepperPosition="StepperPosition.Top"
                   OnFinish="PerformSubmitAsync">
         <Steps>
+            <FluentWizardStep OnChange="OnVideoNameChange">
+                <div>
+                    <FluentLabel Typo="Typography.Body">Name</FluentLabel>
+                    <FluentTextField @bind-Value="this.createVideoInfoModel.Name" style="width:100%;"></FluentTextField>
+                    <FluentValidationMessage For="@(()=>this.createVideoInfoModel.Name)"></FluentValidationMessage>
+                </div>
+            </FluentWizardStep>
+            <FluentWizardStep OnChange="OnVideoDescriptionStepChange">
+                <div>
+                    <FluentLabel Typo="Typography.Body">Description</FluentLabel>
+                    <FluentTextArea @bind-Value="this.createVideoInfoModel.Description" style="width:100%;"></FluentTextArea>
+                    <FluentValidationMessage For="@(()=>this.createVideoInfoModel.Description)"></FluentValidationMessage>
+                </div>
+            </FluentWizardStep>
             <FluentWizardStep Label="Video Url" OnChange="OnVideoUrlChange">
                 <div>
                     <FluentLabel Typo="Typography.Body">Video Url</FluentLabel>
@@ -47,20 +61,6 @@
                 <FluentLabel Typo="Typography.Body">Here you can upload your video to YouTube if you want</FluentLabel>
                 <FluentButton Type="ButtonType.Button" OnClick="UploadToYouTubeAsync">Upload To YouTube</FluentButton>
                 <FluentLabel Typo="Typography.Body">Bytes Sent: @bytesSent</FluentLabel>
-            </FluentWizardStep>
-            <FluentWizardStep OnChange="OnVideoDescriptionStepChange">
-                <div>
-                    <FluentLabel Typo="Typography.Body">Description</FluentLabel>
-                    <FluentTextArea @bind-Value="this.createVideoInfoModel.Description" style="width:100%;"></FluentTextArea>
-                    <FluentValidationMessage For="@(()=>this.createVideoInfoModel.Description)"></FluentValidationMessage>
-                </div>
-            </FluentWizardStep>
-            <FluentWizardStep OnChange="OnVideoNameChange">
-                <div>
-                    <FluentLabel Typo="Typography.Body">Name</FluentLabel>
-                    <FluentTextField @bind-Value="this.createVideoInfoModel.Name" style="width:100%;"></FluentTextField>
-                    <FluentValidationMessage For="@(()=>this.createVideoInfoModel.Name)"></FluentValidationMessage>
-                </div>
             </FluentWizardStep>
             <FluentWizardStep>
                 <div>

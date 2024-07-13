@@ -1,51 +1,88 @@
-﻿@implements IDisposable
+﻿@using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayTube.SharedUI.Components.Layout
+@using Microsoft.Extensions.Localization
+@implements IAsyncDisposable
 
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<NavMenu> localizer
+@inject IFairPlayTubeUserDataService fairPlayTubeUserDataService
+@inject IToastService toastService
 
-<FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.Home())">Home</FluentNavLink>
+
+<FluentNavGroup Title="@localizer[LanguageTextKey]" Icon="@(new Icons.Regular.Size20.LocalLanguage())">
+    <div style="height:250px">
+        <CultureSelector RedirectUri="@NavigationManager.Uri"></CultureSelector>
+    </div>
+</FluentNavGroup>
+<FluentNavGroup Title="@localizer[HelpTextKey]" Icon="@(new Icons.Regular.Size20.QuestionCircle())">
+    <FluentNavLink Href="https://github.com/pticostaricags/FairPlayCombined/issues/new?assignees=&labels=&projects=&template=feature_request.md&title="
+                   Target="_blank"
+                   Icon="@(new Icons.Regular.Size20.BranchRequest())">
+        @localizer[FeatureRequestTextKey]
+    </FluentNavLink>
+    <FluentNavLink Href="https://github.com/pticostaricags/FairPlayCombined/issues/new?assignees=&labels=&projects=&template=bug_report.md&title="
+                   Target="_blank"
+                   Icon="@(new Icons.Regular.Size20.Bug())">
+        @localizer[ReportIssueTextKey]
+    </FluentNavLink>
+</FluentNavGroup>
+<FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.Home())">@localizer[HomeTextKey]</FluentNavLink>
 <FluentNavLink Href="https://github.com/pticostaricags/FairPlayCombined/wiki/FairPlayTube"
                Target="_blank"
                Icon="@(new Icons.Regular.Size20.Document())">
-    User Manual
+    @localizer[UserManualTextKey]
 </FluentNavLink>
-<FluentNavLink Href="/ThemeChoose" Icon="@(new Icons.Regular.Size20.DesignIdeas())">Theme</FluentNavLink>
+<FluentNavLink Href="/ThemeChoose" Icon="@(new Icons.Regular.Size20.DesignIdeas())">@localizer[ThemeTextKey]</FluentNavLink>
 
 <AuthorizeView>
     <Authorized>
-        <FluentNavGroup Title="Accounts" Expanded="@ShouldExpandAccountsGroup"
+        <FluentNavGroup Title="@localizer[AccountsTextKey]" Expanded="@ShouldExpandAccountsGroup"
                         Icon="@(new Icons.Regular.Size20.PeopleCommunity())">
             <FluentNavLink Href="/Account/Manage"
-                           Icon="@(new Icons.Regular.Size20.Edit())">Manage Account</FluentNavLink>
+                           Icon="@(new Icons.Regular.Size20.Edit())">@localizer[ManageAccountTextKey]</FluentNavLink>
+            @if (context.User.IsInRole(Constants.RoleName.BasicPlanUser))
+            {
+                <FluentNavLink OnClick="OnExportMyDataLinkClickedAsync" Target="_blank"
+                               Icon="@(new Icons.Regular.Size20.ArrowExport())">@localizer[ExportMyDataTextKey]</FluentNavLink>
+            }
         </FluentNavGroup>
-        <div class="nav-item px-3">
+        <FluentNavLink Icon="@(new Icons.Regular.Size20.ArrowExit())">
             <form action="Account/Logout" method="post">
                 <AntiforgeryToken />
                 <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                <button type="submit" class="nav-link">
-                    <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                </button>
+                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Stealth">
+                    @localizer[LogoutTextKey]
+                </FluentButton>
             </form>
-        </div>
+        </FluentNavLink>
     </Authorized>
     <NotAuthorized>
-        <FluentNavLink Href="Account/Register">Register</FluentNavLink>
-        <FluentNavLink Href="Account/Login">Login</FluentNavLink>
+        <FluentNavLink Href="Account/Register"
+                       Icon="@(new Icons.Regular.Size20.PersonAdd())">@localizer[RegisterTextKey]</FluentNavLink>
+        <FluentNavLink Href="Account/Login"
+                       Icon="@(new Icons.Regular.Size20.PersonArrowRight())">@localizer[LoginTextKey]</FluentNavLink>
     </NotAuthorized>
 </AuthorizeView>
 
 <AuthorizeView Roles="@Constants.RoleName.BasicPlanUser">
-    <FluentNavGroup Title="Users" Expanded="@ShouldExpandUsersGroup" Icon="@(new Icons.Regular.Size20.PeopleAudience())">
-        <FluentNavLink Href="/User/MyConversations" Icon="@(new Icons.Regular.Size20.ChatMultiple())">My Conversations</FluentNavLink>
-        <FluentNavLink Href="/User/MyFunds" Icon="@(new Icons.Regular.Size20.Money())">My Funds</FluentNavLink>
+    <FluentNavGroup Title="@localizer[UsersTextKey]" Expanded="@ShouldExpandUsersGroup" Icon="@(new Icons.Regular.Size20.PeopleAudience())">
+        @if (context.User.IsInRole(Constants.RoleName.BasicPlanUser))
+        {
+            <FluentNavLink Href="/User/MyConversations" Icon="@(new Icons.Regular.Size20.ChatMultiple())">@localizer[MyConversationsTextKey]</FluentNavLink>
+            <FluentNavLink Href="/User/MyFunds" Icon="@(new Icons.Regular.Size20.Money())">@localizer[MyFundsTextKey]</FluentNavLink>
+        }
+        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.UserRoutes.BillingInfo"
+                       Icon="@(new Icons.Regular.Size20.MoneyCalculator())">@localizer[BillingInfoTextKey]</FluentNavLink>
     </FluentNavGroup>
-    <FluentNavGroup Title="Creators" Expanded="@ShouldExpandCreatorsGroup" Icon="@(new Icons.Regular.Size20.Video())">
-        <FluentNavLink Href="/Creator/UploadMyVideo" Icon="@(new Icons.Regular.Size20.ArrowUpload())">Upload My Video</FluentNavLink>
-        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos" Icon="@(new Icons.Regular.Size20.Video())">My Videos</FluentNavLink>
-        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyProcessingVideos" Icon="@(new Icons.Regular.Size20.DocumentQueue())">My Processing Videos</FluentNavLink>
-        <FluentNavLink Href="/Creator/NewVideoRecommendation" Icon="@(new Icons.Regular.Size20.DesignIdeas())">Recommendations</FluentNavLink>
-        <FluentNavLink Href="/Creator/NewVideoScript" Icon="@(new Icons.Regular.Size20.Script())">New Video Script</FluentNavLink>
-        <FluentNavLink Href="/Creator/CreateVideoPlan" Icon="@(new Icons.Regular.Size20.DocumentImage())">Create Video Plan</FluentNavLink>
-        <FluentNavLink Href="/Creator/MyVideoPlans" Icon="@(new Icons.Regular.Size20.DocumentBulletList())">My Video Plans</FluentNavLink>
+    <FluentNavGroup Title="@localizer[CreatorsTextKey]" Expanded="@ShouldExpandCreatorsGroup" Icon="@(new Icons.Regular.Size20.Video())">
+        <FluentNavLink Href="/Creator/UploadMyVideo" Icon="@(new Icons.Regular.Size20.ArrowUpload())">@localizer[UploadMyVideoTextKey]</FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideos" Icon="@(new Icons.Regular.Size20.Video())">@localizer[MyVideosTextKey]</FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyProcessingVideos" Icon="@(new Icons.Regular.Size20.DocumentQueue())">@localizer[MyProcessingVideosTextKey]</FluentNavLink>
+        <FluentNavLink Href="/Creator/NewVideoRecommendation" Icon="@(new Icons.Regular.Size20.DesignIdeas())">@localizer[RecommendationsTextKey]</FluentNavLink>
+        <FluentNavLink Href="/Creator/NewVideoScript" Icon="@(new Icons.Regular.Size20.Script())">@localizer[NewVideoScriptTextKey]</FluentNavLink>
+        <FluentNavLink Href="/Creator/CreateVideoPlan" Icon="@(new Icons.Regular.Size20.DocumentImage())">@localizer[CreateVideoPlanTextKey]</FluentNavLink>
+        <FluentNavLink Href="/Creator/MyVideoPlans" Icon="@(new Icons.Regular.Size20.DocumentBulletList())">@localizer[MyVideoPlansTextKey]</FluentNavLink>
     </FluentNavGroup>
 </AuthorizeView>
 
@@ -55,6 +92,7 @@
     private bool ShouldExpandAccountsGroup => this.NavigationManager.Uri.IndexOf("/Account") >= 0;
     private bool ShouldExpandUsersGroup => this.NavigationManager.Uri.IndexOf("/User") >= 0;
     private bool ShouldExpandCreatorsGroup => this.NavigationManager.Uri.IndexOf("/Creator") >= 0;
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override void OnInitialized()
     {
@@ -68,9 +106,77 @@
         StateHasChanged();
     }
 
-    public void Dispose()
+    private async Task OnExportMyDataLinkClickedAsync()
+    {
+        try
+        {
+            await fairPlayTubeUserDataService.EnqueueMyDataExportAsync(this.cancellationTokenSource.Token);
+            toastService.ShowSuccess("Your data will be sent yo your email once it is ready");
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Home")]
+    public const string HomeTextKey = "HomeText";
+    [ResourceKey(defaultValue: "User Manual")]
+    public const string UserManualTextKey = "UserManualText";
+    [ResourceKey(defaultValue: "Theme")]
+    public const string ThemeTextKey = "ThemeText";
+    [ResourceKey(defaultValue: "Accounts")]
+    public const string AccountsTextKey = "AccountsText";
+    [ResourceKey(defaultValue: "Manage Account")]
+    public const string ManageAccountTextKey = "ManageAccountText";
+    [ResourceKey(defaultValue: "Export My Data ")]
+    public const string ExportMyDataTextKey = "ExportMyDataText";
+    [ResourceKey(defaultValue: "Logout")]
+    public const string LogoutTextKey = "LogoutText";
+    [ResourceKey(defaultValue: "Register")]
+    public const string RegisterTextKey = "RegisterText";
+    [ResourceKey(defaultValue: "Login")]
+    public const string LoginTextKey = "LoginText";
+    [ResourceKey(defaultValue: "Users")]
+    public const string UsersTextKey = "UsersText";
+    [ResourceKey(defaultValue: "My Conversations")]
+    public const string MyConversationsTextKey = "MyConversationsText";
+    [ResourceKey(defaultValue: "My Funds")]
+    public const string MyFundsTextKey = "MyFundsText";
+    [ResourceKey(defaultValue: "Billing Info")]
+    public const string BillingInfoTextKey = "BillingInfoText";
+    [ResourceKey(defaultValue: "Creators")]
+    public const string CreatorsTextKey = "CreatorsText";
+    [ResourceKey(defaultValue: "Upload My Video")]
+    public const string UploadMyVideoTextKey = "UploadMyVideoText";
+    [ResourceKey(defaultValue: "My Videos")]
+    public const string MyVideosTextKey = "MyVideosText";
+    [ResourceKey(defaultValue: "My Processing Videos")]
+    public const string MyProcessingVideosTextKey = "MyProcessingVideosText";
+    [ResourceKey(defaultValue: "Recommendations")]
+    public const string RecommendationsTextKey = "RecommendationsText";
+    [ResourceKey(defaultValue: "New Video Script")]
+    public const string NewVideoScriptTextKey = "NewVideoScriptText";
+    [ResourceKey(defaultValue: "Create Video Plan")]
+    public const string CreateVideoPlanTextKey = "CreateVideoPlanText";
+    [ResourceKey(defaultValue: "My Video Plans")]
+    public const string MyVideoPlansTextKey = "MyVideoPlansText";
+    [ResourceKey(defaultValue: "Language")]
+    public const string LanguageTextKey = "LanguageText";
+    [ResourceKey(defaultValue: "Help")]
+    public const string HelpTextKey = "HelpText";
+    [ResourceKey(defaultValue: "Feature Request")]
+    public const string FeatureRequestTextKey = "FeatureRequestText";
+    [ResourceKey(defaultValue: "Report Issue")]
+    public const string ReportIssueTextKey = "ReportIssueText";
+    #endregion Resource Keys
 }
 

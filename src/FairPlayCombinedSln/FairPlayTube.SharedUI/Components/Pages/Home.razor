@@ -22,6 +22,21 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
+<FluentAccordion>
+    <FluentAccordionItem Expanded="true" Heading="Important Note!">
+        <FluentIcon Value="@(new Icons.Regular.Size20.Info())"></FluentIcon>
+        <FluentLabel Color="Color.Warning">
+            This published version is intentionally limited in functionality.
+            To learn about the current full capabilities use the following link:
+            <FluentAnchor data-enhance-nav="false" Appearance="Appearance.Hypertext"
+                          Target="_blank"
+                          Href="https://us11.list-manage.com/contact-form?u=8b82a1556651be6b90abb39cb&form_id=ec99fae0af90bd739e8a29962e37657a">
+                Request a Demo
+            </FluentAnchor>
+        </FluentLabel>
+    </FluentAccordionItem>
+</FluentAccordion>
+
 @if (this.PageItems != null)
 {
     <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
@@ -37,10 +52,18 @@
                                  Class="multiline-text" style="width:250px; height:50px;">
                         @singleItem.Name
                     </FluentLabel>
-                    <FluentLabel Typo="Typography.Body"><strong>Lifetime Sessions:</strong> @singleItem.LifetimeSessions</FluentLabel>
-                    <FluentLabel Typo="Typography.Body"><strong>Lifetime Viewers:</strong> @singleItem.LifetimeViewers</FluentLabel>
-                    <FluentLabel Typo="Typography.Body"><strong>Watch Time(hh:mm:ss):</strong> @singleItem.LifetimeWatchTime</FluentLabel>
-                    <FluentLabel Typo="Typography.Body"><strong>Published:</strong> @singleItem.PublishedOnString</FluentLabel>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
+                        <strong>@localizer[LifetimeSessionsTextKey]:</strong> @singleItem.LifetimeSessions</FluentLabel>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.Eye())"></FluentIcon>
+                        <strong>@localizer[LifetimeViewersTextKey]:</strong> @singleItem.LifetimeViewers</FluentLabel>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.Timer())"></FluentIcon>
+                        <strong>@localizer[WatchTimeTextKey]:</strong> @singleItem.LifetimeWatchTime</FluentLabel>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.CalendarDate())"></FluentIcon>
+                        <strong>@localizer[PublishedTextKey]:</strong> @singleItem.PublishedOnString</FluentLabel>
                 </div>
                 <div>
                     <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
@@ -124,5 +147,15 @@
     #region Resource Keys
     [ResourceKey(defaultValue: "Home")]
     public const string HomeTextKey = "HomeText";
+    [ResourceKey(defaultValue: "Lifetime Sessions")]
+    public const string LifetimeSessionsTextKey = "LifetimeSessionsText";
+    [ResourceKey(defaultValue: "Lifetime Viewers")]
+    public const string LifetimeViewersTextKey = "LifetimeViewersText";
+    [ResourceKey(defaultValue: "Watch Time(hh:mm:ss)")]
+    public const string WatchTimeTextKey = "WatchTimeText";
+    [ResourceKey(defaultValue: "Published")]
+    public const string PublishedTextKey = "PublishedText";
+    [ResourceKey(defaultValue: "Play")]
+    public const string PlayTextKey = "PlayText";
     #endregion
 }

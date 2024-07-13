@@ -11,6 +11,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' = {
   kind: 'StorageV2'
   properties: {
     accessTier: 'Hot'
+    minimumTlsVersion: 'TLS1_2'
   }
 }
 

@@ -82,6 +82,7 @@ builder.Services.AddAuthentication(configureOptions =>
         options.Scope.Add(YouTubeService.Scope.YoutubeUpload);
         options.Scope.Add(YouTubeService.Scope.YoutubeForceSsl);
         options.Scope.Add(YouTubeService.Scope.Youtubepartner);
+        options.SaveTokens = true;
     })
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
@@ -184,6 +185,17 @@ app.MapHub<UserMessageNotificationHub>(Constants.Routes.SignalRHubs.UserMessageH
 app.AddLocalizationEndpoints();
 app.AddVideoInfoEndpoints();
 app.AddCustomIdentityEndpoints(clientAppsAuthPolicy);
+app.MapGet("/Account/MyVideoDataExport/{videoInfoId}",
+    async (
+        [FromServices] IFairPlayTubeUserDataService fairPlayTubeUserDataService,
+        long videoInfoId,
+        CancellationToken cancellationToken
+    ) =>
+    {
+        var data = await fairPlayTubeUserDataService.GetMyVideoDataAsync(videoInfoId, cancellationToken);
+        return TypedResults.File(data, System.Net.Mime.MediaTypeNames.Application.Octet,
+            "fairplaytubedata.zip");
+    });
 app.MapGet("/api/photo/{photoId}",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
@@ -214,6 +226,34 @@ app.MapGet("/api/photo/{photoId}",
         await image.SaveAsPngAsync(outputStream, pngEncoder, cancellationToken);
         return TypedResults.File(outputStream.ToArray(), System.Net.Mime.MediaTypeNames.Image.Png);
     });
+app.MapGet("/api/video/{videoId}/description",
+    async (
+        [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        [FromRoute] string videoId,
+        CancellationToken cancellationToken) =>
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await dbContext.VideoInfo
+        .AsNoTracking()
+        .Where(p => p.VideoId == videoId)
+        .Select(p => p.Description)
+        .SingleOrDefaultAsync(cancellationToken);
+        return TypedResults.Content(result);
+    });
+app.MapGet("/api/video/{videoId}/title",
+    async (
+        [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        [FromRoute] string videoId,
+        CancellationToken cancellationToken) =>
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await dbContext.VideoInfo
+        .AsNoTracking()
+        .Where(p => p.VideoId == videoId)
+        .Select(p=>p.Name)
+        .SingleOrDefaultAsync(cancellationToken);
+        return TypedResults.Content(result);
+    });
 app.MapGet("/api/video/{videoId}/thumbnail",
     async (
         [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
@@ -222,6 +262,7 @@ app.MapGet("/api/video/{videoId}/thumbnail",
     {
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         var result = await dbContext.VideoInfo
+        .AsNoTracking()
         .Include(p => p.VideoThumbnailPhoto)
         .Where(p => p.VideoId == videoId)
         .SingleOrDefaultAsync(cancellationToken);
@@ -236,6 +277,7 @@ app.MapGet("/api/video/{videoId}/captions/{language}",
     {
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         var result = await dbContext.VideoCaptions
+        .AsNoTracking()
         .Include(p => p.VideoInfo)
         .Where(p => p.VideoInfo.VideoId == videoId &&
         p.Language == language)

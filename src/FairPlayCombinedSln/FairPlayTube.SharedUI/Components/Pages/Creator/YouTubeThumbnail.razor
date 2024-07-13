@@ -4,6 +4,7 @@
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.Enums
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
@@ -24,6 +25,7 @@
 @inject IToastService toastService
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+@inject IUserFundService userFundService
 <PageTitle>
     Video Thumbnail
 </PageTitle>
@@ -34,10 +36,16 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<div>
-    <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-                  OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
-</div>
+@if (this.HasRequiredFundsToCreate)
+{
+    <div>
+        <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
+        OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
+        <FluentSelect @bind-SelectedOption="@this.imageStylePreference"
+        Items="@(Enum.GetValues<ImageStylePreference>())">
+        </FluentSelect>
+    </div>
+}
 <div>
     @if (this.Items?.Items?.Length > 0)
     {
@@ -83,6 +91,7 @@
     [Parameter]
     public long? VideoInfoId { get; set; }
     private bool IsBusy { get; set; }
+    private bool HasRequiredFundsToCreate { get; set; } = false;
     private PaginationOfT<VideoThumbnailModel>? Items;
     private readonly ConcurrentDictionary<long, string> PagePhotos = new();
     private readonly PaginationState paginationState = new()
@@ -105,7 +114,7 @@
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private string? GeneratedYouTubeThumbnailUri { get; set; }
     private string? RevisedPrompt { get; set; }
-
+    private ImageStylePreference imageStylePreference { get; set; } = ImageStylePreference.NoPreference;
     protected override async Task OnInitializedAsync()
     {
         await LoadDataAsync();
@@ -117,6 +126,13 @@
         {
             this.IsBusy = true;
             StateHasChanged();
+            this.HasRequiredFundsToCreate =
+            await this.userFundService
+            .HasFundsToCreateThumbnailsAsync(this.cancellationTokenSource.Token);
+            if (!this.HasRequiredFundsToCreate)
+            {
+                this.toastService.ShowWarning("You don't have any funds left to create thumbnails");
+            }
             var items = await videoThumbnailService.GetPaginatedVideoThumbnailByVideoInfoIdAsync(
                 this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
             this.Items = items;
@@ -158,6 +174,7 @@
             StateHasChanged();
             var result = await this.videoThumbnailService
             .GenerateVideoThumbnailAsync(this.VideoInfoId!.Value, this.openAIService,
+                this.imageStylePreference,
                 this.httpClient, this.cancellationTokenSource.Token);
             if (result != null)
             {

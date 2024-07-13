@@ -8,9 +8,8 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
+@using FairPlayTube.SharedUI.Components.Video
 
-
-@inject IFairPlayTubeMetrics metricsSetup
 @inject IJSRuntime jsRuntime
 @inject IVideoWatchTimeService videoWatchTimeService
 @inject ILogger<WatchVideo> logger;
@@ -19,6 +18,15 @@
 @inject IVideoInfoService videoInfoService
 @inject IVideoCommentService videoCommentService
 @inject IToastService toastService
+@inject NavigationManager navigationManager
+@inject IApiResolver apiResolver
+
+<HeadContent>
+    <meta name="thumbnail" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
+    <meta property="og:image" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
+    <meta property="og:title" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/title")" />
+    <meta property="og:description" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")" />
+</HeadContent>
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -26,53 +34,61 @@
 {
     <div id="container" data-permanent>
         <!-- HTML -->
-        <video id="my_video_1" class="video-js vjs-default-skin" controls preload="auto" width="640" height="268"
-               data-setup='{}'>
-            <source src="@this.VideoUrl" type="application/x-mpegURL">
-            @if (this.SupportedLanguages?.Length > 0)
-            {
-                foreach (var singleSupportedLanguage in this.SupportedLanguages)
-                {
-                    <track kind="captions" src="@($"/api/video/{this.VideoId}/captions/{singleSupportedLanguage.languageCode}")"
-                           srclang="@singleSupportedLanguage.languageCode" label="@singleSupportedLanguage.name" />
-                }
-            }
-        </video>
+        <VideoJs 
+            SupportedLanguages="@this.SupportedLanguages" 
+            VideoId="@this.VideoId"
+            VideoUrl="@this.VideoUrl"
+        ></VideoJs>
     </div>
     <div>
         <FluentButton Type="ButtonType.Button"
                       Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
                       OnClick="OnUseFallbackMode">Can't see the video? Click here!</FluentButton>
     </div>
+    @if (this.videoInfoModel != null)
+    {
+        <FluentAccordion>
+            <FluentAccordionItem Heading="Description" Expanded="true">
+                <FluentTextArea style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>
+            </FluentAccordionItem>
+        </FluentAccordion>
+    }
     @if (this.videoInfoModel?.VideoKeywords?.Length > 0)
     {
-        <div>
-            <FluentLabel Typo="Typography.Subject">Keywords</FluentLabel>
-            <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
-                @foreach (var singleKeyword in this.videoInfoModel.VideoKeywords)
-                {
-                    <FluentBadge Circular="true"
-                                 Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
-                        @singleKeyword
-                    </FluentBadge>
-                }
-            </FluentStack>
-        </div>
+        <FluentAccordion>
+            <FluentAccordionItem Expanded="false" Heading="Keywords">
+                <div>
+                    <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
+                        @foreach (var singleKeyword in this.videoInfoModel.VideoKeywords)
+                        {
+                            <FluentBadge Circular="true"
+                                         Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
+                                @singleKeyword
+                            </FluentBadge>
+                        }
+                    </FluentStack>
+                </div>
+            </FluentAccordionItem>
+        </FluentAccordion>
     }
     @if (this.videoInfoModel?.VideoTopics?.Length > 0)
     {
-        <div>
-            <FluentLabel Typo="Typography.Subject">Topics</FluentLabel>
-            <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
-                @foreach (var singleTopic in this.videoInfoModel.VideoTopics)
-                {
-                    <FluentBadge Circular="true"
-                                 Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
-                        @singleTopic
-                    </FluentBadge>
-                }
-            </FluentStack>
-        </div>
+        <FluentAccordion>
+            <FluentAccordionItem Heading="Topics" Expanded="false">
+                <div>
+                    <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
+                        @foreach (var singleTopic in this.videoInfoModel.VideoTopics)
+                        {
+                            <FluentBadge Circular="true"
+                                         Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
+                                         Class="multiline-text">
+                                @singleTopic
+                            </FluentBadge>
+                        }
+                    </FluentStack>
+                </div>
+            </FluentAccordionItem>
+        </FluentAccordion>
     }
 }
 else
@@ -130,8 +146,6 @@ else
     private VideoInfoModel? videoInfoModel { get; set; }
     private string? VideoUrl { get; set; }
     private SupportedLanguageModel[]? SupportedLanguages { get; set; }
-    private DotNetObjectReference<WatchVideo>? dotNetObjectReference;
-    private bool IsSessionCreated { get; set; } = false;
     private GridItemsProvider<VideoCommentModel>? ItemsProvider;
     private readonly PaginationState paginationState = new()
         {
@@ -139,10 +153,10 @@ else
         };
     [SupplyParameterFromForm]
     public CreateVideoCommentModel? createVideoCommentModel { get; set; }
+    private string apiBaseUrl => apiResolver.GetBaseUrl();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        this.dotNetObjectReference = DotNetObjectReference.Create<WatchVideo>(this);
         this.IsBusy = true;
         ItemsProvider = async req =>
         {
@@ -166,82 +180,26 @@ else
             var result = GridItemsProviderResult.From<VideoCommentModel>(items!.Items!, items.TotalItems);
             return result;
         };
-        this.IsBusy = false;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            metricsSetup.Initialize();
-            this.IsBusy = true;
-            StateHasChanged();
-            this.videoInfoModel = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
+        this.videoInfoModel = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
                 this.VideoId!,
                 this.cancellationTokenSource.Token
             );
-            var currentUserId = this.userProviderService.GetCurrentUserId();
-            if (!String.IsNullOrWhiteSpace(currentUserId))
-            {
-                this.createVideoCommentModel ??= new CreateVideoCommentModel()
-                    {
-                        VideoInfoId = this.videoInfoModel!.VideoInfoId,
-                        ApplicationUserId = currentUserId
-                    };
-            }
-            this.VideoUrl = videoInfoModel!.PublishedUrl;
-            this.SupportedLanguages = await supportedLanguageService
-            .GetAllSupportedLanguageForVideoInfoIdAsync(videoInfoId: videoInfoModel.VideoInfoId,
-                cancellationToken: this.cancellationTokenSource.Token);
-            StateHasChanged();
-            await jsRuntime.InvokeVoidAsync("initializeVideoJsPlayer", "my_video_1", Guid.NewGuid().ToString(), this.dotNetObjectReference);
-            this.IsBusy = false;
-            StateHasChanged();
+        var currentUserId = this.userProviderService.GetCurrentUserId();
+        if (!String.IsNullOrWhiteSpace(currentUserId))
+        {
+            this.createVideoCommentModel ??= new CreateVideoCommentModel()
+                {
+                    VideoInfoId = this.videoInfoModel!.VideoInfoId,
+                    ApplicationUserId = currentUserId
+                };
         }
+        this.VideoUrl = videoInfoModel!.PublishedUrl;
+        this.SupportedLanguages = await supportedLanguageService
+        .GetAllSupportedLanguageForVideoInfoIdAsync(videoInfoId: videoInfoModel.VideoInfoId,
+            cancellationToken: this.cancellationTokenSource.Token);
+        this.IsBusy = false;
     }
 
-    [JSInvokable]
-    public async Task UpdateWatchTime(double watchTime, string currentSessionGuid)
-    {
-        try
-        {
-            var currentUserId = this.userProviderService.GetCurrentUserId();
-            System.Diagnostics.Debug.WriteLine($"Watch Time (s): {watchTime}. Session: {currentSessionGuid}");
-            if (!IsSessionCreated)
-            {
-                await this.videoWatchTimeService.CreateVideoWatchTimeAsync(
-                    this.VideoId!,
-                    new FairPlayCombined.Models.FairPlayTube.VideoWatchTime.VideoWatchTimeModel()
-                        {
-                            WatchedByApplicationUserId = currentUserId,
-                            SessionId = Guid.Parse(currentSessionGuid),
-                            WatchTime = watchTime
-                        }, cancellationToken: cancellationTokenSource.Token);
-                this.IsSessionCreated = true;
-            }
-            else
-            {
-                await this.videoWatchTimeService.UpdateVideoWatchTimeAsync(
-                    new FairPlayCombined.Models.FairPlayTube.VideoWatchTime.VideoWatchTimeModel()
-                        {
-                            WatchedByApplicationUserId = currentUserId,
-                            SessionId = Guid.Parse(currentSessionGuid),
-                            WatchTime = watchTime
-                        }, cancellationToken: cancellationTokenSource.Token);
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(exception: ex, "Error: {Message}", ex.Message);
-        }
-    }
-
-    private void OnUseFallbackMode()
-    {
-        this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.videoInfoModel!.AccountId}/{this.VideoId}/?locale=en&location={this.videoInfoModel.Location}";
-        this.UseFallbackMode = true;
-        StateHasChanged();
-    }
 
     private async Task OnCreateCommentClickedAsync()
     {
@@ -265,6 +223,13 @@ else
             this.IsBusy = false;
             StateHasChanged();
         }
+    }
+
+    private void OnUseFallbackMode()
+    {
+        this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.videoInfoModel!.AccountId}/{this.VideoId}/?locale=en&location={this.videoInfoModel.Location}";
+        this.UseFallbackMode = true;
+        StateHasChanged();
     }
 
     public ValueTask DisposeAsync()

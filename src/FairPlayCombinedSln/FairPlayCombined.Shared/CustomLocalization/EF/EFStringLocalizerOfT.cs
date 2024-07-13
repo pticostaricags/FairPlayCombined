@@ -77,6 +77,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
                     logger.LogInformation("Executing method {MethodName}", nameof(GetAllStrings));
                     factory.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
                     return db.Resource
+                    .AsNoTracking()
                     .Include(r => r.Culture)
                     .Where(r => r.Culture.Name == CultureInfo.CurrentCulture.Name
                     && r.Type == typeFullName)
@@ -95,11 +96,12 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
                 logger.LogInformation("Executing method {MethodName} for resource {ResourceName}", nameof(GetString), name);
                 factory.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
                 return db.Resource
-                    .Include(r => r.Culture)
-                    .Where(r => r.Culture.Name == CultureInfo.CurrentCulture.Name &&
-                    r.Type == typeFullName
-                    )
-                    .FirstOrDefault(r => r.Key == name)?.Value;
+                .AsNoTracking()
+                .Include(r => r.Culture)
+                .Where(r => r.Culture.Name == CultureInfo.CurrentCulture.Name &&
+                r.Type == typeFullName
+                )
+                .FirstOrDefault(r => r.Key == name)?.Value;
             });
             return result;
         }

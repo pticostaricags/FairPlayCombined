@@ -80,6 +80,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<OpenAipromptMargin> OpenAipromptMargin { get; set; }
 
+    public virtual DbSet<PaypalTransaction> PaypalTransaction { get; set; }
+
     public virtual DbSet<PersonalityType> PersonalityType { get; set; }
 
     public virtual DbSet<Photo> Photo { get; set; }
@@ -121,6 +123,8 @@ public partial class FairPlayCombinedDbContext : DbContext
     public virtual DbSet<ThemeConfiguration> ThemeConfiguration { get; set; }
 
     public virtual DbSet<UserActivity> UserActivity { get; set; }
+
+    public virtual DbSet<UserDataExportQueue> UserDataExportQueue { get; set; }
 
     public virtual DbSet<UserFunds> UserFunds { get; set; }
 
@@ -169,6 +173,8 @@ public partial class FairPlayCombinedDbContext : DbContext
     public virtual DbSet<VideoVisibility> VideoVisibility { get; set; }
 
     public virtual DbSet<VideoWatchTime> VideoWatchTime { get; set; }
+
+    public virtual DbSet<VisitorTracking> VisitorTracking { get; set; }
 
     public virtual DbSet<VwBalance> VwBalance { get; set; }
 
@@ -295,6 +301,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.OpenAiprompt)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_OpenAIPrompt_AspNetUsers");
+        });
+
+        modelBuilder.Entity<PaypalTransaction>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.PaypalTransaction)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PaypalTransaction_AspNetUsers");
         });
 
         modelBuilder.Entity<Post>(entity =>
@@ -424,6 +437,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.Frequency).WithMany(p => p.UserActivity)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserActivity_Frequency");
+        });
+
+        modelBuilder.Entity<UserDataExportQueue>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.UserDataExportQueue)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserDataExportQueue_AspNetUsers");
         });
 
         modelBuilder.Entity<UserFunds>(entity =>
@@ -668,6 +688,13 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_VideoWatchTime_VideoInfo");
 
             entity.HasOne(d => d.WatchedByApplicationUser).WithMany(p => p.VideoWatchTime).HasConstraintName("FK_VideoWatchTime_AspNetUsers");
+        });
+
+        modelBuilder.Entity<VisitorTracking>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.VisitorTracking).HasConstraintName("FK_VisitorTracking_ApplicationUser");
+
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VisitorTracking).HasConstraintName("FK_VisitorTracking_VideoInfo");
         });
 
         modelBuilder.Entity<VwBalance>(entity =>

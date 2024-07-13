@@ -1,0 +1,67 @@
+﻿@implements IAsyncDisposable
+@using System.Globalization
+@using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces
+@using Microsoft.Extensions.Localization
+
+@inject NavigationManager Navigation
+
+@if (this.supportedCultures != null)
+{
+    <FluentLabel Typo="Typography.Body">
+        @Localizer![SelectLocaleTextKey]:
+    </FluentLabel>
+    <FluentSelect @bind-SelectedOption="@Culture" Items="@supportedCultures" Embedded="true">
+        <OptionTemplate>@context.DisplayName</OptionTemplate>
+    </FluentSelect>
+}
+
+@code
+{
+    [Parameter]
+    public string? RedirectUri { get; set; }
+    [Inject]
+    private ICultureService? CultureService { get; set; }
+    [Inject]
+    private IStringLocalizer<CultureSelector>? Localizer { get; set; }
+    private readonly CancellationTokenSource CancellationTokenSource = new();
+    private CultureInfo[]? supportedCultures { get; set; }
+    private bool IsBusy { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        this.IsBusy = true;
+        this.Culture = CultureInfo.CurrentCulture;
+        this.supportedCultures = (await this.CultureService!
+        .GetSupportedCultures(this.CancellationTokenSource.Token))
+        .Select(p => new CultureInfo(p)).ToArray();
+        this.IsBusy = false;
+    }
+
+    private CultureInfo Culture
+    {
+        get => CultureInfo.CurrentCulture;
+        set
+        {
+            if (CultureInfo.CurrentCulture != value)
+            {
+                var uri = new Uri(RedirectUri!)
+                    .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+                var cultureEscaped = Uri.EscapeDataString(value.Name);
+                var uriEscaped = Uri.EscapeDataString(uri);
+
+                Navigation.NavigateTo(
+                    $"Culture/Set?culture={cultureEscaped}&redirectUri={uriEscaped}",
+                    forceLoad: true);
+            }
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.CancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+
+    [ResourceKey(defaultValue: "Select your locale")]
+    public const string SelectLocaleTextKey = "SelectLocaleText";
+}

@@ -1,0 +1,112 @@
+﻿@attribute [Route(Constants.Routes.FairPlayTubeRoutes.UserRoutes.BillingInfo)]
+
+@implements IAsyncDisposable
+
+@using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.FairPlayTube.Billing
+@using FairPlayTube.SharedUI.Components.Spinners
+@using Microsoft.Extensions.Localization
+@using System.Globalization
+
+@attribute [Authorize]
+
+@inject IFairPlayTubeBillingService fairPlayTubeBillingService
+@inject IToastService toastService
+@inject IUserProviderService userProviderService
+@inject IStringLocalizer<BillingInfo> localizer
+
+<h3>@localizer[BillingInfoTextKey]</h3>
+
+<LoadingIndicator ShowSpinners="@this.IsBusy"></LoadingIndicator>
+
+@if (this.Items != null)
+{
+    <div>
+        <FluentLabel Typo="Typography.Subject">@localizer[LifetimeCostTextKey]: @this.Items.Sum(p => p.OperationCost).ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
+        <FluentLabel Typo="Typography.Subject">@localizer[Last7DaysCostTextKey]: @this.Items.Where(p => p.RowCreationDateTime.Date >= DateTimeOffset.UtcNow.Date.AddDays(-7)).Sum(p => p.OperationCost).ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
+        <FluentLabel Typo="Typography.Subject">@localizer[TodaysCostTextKey]: @this.Items.Where(p => p.RowCreationDateTime.Date == DateTimeOffset.UtcNow.Date).Sum(p => p.OperationCost).ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
+    </div>
+    <div>
+        <FluentDataGrid Items="@this.Items.AsQueryable()">
+            <PropertyColumn Title="@localizer[RowCreationDateTimeTextKey]"
+                            Property="@(p=>p.RowCreationDateTime)"
+                            IsDefaultSortColumn="true"
+                            InitialSortDirection="SortDirection.Descending"
+                            Class="multiline-text" Align="Align.Center">
+                <HeaderCellItemTemplate>
+                    <FluentIcon Value="@(new Icons.Regular.Size20.CalendarDate())"
+                                Title="@localizer[RowCreationDateTimeTextKey]"></FluentIcon>
+                </HeaderCellItemTemplate>
+            </PropertyColumn>
+            <PropertyColumn Title="@localizer[OperationCostTextKey]"
+                            Property="@(p=>p.OperationCost.ToString(CurrencyFormat, CurrencyCulture))"
+                            Class="multiline-text" Align="Align.Center">
+                <HeaderCellItemTemplate>
+                    <FluentIcon Value="@(new Icons.Regular.Size20.MoneyCalculator())"
+                                Title="@localizer[OperationCostTextKey]"></FluentIcon>
+                </HeaderCellItemTemplate>
+            </PropertyColumn>
+            <PropertyColumn Title="@localizer[DetailsTextKey]"
+                            Property="@(p=>p.Details)"
+                            Class="multiline-text" Align="Align.Center">
+                <HeaderCellItemTemplate>
+                    <FluentIcon Value="@(new Icons.Regular.Size20.Document())"
+                                Title="@localizer[DetailsTextKey]"></FluentIcon>
+                </HeaderCellItemTemplate>
+            </PropertyColumn>
+        </FluentDataGrid>
+    </div>
+}
+
+@code {
+    private static CultureInfo CurrencyCulture = new(Constants.Cultures.CurrencyDefaultCulture);
+    private const string CurrencyFormat = Constants.Cultures.CurrencyDefaultFormat;
+    private FairPlayTubeBillingModel[]? Items { get; set; }
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; } = false;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var currentUserId = this.userProviderService.GetCurrentUserId();
+            this.Items = await this.fairPlayTubeBillingService
+            .GetBillingInfoByUserIdAsync(currentUserId!, this.cancellationTokenSource.Token);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
+    }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Billing Info")]
+    public const string BillingInfoTextKey = "BillingInfoText";
+    [ResourceKey(defaultValue: "Lifetime Cost")]
+    public const string LifetimeCostTextKey = "LifetimeCostText";
+    [ResourceKey(defaultValue: "Last 7 Days Cost")]
+    public const string Last7DaysCostTextKey = "Last7DaysCostText";
+    [ResourceKey("Today's Cost")]
+    public const string TodaysCostTextKey = "TodaysCostText";
+    [ResourceKey("Operation Cost")]
+    public const string OperationCostTextKey = "OperationCostText";
+    [ResourceKey(defaultValue: "Row Creation DateTime")]
+    public const string RowCreationDateTimeTextKey = "RowCreationDateTimeText";
+    [ResourceKey(defaultValue: "Details")]
+    public const string DetailsTextKey = "DetailsText";
+    #endregion Resource Keys
+}

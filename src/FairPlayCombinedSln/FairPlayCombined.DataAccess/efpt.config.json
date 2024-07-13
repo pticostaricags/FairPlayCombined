@@ -75,6 +75,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[PaypalTransaction]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Photo]",
          "ObjectType": 0
       },
@@ -99,11 +103,19 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[UserDataExportQueue]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[UserFunds]",
          "ObjectType": 0
       },
       {
          "Name": "[dbo].[UserMessage]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[VisitorTracking]",
          "ObjectType": 0
       },
       {

@@ -42,4 +42,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="OpenAIPromptCost" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="fd74fcca-a467-472e-8f03-7c4421fd10bd" ChangeDateTime="07/08/2024 17:13:53">
+    <Property Name="ElementName" Value="[dbo].[DataExportQueue].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DataExportQueue]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UserDataExportQueueId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6a6e1be5-9e04-4284-90f6-5708f8b8d9e0" ChangeDateTime="07/09/2024 02:06:01">
+    <Property Name="ElementName" Value="[dbo].[UserDataExportQueue].[DataBytes]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserDataExportQueue]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FileUrl" />
+  </Operation>
 </Operations>

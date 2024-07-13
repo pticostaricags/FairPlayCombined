@@ -1,4 +1,6 @@
-﻿using FairPlayCombined.Interfaces.Common;
+﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.GoogleAuth;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
@@ -6,6 +8,7 @@ using Google.Apis.Upload;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -13,8 +16,8 @@ using System.Text.Json;
 namespace FairPlayCombined.Services.Common
 {
     public class YouTubeClientService(
-        YouTubeClientServiceConfiguration youTubeClientServiceConfiguration,
-        IHttpContextAccessor httpContextAccessor) : IYouTubeClientService
+        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        IUserProviderService userProviderService) : IYouTubeClientService
     {
         public async Task<SearchListResponse> SearchMyVideosAsync(string searchTerm, CancellationToken cancellationToken)
         {
@@ -44,25 +47,13 @@ namespace FairPlayCombined.Services.Common
 
         public async Task<YouTubeService> AuthorizeAsync()
         {
-            var userName = httpContextAccessor!.HttpContext!.User.Identity!.Name;
-            UserCredential credential;
-            var json = JsonSerializer.Serialize(youTubeClientServiceConfiguration!.GoogleAuthClientSecretInfo!);
-            var bytes = Encoding.UTF8.GetBytes(json);
-            MemoryStream memoryStream = new(bytes);
-            using (var stream = memoryStream)
-            {
-                var secrets = await GoogleClientSecrets.FromStreamAsync(stream);
-                credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    secrets.Secrets,
-                    // This OAuth 2.0 access scope allows an application to upload files to the
-                    // authenticated user's YouTube channel, but doesn't allow other types of access.
-                    [ YouTubeService.Scope.YoutubeUpload,
-                    YouTubeService.Scope.YoutubeForceSsl,
-                    YouTubeService.Scope.Youtubepartner],
-                    userName,
-                    CancellationToken.None
-                );
-            }
+            var userId = userProviderService.GetCurrentUserId();
+            var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var accessTokenEntity = await
+                dbContext.AspNetUserTokens
+                .SingleAsync(p => p.UserId == userId && p.LoginProvider == "Google" &&
+                p.Name == "access_token");
+            var credential = GoogleCredential.FromAccessToken(accessTokenEntity.Value);
 
             var youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {

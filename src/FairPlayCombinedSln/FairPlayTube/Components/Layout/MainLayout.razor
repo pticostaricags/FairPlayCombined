@@ -1,15 +1,30 @@
-﻿@inherits LayoutComponentBase
+﻿@using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Models.Common.VisitorTracking
+@using Microsoft.Extensions.Localization
+@using System.Timers
 
+@implements IAsyncDisposable
+
+@inherits LayoutComponentBase
+@inject IStringLocalizer<MainLayout> localizer
+@inject NavigationManager navigationManager
+@inject IVisitorTrackingService visitorTrackingService
+@inject IUserProviderService userProviderService
 
 <FluentMainLayout NavMenuWidth="400">
     <Header>
-        <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center">
-            @nameof(FairPlayTube)
-        </FluentLabel>
+        <div class="header-content">
+            <img src="images/brand-logo.png" alt="@nameof(FairPlayTube) Logo" class="logo" />
+            <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center">
+                @nameof(FairPlayTube)
+            </FluentLabel>
+        </div>
     </Header>
     <SubHeader>
         <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
-            @Constants.ApplicationTitles.FairPlayTube
+            @localizer[ApplicationSubHeaderTextKey]
         </FluentLabel>
     </SubHeader>
     <Body>
@@ -36,3 +51,96 @@
 <FluentTooltipProvider />
 <FluentMessageBarProvider />
 <FluentDesignTheme StorageName="theme" />
+
+@code
+{
+    private bool IsBusy { get; set; } = false;
+    private System.Timers.Timer? VisitsTimer { get; set; }
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private long? VisitorTrackingId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            await TrackVisit(createNewSession: true);
+            navigationManager.LocationChanged += NavigationManager_LocationChanged;
+        }
+        catch (Exception)
+        {
+            //Ignore
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task TrackVisit(bool createNewSession)
+    {
+        //We do not want to track authentication flow pages visits
+        if (navigationManager.Uri.Contains("/authentication/"))
+            return;
+        VisitorTrackingModel visitorTrackingModel = new()
+            {
+                VisitedUrl = navigationManager.Uri
+            };
+        var currentUserId = userProviderService.GetCurrentUserId();
+        if (!String.IsNullOrWhiteSpace(currentUserId))
+        {
+            visitorTrackingModel.ApplicationUserId = currentUserId;
+        }
+        if (createNewSession)
+        {
+            visitorTrackingModel.SessionId = Guid.NewGuid();
+        }
+        this.VisitorTrackingId = await this.visitorTrackingService
+        .TrackVisitAsync(visitorTrackingModel, this.cancellationTokenSource.Token);
+
+        if (createNewSession)
+        {
+            this.VisitsTimer = new System.Timers.Timer(TimeSpan.FromSeconds(60).TotalMilliseconds);
+            this.VisitsTimer.Elapsed += VisitsTimer_Elapsed;
+            this.VisitsTimer.Start();
+        }
+    }
+
+    private async void VisitsTimer_Elapsed(object? sender, ElapsedEventArgs e)
+    {
+        try
+        {
+            await visitorTrackingService.UpdateVisitTimeElapsedAsync(this.VisitorTrackingId!.Value,
+            this.cancellationTokenSource.Token);
+        }
+        catch (Exception)
+        {
+            //Ignore
+        }
+    }
+
+    private async void NavigationManager_LocationChanged(object? sender,
+        Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        try
+        {
+            await TrackVisit(createNewSession: false);
+        }
+        catch (Exception)
+        {
+            //Ignore
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
+    }
+
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: Constants.ApplicationTitles.FairPlayTube)]
+    public const string ApplicationSubHeaderTextKey = "ApplicationSubHeaderText";
+    #endregion Resource Keys
+}
