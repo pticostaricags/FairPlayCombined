@@ -23,9 +23,16 @@
 
 <HeadContent>
     <meta name="thumbnail" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
-    <meta property="og:image" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
+
     <meta property="og:title" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/title")" />
     <meta property="og:description" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")" />
+
+    <meta property="og:image" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
+    <meta property="og:image:secure_url" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="400" />
+    <meta property="og:image:height" content="300" />
+    <meta property="og:image:alt" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")" />
 </HeadContent>
 <FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
 
