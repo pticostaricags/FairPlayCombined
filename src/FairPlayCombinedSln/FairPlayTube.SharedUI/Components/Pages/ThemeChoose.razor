@@ -5,10 +5,10 @@
 
 <FluentDesignTheme StorageName="theme" Mode="@Mode" OfficeColor="@OfficeColor"></FluentDesignTheme>
 
-<FluentGrid>
+<FluentGrid style="height:500px;">
     <FluentGridItem>
         <FluentSelect Label="Theme"
-                      Width="250px"
+                      Width="250px" Height="110px"
                       Items="@(Enum.GetValues<DesignThemeModes>())"
                       @bind-SelectedOption="@Mode" />
     </FluentGridItem>
@@ -16,7 +16,7 @@
     <FluentGridItem>
         <FluentSelect Label="Color"
                       Items="@(Enum.GetValues<OfficeColor>().Select(i => (OfficeColor?)i))"
-                      Height="200px"
+                      Height="300px"
                       Width="250px"
                       @bind-SelectedOption="@OfficeColor">
             <OptionTemplate>
