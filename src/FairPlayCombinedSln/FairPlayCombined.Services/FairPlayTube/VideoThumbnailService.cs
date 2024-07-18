@@ -59,6 +59,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .Where(p => p.VideoInfoId == videoInfoId)
                 .Select(p => new
                 {
+                    p.Name,
                     p.Description,
                     EnglishCaptions = p.VideoCaptions.Single(p => p.Language == "en-US").Content
                 })
@@ -69,7 +70,8 @@ namespace FairPlayCombined.Services.FairPlayTube
             {
                 stringBuilder.AppendLine($"Image Style: {imageStylePreference.ToString()}.");
             }
-            stringBuilder.AppendLine($"Video Title: {videoDataEntity.Description}.");
+            stringBuilder.AppendLine($"Video Title: {videoDataEntity.Name}.");
+            stringBuilder.AppendLine($"Video Description: {videoDataEntity.Description}.");
             stringBuilder.AppendLine($"Video Captions: {videoDataEntity.EnglishCaptions}.");
             string prompt = stringBuilder.ToString();
             if (prompt.Length > 4000)
