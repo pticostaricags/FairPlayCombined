@@ -178,6 +178,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        persistingSubscription =
+            ApplicationState.RegisterOnPersisting(PersistData);
+
         ItemsProvider = async req =>
         {
             StateHasChanged();
