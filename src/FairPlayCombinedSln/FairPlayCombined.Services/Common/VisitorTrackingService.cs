@@ -21,6 +21,7 @@ namespace FairPlayCombined.Services.Common
             try
             {
                 var httpContext = httpContextAccessor.HttpContext;
+                var referer = httpContext!.Request.Headers.Referer.ToString();
                 var remoteIpAddress = httpContext!.Connection.RemoteIpAddress!.ToString();
                 if (remoteIpAddress == "::1")
                 {
@@ -28,10 +29,10 @@ namespace FairPlayCombined.Services.Common
                     remoteIpAddress = ipAddresses[0];
                 }
                 var parsedIpAddress = System.Net.IPAddress.Parse(remoteIpAddress);
-                var ipGeoLocationInfo = await ipDataService.GetIpGeoLocationInfoAsync(ipAddress: parsedIpAddress);
+                var ipGeoLocationInfo = await ipDataService.GetIpGeoLocationInfoAsync(ipAddress: parsedIpAddress, cancellationToken);
                 string? country = ipGeoLocationInfo?.country_name;
                 var host = httpContext.Request.Host.Value;
-                var userAgent = httpContext.Request.Headers["User-Agent"][0];
+                var userAgent = httpContext.Request.Headers.UserAgent.ToString();
                 AspNetUsers? userEntity = null;
                 if (!String.IsNullOrWhiteSpace(visitorTrackingModel.ApplicationUserId))
                     userEntity = await dbContext.AspNetUsers
@@ -45,12 +46,13 @@ namespace FairPlayCombined.Services.Common
                     UserAgent = userAgent,
                     VisitDateTime = DateTimeOffset.UtcNow,
                     VisitedUrl = visitorTrackingModel.VisitedUrl,
-                    SessionId = visitorTrackingModel.SessionId
+                    SessionId = visitorTrackingModel.SessionId,
+                    Referer = referer
                 };
                 await dbContext.VisitorTracking.AddAsync(visitedPage, cancellationToken);
                 await dbContext.SaveChangesAsync(cancellationToken);
                 var pageUri = new Uri(visitedPage.VisitedUrl!);
-                var lastSegment = pageUri.Segments[pageUri.Segments.Length - 1].TrimEnd('/');
+                var lastSegment = pageUri.Segments[^1].TrimEnd('/');
                 if (!String.IsNullOrWhiteSpace(lastSegment))
                 {
                     var videoInfoEntity = await dbContext.VideoInfo

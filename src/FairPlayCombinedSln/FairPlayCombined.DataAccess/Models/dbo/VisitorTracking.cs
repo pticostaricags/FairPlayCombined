@@ -49,6 +49,8 @@ public partial class VisitorTracking
 
     public DateTimeOffset? LastTrackedDateTime { get; set; }
 
+    public string Referer { get; set; }
+
     [ForeignKey("ApplicationUserId")]
     [InverseProperty("VisitorTracking")]
     public virtual AspNetUsers ApplicationUser { get; set; }
