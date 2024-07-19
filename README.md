@@ -36,7 +36,7 @@ The project is still a work in progress, it started some time after DotNetConf r
 * General Wiki: https://github.com/pticostaricags/FairPlayCombined/wiki
 * FairPlayTube Wiki: https://github.com/pticostaricags/FairPlayCombined/wiki/FairPlayTube
 
-### Samples Apps
+### Sample Apps
 * [FairPlayTube](https://fairplaytube.pticostarica.com/)
 
 ### Support Me
