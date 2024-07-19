@@ -18,14 +18,17 @@
 @inject IVideoInfoService videoInfoService
 @inject IVideoCommentService videoCommentService
 @inject IToastService toastService
-@inject NavigationManager navigationManager
 @inject IApiResolver apiResolver
+
+@inject NavigationManager navigationManager
+@inject HttpClient httpClient
+@inject PersistentComponentState ApplicationState
 
 <HeadContent>
     <meta name="thumbnail" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
 
-    <meta property="og:title" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/title")" />
-    <meta property="og:description" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")" />
+    <meta property="og:title" content="@OpenGraphTitle" />
+    <meta property="og:description" content="@OpenGraphDescription" />
 
     <meta property="og:image" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
     <meta property="og:image:secure_url" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
@@ -41,11 +44,9 @@
 {
     <div id="container" data-permanent>
         <!-- HTML -->
-        <VideoJs 
-            SupportedLanguages="@this.SupportedLanguages" 
-            VideoId="@this.VideoId"
-            VideoUrl="@this.VideoUrl"
-        ></VideoJs>
+        <VideoJs SupportedLanguages="@this.SupportedLanguages"
+                 VideoId="@this.VideoId"
+                 VideoUrl="@this.VideoUrl"></VideoJs>
     </div>
     <div>
         <FluentButton Type="ButtonType.Button"
@@ -162,9 +163,21 @@ else
     public CreateVideoCommentModel? createVideoCommentModel { get; set; }
     private string apiBaseUrl => apiResolver.GetBaseUrl();
 
+    private string? OpenGraphTitle { get; set; }
+    private string? OpenGraphDescription { get; set; }
+    private PersistingComponentStateSubscription persistingSubscription;
+
+    private Task PersistData()
+    {
+        //Check https://learn.microsoft.com/en-us/aspnet/core/blazor/components/prerender?view=aspnetcore-9.0
+        ApplicationState.PersistAsJson<string>(nameof(OpenGraphTitle), this.OpenGraphTitle!);
+        ApplicationState.PersistAsJson<string>(nameof(OpenGraphDescription), this.OpenGraphDescription!);
+        ApplicationState.PersistAsJson<VideoInfoModel>(nameof(this.videoInfoModel), this.videoInfoModel!);
+        return Task.CompletedTask;
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        this.IsBusy = true;
         ItemsProvider = async req =>
         {
             StateHasChanged();
@@ -187,24 +200,64 @@ else
             var result = GridItemsProviderResult.From<VideoCommentModel>(items!.Items!, items.TotalItems);
             return result;
         };
-        this.videoInfoModel = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
-                this.VideoId!,
-                this.cancellationTokenSource.Token
-            );
-        var currentUserId = this.userProviderService.GetCurrentUserId();
-        if (!String.IsNullOrWhiteSpace(currentUserId))
+        try
         {
-            this.createVideoCommentModel ??= new CreateVideoCommentModel()
-                {
-                    VideoInfoId = this.videoInfoModel!.VideoInfoId,
-                    ApplicationUserId = currentUserId
-                };
+            this.IsBusy = true;
+            StateHasChanged();
+            if (!ApplicationState.TryTakeFromJson<string>(
+                nameof(this.OpenGraphTitle), out var restoredOpenGraphTitle))
+            {
+                this.OpenGraphTitle = await httpClient.GetStringAsync($"{apiBaseUrl}/api/video/{this.VideoId}/title");
+            }
+            else
+            {
+                this.OpenGraphTitle = restoredOpenGraphTitle!;
+            }
+
+            if (!ApplicationState.TryTakeFromJson<string>(
+                nameof(this.OpenGraphDescription), out var restoredOpenGraphDescription))
+            {
+                this.OpenGraphDescription = await httpClient.GetStringAsync($"{apiBaseUrl}/api/video/{this.VideoId}/description");
+            }
+            else
+            {
+                this.OpenGraphTitle = restoredOpenGraphDescription!;
+            }
+
+            if (!ApplicationState.TryTakeFromJson<VideoInfoModel>(
+                nameof(this.videoInfoModel), out var restoredVideoInfoModel))
+            {
+                this.videoInfoModel = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
+                    this.VideoId!,
+                    this.cancellationTokenSource.Token
+                );
+            }
+            else
+            {
+                this.videoInfoModel = restoredVideoInfoModel!;
+            }
+            var currentUserId = this.userProviderService.GetCurrentUserId();
+            if (!String.IsNullOrWhiteSpace(currentUserId))
+            {
+                this.createVideoCommentModel ??= new CreateVideoCommentModel()
+                    {
+                        VideoInfoId = this.videoInfoModel!.VideoInfoId,
+                        ApplicationUserId = currentUserId
+                    };
+            }
+            this.VideoUrl = videoInfoModel!.PublishedUrl;
+            this.SupportedLanguages = await supportedLanguageService
+            .GetAllSupportedLanguageForVideoInfoIdAsync(videoInfoId: videoInfoModel.VideoInfoId,
+                cancellationToken: this.cancellationTokenSource.Token);
         }
-        this.VideoUrl = videoInfoModel!.PublishedUrl;
-        this.SupportedLanguages = await supportedLanguageService
-        .GetAllSupportedLanguageForVideoInfoIdAsync(videoInfoId: videoInfoModel.VideoInfoId,
-            cancellationToken: this.cancellationTokenSource.Token);
-        this.IsBusy = false;
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+        }
     }
 
 
@@ -242,6 +295,7 @@ else
     public ValueTask DisposeAsync()
     {
         this.cancellationTokenSource.Dispose();
+        this.persistingSubscription.Dispose();
         return ValueTask.CompletedTask;
     }
 }
