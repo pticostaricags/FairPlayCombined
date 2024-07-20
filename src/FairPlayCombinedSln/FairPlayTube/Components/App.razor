@@ -56,7 +56,7 @@
 </head>
 
 <body>
-    <Routes @rendermode="RenderMode.InteractiveServer" />
+    <Routes @rendermode="PageRenderMode" />
     <script src="scripts/videojs/video.min.js"></script>
     <script src="scripts/videojs.js"></script>
     <script src="_framework/blazor.web.js"></script>
@@ -71,7 +71,6 @@
 {
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
-    private static IComponentRenderMode ServerNoPrerender = new InteractiveServerRenderMode(prerender: false);
     private IComponentRenderMode? PageRenderMode =>
-        HttpContext.AcceptsInteractiveRouting() ? ServerNoPrerender : null;
+        HttpContext.AcceptsInteractiveRouting() ? RenderMode.InteractiveServer : null;
 }
