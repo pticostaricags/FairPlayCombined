@@ -16,7 +16,7 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.28.0.94264">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.30.0.95878">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

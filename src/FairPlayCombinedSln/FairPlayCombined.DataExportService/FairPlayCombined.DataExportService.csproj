@@ -16,10 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="8.0.1" />
+    <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="8.0.2" />
     <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0-preview.5.24306.7" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.28.0.94264">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.30.0.95878">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

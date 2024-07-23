@@ -36,11 +36,11 @@
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.68.0.3421" />
     <PackageReference Include="PayoutsSdk" Version="1.1.1" />
     <PackageReference Include="PayPal" Version="2.0.0-rc2" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.28.0.94264">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.30.0.95878">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.4.2" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.4.3" />
   </ItemGroup>
   <ItemGroup>
 	<FrameworkReference Include="Microsoft.AspNetCore.App" />
