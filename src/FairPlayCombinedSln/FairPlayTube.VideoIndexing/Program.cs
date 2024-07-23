@@ -65,4 +65,4 @@ builder.Services.AddHostedService<VideoIndexStatusBackgroundService>();
 builder.Services.AddHostedService<VideoCaptionsBackgroundService>();
 
 var host = builder.Build();
-host.Run();
+await host.RunAsync();

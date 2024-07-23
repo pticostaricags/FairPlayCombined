@@ -45,5 +45,5 @@ if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
     builder.Services.AddHostedService<DataExportBackgroundService>();
 
     var host = builder.Build();
-    host.Run();
+    await host.RunAsync();
 }

@@ -56,6 +56,9 @@
     @if (this.videoInfoModel != null)
     {
         <FluentAccordion>
+            <FluentAccordionItem Heading="Name" Expanded="true">
+                <FluentTextArea style="width:100%;" Value="@this.videoInfoModel.Name"></FluentTextArea>
+            </FluentAccordionItem>
             <FluentAccordionItem Heading="Description" Expanded="true">
                 <FluentTextArea style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>
             </FluentAccordionItem>

@@ -8,6 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting" Version="8.0.1" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.28.0.94264">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
