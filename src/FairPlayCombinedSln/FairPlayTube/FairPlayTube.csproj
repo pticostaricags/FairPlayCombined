@@ -31,7 +31,7 @@
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.8.1" />
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.6.0" />
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.8.0" />
-	<PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
+	<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.28.0.94264">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
