@@ -14,6 +14,7 @@
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
 @using System.Collections.Concurrent
+@using System.Globalization
 
 @attribute [StreamRendering(enabled: true)]
 
@@ -53,7 +54,7 @@
             @foreach (var singleThumbnail in this.Items.Items)
             {
                 <div style="width:400px;">
-                    <FluentLabel Typo="Typography.Subject">Cost: @singleThumbnail.ThumbnailCost.ToString("c")</FluentLabel>
+                    <FluentLabel Typo="Typography.Subject">Cost: @singleThumbnail.ThumbnailCost.ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
                     @if (!this.PagePhotos.ContainsKey(singleThumbnail.PhotoId))
                     {
                         <FluentCard class="card-padding" Width="400">
@@ -115,6 +116,9 @@
     private string? GeneratedYouTubeThumbnailUri { get; set; }
     private string? RevisedPrompt { get; set; }
     private ImageStylePreference imageStylePreference { get; set; } = ImageStylePreference.NoPreference;
+    private static CultureInfo CurrencyCulture = new(Constants.Cultures.CurrencyDefaultCulture);
+    private const string CurrencyFormat = Constants.Cultures.CurrencyDefaultFormat;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadDataAsync();
