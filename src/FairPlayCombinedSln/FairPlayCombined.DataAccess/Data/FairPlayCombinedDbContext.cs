@@ -128,6 +128,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<UserFunds> UserFunds { get; set; }
 
+    public virtual DbSet<UserFundsUniqueCodes> UserFundsUniqueCodes { get; set; }
+
     public virtual DbSet<UserMessage> UserMessage { get; set; }
 
     public virtual DbSet<UserProfile> UserProfile { get; set; }

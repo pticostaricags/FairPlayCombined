@@ -24,12 +24,12 @@ namespace FairPlayTube.Controllers
         [HttpGet("Sitemap.xml")]
         public async Task<FileContentResult> Sitemap(CancellationToken cancellationToken)
         {
-            StringBuilder stringBuilder = new();
-            using var xmlWriter = XmlWriter.Create(stringBuilder, new XmlWriterSettings
+            MemoryStream memoryStream = new();
+            using var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings
             {
                 Indent = true,
                 Async = true,
-                
+                Encoding = Encoding.UTF8
             });
             xmlWriter.WriteStartDocument();
             xmlWriter.WriteStartElement(localName: "urlset", ns: "http://www.sitemaps.org/schemas/sitemap/0.9");
@@ -52,8 +52,8 @@ namespace FairPlayTube.Controllers
             xmlWriter.WriteEndElement();
             xmlWriter.WriteEndDocument();
             xmlWriter.Close();
-            var result = stringBuilder.ToString();
-            return File(Encoding.UTF8.GetBytes(result),
+            var streamBytes = memoryStream.ToArray();
+            return File(streamBytes,
                 System.Net.Mime.MediaTypeNames.Application.Xml);
         }
 

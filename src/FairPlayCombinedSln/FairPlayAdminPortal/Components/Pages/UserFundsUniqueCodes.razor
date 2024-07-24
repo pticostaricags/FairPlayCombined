@@ -1,0 +1,92 @@
+﻿@page "/UserFundsUniqueCodes"
+@implements IDisposable
+
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.SystemAdmin)]
+
+@using FairPlayAdminPortal.Components.Spinners
+@using FairPlayAdminPortal.Data
+@using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Models
+@using FairPlayCombined.Models.Common.UserFundsUniqueCodes
+@using FairPlayCombined.Models.Pagination
+@using Microsoft.AspNetCore.Identity
+@using FairPlayCombined.Common.GeneratorsAttributes
+@inject IUserFundsUniqueCodesService userFundsUniqueCodesService
+@inject IServiceScopeFactory serviceScopeFactory
+@rendermode NoPreRender
+@attribute [StreamRendering(enabled: true)]
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<FluentLabel Typo="Typography.H3">
+    UserFundsUniqueCodes
+</FluentLabel>
+
+<FluentButton OnClick="OnCreateNewCodeAsync">Create New Code</FluentButton>
+<FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
+    <PropertyColumn Property="@(p=>p.Code)" Sortable="true"></PropertyColumn>
+    <PropertyColumn Property="@(p=>p.IsClaimed)" Sortable="true"></PropertyColumn>
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination">
+</FluentPaginator>
+
+@code {
+    private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private GridItemsProvider<UserFundsUniqueCodesModel>? ItemsProvider;
+    private readonly PaginationState pagination = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
+
+    private bool IsBusy { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ItemsProvider ??= async req =>
+            {
+                this.IsBusy = true;
+                StateHasChanged();
+                PaginationRequest paginationRequest = new PaginationRequest()
+                    {
+                        StartIndex = req.StartIndex,
+                        SortingItems = req.GetSortByProperties()
+                                            .Select(p => new SortingItem()
+                                            {
+                                                PropertyName = p.PropertyName,
+                                                SortType = (p.Direction == SortDirection.Ascending) ?
+                                                SortType.Ascending
+                                                :
+                                                SortType.Descending
+                                            }).ToArray()
+                    };
+                var paginationResult = await this.userFundsUniqueCodesService!.GetPaginatedUserFundsUniqueCodesListAsync(
+                    paginationRequest, this.cancellationTokenSource.Token);
+                var result = GridItemsProviderResult.From(
+                items: paginationResult.Items!,
+                totalItemCount: paginationResult!.TotalItems);
+                this.IsBusy = false;
+                StateHasChanged();
+                return result;
+            };
+    }
+
+    private async Task OnCreateNewCodeAsync()
+    {
+        this.IsBusy = true;
+        StateHasChanged();
+        await this.userFundsUniqueCodesService.CreateFundsUniqueCodeAsync(this.cancellationTokenSource.Token);
+        await this.pagination.SetCurrentPageIndexAsync(this.pagination.CurrentPageIndex);
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
+    }
+
+}

@@ -56,4 +56,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="FileUrl" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="bc7ff65f-d437-410a-89cb-183c8348710d" ChangeDateTime="07/24/2024 22:21:00">
+    <Property Name="ElementName" Value="[dbo].[UserFundsUniqueCodes].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserFundsUniqueCodes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UserFundsUniqueCodesId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a2055d30-4aee-46b2-a5cf-4f33f5c130d5" ChangeDateTime="07/24/2024 22:23:18">
+    <Property Name="ElementName" Value="[dbo].[UserFundsUniqueCodes].[UniqueCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserFundsUniqueCodes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Code" />
+  </Operation>
 </Operations>

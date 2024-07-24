@@ -83,6 +83,7 @@ builder.Services.AddTransient<ResourceService>();
 builder.Services.AddTransient<ConfigurationSecretService>();
 builder.Services.AddTransient<OpenAIPromptService>();
 builder.Services.AddTransient<IPromptGeneratorService, PromptGeneratorService>();
+builder.Services.AddTransient<IUserFundsUniqueCodesService, UserFundsUniqueCodesService>();
 builder.AddOpenAIClient();
 builder.AddSemanticKernel();
 var app = builder.Build();

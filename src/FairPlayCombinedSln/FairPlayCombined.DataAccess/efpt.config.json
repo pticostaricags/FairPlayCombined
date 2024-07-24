@@ -111,6 +111,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[UserFundsUniqueCodes]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[UserMessage]",
          "ObjectType": 0
       },
