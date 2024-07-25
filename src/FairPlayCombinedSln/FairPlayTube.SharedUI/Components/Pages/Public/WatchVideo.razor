@@ -45,7 +45,11 @@
     <meta name="twitter:image" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
 
 </HeadContent>
-<FluentLabel Typo="Typography.H3">WatchVideo</FluentLabel>
+@if (this.videoInfoModel != null)
+{
+    <PageTitle>@this.videoInfoModel.Name</PageTitle>
+    <FluentLabel Typo="Typography.H3">@this.videoInfoModel.Name</FluentLabel>
+}
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 @if (!this.UseFallbackMode && !String.IsNullOrWhiteSpace(this.VideoUrl))
@@ -64,9 +68,6 @@
     @if (this.videoInfoModel != null)
     {
         <FluentAccordion>
-            <FluentAccordionItem Heading="Name" Expanded="true">
-                <FluentTextArea style="width:100%;" Value="@this.videoInfoModel.Name"></FluentTextArea>
-            </FluentAccordionItem>
             <FluentAccordionItem Heading="Description" Expanded="true">
                 <FluentTextArea style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>
             </FluentAccordionItem>
