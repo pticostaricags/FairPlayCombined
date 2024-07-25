@@ -58,5 +58,6 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
         public string? ThumbnailUrl { get; set; }
         [StringLength(11)]
         public string? YouTubeVideoId { get; set; }
+        public bool IsVideoGeneratedWithAi { get; set; }
     }
 }

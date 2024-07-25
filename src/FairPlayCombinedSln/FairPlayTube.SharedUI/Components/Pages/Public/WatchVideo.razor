@@ -67,6 +67,12 @@
     </div>
     @if (this.videoInfoModel != null)
     {
+        @if (this.videoInfoModel.IsVideoGeneratedWithAi == true)
+        {
+            <FluentLabel Typo="Typography.Body" Color="Color.Warning">
+                Video was generated using AI, content could be innacurate.
+            </FluentLabel>
+        }
         <FluentAccordion>
             <FluentAccordionItem Heading="Description" Expanded="true">
                 <FluentTextArea Rows="10" style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>

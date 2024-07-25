@@ -596,6 +596,7 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasFilter("YouTubeVideoId IS NOT NULL");
 
             entity.Property(e => e.ApplicationUserId).HasComment("Video Owner Id");
+            entity.Property(e => e.IsVideoGeneratedWithAi).HasDefaultValueSql("0");
             entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
             entity.Property(e => e.RowCreationUser).HasDefaultValueSql("'Unknown'");
             entity.Property(e => e.SourceApplication).HasDefaultValueSql("'Unknown'");

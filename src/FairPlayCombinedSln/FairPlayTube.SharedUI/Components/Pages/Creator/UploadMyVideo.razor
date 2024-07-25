@@ -41,6 +41,7 @@
                     <FluentLabel Typo="Typography.Body">Name</FluentLabel>
                     <FluentTextField @bind-Value="this.createVideoInfoModel.Name" style="width:100%;"></FluentTextField>
                     <FluentValidationMessage For="@(()=>this.createVideoInfoModel.Name)"></FluentValidationMessage>
+                    <FluentCheckbox @bind-Value="this.createVideoInfoModel.IsVideoGeneratedWithAi" Label="Was the Video Generated Using AI?"></FluentCheckbox>
                 </div>
             </FluentWizardStep>
             <FluentWizardStep OnChange="OnVideoDescriptionStepChange">
