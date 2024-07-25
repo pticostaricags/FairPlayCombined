@@ -15,12 +15,17 @@
     <FluentLabel Typo="Typography.Header">Available Funds: @(this.AvailableFunds.Value.ToString("c"))</FluentLabel>
 }
 
-<FluentLabel Typo="Typography.Body">Use Code:</FluentLabel>
-<FluentTextField @bind-Value="@this.CodeToClaim"></FluentTextField>
-<FluentButton Type="ButtonType.Button" OnClick="OnClaimCodeClickAsync">Claim Code</FluentButton>
-<FluentDivider>
-</FluentDivider>
-<PayPalCheckout OnFundsAdded="OnFundsAdded"></PayPalCheckout>
+<div>
+    <FluentLabel Typo="Typography.Body">Use Code:</FluentLabel>
+    <FluentTextField @bind-Value="@this.CodeToClaim" style="width:100%;"></FluentTextField>
+    <FluentButton Type="ButtonType.Button" OnClick="OnClaimCodeClickAsync" Appearance="Appearance.Accent">Claim Code</FluentButton>
+</div>
+<FluentDivider Style="width: 100%;" Role="DividerRole.Presentation"></FluentDivider>
+<div>
+    <PayPalCheckout OnFundsAdded="OnFundsAdded"></PayPalCheckout>
+</div>
+
+
 @code
 {
     private decimal? AvailableFunds { get; set; }
