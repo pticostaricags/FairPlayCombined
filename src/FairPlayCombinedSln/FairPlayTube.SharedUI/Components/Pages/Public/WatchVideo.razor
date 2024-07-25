@@ -109,6 +109,16 @@
             </FluentAccordionItem>
         </FluentAccordion>
     }
+    <FluentAccordion>
+        <FluentAccordionItem Heading="All Insights" Expanded="false">
+            <div>
+                <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
+                    <iframe width="580" height="780" 
+                        src="@this.videoInfoModel?.AllInsightsUrl" frameborder="0" allowfullscreen></iframe>
+                </FluentStack>
+            </div>
+        </FluentAccordionItem>
+    </FluentAccordion>
 }
 else
 {
