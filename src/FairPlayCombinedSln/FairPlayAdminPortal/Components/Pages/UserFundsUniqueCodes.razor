@@ -24,16 +24,75 @@
     UserFundsUniqueCodes
 </FluentLabel>
 
-<FluentButton OnClick="OnCreateNewCodeAsync">Create New Code</FluentButton>
+@if (this.createUserFundsUniqueCodesModel != null)
+{
+    <FluentEditForm FormName="frmUserFundsUniqueCode"
+                    Model="@this.createUserFundsUniqueCodesModel"
+                    OnValidSubmit="OnValidSubmitAsync">
+        <div>
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <FluentValidationSummary></FluentValidationSummary>
+        </div>
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@nameof(CreateUserFundsUniqueCodesModel.OwnerFullName)</FluentLabel>
+            <FluentTextField @bind-Value="@this.createUserFundsUniqueCodesModel.OwnerFullName"></FluentTextField>
+            <FluentValidationMessage For="@(()=> this.createUserFundsUniqueCodesModel.OwnerFullName)"></FluentValidationMessage>
+        </div>
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@nameof(CreateUserFundsUniqueCodesModel.OwnerEmailAddress)</FluentLabel>
+            <FluentTextField @bind-Value="@this.createUserFundsUniqueCodesModel.OwnerEmailAddress" TextFieldType="TextFieldType.Email" InputMode="InputMode.Email"></FluentTextField>
+            <FluentValidationMessage For="@(()=> this.createUserFundsUniqueCodesModel.OwnerEmailAddress)"></FluentValidationMessage>
+        </div>
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@nameof(CreateUserFundsUniqueCodesModel.OwnerLinkedProfileUrl)</FluentLabel>
+            <FluentTextField @bind-Value="@this.createUserFundsUniqueCodesModel.OwnerLinkedProfileUrl" TextFieldType="TextFieldType.Url" InputMode="InputMode.Url"></FluentTextField>
+            <FluentValidationMessage For="@(()=> this.createUserFundsUniqueCodesModel.OwnerLinkedProfileUrl)"></FluentValidationMessage>
+        </div>
+        <div>
+            <FluentButton Type="ButtonType.Submit">Create New Code</FluentButton>
+        </div>
+    </FluentEditForm>
+}
+
 <FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
     <PropertyColumn Property="@(p=>p.Code)" Sortable="true"></PropertyColumn>
     <PropertyColumn Property="@(p=>p.IsClaimed)" Sortable="true"></PropertyColumn>
+    <PropertyColumn Property="@(p=>p.OwnerFullName)" Sortable="true"></PropertyColumn>
+    <TemplateColumn Sortable="false" Title="@nameof(UserFundsUniqueCodesModel.OwnerEmailAddress)">
+        @if (!String.IsNullOrWhiteSpace(context.OwnerEmailAddress))
+        {
+            <FluentAnchor Href="@($"mailto://{context.OwnerEmailAddress}")" Target="_blank">
+                <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                            Color="Color.Accent" Slot="start"></FluentIcon>
+                @context.OwnerEmailAddress
+            </FluentAnchor>
+        }
+    </TemplateColumn>
+    <TemplateColumn Sortable="false" Title="@nameof(UserFundsUniqueCodesModel.OwnerLinkedProfileUrl)">
+        <FluentAnchor Href="@context.OwnerLinkedProfileUrl" Target="_blank">
+            <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                        Color="Color.Accent" Slot="start"></FluentIcon>
+            @context.OwnerLinkedProfileUrl
+        </FluentAnchor>
+    </TemplateColumn>
+    <TemplateColumn Sortable="false" Title="@nameof(UserFundsUniqueCodesModel.ClaimedByApplicationUser)">
+        @if (!String.IsNullOrWhiteSpace(context.ClaimedByApplicationUser))
+        {
+            <FluentAnchor Href="@($"mailto://{context.ClaimedByApplicationUser}")" Target="_blank">
+                <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                            Color="Color.Accent" Slot="start"></FluentIcon>
+                @context.ClaimedByApplicationUser
+            </FluentAnchor>
+        }
+    </TemplateColumn>
 </FluentDataGrid>
 
 <FluentPaginator State="@pagination">
 </FluentPaginator>
 
 @code {
+    [SupplyParameterFromForm]
+    private CreateUserFundsUniqueCodesModel? createUserFundsUniqueCodesModel { get; set; }
     private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private GridItemsProvider<UserFundsUniqueCodesModel>? ItemsProvider;
@@ -46,6 +105,7 @@
 
     protected override void OnInitialized()
     {
+        this.createUserFundsUniqueCodesModel ??= new();
         ItemsProvider ??= async req =>
             {
                 this.IsBusy = true;
@@ -54,14 +114,14 @@
                     {
                         StartIndex = req.StartIndex,
                         SortingItems = req.GetSortByProperties()
-                                            .Select(p => new SortingItem()
-                                            {
-                                                PropertyName = p.PropertyName,
-                                                SortType = (p.Direction == SortDirection.Ascending) ?
-                                                SortType.Ascending
-                                                :
-                                                SortType.Descending
-                                            }).ToArray()
+                                                                        .Select(p => new SortingItem()
+                                                                        {
+                                                                            PropertyName = p.PropertyName,
+                                                                            SortType = (p.Direction == SortDirection.Ascending) ?
+                                                                            SortType.Ascending
+                                                                            :
+                                                                            SortType.Descending
+                                                                        }).ToArray()
                     };
                 var paginationResult = await this.userFundsUniqueCodesService!.GetPaginatedUserFundsUniqueCodesListAsync(
                     paginationRequest, this.cancellationTokenSource.Token);
@@ -74,11 +134,11 @@
             };
     }
 
-    private async Task OnCreateNewCodeAsync()
+    private async Task OnValidSubmitAsync()
     {
         this.IsBusy = true;
         StateHasChanged();
-        await this.userFundsUniqueCodesService.CreateFundsUniqueCodeAsync(this.cancellationTokenSource.Token);
+        await this.userFundsUniqueCodesService.CreateFundsUniqueCodeAsync(this.createUserFundsUniqueCodesModel!, this.cancellationTokenSource.Token);
         await this.pagination.SetCurrentPageIndexAsync(this.pagination.CurrentPageIndex);
         this.IsBusy = false;
         StateHasChanged();

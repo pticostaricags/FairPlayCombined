@@ -119,6 +119,9 @@ public partial class AspNetUsers
     [InverseProperty("ApplicationUser")]
     public virtual UserFunds UserFunds { get; set; }
 
+    [InverseProperty("ClaimedByApplicationUser")]
+    public virtual ICollection<UserFundsUniqueCodes> UserFundsUniqueCodes { get; set; } = new List<UserFundsUniqueCodes>();
+
     [InverseProperty("FromApplicationUser")]
     public virtual ICollection<UserMessage> UserMessageFromApplicationUser { get; set; } = new List<UserMessage>();
 

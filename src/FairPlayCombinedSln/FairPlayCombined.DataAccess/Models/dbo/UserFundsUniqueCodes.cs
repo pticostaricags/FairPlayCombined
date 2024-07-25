@@ -39,4 +39,20 @@ public partial class UserFundsUniqueCodes
     [Column("OriginatorIPAddress")]
     [StringLength(100)]
     public string OriginatorIpaddress { get; set; }
+
+    [StringLength(100)]
+    public string OwnerFullName { get; set; }
+
+    [StringLength(100)]
+    public string OwnerEmailAddress { get; set; }
+
+    [StringLength(500)]
+    public string OwnerLinkedProfileUrl { get; set; }
+
+    [StringLength(450)]
+    public string ClaimedByApplicationUserId { get; set; }
+
+    [ForeignKey("ClaimedByApplicationUserId")]
+    [InverseProperty("UserFundsUniqueCodes")]
+    public virtual AspNetUsers ClaimedByApplicationUser { get; set; }
 }

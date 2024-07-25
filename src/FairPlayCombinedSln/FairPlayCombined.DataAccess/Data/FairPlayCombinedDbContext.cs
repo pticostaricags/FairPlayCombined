@@ -455,6 +455,11 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_UserFunds_AspNetUsers");
         });
 
+        modelBuilder.Entity<UserFundsUniqueCodes>(entity =>
+        {
+            entity.HasOne(d => d.ClaimedByApplicationUser).WithMany(p => p.UserFundsUniqueCodes).HasConstraintName("FK_UserFundsUniqueCodes_AspNetUsers");
+        });
+
         modelBuilder.Entity<UserMessage>(entity =>
         {
             entity.HasOne(d => d.FromApplicationUser).WithMany(p => p.UserMessageFromApplicationUser)

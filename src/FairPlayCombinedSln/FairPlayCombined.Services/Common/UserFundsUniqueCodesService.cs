@@ -22,26 +22,30 @@ namespace FairPlayCombined.Services.Common
             var currentUserId = userProviderService.GetCurrentUserId();
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var userEntity = await dbContext.AspNetUsers
-                .Include(p=>p.UserFunds)
+                .Include(p => p.UserFunds)
                 .SingleAsync(p => p.Id == currentUserId,
                 cancellationToken);
-            var entity = await dbContext.UserFundsUniqueCodes
+            var uniqueCodeEntity = await dbContext.UserFundsUniqueCodes
                 .SingleAsync(p => p.Code.ToString() == code.ToString(),
                 cancellationToken);
-            if (entity.IsClaimed)
+            if (uniqueCodeEntity.IsClaimed)
                 throw new RuleException("Code is already claimed");
-            entity.IsClaimed = true;
+            uniqueCodeEntity.IsClaimed = true;
+            uniqueCodeEntity.ClaimedByApplicationUserId = currentUserId;
             userEntity.UserFunds.AvailableFunds += 10;
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<Guid> CreateFundsUniqueCodeAsync(CancellationToken cancellationToken)
+        public async Task<Guid> CreateFundsUniqueCodeAsync(CreateUserFundsUniqueCodesModel createUserFundsUniqueCodesModel, CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             UserFundsUniqueCodes entity = new()
             {
                 Code = Guid.NewGuid(),
-                IsClaimed = false
+                IsClaimed = false,
+                OwnerFullName = createUserFundsUniqueCodesModel.OwnerFullName,
+                OwnerEmailAddress = createUserFundsUniqueCodesModel.OwnerEmailAddress,
+                OwnerLinkedProfileUrl = createUserFundsUniqueCodesModel.OwnerLinkedProfileUrl
             };
             await dbContext.UserFundsUniqueCodes.AddAsync(entity, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -59,12 +63,16 @@ namespace FairPlayCombined.Services.Common
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.UserFundsUniqueCodes
                 .AsNoTracking()
-                .OrderByDescending(p=>p.UserFundsUniqueCodesId)
+                .OrderByDescending(p => p.UserFundsUniqueCodesId)
                 .Select(p => new UserFundsUniqueCodesModel()
                 {
                     Code = p.Code,
                     IsClaimed = p.IsClaimed,
-                    UserFundsUniqueCodesId=p.UserFundsUniqueCodesId,
+                    UserFundsUniqueCodesId = p.UserFundsUniqueCodesId,
+                    OwnerFullName = p.OwnerFullName,
+                    OwnerEmailAddress = p.OwnerEmailAddress,
+                    OwnerLinkedProfileUrl = p.OwnerLinkedProfileUrl,
+                    ClaimedByApplicationUser = p.ClaimedByApplicationUser.Email
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);
