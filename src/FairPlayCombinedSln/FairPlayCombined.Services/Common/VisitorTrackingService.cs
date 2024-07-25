@@ -11,8 +11,8 @@ namespace FairPlayCombined.Services.Common
 {
     public class VisitorTrackingService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IHttpContextAccessor httpContextAccessor, 
-        IpDataService ipDataService, 
+        IHttpContextAccessor httpContextAccessor,
+        IpDataService ipDataService,
         ILogger<VisitorTrackingService> logger) : IVisitorTrackingService
     {
         public async Task<long?> TrackVisitAsync(VisitorTrackingModel visitorTrackingModel, CancellationToken cancellationToken)
@@ -21,7 +21,11 @@ namespace FairPlayCombined.Services.Common
             try
             {
                 var httpContext = httpContextAccessor.HttpContext;
-                var referer = httpContext!.Request.Headers.Referer.ToString();
+                string? referer=null;
+                if (httpContext!.Request.Headers?.Referer.Count > 0)
+                {
+                    referer = httpContext!.Request.Headers.Referer.ToString();
+                }
                 var remoteIpAddress = httpContext!.Connection.RemoteIpAddress!.ToString();
                 if (remoteIpAddress == "::1")
                 {
@@ -32,7 +36,7 @@ namespace FairPlayCombined.Services.Common
                 var ipGeoLocationInfo = await ipDataService.GetIpGeoLocationInfoAsync(ipAddress: parsedIpAddress, cancellationToken);
                 string? country = ipGeoLocationInfo?.country_name;
                 var host = httpContext.Request.Host.Value;
-                var userAgent = httpContext.Request.Headers.UserAgent.ToString();
+                var userAgent = httpContext.Request.Headers!.UserAgent.ToString();
                 AspNetUsers? userEntity = null;
                 if (!String.IsNullOrWhiteSpace(visitorTrackingModel.ApplicationUserId))
                     userEntity = await dbContext.AspNetUsers
@@ -67,7 +71,7 @@ namespace FairPlayCombined.Services.Common
             }
             catch (Exception ex)
             {
-                logger.LogError(ex,"Error: {ErrorMessage}", ex.Message);
+                logger.LogError(ex, "Error: {ErrorMessage}", ex.Message);
                 try
                 {
                     await dbContext.ErrorLog.AddAsync(new ErrorLog()
@@ -80,7 +84,7 @@ namespace FairPlayCombined.Services.Common
                 }
                 catch (Exception ex2)
                 {
-                    logger.LogError(ex2,"Error: {ErrorMessage}", ex2.Message);
+                    logger.LogError(ex2, "Error: {ErrorMessage}", ex2.Message);
                 }
             }
 
