@@ -1,4 +1,5 @@
 ﻿using FairPlayCombined.Common.CustomExceptions;
+using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
@@ -94,6 +95,33 @@ public class OpenAIService(
             request, cancellationToken: cancellationToken);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<ChatCompletionResponseModel>(cancellationToken: cancellationToken);
+        try
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var userId = userProviderService.GetCurrentUserId()!;
+            var promptMarginEntity = await dbContext.OpenAipromptMargin.SingleAsync(cancellationToken: cancellationToken);
+            var promptCostEntity = await dbContext.OpenAipromptCost.SingleAsync(cancellationToken: cancellationToken);
+            var promptCost = promptCostEntity.CostPerPrompt +
+                (promptCostEntity.CostPerPrompt * promptMarginEntity.Margin);
+            var userFundsEntity = await dbContext.UserFunds.
+                SingleAsync(p => p.ApplicationUserId == userId,
+                cancellationToken: cancellationToken);
+            userFundsEntity.AvailableFunds -= promptCost;
+            OpenAiprompt openAiprompt = new()
+            {
+                OperationCost = promptCost,
+                OriginalPrompt = prompt,
+                Model = request.model,
+                OwnerApplicationUserId = userId,
+            };
+            await dbContext.OpenAiprompt.AddAsync(openAiprompt, cancellationToken: cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
+            result!.OpenAIPromptId = openAiprompt.OpenAipromptId;
+        }
+        catch (Exception)
+        {
+            //we ignore so we do not interrupt user flow
+        }
         logger.LogInformation("End of method: {MethodName}. CallId: {CallGuid}. Duration: {Duration}",
             nameof(GenerateChatCompletionAsync), callGuid, stopWatch.Elapsed);
         return result;

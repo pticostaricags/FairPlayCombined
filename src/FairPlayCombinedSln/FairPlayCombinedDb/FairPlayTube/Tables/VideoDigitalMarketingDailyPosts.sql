@@ -4,7 +4,9 @@
     [VideoInfoId] BIGINT NOT NULL, 
     [SocialNetworkName] NVARCHAR(50) NOT NULL, 
     [HtmlVideoDigitalMarketingDailyPostsIdeas] NVARCHAR(MAX) NOT NULL, 
-    CONSTRAINT [FK_VideoDigitalMarketingDailyPosts_VideoInfo] FOREIGN KEY ([VideoInfoId]) REFERENCES [FairPlayTube].[VideoInfo]([VideoInfoId])
+    [OpenAIPromptId] BIGINT NULL, 
+    CONSTRAINT [FK_VideoDigitalMarketingDailyPosts_VideoInfo] FOREIGN KEY ([VideoInfoId]) REFERENCES [FairPlayTube].[VideoInfo]([VideoInfoId]), 
+    CONSTRAINT [FK_VideoDigitalMarketingDailyPosts_OpenAIPrompt] FOREIGN KEY ([OpenAIPromptId]) REFERENCES [dbo].[OpenAIPrompt]([OpenAIPromptId])
 )
 
 GO

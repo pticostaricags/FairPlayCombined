@@ -75,7 +75,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             stringBuilder.AppendLine($"Video Captions: {videoDataEntity.EnglishCaptions}.");
             string prompt = stringBuilder.ToString();
             if (prompt.Length > 4000)
-                prompt = prompt.Substring(0, 4000);
+                prompt = prompt[..4000];
             var result = await openAIService.GenerateDallE3ImageAsync(prompt, cancellationToken);
             Photo photoEntity = new()
             {

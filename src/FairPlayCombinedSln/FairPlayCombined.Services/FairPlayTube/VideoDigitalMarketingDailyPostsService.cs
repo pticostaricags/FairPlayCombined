@@ -1,12 +1,20 @@
-﻿using FairPlayCombined.Common.GeneratorsAttributes;
+﻿using FairPlayCombined.Common;
+using FairPlayCombined.Common.CustomExceptions;
+using FairPlayCombined.Common.Enums;
+using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.FairPlayTube.VideoDigitalMarketingDailyPosts;
+using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.Pagination;
+using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
+using System.Text;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
@@ -21,6 +29,55 @@ namespace FairPlayCombined.Services.FairPlayTube
         >]
     public partial class VideoDigitalMarketingDailyPostsService : BaseService, IVideoDigitalMarketingDailyPostsService
     {
+        private readonly IUserFundService userFundService;
+        private readonly IOpenAIService openAIService;
+        public VideoDigitalMarketingDailyPostsService(
+            IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+            ILogger<VideoDigitalMarketingDailyPostsService> logger,
+            IUserFundService userFundService,
+            IOpenAIService openAIService) : this(dbContextFactory, logger)
+        {
+            this.userFundService = userFundService;
+            this.openAIService = openAIService;
+        }
+        public async Task<string> CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(long videoInfoId, CancellationToken cancellationToken)
+        {
+            var hasRequiredFunds = await userFundService.HasFundsToCreateDailyPostsAsync(cancellationToken);
+            if (!hasRequiredFunds)
+            {
+                string message = "You don't have available funds left to perform the operation.";
+                throw new RuleException(message);
+            }
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var promptEntity = await dbContext.Prompt
+                .AsNoTracking()
+                .SingleAsync(p => p.PromptName ==
+                Constants.PromptsNames.CreateVideoDailyPosts, cancellationToken);
+            var videoDataEntity = await dbContext.VideoInfo
+                .AsNoTracking()
+                .Where(p => p.VideoInfoId == videoInfoId)
+                .Select(p => new
+                {
+                    p.Name,
+                    p.Description,
+                    EnglishCaptions = p.VideoCaptions.Single(p => p.Language == "en-US").Content
+                })
+                .SingleAsync(cancellationToken);
+            var userMessage = $"Today's Date: {DateTimeOffset.UtcNow.Date}. Video Title: {videoDataEntity.Description}. Video Captions: {videoDataEntity.EnglishCaptions}";
+            var result = await this.openAIService.GenerateChatCompletionAsync(promptEntity.BaseText,
+                userMessage, cancellationToken);
+            var resultText = result!.choices![0].message!.content;
+            await dbContext.VideoDigitalMarketingDailyPosts.AddAsync(new()
+            {
+                HtmlVideoDigitalMarketingDailyPostsIdeas = resultText,
+                OpenAipromptId = result.OpenAIPromptId,
+                SocialNetworkName = "LinkedIn",
+                VideoInfoId = videoInfoId
+            }, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+            return resultText!;
+        }
+
         public async Task<PaginationOfT<VideoDigitalMarketingDailyPostsModel>> GetPaginatedVideoDigitalMarketingDailyPostsByVideoInfoIdAsync(long videoInfoId, PaginationRequest paginationRequest, CancellationToken cancellationToken)
         {
             logger.LogInformation(message: "Start of method: {MethodName}", nameof(GetPaginatedVideoDigitalMarketingDailyPostsAsync));
@@ -32,7 +89,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
             var query = dbContext.VideoDigitalMarketingDailyPosts
-                .Where(p=>p.VideoInfoId == videoInfoId)
+                .Where(p => p.VideoInfoId == videoInfoId)
                 .Select(p => new FairPlayCombined.Models.FairPlayTube.VideoDigitalMarketingDailyPosts.VideoDigitalMarketingDailyPostsModel
                 {
                     VideoDigitalMarketingDailyPostsId = p.VideoDigitalMarketingDailyPostsId,

@@ -18,10 +18,8 @@
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
 @inject IUserProviderService userProviderService
-@inject IOpenAIService openAIService
 @inject IVideoCaptionsService videoCaptionsService
 @inject IVideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
-@inject IPromptGeneratorService promptGeneratorService
 @inject IToastService toastService
 
 <PageTitle>
@@ -39,7 +37,7 @@
                   OnClick="OnCreateVideoDailyPostAsync">Create Video Daily Posts</FluentButton>
 </div>
 
-@if(this.ItemsProvider != null)
+@if (this.ItemsProvider != null)
 {
     <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
         <TemplateColumn Class="multiline-text" Title="Posts">
@@ -86,10 +84,10 @@
                 this.IsBusy = true;
                 StateHasChanged();
                 PaginationRequest paginationRequest = new()
-                {
-                    PageSize = Constants.Pagination.PageSize,
-                    StartIndex = req.StartIndex,
-                    SortingItems = new SortingItem[]
+                    {
+                        PageSize = Constants.Pagination.PageSize,
+                        StartIndex = req.StartIndex,
+                        SortingItems = new SortingItem[]
                     {
                         new SortingItem()
                         {
@@ -97,7 +95,7 @@
                             SortType= SortType.Descending
                         }
                     }
-                };
+                    };
                 var items = await this.videoDigitalMarketingDailyPostsService
                 .GetPaginatedVideoDigitalMarketingDailyPostsByVideoInfoIdAsync(
                     this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
@@ -116,29 +114,11 @@
         {
             this.IsBusy = true;
             StateHasChanged();
-            var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-            cancellationToken: this.cancellationTokenSource.Token);
-            var englishCaptions = await this.videoCaptionsService
-            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-            var promptModel = await this.promptGeneratorService
-            .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateVideoDailyPosts,
-                this.cancellationTokenSource.Token);
-            var systemMessage = promptModel!.BaseText!;
-            var userMessage = $"Today's Date: {DateTimeOffset.UtcNow.Date}. Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-            var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
-            if (result != null)
-            {
-                this.DigitalMarketingDailyPostsIdeas = result!.choices![0]!.message!.content!;
-                await this.videoDigitalMarketingDailyPostsService
-                .SaveVideoDigitalMarketingDailyPostsAsync(
-                    videoInfoId: videoInfoModel.VideoInfoId,
-                    htmlVideoDigitalMarketingDailyPostsIdeas: this.DigitalMarketingDailyPostsIdeas,
-                    socialNetworkName: "LinkedIn",
-                    cancellationToken: this.cancellationTokenSource.Token);
-                    await this.paginationState.SetCurrentPageIndexAsync(
-                        this.paginationState.CurrentPageIndex);
-            }
+            this.DigitalMarketingDailyPostsIdeas =
+            await this.videoDigitalMarketingDailyPostsService
+            .CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
+            await this.paginationState.SetCurrentPageIndexAsync(
+                    this.paginationState.CurrentPageIndex);
         }
         catch (Exception ex)
         {
