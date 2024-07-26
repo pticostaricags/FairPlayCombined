@@ -80,7 +80,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             {
 
                 HtmlDigitalMarketingPlan = resultText,
-                //OpenAipromptId = result.OpenAIPromptId,
+                OpenAipromptId = result.OpenAIPromptId,
                 SocialNetworkName = "LinkedIn",
                 VideoInfoId = videoInfoId
             }, cancellationToken);

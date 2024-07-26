@@ -84,4 +84,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="OpenAIPromptId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="e5c8c04b-946f-4f33-b6ee-4d8e3e9067b2" ChangeDateTime="07/26/2024 12:33:19">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoDigitalMarketingPlan].[VideoDigitalMarketingPlan]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoDigitalMarketingPlan]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoDigitalMarketingPlanId" />
+  </Operation>
 </Operations>

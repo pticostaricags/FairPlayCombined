@@ -563,7 +563,9 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<VideoDigitalMarketingPlan>(entity =>
         {
-            entity.HasOne(d => d.OpenAiprompt).WithMany(p => p.VideoDigitalMarketingPlan).HasConstraintName("FK_VideoDigitalMarketingPlan_OpenAIPrompt");
+            entity.HasOne(d => d.OpenAiprompt).WithMany(p => p.VideoDigitalMarketingPlan)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoDigitalMarketingPlan_OpenAIPrompt");
 
             entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoDigitalMarketingPlan)
                 .OnDelete(DeleteBehavior.ClientSetNull)

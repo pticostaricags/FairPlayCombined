@@ -162,7 +162,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             {
                 foreach (var singleVideoDigitalMarketingPlan in video.VideoDigitalMarketingPlan)
                 {
-                    string fileName = @$"videos\{video.Name}\digitalmarketingplan\{singleVideoDigitalMarketingPlan.VideoDigitalMarketingPlan1}.html";
+                    string fileName = @$"videos\{video.Name}\digitalmarketingplan\{singleVideoDigitalMarketingPlan.VideoDigitalMarketingPlanId}.html";
                     var videoDigitalMarketingPlanEntry = archive.CreateEntry(fileName, DefaultCompressionLevel);
                     await using var videoDigitalMarketingPlanEntryArchiveEntryStream = videoDigitalMarketingPlanEntry.Open();
                     using StreamWriter streamWriter = new(videoDigitalMarketingPlanEntryArchiveEntryStream);
