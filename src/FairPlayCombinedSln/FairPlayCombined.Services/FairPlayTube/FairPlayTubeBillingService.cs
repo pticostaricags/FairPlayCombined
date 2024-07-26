@@ -21,7 +21,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             string indexingOfVideoText = localizer[IndexingOfVideoTextKey];
             string creationOfLinkedInDailyPostsText = localizer[CreationOfLinkedInDailyPostsTextKey];
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-            var result = await dbContext.VideoThumbnail
+            var result = await (dbContext.VideoThumbnail
                 .AsNoTracking()
                 .Where(p => p.VideoInfo.ApplicationUserId == userId)
                 .Select(p => new FairPlayTubeBillingModel()
@@ -48,12 +48,12 @@ namespace FairPlayCombined.Services.FairPlayTube
                     {
                         Details = String.Concat(creationOfLinkedInDailyPostsText, p.VideoInfo.Name),
                         OperationCost = p.OpenAiprompt == null ? 0 : p.OpenAiprompt.OperationCost,
-                        RowCreationDateTime = p.OpenAiprompt == null ? DateTimeOffset.UtcNow : p.OpenAiprompt.RowCreationDateTime
+                        RowCreationDateTime = p.OpenAiprompt == null ? DateTimeOffset.MinValue : p.OpenAiprompt.RowCreationDateTime
                     })
                     )
-                )
-                .OrderByDescending(p => p.OperationCost)
-                .ThenByDescending(p => p.RowCreationDateTime)
+                ))
+                .OrderByDescending(p=>p.RowCreationDateTime)
+                .ThenByDescending(p => p.OperationCost)
                 .ToArrayAsync(cancellationToken);
             return result;
         }
