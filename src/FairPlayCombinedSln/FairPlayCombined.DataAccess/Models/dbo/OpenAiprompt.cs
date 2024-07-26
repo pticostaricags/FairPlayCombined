@@ -63,5 +63,8 @@ public partial class OpenAiprompt
     public virtual ICollection<VideoDigitalMarketingDailyPosts> VideoDigitalMarketingDailyPosts { get; set; } = new List<VideoDigitalMarketingDailyPosts>();
 
     [InverseProperty("OpenAiprompt")]
+    public virtual ICollection<VideoDigitalMarketingPlan> VideoDigitalMarketingPlan { get; set; } = new List<VideoDigitalMarketingPlan>();
+
+    [InverseProperty("OpenAiprompt")]
     public virtual ICollection<VideoThumbnail> VideoThumbnail { get; set; } = new List<VideoThumbnail>();
 }

@@ -32,6 +32,13 @@ public partial class VideoDigitalMarketingPlan
     [Required]
     public string HtmlDigitalMarketingPlan { get; set; }
 
+    [Column("OpenAIPromptId")]
+    public long? OpenAipromptId { get; set; }
+
+    [ForeignKey("OpenAipromptId")]
+    [InverseProperty("VideoDigitalMarketingPlan")]
+    public virtual OpenAiprompt OpenAiprompt { get; set; }
+
     [ForeignKey("VideoInfoId")]
     [InverseProperty("VideoDigitalMarketingPlan")]
     public virtual VideoInfo VideoInfo { get; set; }

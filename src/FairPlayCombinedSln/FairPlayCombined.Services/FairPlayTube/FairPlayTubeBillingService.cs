@@ -20,6 +20,8 @@ namespace FairPlayCombined.Services.FairPlayTube
             string creatingThumbnailForVideoText = localizer[CreatingThumbnailForVideoTextKey];
             string indexingOfVideoText = localizer[IndexingOfVideoTextKey];
             string creationOfLinkedInDailyPostsText = localizer[CreationOfLinkedInDailyPostsTextKey];
+            string creationOfDigitalMarketingPlanText = localizer[CreationOfDigitalMarketingPlanTextKey];
+
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var result = await (dbContext.VideoThumbnail
                 .AsNoTracking()
@@ -51,6 +53,17 @@ namespace FairPlayCombined.Services.FairPlayTube
                         RowCreationDateTime = p.OpenAiprompt == null ? DateTimeOffset.MinValue : p.OpenAiprompt.RowCreationDateTime
                     })
                     )
+                .Union(
+                    dbContext.VideoDigitalMarketingPlan
+                    .AsNoTracking()
+                    .Where(p => p.VideoInfo.ApplicationUserId == userId)
+                    .Select(p => new FairPlayTubeBillingModel()
+                    {
+                        Details = String.Concat(creationOfDigitalMarketingPlanText, p.VideoInfo.Name),
+                        OperationCost = p.OpenAiprompt == null ? 0 : p.OpenAiprompt.OperationCost,
+                        RowCreationDateTime = p.OpenAiprompt == null ? DateTimeOffset.MinValue : p.OpenAiprompt.RowCreationDateTime
+                    })
+                    )
                 ))
                 .OrderByDescending(p=>p.RowCreationDateTime)
                 .ThenByDescending(p => p.OperationCost)
@@ -63,6 +76,8 @@ namespace FairPlayCombined.Services.FairPlayTube
         [ResourceKey(defaultValue: "Indexing Of Video: ")]
         public const string IndexingOfVideoTextKey = "IndexingOfVideoText";
         [ResourceKey(defaultValue: "Creation Of LinkedIn Daily Posts ")]
-        private const string CreationOfLinkedInDailyPostsTextKey = "CreationOfLinkedInDailyPosts";
+        private const string CreationOfLinkedInDailyPostsTextKey = "CreationOfLinkedInDailyPostsText";
+        [ResourceKey(defaultValue: "Creation Of Digital Marketing Plan ")]
+        private const string CreationOfDigitalMarketingPlanTextKey = "CreationOfDigitalMarketingPlanText";
     }
 }
