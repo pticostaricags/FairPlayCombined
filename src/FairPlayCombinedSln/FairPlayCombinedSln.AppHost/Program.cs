@@ -98,7 +98,8 @@ if (addFairPlayTube)
 
             callback.EnvironmentVariables.Add("IpDataKey", ipDataKey);
         })
-    .WithReference(fairPlayDbResource);
+    .WithReference(fairPlayDbResource)
+    .WithReference(blobs);
 
     if (!useSendGrid)
         fairPlayTube = fairPlayTube.WithReference(mailDev!);

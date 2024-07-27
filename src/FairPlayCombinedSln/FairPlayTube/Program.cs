@@ -31,6 +31,8 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddAzureBlobClient("blobs");
+
 if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
 {
     builder.AddSmtpClient(Constants.ConnectionStringNames.SMTP);

@@ -10,6 +10,6 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
     {
         Task EnqueueMyDataExportAsync(CancellationToken cancellationToken);
         Task<byte[]> GetMyVideoDataAsync(long videoInfoId, CancellationToken cancellationToken);
-        Task<byte[]> GetUserDataAsync(string userId, CancellationToken cancellationToken);
+        Task<string> GetUserDataAsync(string userId, CancellationToken cancellationToken);
     }
 }

@@ -40,19 +40,10 @@ public class DataExportBackgroundService(ILogger<DataExportBackgroundService> lo
                         .Where(p=>!p.IsCompleted)
                         .Include(p => p.ApplicationUser))
                     {
-                        var fileBytes =
+                        var fileUrl =
                         await fairPlayTubeUserDataService.GetUserDataAsync(singleEnqueuedItem.ApplicationUserId, stoppingToken);
-                        var binaryData = BinaryData.FromBytes(fileBytes);
-                        BlobServiceClient blobServiceClient = scope.ServiceProvider.GetRequiredService<BlobServiceClient>();
-                        var blobContainerClient = blobServiceClient.GetBlobContainerClient("fairplaydata");
-                        await blobContainerClient
-                            .CreateIfNotExistsAsync(PublicAccessType.Blob, cancellationToken: stoppingToken);
-                        string blobName = $"DataExports/{singleEnqueuedItem.ApplicationUserId}.zip";
-                        var blobClient = blobContainerClient.GetBlobClient(blobName);
-                        logger.LogInformation("Uploading blob");
-                        await blobClient.UploadAsync(binaryData, overwrite: true, cancellationToken: stoppingToken);
                         singleEnqueuedItem.IsCompleted = true;
-                        singleEnqueuedItem.FileUrl = blobClient.Uri.ToString();
+                        singleEnqueuedItem.FileUrl = fileUrl;
                         dbContext.Database.SetCommandTimeout(TimeSpan.FromMinutes(20));
                         logger.LogInformation("Saving export into the database");
                         await dbContext.SaveChangesAsync(stoppingToken);
