@@ -93,11 +93,32 @@ public class OpenAIService(
         };
         var response = await openAIAuthorizedHttpClient.PostAsJsonAsync<ChatCompletionRequestModel>(requestUrl,
             request, cancellationToken: cancellationToken);
-        response.EnsureSuccessStatusCode();
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        long? errorId = null;
+        try
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
+                ErrorLog errorEntity = new()
+                {
+                    FullException = errorMessage,
+                    Message = errorMessage,
+                    StackTrace=System.Environment.StackTrace
+                };
+                await dbContext.ErrorLog.AddAsync(errorEntity, cancellationToken);
+                await dbContext.SaveChangesAsync(cancellationToken);
+                errorId = errorEntity.ErrorLogId;
+            }
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception)
+        {
+            throw new RuleException($"An error has occured, give the following code to the admin: {errorId}");
+        }
         var result = await response.Content.ReadFromJsonAsync<ChatCompletionResponseModel>(cancellationToken: cancellationToken);
         try
         {
-            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var userId = userProviderService.GetCurrentUserId()!;
             var promptMarginEntity = await dbContext.OpenAipromptMargin.SingleAsync(cancellationToken: cancellationToken);
             var promptCostEntity = await dbContext.OpenAipromptCost.SingleAsync(cancellationToken: cancellationToken);
@@ -118,9 +139,15 @@ public class OpenAIService(
             await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
             result!.OpenAIPromptId = openAiprompt.OpenAipromptId;
         }
-        catch (Exception)
+        catch (Exception ex2)
         {
-            //we ignore so we do not interrupt user flow
+            await dbContext.ErrorLog.AddAsync(new()
+            {
+                FullException = ex2.ToString(),
+                Message = ex2.Message,
+                StackTrace = ex2.StackTrace
+            }, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
         logger.LogInformation("End of method: {MethodName}. CallId: {CallGuid}. Duration: {Duration}",
             nameof(GenerateChatCompletionAsync), callGuid, stopWatch.Elapsed);
