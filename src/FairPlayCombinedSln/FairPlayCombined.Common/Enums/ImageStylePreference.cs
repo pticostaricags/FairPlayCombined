@@ -1,15 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FairPlayCombined.Common.Enums
+﻿namespace FairPlayCombined.Common.Enums
 {
     public enum ImageStylePreference
     {
-        NoPreference = 0,
-        PhotoRealistic
+        NoPreference,
+        PhotoRealistic,
+        Cartoonish,
+        Abstract,
+        Minimalist,
+        Vintage,
+        Surreal,
+        Watercolor,
+        LineArt,
+        Sketch,
+        PopArt,
+        Retro,
+        Fantasy,
+        Steampunk,
+        PixelArt,
+        Graffiti,
+        Impressionist,
+        ThreeDRendered,
+        Anime,
+        Manga,
+        Gothic,
+        Cyberpunk
     }
 }
