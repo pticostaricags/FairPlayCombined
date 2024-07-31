@@ -40,6 +40,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             long videoInfoId,
             IOpenAIService openAIService,
             ImageStylePreference imageStylePreference,
+            bool requestCleanThumbnail,
             HttpClient httpClient,
             CancellationToken cancellationToken)
         {
@@ -68,7 +69,11 @@ namespace FairPlayCombined.Services.FairPlayTube
             stringBuilder.AppendLine($"{promptEntity!.BaseText}.");
             if (imageStylePreference != ImageStylePreference.NoPreference)
             {
-                stringBuilder.AppendLine($"Image Style: {imageStylePreference.ToString()}.");
+                stringBuilder.AppendLine($"Make sure the image style is: {imageStylePreference.ToString()}, this is mandatory.");
+            }
+            if (requestCleanThumbnail)
+            {
+                stringBuilder.AppendLine("Make sure the image does not have any text nor typography.");
             }
             stringBuilder.AppendLine($"Video Title: {videoDataEntity.Name}.");
             stringBuilder.AppendLine($"Video Description: {videoDataEntity.Description}.");

@@ -11,6 +11,7 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
         Task<GenerateDallE3ResponseModel?> GenerateVideoThumbnailAsync(long videoInfoId,
             IOpenAIService openAIService,
             ImageStylePreference imageStylePreference,
+            bool requestCleanThumbnail,
             HttpClient httpClient,
             CancellationToken cancellationToken);
         Task<PaginationOfT<VideoThumbnailModel>>

@@ -40,11 +40,19 @@
 @if (this.HasRequiredFundsToCreate)
 {
     <div>
-        <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-        OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
-        <FluentSelect @bind-SelectedOption="@this.imageStylePreference"
-        Items="@(Enum.GetValues<ImageStylePreference>())">
+        <FluentSelect Appearance="Appearance.Accent"
+                      @bind-SelectedOption="@this.imageStylePreference"
+                      Items="@(Enum.GetValues<ImageStylePreference>())"
+                      Label="Image Style (Experimental)">
         </FluentSelect>
+    </div>
+    <div>
+        <FluentCheckbox Label="Request Clean Thumbnail (No Text)?"
+                        @bind-Value="@this.RequestCleanThumbnail"></FluentCheckbox>
+    </div>
+    <div>
+        <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
+                      OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
     </div>
 }
 <div>
@@ -91,6 +99,7 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
+    private bool RequestCleanThumbnail { get; set; } = false;
     private bool IsBusy { get; set; }
     private bool HasRequiredFundsToCreate { get; set; } = false;
     private PaginationOfT<VideoThumbnailModel>? Items;
@@ -178,7 +187,7 @@
             StateHasChanged();
             var result = await this.videoThumbnailService
             .GenerateVideoThumbnailAsync(this.VideoInfoId!.Value, this.openAIService,
-                this.imageStylePreference,
+                this.imageStylePreference, this.RequestCleanThumbnail,
                 this.httpClient, this.cancellationTokenSource.Token);
             if (result != null)
             {
