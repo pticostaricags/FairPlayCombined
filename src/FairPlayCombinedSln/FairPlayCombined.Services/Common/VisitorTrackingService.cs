@@ -22,7 +22,9 @@ namespace FairPlayCombined.Services.Common
             {
                 var httpContext = httpContextAccessor.HttpContext;
                 string? referer=null;
-                if (httpContext!.Request.Headers?.Referer.Count > 0)
+                if (httpContext != null && httpContext.Request != null &&
+                    httpContext.Request.Headers != null &&
+                    httpContext.Request.Headers.Referer.Count > 0)
                 {
                     referer = httpContext!.Request.Headers.Referer.ToString();
                 }
@@ -35,7 +37,7 @@ namespace FairPlayCombined.Services.Common
                 var parsedIpAddress = System.Net.IPAddress.Parse(remoteIpAddress);
                 var ipGeoLocationInfo = await ipDataService.GetIpGeoLocationInfoAsync(ipAddress: parsedIpAddress, cancellationToken);
                 string? country = ipGeoLocationInfo?.country_name;
-                var host = httpContext.Request.Host.Value;
+                var host = httpContext.Request!.Host.Value;
                 var userAgent = httpContext.Request.Headers!.UserAgent.ToString();
                 AspNetUsers? userEntity = null;
                 if (!String.IsNullOrWhiteSpace(visitorTrackingModel.ApplicationUserId))
