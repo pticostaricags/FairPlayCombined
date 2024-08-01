@@ -91,4 +91,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="VideoDigitalMarketingPlanId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="c9cd7bb9-6db3-4c4d-96e8-f3b21af090f8" ChangeDateTime="08/01/2024 11:46:40">
+    <Property Name="ElementName" Value="[dbo].[ImageStyle].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ImageStyle]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ImageStyleId" />
+  </Operation>
 </Operations>

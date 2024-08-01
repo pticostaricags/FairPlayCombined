@@ -1,20 +1,15 @@
 ﻿using FairPlayCombined.Common;
 using FairPlayCombined.Common.CustomExceptions;
-using FairPlayCombined.Common.Enums;
 using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
-using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.FairPlayTube.VideoDigitalMarketingDailyPosts;
-using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.Pagination;
-using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
-using System.Text;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {

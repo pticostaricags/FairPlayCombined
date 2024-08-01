@@ -62,6 +62,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<HairColor> HairColor { get; set; }
 
+    public virtual DbSet<ImageStyle> ImageStyle { get; set; }
+
     public virtual DbSet<Income> Income { get; set; }
 
     public virtual DbSet<KidStatus> KidStatus { get; set; }

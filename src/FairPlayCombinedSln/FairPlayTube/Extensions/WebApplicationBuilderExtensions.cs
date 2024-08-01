@@ -89,6 +89,7 @@ namespace FairPlayTube.Extensions
             builder.Services.AddTransient<IpDataService>();
             builder.Services.AddTransient<IVisitorTrackingService, VisitorTrackingService>();
             builder.Services.AddTransient<IUserFundsUniqueCodesService, UserFundsUniqueCodesService>();
+            builder.Services.AddTransient<IImageStyleService, ImageStyleService>();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using FairPlayCombined.Common.Enums;
-using FairPlayCombined.Interfaces.Common;
+﻿using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.FairPlayTube.VideoThumbnail;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Models.Pagination;
@@ -10,7 +9,7 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
     {
         Task<GenerateDallE3ResponseModel?> GenerateVideoThumbnailAsync(long videoInfoId,
             IOpenAIService openAIService,
-            ImageStylePreference imageStylePreference,
+            int imageStyleId,
             bool requestCleanThumbnail,
             HttpClient httpClient,
             CancellationToken cancellationToken);

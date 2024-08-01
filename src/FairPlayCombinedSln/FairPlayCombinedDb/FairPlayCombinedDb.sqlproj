@@ -185,6 +185,7 @@
     <Build Include="dbo\Tables\UserDataExportQueue.sql" />
     <Build Include="dbo\Tables\PaypalTransaction.sql" />
     <Build Include="dbo\Tables\UserFundsUniqueCodes.sql" />
+    <Build Include="dbo\Tables\ImageStyle.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
