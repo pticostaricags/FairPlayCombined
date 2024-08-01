@@ -48,8 +48,8 @@
                           @bind-SelectedOption="@this.SelectedImageStyle"
                           Items="@this.ImageStyles"
                           Label="Image Style (Experimental)"
-                          OptionText="@(p=>p.StyleName)"
-                          OptionValue="@(p=>p.ImageStyleId.ToString())"></FluentSelect>
+                          OptionText="@(p=>p!.StyleName!)"
+                          OptionValue="@(p=>p!.ImageStyleId!.ToString())"></FluentSelect>
         }
     </div>
     <div>
