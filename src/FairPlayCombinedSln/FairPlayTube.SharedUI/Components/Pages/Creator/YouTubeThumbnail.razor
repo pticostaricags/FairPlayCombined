@@ -154,7 +154,7 @@
                 this.toastService.ShowWarning("You don't have any funds left to create thumbnails");
             }
             this.ImageStyles ??= await imageStyleService.GetAllImageStyleAsync(this.cancellationTokenSource.Token);
-            this.SelectedImageStyle ??= this.ImageStyles.First();
+            this.SelectedImageStyle ??= this.ImageStyles[0];
             var items = await videoThumbnailService.GetPaginatedVideoThumbnailByVideoInfoIdAsync(
                 this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
             this.Items = items;

@@ -63,7 +63,7 @@
             cancellationToken: this.cancellationTokenSource.Token);
         if (String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
         {
-            await this.GenerateDigitalMarketingIdeasAsync(videoInfoModel);
+            await this.GenerateDigitalMarketingIdeasAsync();
         }
         this.IsBusy = false;
         StateHasChanged();
@@ -73,14 +73,12 @@
     {
         this.IsBusy = true;
         StateHasChanged();
-        var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        await this.GenerateDigitalMarketingIdeasAsync(videoInfoModel);
+        await this.GenerateDigitalMarketingIdeasAsync();
         this.IsBusy = false;
         StateHasChanged();
     }
 
-    private async Task GenerateDigitalMarketingIdeasAsync(VideoInfoModel videoInfoModel)
+    private async Task GenerateDigitalMarketingIdeasAsync()
     {
         this.DigitalMarketingIdeas =
         await this.videoDigitalMarketingPlanService.CreateVideoDigitalMarketingPlanAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
