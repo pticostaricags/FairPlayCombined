@@ -28,6 +28,7 @@
     [VideoThumbnailPhotoId] BIGINT NULL, 
     [VideoIndexingProcessingPercentage] INT NULL DEFAULT 0, 
     [PublishedUrl] NVARCHAR(1000) NULL, 
+    [IsVideoGeneratedWithAI] BIT NULL DEFAULT 0, 
     CONSTRAINT [FK_VideoInfo_VideoIndexStatus] FOREIGN KEY ([VideoIndexStatusId]) REFERENCES [FairPlayTube].[VideoIndexStatus]([VideoIndexStatusId]), 
     CONSTRAINT [FK_VideoInfo_VideoVisibility] FOREIGN KEY ([VideoVisibilityId]) REFERENCES [FairPlayTube].[VideoVisibility]([VideoVisibilityId]), 
     CONSTRAINT [FK_VideoInfo_Photo_Thumbnail] FOREIGN KEY ([VideoThumbnailPhotoId]) REFERENCES [dbo].[Photo]([PhotoId])

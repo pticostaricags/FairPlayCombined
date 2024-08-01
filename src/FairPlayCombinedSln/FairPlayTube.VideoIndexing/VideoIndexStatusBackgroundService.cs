@@ -91,9 +91,9 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
             var query = dbContext.VideoInfo
                 .Include(p => p.ApplicationUser).Where(p => indexCompleteVideosIds.Contains(p.VideoId));
 
-            var costPerMinute = dbContext.VideoIndexingCost
+            var costPerMinute = (await dbContext.VideoIndexingCost
                 .OrderByDescending(d => d.RowCreationDateTime)
-                .First()
+                .FirstAsync(stoppingToken))
                 .CostPerMinute;
 
             foreach (var singleVideoEntity in query)

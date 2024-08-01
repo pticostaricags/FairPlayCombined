@@ -41,6 +41,7 @@
                     <FluentLabel Typo="Typography.Body">Name</FluentLabel>
                     <FluentTextField @bind-Value="this.createVideoInfoModel.Name" style="width:100%;"></FluentTextField>
                     <FluentValidationMessage For="@(()=>this.createVideoInfoModel.Name)"></FluentValidationMessage>
+                    <FluentCheckbox @bind-Value="this.createVideoInfoModel.IsVideoGeneratedWithAi" Label="Was the Video Generated Using AI?"></FluentCheckbox>
                 </div>
             </FluentWizardStep>
             <FluentWizardStep OnChange="OnVideoDescriptionStepChange">
@@ -183,15 +184,14 @@
                 this.toastService.ShowError("Please make sure to fill all the values and try again");
                 return;
             }
-            var fileBytes = await new HttpClient().GetByteArrayAsync(this.createVideoInfoModel.ExternalVideoSourceUrl);
-            MemoryStream stream = new MemoryStream(fileBytes);
+            var videoStream = await new HttpClient().GetStreamAsync(this.createVideoInfoModel.ExternalVideoSourceUrl);
             Google.Apis.YouTube.v3.Data.Video video = new();
             video.Snippet = new VideoSnippet();
             video.Snippet.Title = this.createVideoInfoModel.Name;
             video.Snippet.Description = this.createVideoInfoModel.Description;
             video.Status = new VideoStatus();
             video.Status.PrivacyStatus = "unlisted";
-            await this.youTubeClientService.UploadVideoAsync(video, stream,
+            await this.youTubeClientService.UploadVideoAsync(video, videoStream,
             progressChanged: async (uploadProgress) =>
             {
                 this.bytesSent = uploadProgress.BytesSent;

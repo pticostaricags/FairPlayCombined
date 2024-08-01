@@ -1,4 +1,6 @@
-﻿using FairPlayCombined.Common.CustomExceptions;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
@@ -13,7 +15,8 @@ namespace FairPlayCombined.Services.FairPlayTube
     public class FairPlayTubeUserDataService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
         IUserProviderService userProviderService,
-        ILogger<FairPlayTubeUserDataService> logger) : IFairPlayTubeUserDataService
+        ILogger<FairPlayTubeUserDataService> logger,
+        BlobServiceClient blobServiceClient) : IFairPlayTubeUserDataService
     {
         private const CompressionLevel DefaultCompressionLevel = CompressionLevel.SmallestSize;
         private const string START_OF_METHOD_MESSAGE = "Start of method: {MethodName}";
@@ -63,10 +66,15 @@ namespace FairPlayCombined.Services.FairPlayTube
             return memoryStream.ToArray();
         }
 
-        public async Task<byte[]> GetUserDataAsync(string userId, CancellationToken cancellationToken)
+        public async Task<string> GetUserDataAsync(string userId, CancellationToken cancellationToken)
         {
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient("fairplaydata");
+            await blobContainerClient
+                .CreateIfNotExistsAsync(PublicAccessType.Blob, cancellationToken: cancellationToken);
+            string blobName = $"DataExports/{userId}.zip";
+            var blobClient = blobContainerClient.GetBlobClient(blobName);
             logger.LogInformation(message: START_OF_METHOD_MESSAGE, nameof(GetUserDataAsync));
-            await using MemoryStream memoryStream = new();
+            using var memoryStream = await blobClient.OpenWriteAsync(overwrite: true, cancellationToken: cancellationToken);
             using (ZipArchive archive = new(memoryStream, ZipArchiveMode.Create, true))
             {
                 var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
@@ -105,8 +113,8 @@ namespace FairPlayCombined.Services.FairPlayTube
                     }
                 }
             }
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            return memoryStream.ToArray();
+            memoryStream.Close();
+            return blobClient.Uri.ToString();
         }
 
         private async Task AddThumbnailsEntriesAsync(ZipArchive archive, VideoInfo video,
@@ -162,7 +170,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             {
                 foreach (var singleVideoDigitalMarketingPlan in video.VideoDigitalMarketingPlan)
                 {
-                    string fileName = @$"videos\{video.Name}\digitalmarketingplan\{singleVideoDigitalMarketingPlan.VideoDigitalMarketingPlan1}.html";
+                    string fileName = @$"videos\{video.Name}\digitalmarketingplan\{singleVideoDigitalMarketingPlan.VideoDigitalMarketingPlanId}.html";
                     var videoDigitalMarketingPlanEntry = archive.CreateEntry(fileName, DefaultCompressionLevel);
                     await using var videoDigitalMarketingPlanEntryArchiveEntryStream = videoDigitalMarketingPlanEntry.Open();
                     using StreamWriter streamWriter = new(videoDigitalMarketingPlanEntryArchiveEntryStream);

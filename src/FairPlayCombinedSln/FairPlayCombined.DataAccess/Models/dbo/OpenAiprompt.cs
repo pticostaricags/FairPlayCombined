@@ -32,14 +32,12 @@ public partial class OpenAiprompt
     [Required]
     public string OriginalPrompt { get; set; }
 
-    [Required]
     public string RevisedPrompt { get; set; }
 
     [Required]
     [StringLength(50)]
     public string Model { get; set; }
 
-    [Required]
     public byte[] GeneratedImageBytes { get; set; }
 
     public DateTimeOffset RowCreationDateTime { get; set; }
@@ -60,6 +58,12 @@ public partial class OpenAiprompt
     [ForeignKey("OwnerApplicationUserId")]
     [InverseProperty("OpenAiprompt")]
     public virtual AspNetUsers OwnerApplicationUser { get; set; }
+
+    [InverseProperty("OpenAiprompt")]
+    public virtual ICollection<VideoDigitalMarketingDailyPosts> VideoDigitalMarketingDailyPosts { get; set; } = new List<VideoDigitalMarketingDailyPosts>();
+
+    [InverseProperty("OpenAiprompt")]
+    public virtual ICollection<VideoDigitalMarketingPlan> VideoDigitalMarketingPlan { get; set; } = new List<VideoDigitalMarketingPlan>();
 
     [InverseProperty("OpenAiprompt")]
     public virtual ICollection<VideoThumbnail> VideoThumbnail { get; set; } = new List<VideoThumbnail>();

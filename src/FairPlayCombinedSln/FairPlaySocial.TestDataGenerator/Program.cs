@@ -26,4 +26,4 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(optionsAction =>
 builder.Services.AddHostedService<TestDataGenerator>();
 
 var host = builder.Build();
-host.Run();
+await host.RunAsync();

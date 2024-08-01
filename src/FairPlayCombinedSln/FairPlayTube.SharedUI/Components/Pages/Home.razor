@@ -12,9 +12,11 @@
 @attribute [StreamRendering(enabled: true)]
 
 @inject IVideoInfoService videoInfoService
-@inject NavigationManager navigationManager
 @inject IStringLocalizer<Home> localizer
 @inject IApiResolver apiResolver
+
+@inject NavigationManager navigationManager
+@inject PersistentComponentState ApplicationState
 
 <PageTitle>@localizer[HomeTextKey]</PageTitle>
 
@@ -87,8 +89,20 @@
     private GridItemsProviderResult<VideoInfoModel>? PageItems { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private string apiBaseUrl => apiResolver.GetBaseUrl();
+    private PersistingComponentStateSubscription persistingSubscription;
+
+    private Task PersistData()
+    {
+        //Check https://learn.microsoft.com/en-us/aspnet/core/blazor/components/prerender?view=aspnetcore-9.0
+        ApplicationState.PersistAsJson<GridItemsProviderResult<VideoInfoModel>?>(nameof(PageItems), this.PageItems);
+        return Task.CompletedTask;
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        persistingSubscription =
+            ApplicationState.RegisterOnPersisting(PersistData);
+
         ItemsProvider = async req =>
         {
             this.IsBusy = true;
@@ -111,15 +125,22 @@
             this.IsBusy = false;
             StateHasChanged();
             var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
-            await this.paginationState.SetTotalItemCountAsync(result.TotalItemCount);
             return result;
         };
-        this.PageItems = await this.ItemsProvider(new GridItemsProviderRequest<VideoInfoModel>()
-            {
-                CancellationToken = this.cancellationTokenSource.Token,
-                StartIndex = 0
-
-            });
+        if (!ApplicationState.TryTakeFromJson<GridItemsProviderResult<VideoInfoModel>?>(
+                nameof(this.PageItems), out var restoredPageItems))
+        {
+            this.PageItems = await this.ItemsProvider(new GridItemsProviderRequest<VideoInfoModel>()
+                {
+                    CancellationToken = this.cancellationTokenSource.Token,
+                    StartIndex = 0
+                });
+        }
+        else
+        {
+            this.PageItems = restoredPageItems;
+        }
+        await this.paginationState.SetTotalItemCountAsync(PageItems?.TotalItemCount ?? 0);
         StateHasChanged();
     }
 
@@ -133,14 +154,14 @@
         this.PageItems = await this.ItemsProvider!(new GridItemsProviderRequest<VideoInfoModel>()
             {
                 CancellationToken = this.cancellationTokenSource.Token,
-                StartIndex = page
-
+                StartIndex = page * this.paginationState.ItemsPerPage
             });
     }
 
     public ValueTask DisposeAsync()
     {
         this.cancellationTokenSource.Dispose();
+        this.persistingSubscription.Dispose();
         return ValueTask.CompletedTask;
     }
 

@@ -13,6 +13,7 @@
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Microsoft.Extensions.Localization
+@using System.Globalization
 
 @attribute [StreamRendering(enabled: true)]
 
@@ -46,7 +47,7 @@
                 </HeadingTemplate>
                 <ChildContent>
                     <div>
-                        <FluentLabel Typo="Typography.Body">@localizer[IndexingCostTextKey]: @context.IndexingCost.ToString("c")</FluentLabel>
+                        <FluentLabel Typo="Typography.Body">@localizer[IndexingCostTextKey]: @context.IndexingCost.ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
                     </div>
                     @if (context.YouTubeVideoId != null)
                     {
@@ -127,6 +128,8 @@
             ItemsPerPage = Constants.Pagination.PageSize
         };
     private readonly CancellationTokenSource cancellationTokenSource = new();
+    private static CultureInfo CurrencyCulture = new(Constants.Cultures.CurrencyDefaultCulture);
+    private const string CurrencyFormat = Constants.Cultures.CurrencyDefaultFormat;
 
     protected override void OnInitialized()
     {

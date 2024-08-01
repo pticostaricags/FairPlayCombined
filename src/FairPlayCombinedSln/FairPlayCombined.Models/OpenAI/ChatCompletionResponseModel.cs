@@ -9,5 +9,6 @@ public class ChatCompletionResponseModel
     public ChatCompletionResponseChoiceModel[]? choices { get; set; }
     public ChatCompletionResponseUsageModel? usage { get; set; }
     public string? system_fingerprint { get; set; }
+    public long OpenAIPromptId { get; set; }
 }
 #pragma warning restore IDE1006 // Naming Styles

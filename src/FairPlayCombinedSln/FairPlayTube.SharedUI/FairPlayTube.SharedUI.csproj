@@ -14,13 +14,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.0-preview.5.24306.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0-preview.5.24306.11" />
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.0-preview.5.24306.11" />
-	  <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.8.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.0-preview.6.24328.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0-preview.6.24328.4" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.0-preview.6.24328.4" />
+	  <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.9.3" />
 	  <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.6.0" />
-	  <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.8.0" />
-	  <PackageReference Include="SonarAnalyzer.CSharp" Version="9.28.0.94264">
+	  <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.9.3" />
+	  <PackageReference Include="SonarAnalyzer.CSharp" Version="9.30.0.95878">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>

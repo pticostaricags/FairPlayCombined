@@ -1,0 +1,152 @@
+﻿@page "/UserFundsUniqueCodes"
+@implements IDisposable
+
+@attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.SystemAdmin)]
+
+@using FairPlayAdminPortal.Components.Spinners
+@using FairPlayAdminPortal.Data
+@using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Models
+@using FairPlayCombined.Models.Common.UserFundsUniqueCodes
+@using FairPlayCombined.Models.Pagination
+@using Microsoft.AspNetCore.Identity
+@using FairPlayCombined.Common.GeneratorsAttributes
+@inject IUserFundsUniqueCodesService userFundsUniqueCodesService
+@inject IServiceScopeFactory serviceScopeFactory
+@rendermode NoPreRender
+@attribute [StreamRendering(enabled: true)]
+
+<LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<FluentLabel Typo="Typography.H3">
+    UserFundsUniqueCodes
+</FluentLabel>
+
+@if (this.createUserFundsUniqueCodesModel != null)
+{
+    <FluentEditForm FormName="frmUserFundsUniqueCode"
+                    Model="@this.createUserFundsUniqueCodesModel"
+                    OnValidSubmit="OnValidSubmitAsync">
+        <div>
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <FluentValidationSummary></FluentValidationSummary>
+        </div>
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@nameof(CreateUserFundsUniqueCodesModel.OwnerFullName)</FluentLabel>
+            <FluentTextField @bind-Value="@this.createUserFundsUniqueCodesModel.OwnerFullName"></FluentTextField>
+            <FluentValidationMessage For="@(()=> this.createUserFundsUniqueCodesModel.OwnerFullName)"></FluentValidationMessage>
+        </div>
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@nameof(CreateUserFundsUniqueCodesModel.OwnerEmailAddress)</FluentLabel>
+            <FluentTextField @bind-Value="@this.createUserFundsUniqueCodesModel.OwnerEmailAddress" TextFieldType="TextFieldType.Email" InputMode="InputMode.Email"></FluentTextField>
+            <FluentValidationMessage For="@(()=> this.createUserFundsUniqueCodesModel.OwnerEmailAddress)"></FluentValidationMessage>
+        </div>
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@nameof(CreateUserFundsUniqueCodesModel.OwnerLinkedProfileUrl)</FluentLabel>
+            <FluentTextField @bind-Value="@this.createUserFundsUniqueCodesModel.OwnerLinkedProfileUrl" TextFieldType="TextFieldType.Url" InputMode="InputMode.Url"></FluentTextField>
+            <FluentValidationMessage For="@(()=> this.createUserFundsUniqueCodesModel.OwnerLinkedProfileUrl)"></FluentValidationMessage>
+        </div>
+        <div>
+            <FluentButton Type="ButtonType.Submit">Create New Code</FluentButton>
+        </div>
+    </FluentEditForm>
+}
+
+<FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="@pagination">
+    <PropertyColumn Property="@(p=>p.Code)" Sortable="true"></PropertyColumn>
+    <PropertyColumn Property="@(p=>p.IsClaimed)" Sortable="true"></PropertyColumn>
+    <PropertyColumn Property="@(p=>p.OwnerFullName)" Sortable="true"></PropertyColumn>
+    <TemplateColumn Sortable="false" Title="@nameof(UserFundsUniqueCodesModel.OwnerEmailAddress)">
+        @if (!String.IsNullOrWhiteSpace(context.OwnerEmailAddress))
+        {
+            <FluentAnchor Href="@($"mailto://{context.OwnerEmailAddress}")" Target="_blank">
+                <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                            Color="Color.Accent" Slot="start"></FluentIcon>
+                @context.OwnerEmailAddress
+            </FluentAnchor>
+        }
+    </TemplateColumn>
+    <TemplateColumn Sortable="false" Title="@nameof(UserFundsUniqueCodesModel.OwnerLinkedProfileUrl)">
+        <FluentAnchor Href="@context.OwnerLinkedProfileUrl" Target="_blank">
+            <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                        Color="Color.Accent" Slot="start"></FluentIcon>
+            @context.OwnerLinkedProfileUrl
+        </FluentAnchor>
+    </TemplateColumn>
+    <TemplateColumn Sortable="false" Title="@nameof(UserFundsUniqueCodesModel.ClaimedByApplicationUser)">
+        @if (!String.IsNullOrWhiteSpace(context.ClaimedByApplicationUser))
+        {
+            <FluentAnchor Href="@($"mailto://{context.ClaimedByApplicationUser}")" Target="_blank">
+                <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                            Color="Color.Accent" Slot="start"></FluentIcon>
+                @context.ClaimedByApplicationUser
+            </FluentAnchor>
+        }
+    </TemplateColumn>
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination">
+</FluentPaginator>
+
+@code {
+    [SupplyParameterFromForm]
+    private CreateUserFundsUniqueCodesModel? createUserFundsUniqueCodesModel { get; set; }
+    private static IComponentRenderMode NoPreRender = new InteractiveServerRenderMode(prerender: false);
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private GridItemsProvider<UserFundsUniqueCodesModel>? ItemsProvider;
+    private readonly PaginationState pagination = new()
+        {
+            ItemsPerPage = Constants.Pagination.PageSize
+        };
+
+    private bool IsBusy { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.createUserFundsUniqueCodesModel ??= new();
+        ItemsProvider ??= async req =>
+            {
+                this.IsBusy = true;
+                StateHasChanged();
+                PaginationRequest paginationRequest = new PaginationRequest()
+                    {
+                        StartIndex = req.StartIndex,
+                        SortingItems = req.GetSortByProperties()
+                                                                        .Select(p => new SortingItem()
+                                                                        {
+                                                                            PropertyName = p.PropertyName,
+                                                                            SortType = (p.Direction == SortDirection.Ascending) ?
+                                                                            SortType.Ascending
+                                                                            :
+                                                                            SortType.Descending
+                                                                        }).ToArray()
+                    };
+                var paginationResult = await this.userFundsUniqueCodesService!.GetPaginatedUserFundsUniqueCodesListAsync(
+                    paginationRequest, this.cancellationTokenSource.Token);
+                var result = GridItemsProviderResult.From(
+                items: paginationResult.Items!,
+                totalItemCount: paginationResult!.TotalItems);
+                this.IsBusy = false;
+                StateHasChanged();
+                return result;
+            };
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        this.IsBusy = true;
+        StateHasChanged();
+        await this.userFundsUniqueCodesService.CreateFundsUniqueCodeAsync(this.createUserFundsUniqueCodesModel!, this.cancellationTokenSource.Token);
+        await this.pagination.SetCurrentPageIndexAsync(this.pagination.CurrentPageIndex);
+        this.IsBusy = false;
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
+    }
+
+}

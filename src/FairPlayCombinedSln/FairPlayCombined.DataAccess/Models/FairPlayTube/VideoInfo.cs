@@ -104,6 +104,9 @@ public partial class VideoInfo
     [StringLength(1000)]
     public string PublishedUrl { get; set; }
 
+    [Column("IsVideoGeneratedWithAI")]
+    public bool? IsVideoGeneratedWithAi { get; set; }
+
     [ForeignKey("ApplicationUserId")]
     [InverseProperty("VideoInfo")]
     public virtual AspNetUsers ApplicationUser { get; set; }

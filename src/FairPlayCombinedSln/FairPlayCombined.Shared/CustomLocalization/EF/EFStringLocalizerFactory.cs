@@ -1,4 +1,5 @@
 ﻿using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
@@ -14,7 +15,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
     /// </remarks>
     /// <param name="dbContextFactory"></param>
     public class EFStringLocalizerFactory(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IMemoryCache memoryCache, ILogger<EFStringLocalizer> efStringLocalizerLogger) : IStringLocalizerFactory
+        ICustomCache customCache, ILogger<EFStringLocalizer> efStringLocalizerLogger) : IStringLocalizerFactory
     {
 
         /// <summary>
@@ -27,7 +28,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
             var localizerType = typeof(EFStringLocalizer<>)
                 .MakeGenericType(resourceSource);
             var instance = Activator.CreateInstance(localizerType, dbContextFactory,
-                memoryCache, efStringLocalizerLogger) as IStringLocalizer;
+                customCache, efStringLocalizerLogger) as IStringLocalizer;
             return instance!;
         }
 
@@ -39,7 +40,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
         /// <returns></returns>
         public IStringLocalizer Create(string baseName, string location)
         {
-            return new EFStringLocalizer(dbContextFactory, memoryCache, efStringLocalizerLogger);
+            return new EFStringLocalizer(dbContextFactory, customCache, efStringLocalizerLogger);
         }
     }
 }

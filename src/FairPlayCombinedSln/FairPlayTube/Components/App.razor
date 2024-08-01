@@ -7,6 +7,15 @@
 <html lang="en">
 
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Earn the money you deserve from your video content creations with instant access to monetization options" />
+    <meta name="keywords" content="money, monetization, creator, video, content creator, YouTube, portal" />
+    <meta name="robots" content="index, follow" />
+
+    <title>FairPlayTube: The Next Generation of Video Sharing Portals!</title>
+    <base href="/" />
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-D7Q1K6LFLN"></script>
     <script>
@@ -24,15 +33,12 @@
             y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
         })(window, document, "clarity", "script", "8tkjtablaw");
     </script>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <script src="bootstrap/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="FairPlayTube.styles.css" />
     <link rel="stylesheet" href="custom.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="bootstrap-icons-1.11.3/font/bootstrap-icons.min.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
 
     <!--Paypal-->
@@ -43,7 +49,7 @@
     <link href="_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css" rel="stylesheet" />
 
     <!--VideoJS-->
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <link href="video-js.min.css" rel="stylesheet" />
 
 
     <HeadOutlet @rendermode="RenderMode.InteractiveServer" />
@@ -57,6 +63,28 @@
     <!-- Set the default theme -->
     <script src="_content/Microsoft.FluentUI.AspNetCore.Components/js/loading-theme.js" type="text/javascript"></script>
     <loading-theme storage-name="theme"></loading-theme>
+
+    <script type="text/javascript">
+        _linkedin_partner_id = "6174906";
+        window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+        window._linkedin_data_partner_ids.push(_linkedin_partner_id);
+    </script>
+    <script type="text/javascript">
+        (function (l) {
+            if (!l) {
+                window.lintrk = function (a, b) { window.lintrk.q.push([a, b]) };
+                window.lintrk.q = []
+            }
+            var s = document.getElementsByTagName("script")[0];
+            var b = document.createElement("script");
+            b.type = "text/javascript"; b.async = true;
+            b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+            s.parentNode.insertBefore(b, s);
+        })(window.lintrk);
+    </script>
+    <noscript>
+        <img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=6174906&fmt=gif" />
+    </noscript>
 </body>
 
 </html>
@@ -65,7 +93,6 @@
 {
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
-    private static IComponentRenderMode ServerNoPrerender = new InteractiveServerRenderMode(prerender: false);
     private IComponentRenderMode? PageRenderMode =>
-        HttpContext.AcceptsInteractiveRouting() ? ServerNoPrerender : null;
+        HttpContext.AcceptsInteractiveRouting() ? RenderMode.InteractiveServer : null;
 }

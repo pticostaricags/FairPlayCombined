@@ -79,5 +79,11 @@ namespace FairPlayCombined.Services.Common
                 .SingleAsync(p => p.ApplicationUserId == userId, cancellationToken);
             return userAvailableFunds.AvailableFunds >= promptCost;
         }
+
+        public async Task<bool> HasFundsToCreateDailyPostsAsync(CancellationToken cancellationToken)
+        {
+            var result = await this.HasFundsToCreateThumbnailsAsync(cancellationToken);
+            return result;
+        }
     }
 }

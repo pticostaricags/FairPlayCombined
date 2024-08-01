@@ -8,16 +8,30 @@
 
 @inject IUserFundService userFundService
 @inject IToastService toastService
+@inject IUserFundsUniqueCodesService userFundsUniqueCodesService
 
 @if (this.AvailableFunds != null)
 {
     <FluentLabel Typo="Typography.Header">Available Funds: @(this.AvailableFunds.Value.ToString("c"))</FluentLabel>
 }
-<PayPalCheckout OnFundsAdded="OnFundsAdded"></PayPalCheckout>
+
+<div>
+    <FluentLabel Typo="Typography.Body">Use Code:</FluentLabel>
+    <FluentTextField @bind-Value="@this.CodeToClaim" style="width:100%;"></FluentTextField>
+    <FluentButton Type="ButtonType.Button" OnClick="OnClaimCodeClickAsync" Appearance="Appearance.Accent">Claim Code</FluentButton>
+</div>
+<FluentDivider Style="width: 100%;" Role="DividerRole.Presentation"></FluentDivider>
+<div>
+    <PayPalCheckout OnFundsAdded="OnFundsAdded"></PayPalCheckout>
+</div>
+
+
 @code
 {
     private decimal? AvailableFunds { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
+    private string? CodeToClaim { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -40,6 +54,22 @@
     private async Task OnFundsAdded()
     {
         await LoadDataAsync();
+    }
+
+    private async Task OnClaimCodeClickAsync()
+    {
+        try
+        {
+            Guid codeGuid = Guid.Parse(this.CodeToClaim!);
+            await this.userFundsUniqueCodesService.ClaimFundsUniqueCodeAsync(codeGuid, this.cancellationTokenSource.Token);
+            this.toastService.ShowInfo("Your code has been claimed and added to your funds");
+            this.CodeToClaim = String.Empty;
+            await this.LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
     }
 
     public async ValueTask DisposeAsync()

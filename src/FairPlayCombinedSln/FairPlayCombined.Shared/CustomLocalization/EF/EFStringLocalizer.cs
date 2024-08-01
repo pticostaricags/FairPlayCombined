@@ -1,5 +1,6 @@
 ﻿using FairPlayCombined.Common;
 using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
@@ -15,10 +16,10 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
     /// Initializes <see cref="EFStringLocalizer"/>
     /// </remarks>
     /// <param name="dbContextFactory"></param>
-    /// <param name="memoryCache"></param>
+    /// <param name="customCache"></param>
     /// <param name="logger"></param>
     public class EFStringLocalizer(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IMemoryCache memoryCache, ILogger<EFStringLocalizer> logger) : IStringLocalizer
+        ICustomCache customCache, ILogger<EFStringLocalizer> logger) : IStringLocalizer
     {
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
             CultureInfo.DefaultThreadCurrentCulture = culture;
-            return new EFStringLocalizer(dbContextFactory, memoryCache, logger);
+            return new EFStringLocalizer(dbContextFactory, customCache, logger);
         }
 
         /// <summary>
@@ -71,17 +72,20 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
         {
             string cacheKey = $"{nameof(GetAllStrings)} -{CultureInfo.CurrentCulture.Name}";
             var db = dbContextFactory.CreateDbContext();
-            var result = memoryCache.GetOrCreate<IQueryable<LocalizedString>>(cacheKey,
-                factory =>
+            var result = customCache!.GetOrCreateAsync<IQueryable<LocalizedString>>(cacheKey,
+                retrieveDataTask:() =>
                 {
                     logger.LogInformation("Executing method {MethodName}", nameof(GetAllStrings));
-                    factory.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
-                    return db.Resource
+                    var data = 
+                    db.Resource
                     .AsNoTracking()
                     .Include(r => r.Culture)
                     .Where(r => r.Culture.Name == CultureInfo.CurrentCulture.Name)
                     .Select(r => new LocalizedString(r.Key, r.Value, true));
-                });
+                    return Task.FromResult(data);
+                },
+                expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
+                cancellationToken: CancellationToken.None).Result;
             return result!;
         }
 
@@ -89,16 +93,19 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
         {
             var db = dbContextFactory.CreateDbContext();
             var cacheKey = $"{name}-{CultureInfo.CurrentCulture.Name}";
-            var result = memoryCache.GetOrCreate<string?>(cacheKey, factory =>
+            var result = customCache!.GetOrCreateAsync<string?>(key:cacheKey, 
+                retrieveDataTask: () =>
             {
                 logger.LogInformation("Executing method {MethodName} for resource {ResourceName}", nameof(GetString), name);
-                factory.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
-                return db.Resource
+                var data = db.Resource
                 .AsNoTracking()
                 .Include(r => r.Culture)
                 .Where(r => r.Culture.Name == CultureInfo.CurrentCulture.Name)
                 .FirstOrDefault(r => r.Key == name)?.Value;
-            });
+                return Task.FromResult(data);
+            }, expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
+            cancellationToken: CancellationToken.None)
+                .Result;
             return result;
         }
     }

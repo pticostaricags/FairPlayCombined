@@ -12,6 +12,7 @@
     [VideoInfoId] BIGINT NULL, 
     [SessionId] UNIQUEIDENTIFIER NULL, 
     [LastTrackedDateTime] DATETIMEOFFSET NULL, 
+    [Referer] NVARCHAR(MAX) NULL, 
     CONSTRAINT [FK_VisitorTracking_VideoInfo] FOREIGN KEY ([VideoInfoId]) REFERENCES [FairPlayTube].[VideoInfo]([VideoInfoId])
 )
 

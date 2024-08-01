@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Common.GeneratorsAttributes;
+﻿using FairPlayCombined.Common.CustomExceptions;
+using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 using FairPlayCombined.Interfaces.Common;
@@ -8,6 +9,7 @@ using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
+using System.Text;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
@@ -23,11 +25,43 @@ namespace FairPlayCombined.Services.FairPlayTube
     public partial class VideoInfoService : BaseService, IVideoInfoService
     {
         private readonly IAzureVideoIndexerService azureVideoIndexerService;
+        private readonly IOpenAIService openAIService;
         public VideoInfoService(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-            ILogger<VideoInfoService> logger, IAzureVideoIndexerService azureVideoIndexerService) :
+            ILogger<VideoInfoService> logger, IAzureVideoIndexerService azureVideoIndexerService,
+            IOpenAIService openAIService) :
             this(dbContextFactory, logger)
         {
             this.azureVideoIndexerService = azureVideoIndexerService;
+            this.openAIService = openAIService;
+        }
+
+        public async Task CreateDescriptionForVideoAsync(long videoInfoId, CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var videoEntity =
+                await dbContext.VideoInfo
+                .Include(p=>p.VideoCaptions)
+                .Where(p => p.VideoInfoId == videoInfoId)
+                .SingleOrDefaultAsync(cancellationToken) 
+                ?? throw new RuleException($"Unable to find the video with id: {videoInfoId}");
+            var englishCaptions = 
+                (videoEntity
+                .VideoCaptions?
+                .SingleOrDefault(p => p.Language == "en-US")) 
+                ?? throw new RuleException("Video captions have not been created yet");
+            
+            StringBuilder promptBuilder = new();
+            promptBuilder.AppendLine($"Video Title: {videoEntity.Name}.");
+            promptBuilder.AppendLine($"Current Video Description: {videoEntity.Description}.");
+            promptBuilder.AppendLine($"VTT Transcript: {englishCaptions.Content}");
+            
+            var response = await openAIService
+                .GenerateChatCompletionAsync(systemMessage: "Create a description for the video based on the information I'll provide. Description must be less than 500 characters. Your response must be in simple text.",
+                prompt: promptBuilder.ToString(), cancellationToken);
+            
+            var result = response?.choices?[0].message?.content;
+            videoEntity.Description = result;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
         public async Task<PaginationOfT<VideoInfoModel>> GetPaginatedNotCompletedVideoInfobyUserIdAsync(
             PaginationRequest paginationRequest,
@@ -228,6 +262,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 ThumbnailUrl = p.ThumbnailUrl,
                 YouTubeVideoId = p.YouTubeVideoId,
                 PublishedUrl = p.PublishedUrl,
+                IsVideoGeneratedWithAi = p.IsVideoGeneratedWithAi,
                 VideoTopics = p.VideoTopic.Select(p => p.Topic).ToArray(),
                 VideoKeywords = p.VideoKeyword.Select(p => p.Keyword).ToArray()
             })

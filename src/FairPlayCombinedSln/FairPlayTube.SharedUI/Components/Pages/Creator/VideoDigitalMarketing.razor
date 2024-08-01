@@ -17,7 +17,6 @@
 @inject IOpenAIService openAIService
 @inject IVideoCaptionsService videoCaptionsService
 @inject IVideoDigitalMarketingPlanService videoDigitalMarketingPlanService
-@inject IPromptGeneratorService promptGeneratorService
 <PageTitle>
     Video Digital Marketing Strategy
 </PageTitle>
@@ -64,7 +63,7 @@
             cancellationToken: this.cancellationTokenSource.Token);
         if (String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
         {
-            await this.GenerateDigitalMarketingIdeasAsync(videoInfoModel);
+            await this.GenerateDigitalMarketingIdeasAsync();
         }
         this.IsBusy = false;
         StateHasChanged();
@@ -74,34 +73,16 @@
     {
         this.IsBusy = true;
         StateHasChanged();
-        var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        await this.GenerateDigitalMarketingIdeasAsync(videoInfoModel);
+        await this.GenerateDigitalMarketingIdeasAsync();
         this.IsBusy = false;
         StateHasChanged();
     }
 
-    private async Task GenerateDigitalMarketingIdeasAsync(VideoInfoModel videoInfoModel)
+    private async Task GenerateDigitalMarketingIdeasAsync()
     {
-        var englishCaptions = await this.videoCaptionsService
-            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        var promptModel = await this.promptGeneratorService
-            .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateDigitalMarketingIdeas,
-                this.cancellationTokenSource.Token);
-        var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        var result = await this.openAIService.GenerateChatCompletionAsync(promptModel!.BaseText!, 
-            userMessage, this.cancellationTokenSource.Token);
-        if (result != null)
-        {
-            this.DigitalMarketingIdeas = result!.choices![0]!.message!.content!;
-            await this.videoDigitalMarketingPlanService.SaveVideoDigitalMarketingPlanAsync(
-                videoInfoId: videoInfoModel.VideoInfoId,
-                htmlDigitalMarketingPlan: this.DigitalMarketingIdeas,
-                socialNetworkName: "LinkedIn",
-                replaceExistent: true,
-                cancellationToken: this.cancellationTokenSource.Token);
-        }
+        this.DigitalMarketingIdeas =
+        await this.videoDigitalMarketingPlanService.CreateVideoDigitalMarketingPlanAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
+        StateHasChanged();
     }
 
     void IDisposable.Dispose()

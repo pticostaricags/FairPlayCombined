@@ -62,6 +62,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<HairColor> HairColor { get; set; }
 
+    public virtual DbSet<ImageStyle> ImageStyle { get; set; }
+
     public virtual DbSet<Income> Income { get; set; }
 
     public virtual DbSet<KidStatus> KidStatus { get; set; }
@@ -127,6 +129,8 @@ public partial class FairPlayCombinedDbContext : DbContext
     public virtual DbSet<UserDataExportQueue> UserDataExportQueue { get; set; }
 
     public virtual DbSet<UserFunds> UserFunds { get; set; }
+
+    public virtual DbSet<UserFundsUniqueCodes> UserFundsUniqueCodes { get; set; }
 
     public virtual DbSet<UserMessage> UserMessage { get; set; }
 
@@ -453,6 +457,11 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_UserFunds_AspNetUsers");
         });
 
+        modelBuilder.Entity<UserFundsUniqueCodes>(entity =>
+        {
+            entity.HasOne(d => d.ClaimedByApplicationUser).WithMany(p => p.UserFundsUniqueCodes).HasConstraintName("FK_UserFundsUniqueCodes_AspNetUsers");
+        });
+
         modelBuilder.Entity<UserMessage>(entity =>
         {
             entity.HasOne(d => d.FromApplicationUser).WithMany(p => p.UserMessageFromApplicationUser)
@@ -547,6 +556,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<VideoDigitalMarketingDailyPosts>(entity =>
         {
+            entity.HasOne(d => d.OpenAiprompt).WithMany(p => p.VideoDigitalMarketingDailyPosts).HasConstraintName("FK_VideoDigitalMarketingDailyPosts_OpenAIPrompt");
+
             entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoDigitalMarketingDailyPosts)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoDigitalMarketingDailyPosts_VideoInfo");
@@ -554,6 +565,10 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<VideoDigitalMarketingPlan>(entity =>
         {
+            entity.HasOne(d => d.OpenAiprompt).WithMany(p => p.VideoDigitalMarketingPlan)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoDigitalMarketingPlan_OpenAIPrompt");
+
             entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoDigitalMarketingPlan)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoDigitalMarketingPlan_VideoInfo");
@@ -589,6 +604,7 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasFilter("YouTubeVideoId IS NOT NULL");
 
             entity.Property(e => e.ApplicationUserId).HasComment("Video Owner Id");
+            entity.Property(e => e.IsVideoGeneratedWithAi).HasDefaultValueSql("0");
             entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
             entity.Property(e => e.RowCreationUser).HasDefaultValueSql("'Unknown'");
             entity.Property(e => e.SourceApplication).HasDefaultValueSql("'Unknown'");

@@ -6,5 +6,6 @@
         Task<decimal> GetMyAvailableFundsAsync(CancellationToken cancellationToken);
         Task AddMyFundsAsync(string orderId, CancellationToken cancellationToken);
         Task<bool> HasFundsToCreateThumbnailsAsync(CancellationToken cancellationToken);
+        Task<bool> HasFundsToCreateDailyPostsAsync(CancellationToken cancellationToken);
     }
 }

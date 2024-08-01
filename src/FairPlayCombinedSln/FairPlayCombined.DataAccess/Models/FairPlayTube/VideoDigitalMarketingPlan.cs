@@ -16,12 +16,11 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 [Table("VideoDigitalMarketingPlan", Schema = "FairPlayTube")]
-[Index("VideoInfoId", "SocialNetworkName", Name = "IX_VideoDigitalMarketingPlan_SocialNetworkPlan", IsUnique = true)]
+[Index("VideoInfoId", "SocialNetworkName", Name = "IX_VideoDigitalMarketingPlan_SocialNetworkPlan")]
 public partial class VideoDigitalMarketingPlan
 {
     [Key]
-    [Column("VideoDigitalMarketingPlan")]
-    public long VideoDigitalMarketingPlan1 { get; set; }
+    public long VideoDigitalMarketingPlanId { get; set; }
 
     public long VideoInfoId { get; set; }
 
@@ -31,6 +30,13 @@ public partial class VideoDigitalMarketingPlan
 
     [Required]
     public string HtmlDigitalMarketingPlan { get; set; }
+
+    [Column("OpenAIPromptId")]
+    public long OpenAipromptId { get; set; }
+
+    [ForeignKey("OpenAipromptId")]
+    [InverseProperty("VideoDigitalMarketingPlan")]
+    public virtual OpenAiprompt OpenAiprompt { get; set; }
 
     [ForeignKey("VideoInfoId")]
     [InverseProperty("VideoDigitalMarketingPlan")]

@@ -63,6 +63,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[ImageStyle]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[OpenAIPrompt]",
          "ObjectType": 0
       },
@@ -108,6 +112,10 @@
       },
       {
          "Name": "[dbo].[UserFunds]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserFundsUniqueCodes]",
          "ObjectType": 0
       },
       {

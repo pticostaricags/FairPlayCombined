@@ -1,6 +1,5 @@
 ﻿using FairPlayCombined.Common;
 using FairPlayCombined.Common.CustomExceptions;
-using FairPlayCombined.Common.Enums;
 using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
@@ -39,7 +38,8 @@ namespace FairPlayCombined.Services.FairPlayTube
         public async Task<GenerateDallE3ResponseModel?> GenerateVideoThumbnailAsync(
             long videoInfoId,
             IOpenAIService openAIService,
-            ImageStylePreference imageStylePreference,
+            int imageStyleId,
+            bool requestCleanThumbnail,
             HttpClient httpClient,
             CancellationToken cancellationToken)
         {
@@ -59,21 +59,25 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .Where(p => p.VideoInfoId == videoInfoId)
                 .Select(p => new
                 {
+                    p.Name,
                     p.Description,
                     EnglishCaptions = p.VideoCaptions.Single(p => p.Language == "en-US").Content
                 })
                 .SingleAsync(cancellationToken);
+            var imageStyle = await dbContext.ImageStyle.SingleAsync(p => p.ImageStyleId == imageStyleId, cancellationToken);
             StringBuilder stringBuilder = new();
             stringBuilder.AppendLine($"{promptEntity!.BaseText}.");
-            if (imageStylePreference != ImageStylePreference.NoPreference)
+            stringBuilder.AppendLine($"Make sure the image style is: {imageStyle.StyleName}, this is mandatory.");
+            if (requestCleanThumbnail)
             {
-                stringBuilder.AppendLine($"Image Style: {imageStylePreference.ToString()}.");
+                stringBuilder.AppendLine("Make sure the image does not have any text nor typography.");
             }
-            stringBuilder.AppendLine($"Video Title: {videoDataEntity.Description}.");
+            stringBuilder.AppendLine($"Video Title: {videoDataEntity.Name}.");
+            stringBuilder.AppendLine($"Video Description: {videoDataEntity.Description}.");
             stringBuilder.AppendLine($"Video Captions: {videoDataEntity.EnglishCaptions}.");
             string prompt = stringBuilder.ToString();
             if (prompt.Length > 4000)
-                prompt = prompt.Substring(0, 4000);
+                prompt = prompt[..4000];
             var result = await openAIService.GenerateDallE3ImageAsync(prompt, cancellationToken);
             Photo photoEntity = new()
             {

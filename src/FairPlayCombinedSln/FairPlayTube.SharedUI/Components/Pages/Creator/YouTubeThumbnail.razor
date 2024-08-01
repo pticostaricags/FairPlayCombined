@@ -4,16 +4,17 @@
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
 @using FairPlayCombined.Common
-@using FairPlayCombined.Common.Enums
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.Common.ImageStyle
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.FairPlayTube.VideoThumbnail
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
 @using System.Collections.Concurrent
+@using System.Globalization
 
 @attribute [StreamRendering(enabled: true)]
 
@@ -26,6 +27,8 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 @inject IUserFundService userFundService
+@inject IImageStyleService imageStyleService
+
 <PageTitle>
     Video Thumbnail
 </PageTitle>
@@ -39,11 +42,23 @@
 @if (this.HasRequiredFundsToCreate)
 {
     <div>
+        @if (this.ImageStyles?.Length > 0)
+        {
+            <FluentSelect Appearance="Appearance.Accent"
+                          @bind-SelectedOption="@this.SelectedImageStyle"
+                          Items="@this.ImageStyles"
+                          Label="Image Style (Experimental)"
+                          OptionText="@(p=>p!.StyleName!)"
+                          OptionValue="@(p=>p!.ImageStyleId!.ToString())"></FluentSelect>
+        }
+    </div>
+    <div>
+        <FluentCheckbox Label="Request Clean Thumbnail (No Text)?"
+                        @bind-Value="@this.RequestCleanThumbnail"></FluentCheckbox>
+    </div>
+    <div>
         <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-        OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
-        <FluentSelect @bind-SelectedOption="@this.imageStylePreference"
-        Items="@(Enum.GetValues<ImageStylePreference>())">
-        </FluentSelect>
+                      OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
     </div>
 }
 <div>
@@ -53,7 +68,7 @@
             @foreach (var singleThumbnail in this.Items.Items)
             {
                 <div style="width:400px;">
-                    <FluentLabel Typo="Typography.Subject">Cost: @singleThumbnail.ThumbnailCost.ToString("c")</FluentLabel>
+                    <FluentLabel Typo="Typography.Subject">Cost: @singleThumbnail.ThumbnailCost.ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
                     @if (!this.PagePhotos.ContainsKey(singleThumbnail.PhotoId))
                     {
                         <FluentCard class="card-padding" Width="400">
@@ -90,6 +105,7 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
+    private bool RequestCleanThumbnail { get; set; } = false;
     private bool IsBusy { get; set; }
     private bool HasRequiredFundsToCreate { get; set; } = false;
     private PaginationOfT<VideoThumbnailModel>? Items;
@@ -114,7 +130,11 @@
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private string? GeneratedYouTubeThumbnailUri { get; set; }
     private string? RevisedPrompt { get; set; }
-    private ImageStylePreference imageStylePreference { get; set; } = ImageStylePreference.NoPreference;
+    private ImageStyleModel? SelectedImageStyle { get; set; }
+    private ImageStyleModel[]? ImageStyles { get; set; }
+    private static CultureInfo CurrencyCulture = new(Constants.Cultures.CurrencyDefaultCulture);
+    private const string CurrencyFormat = Constants.Cultures.CurrencyDefaultFormat;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadDataAsync();
@@ -133,6 +153,8 @@
             {
                 this.toastService.ShowWarning("You don't have any funds left to create thumbnails");
             }
+            this.ImageStyles ??= await imageStyleService.GetAllImageStyleAsync(this.cancellationTokenSource.Token);
+            this.SelectedImageStyle ??= this.ImageStyles[0];
             var items = await videoThumbnailService.GetPaginatedVideoThumbnailByVideoInfoIdAsync(
                 this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
             this.Items = items;
@@ -174,7 +196,7 @@
             StateHasChanged();
             var result = await this.videoThumbnailService
             .GenerateVideoThumbnailAsync(this.VideoInfoId!.Value, this.openAIService,
-                this.imageStylePreference,
+                this.SelectedImageStyle!.ImageStyleId, this.RequestCleanThumbnail,
                 this.httpClient, this.cancellationTokenSource.Token);
             if (result != null)
             {

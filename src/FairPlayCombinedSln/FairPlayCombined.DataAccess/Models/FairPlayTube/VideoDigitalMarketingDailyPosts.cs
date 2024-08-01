@@ -31,6 +31,13 @@ public partial class VideoDigitalMarketingDailyPosts
     [Required]
     public string HtmlVideoDigitalMarketingDailyPostsIdeas { get; set; }
 
+    [Column("OpenAIPromptId")]
+    public long? OpenAipromptId { get; set; }
+
+    [ForeignKey("OpenAipromptId")]
+    [InverseProperty("VideoDigitalMarketingDailyPosts")]
+    public virtual OpenAiprompt OpenAiprompt { get; set; }
+
     [ForeignKey("VideoInfoId")]
     [InverseProperty("VideoDigitalMarketingDailyPosts")]
     public virtual VideoInfo VideoInfo { get; set; }

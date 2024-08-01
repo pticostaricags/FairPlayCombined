@@ -19,9 +19,11 @@ namespace FairPlayCombined.Services.FairPlayTube
         {
             string creatingThumbnailForVideoText = localizer[CreatingThumbnailForVideoTextKey];
             string indexingOfVideoText = localizer[IndexingOfVideoTextKey];
+            string creationOfLinkedInDailyPostsText = localizer[CreationOfLinkedInDailyPostsTextKey];
+            string creationOfDigitalMarketingPlanText = localizer[CreationOfDigitalMarketingPlanTextKey];
 
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-            var result = await dbContext.VideoThumbnail
+            var result = await (dbContext.VideoThumbnail
                 .AsNoTracking()
                 .Where(p => p.VideoInfo.ApplicationUserId == userId)
                 .Select(p => new FairPlayTubeBillingModel()
@@ -37,11 +39,35 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .Select(p => new FairPlayTubeBillingModel()
                 {
                     Details = String.Concat(indexingOfVideoText, p.VideoInfo.Name),
-                    OperationCost =p.IndexingCost,
+                    OperationCost = p.IndexingCost,
                     RowCreationDateTime = p.RowCreationDateTime
                 })
-                .OrderByDescending(p => p.RowCreationDateTime)
-                ).ToArrayAsync(cancellationToken);
+                .Union(
+                    dbContext.VideoDigitalMarketingDailyPosts
+                    .AsNoTracking()
+                    .Where(p => p.VideoInfo.ApplicationUserId == userId)
+                    .Select(p => new FairPlayTubeBillingModel()
+                    {
+                        Details = String.Concat(creationOfLinkedInDailyPostsText, p.VideoInfo.Name),
+                        OperationCost = p.OpenAiprompt == null ? 0 : p.OpenAiprompt.OperationCost,
+                        RowCreationDateTime = p.OpenAiprompt == null ? DateTimeOffset.MinValue : p.OpenAiprompt.RowCreationDateTime
+                    })
+                    )
+                .Union(
+                    dbContext.VideoDigitalMarketingPlan
+                    .AsNoTracking()
+                    .Where(p => p.VideoInfo.ApplicationUserId == userId)
+                    .Select(p => new FairPlayTubeBillingModel()
+                    {
+                        Details = String.Concat(creationOfDigitalMarketingPlanText, p.VideoInfo.Name),
+                        OperationCost = p.OpenAiprompt == null ? 0 : p.OpenAiprompt.OperationCost,
+                        RowCreationDateTime = p.OpenAiprompt == null ? DateTimeOffset.MinValue : p.OpenAiprompt.RowCreationDateTime
+                    })
+                    )
+                ))
+                .OrderByDescending(p=>p.RowCreationDateTime)
+                .ThenByDescending(p => p.OperationCost)
+                .ToArrayAsync(cancellationToken);
             return result;
         }
 
@@ -49,5 +75,9 @@ namespace FairPlayCombined.Services.FairPlayTube
         public const string CreatingThumbnailForVideoTextKey = "CreatingThumbnailForVideoText";
         [ResourceKey(defaultValue: "Indexing Of Video: ")]
         public const string IndexingOfVideoTextKey = "IndexingOfVideoText";
+        [ResourceKey(defaultValue: "Creation Of LinkedIn Daily Posts ")]
+        private const string CreationOfLinkedInDailyPostsTextKey = "CreationOfLinkedInDailyPostsText";
+        [ResourceKey(defaultValue: "Creation Of Digital Marketing Plan ")]
+        private const string CreationOfDigitalMarketingPlanTextKey = "CreationOfDigitalMarketingPlanText";
     }
 }

@@ -74,6 +74,7 @@ builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp, builder) =>
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 builder.Services.AddMemoryCache();
+builder.Services.AddTransient<ICustomCache, CustomCache>();
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.AddIdentityEmailSender();
 builder.Services.AddTransient<IUserService, UserService>();
@@ -83,6 +84,7 @@ builder.Services.AddTransient<ResourceService>();
 builder.Services.AddTransient<ConfigurationSecretService>();
 builder.Services.AddTransient<OpenAIPromptService>();
 builder.Services.AddTransient<IPromptGeneratorService, PromptGeneratorService>();
+builder.Services.AddTransient<IUserFundsUniqueCodesService, UserFundsUniqueCodesService>();
 builder.AddOpenAIClient();
 builder.AddSemanticKernel();
 var app = builder.Build();

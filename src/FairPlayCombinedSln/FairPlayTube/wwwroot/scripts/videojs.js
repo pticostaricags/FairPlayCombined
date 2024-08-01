@@ -13,7 +13,8 @@ function disposePlayer(playerElementId) {
         player.dispose();
     }
 }
-function initializeVideoJsPlayer(playerElementId, sessionGuid, dotNetObjectReference) {
+function initializeVideoJsPlayer(playerElementId, sessionGuid, dotNetObjectReference,
+    videoSrc, videoType, supportedLanguages, videoId) {
     timer = null;
     totalTime = 0;
     lastPlayerTime = null;
@@ -28,8 +29,26 @@ function initializeVideoJsPlayer(playerElementId, sessionGuid, dotNetObjectRefer
         {
             controls: true,
             autoplay: true,
-            responsive: true
+            responsive: true,
+            sources: [
+                {
+                    src: videoSrc,
+                    type: videoType
+                }]
         });
+    player.one("loadedmetadata", function () {
+        supportedLanguages.forEach(language => {
+            console.log(language);
+            let captionsUrl = `/api/video/${videoId}/captions/${language.languageCode}`;
+            player.addRemoteTextTrack(
+                {
+                    kind: 'captions',
+                    src: captionsUrl,
+                    srclang: language.languageCode,
+                    label: language.name
+                }, true);
+        });
+    });
     lastPlayerTime = player.currentTime();
     currentSessionGuid = sessionGuid;
     player.on('play', startPlaying);

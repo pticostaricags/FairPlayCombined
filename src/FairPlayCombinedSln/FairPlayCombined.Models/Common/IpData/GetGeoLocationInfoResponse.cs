@@ -56,8 +56,8 @@ namespace FairPlayCombined.Models.Common.IpData
         public string? name { get; set; }
         public string? abbr { get; set; }
         public string? offset { get; set; }
-        public bool is_dst { get; set; }
-        public DateTime current_time { get; set; }
+        public bool? is_dst { get; set; }
+        public DateTime? current_time { get; set; }
     }
 
     public class Threat

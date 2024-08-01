@@ -19,6 +19,7 @@ namespace FairPlayTube.Extensions
         internal static void AddPlatformServices(this WebApplicationBuilder builder,
             GoogleAuthClientSecretInfo googleAuthClientSecretInfo)
         {
+            builder.Services.AddTransient<ICustomCache, CustomCache>();
             builder.Services.AddTransient<ICultureService, CultureService>();
             builder.Services.AddSingleton<AzureVideoIndexerServiceConfiguration>(sp =>
             {
@@ -87,6 +88,8 @@ namespace FairPlayTube.Extensions
             });
             builder.Services.AddTransient<IpDataService>();
             builder.Services.AddTransient<IVisitorTrackingService, VisitorTrackingService>();
+            builder.Services.AddTransient<IUserFundsUniqueCodesService, UserFundsUniqueCodesService>();
+            builder.Services.AddTransient<IImageStyleService, ImageStyleService>();
         }
     }
 }
