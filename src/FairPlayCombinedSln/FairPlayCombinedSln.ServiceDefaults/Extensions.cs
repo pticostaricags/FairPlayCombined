@@ -1,3 +1,4 @@
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombinedSln.ServiceDefaults;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
@@ -32,6 +33,7 @@ public static class Extensions
             http.AddServiceDiscovery();
         });
         builder.Services.AddMemoryCache();
+        builder.Services.AddHybridCache();
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
         return builder;

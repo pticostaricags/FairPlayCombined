@@ -74,6 +74,7 @@ builder.Services.AddDbContext<FairPlayCombinedDbContext>((sp, builder) =>
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 builder.Services.AddMemoryCache();
+builder.Services.AddTransient<ICustomCache, CustomCache>();
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.AddIdentityEmailSender();
 builder.Services.AddTransient<IUserService, UserService>();
