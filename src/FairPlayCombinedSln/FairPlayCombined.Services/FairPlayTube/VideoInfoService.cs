@@ -180,8 +180,8 @@ namespace FairPlayCombined.Services.FairPlayTube
         }
 
         public async Task<PaginationOfT<VideoInfoModel>> GetPaginatedCompletedVideoInfoAsync(
-    PaginationRequest paginationRequest,
-    CancellationToken cancellationToken
+            PaginationRequest paginationRequest, string? searchTerm,
+            CancellationToken cancellationToken
     )
         {
             PaginationOfT<VideoInfoModel> result = new();
@@ -191,10 +191,17 @@ namespace FairPlayCombined.Services.FairPlayTube
                 orderByString =
                     String.Join(",",
                     paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
-            var query = dbContext.VideoInfo
+            var preQuery = dbContext.VideoInfo
                 .AsNoTracking()
-                .AsSplitQuery()
-                .Where(p => p.VideoIndexStatusId == (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed)
+                .AsSplitQuery();
+            if (!String.IsNullOrWhiteSpace(searchTerm))
+            {
+                preQuery =
+                    preQuery.Where(p => EF.Functions.FreeText(p.Description, searchTerm!));
+            }
+            var query = preQuery
+                .Where(p => 
+                p.VideoIndexStatusId == (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed)
                 .Select(p => new VideoInfoModel
                 {
                     VideoInfoId = p.VideoInfoId,

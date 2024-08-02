@@ -80,6 +80,9 @@
 
 @code
 {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? SearchTerm { get; set; }
     private bool IsBusy { get; set; }
     private GridItemsProvider<VideoInfoModel>? ItemsProvider;
     private readonly PaginationState paginationState = new()
@@ -121,6 +124,7 @@
                     }
                 };
             var items = await videoInfoService.GetPaginatedCompletedVideoInfoAsync(paginationRequest,
+                this.SearchTerm,
             this.cancellationTokenSource.Token);
             this.IsBusy = false;
             StateHasChanged();
