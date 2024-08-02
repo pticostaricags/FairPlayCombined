@@ -83,6 +83,7 @@
     <Folder Include="FairPlayBudget" />
     <Folder Include="FairPlayBudget\Tables" />
     <Folder Include="FairPlayBudget\Views" />
+    <Folder Include="Storage\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
@@ -186,6 +187,7 @@
     <Build Include="dbo\Tables\PaypalTransaction.sql" />
     <Build Include="dbo\Tables\UserFundsUniqueCodes.sql" />
     <Build Include="dbo\Tables\ImageStyle.sql" />
+    <Build Include="Storage\ftDefaultCatalog.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
