@@ -292,12 +292,3 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 await app.RunAsync();
-
-namespace FairPlayTube.UIConfiguration
-{
-    public static class AdditionalSetup
-    {
-        internal static readonly Assembly[] AdditionalAssemblies =
-                [typeof(FairPlayTube.SharedUI.Components.Pages.Home).Assembly];
-    }
-}
