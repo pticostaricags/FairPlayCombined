@@ -21,12 +21,11 @@
                 @nameof(FairPlayTube)
             </FluentLabel>
         </div>
-        <div>
-            <input type="search" @bind-value="@this.SearchTerm" />
-            <button type="button" @onclick="OnSearchButtonClicked">
-                <i class="bi bi-search"></i>
-            </button>
-        </div>
+        <FluentTextField @bind-Value="@this.SearchTerm" Placeholder="Search">
+        </FluentTextField>
+        <FluentButton Type="ButtonType.Button" OnClick="OnSearchButtonClicked"
+                      IconEnd="@(new Icons.Regular.Size20.Search())">
+        </FluentButton>
     </Header>
     <SubHeader>
         <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
@@ -146,11 +145,11 @@
         if (!String.IsNullOrWhiteSpace(this.SearchTerm))
         {
             this.navigationManager.NavigateTo($"/?SearchTerm={this.SearchTerm}",
-            forceLoad:true);
+            forceLoad: true);
         }
         else
         {
-            this.navigationManager.NavigateTo($"/", forceLoad:true);
+            this.navigationManager.NavigateTo($"/", forceLoad: true);
         }
     }
 
