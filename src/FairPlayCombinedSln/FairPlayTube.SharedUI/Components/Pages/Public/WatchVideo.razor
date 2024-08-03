@@ -49,7 +49,7 @@
 </HeadContent>
 @if (this.videoInfoModel != null)
 {
-    <PageTitle>@($"{Constants.ApplicationTitles.FairPlayTube} - {this.videoInfoModel.Name}")</PageTitle>
+    <PageTitle>@($"{nameof(Constants.ApplicationTitles.FairPlayTube)} - {this.videoInfoModel.Name}")</PageTitle>
     <FluentLabel Typo="Typography.H1">@this.videoInfoModel.Name</FluentLabel>
 }
 
