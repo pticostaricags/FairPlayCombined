@@ -10,6 +10,7 @@ using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
+using System.Text;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
@@ -35,7 +36,8 @@ namespace FairPlayCombined.Services.FairPlayTube
             this.userFundService = userFundService;
             this.openAIService = openAIService;
         }
-        public async Task<string> CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(long videoInfoId, CancellationToken cancellationToken)
+        public async Task<string> CreateVideoDigitalMarketingDailyPostsForLinkedInAsync
+            (long videoInfoId, string languageCode, CancellationToken cancellationToken)
         {
             var hasRequiredFunds = await userFundService.HasFundsToCreateDailyPostsAsync(cancellationToken);
             if (!hasRequiredFunds)
@@ -58,8 +60,10 @@ namespace FairPlayCombined.Services.FairPlayTube
                     EnglishCaptions = p.VideoCaptions.Single(p => p.Language == "en-US").Content
                 })
                 .SingleAsync(cancellationToken);
+            StringBuilder promptBuilder = new(promptEntity.BaseText);
+            promptBuilder.AppendLine($"The posts must be in language culture: {languageCode}");
             var userMessage = $"Today's Date: {DateTimeOffset.UtcNow.Date}. Video Title: {videoDataEntity.Description}. Video Captions: {videoDataEntity.EnglishCaptions}";
-            var result = await this.openAIService.GenerateChatCompletionAsync(promptEntity.BaseText,
+            var result = await this.openAIService.GenerateChatCompletionAsync(promptBuilder.ToString(),
                 userMessage, cancellationToken);
             var resultText = result!.choices![0].message!.content;
             await dbContext.VideoDigitalMarketingDailyPosts.AddAsync(new()

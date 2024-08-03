@@ -8,6 +8,7 @@
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.Common.Localization
 @using FairPlayCombined.Models.FairPlayTube.VideoDigitalMarketingDailyPosts
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
@@ -29,6 +30,14 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
+<div>
+    <FluentSelect Appearance="Appearance.Accent"
+                  @bind-SelectedOption="@this.SelectedCulture"
+                  Items="@this.CaptionsCultures"
+                  Label="Posts Language"
+                  OptionText="@(p=>p!.DisplayName!)"
+                  OptionValue="@(p=>p!.Name!)"></FluentSelect>
+</div>
 <div>
     <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
                   OnClick="OnCreateVideoDailyPostAsync">Create Video Daily Posts</FluentButton>
@@ -66,6 +75,19 @@
     private string? DigitalMarketingDailyPostsIdeas { get; set; }
     private string? RevisedPrompt { get; set; }
     private GridItemsProvider<VideoDigitalMarketingDailyPostsModel>? ItemsProvider { get; set; }
+    private CultureModel? SelectedCulture { get; set; }
+    private CultureModel[]? CaptionsCultures = [
+        new CultureModel()
+        {
+            DisplayName="English US",
+            Name="en-US"
+        },
+    new CultureModel()
+        {
+            DisplayName="Spanish Mexico",
+            Name="es-MX"
+        }
+    ];
     private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
@@ -74,6 +96,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        this.SelectedCulture ??= this.CaptionsCultures!.First();
         if (ItemsProvider is null)
         {
             ItemsProvider = async req =>
@@ -113,7 +136,8 @@
             StateHasChanged();
             this.DigitalMarketingDailyPostsIdeas =
             await this.videoDigitalMarketingDailyPostsService
-            .CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
+            .CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(this.VideoInfoId!.Value,
+                this.SelectedCulture!.Name!, this.cancellationTokenSource.Token);
             await this.paginationState.SetCurrentPageIndexAsync(
                     this.paginationState.CurrentPageIndex);
         }
