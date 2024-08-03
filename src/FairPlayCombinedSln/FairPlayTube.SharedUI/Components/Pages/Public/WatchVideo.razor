@@ -49,12 +49,12 @@
 </HeadContent>
 @if (this.videoInfoModel != null)
 {
-    <PageTitle>@this.videoInfoModel.Name</PageTitle>
+    <PageTitle>@($"{Constants.ApplicationTitles.FairPlayTube} - {this.videoInfoModel.Name}")</PageTitle>
     <FluentLabel Typo="Typography.H1">@this.videoInfoModel.Name</FluentLabel>
 }
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-@if (!this.UseFallbackMode && !String.IsNullOrWhiteSpace(this.VideoUrl))
+@if (!String.IsNullOrWhiteSpace(this.VideoUrl))
 {
     <div id="container" data-permanent>
         <!-- HTML -->
@@ -62,24 +62,19 @@
                  VideoId="@this.VideoId"
                  VideoUrl="@this.VideoUrl"></VideoJs>
     </div>
-    <div>
-        <FluentButton Type="ButtonType.Button"
-                      Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
-                      OnClick="OnUseFallbackMode">Can't see the video? Click here!</FluentButton>
-    </div>
     @if (this.videoInfoModel != null)
     {
+        <FluentAccordion>
+            <FluentAccordionItem Heading="Description" Expanded="true">
+                <FluentTextArea Rows="10" style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>
+            </FluentAccordionItem>
+        </FluentAccordion>
         @if (this.videoInfoModel.IsVideoGeneratedWithAi == true)
         {
             <FluentLabel Typo="Typography.Body" Color="Color.Warning">
                 Video was generated using AI, content could be innacurate.
             </FluentLabel>
         }
-        <FluentAccordion>
-            <FluentAccordionItem Heading="Description" Expanded="true">
-                <FluentTextArea Rows="10" style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>
-            </FluentAccordionItem>
-        </FluentAccordion>
         <AuthorizeView>
             <Authorized>
                 @if (this.videoInfoModel.ApplicationUserId == userProviderService.GetCurrentUserId())
@@ -139,12 +134,6 @@
         </FluentAccordionItem>
     </FluentAccordion>
 }
-else
-{
-    <div>
-        <iframe src="@this.FallbackModeUrl" width="600" allowfullscreen></iframe>
-    </div>
-}
 
 <FluentLabel Typo="Typography.H3">Comments</FluentLabel>
 <AuthorizeView>
@@ -189,8 +178,6 @@ else
     public string? VideoId { get; set; }
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    private bool UseFallbackMode { get; set; }
-    private string? FallbackModeUrl { get; set; }
     private VideoInfoModel? videoInfoModel { get; set; }
     private string? VideoUrl { get; set; }
     private SupportedLanguageModel[]? SupportedLanguages { get; set; }
@@ -373,13 +360,6 @@ else
             this.IsBusy = false;
             StateHasChanged();
         }
-    }
-
-    private void OnUseFallbackMode()
-    {
-        this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.videoInfoModel!.AccountId}/{this.VideoId}/?locale=en&location={this.videoInfoModel.Location}";
-        this.UseFallbackMode = true;
-        StateHasChanged();
     }
 
     private async Task OnCreateDescriptionWithAIAsync()

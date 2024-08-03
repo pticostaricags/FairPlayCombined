@@ -81,6 +81,12 @@
         {
             <div>
                 <div>
+                    <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                                  style="width:100%;"
+                                  IconStart="@(new Icons.Regular.Size16.Play())"
+                                  OnClick="@( () => OnPlayVideoClicked(singleItem.VideoId!))">@localizer[PlayVideoTextKey]</FluentButton>
+                </div>
+                <div>
                     <img src="@($"{apiBaseUrl}/api/video/{singleItem.VideoId}/thumbnail")" width="300" />
                 </div>
                 <div>
@@ -89,27 +95,39 @@
                                  Class="multiline-text" style="width:250px; height:50px;">
                         @singleItem.Name
                     </FluentLabel>
-                    <FluentLabel Typo="Typography.Body">
-                        <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
-                        <strong>@localizer[LifetimeSessionsTextKey]:</strong> @singleItem.LifetimeSessions
-                    </FluentLabel>
-                    <FluentLabel Typo="Typography.Body">
-                        <FluentIcon Value="@(new Icons.Regular.Size20.Eye())"></FluentIcon>
-                        <strong>@localizer[LifetimeViewersTextKey]:</strong> @singleItem.LifetimeViewers
-                    </FluentLabel>
-                    <FluentLabel Typo="Typography.Body">
-                        <FluentIcon Value="@(new Icons.Regular.Size20.Timer())"></FluentIcon>
-                        <strong>@localizer[WatchTimeTextKey]:</strong> @singleItem.LifetimeWatchTime
-                    </FluentLabel>
-                    <FluentLabel Typo="Typography.Body">
-                        <FluentIcon Value="@(new Icons.Regular.Size20.CalendarDate())"></FluentIcon>
-                        <strong>@localizer[PublishedTextKey]:</strong> @singleItem.PublishedOnString
-                    </FluentLabel>
-                </div>
-                <div>
-                    <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
-                                  IconStart="@(new Icons.Regular.Size16.Play())"
-                                  OnClick="@( () => OnPlayVideoClicked(singleItem.VideoId!))">Play</FluentButton>
+                    <FluentAccordion>
+                        <FluentAccordionItem Expanded="true">
+                            <HeadingTemplate>
+                                <FluentLabel Weight="FontWeight.Bold">@localizer[VideoDescriptionTextKey]</FluentLabel>
+                            </HeadingTemplate>
+                            <ChildContent>
+                                <FluentTextArea Rows="3" style="width:100%;" Value="@singleItem.Description"></FluentTextArea>
+                            </ChildContent>
+                        </FluentAccordionItem>
+                        <FluentAccordionItem Heading="More Info" Expanded="true">
+                            <HeadingTemplate>
+                                <FluentLabel Weight="FontWeight.Bold">@localizer[VideoMoreInfoTextKey]</FluentLabel>
+                            </HeadingTemplate>
+                            <ChildContent>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
+                                    <strong>@localizer[LifetimeSessionsTextKey]:</strong> @singleItem.LifetimeSessions
+                                </FluentLabel>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentIcon Value="@(new Icons.Regular.Size20.Eye())"></FluentIcon>
+                                    <strong>@localizer[LifetimeViewersTextKey]:</strong> @singleItem.LifetimeViewers
+                                </FluentLabel>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentIcon Value="@(new Icons.Regular.Size20.Timer())"></FluentIcon>
+                                    <strong>@localizer[WatchTimeTextKey]:</strong> @singleItem.LifetimeWatchTime
+                                </FluentLabel>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentIcon Value="@(new Icons.Regular.Size20.CalendarDate())"></FluentIcon>
+                                    <strong>@localizer[PublishedTextKey]:</strong> @singleItem.PublishedOnString
+                                </FluentLabel>
+                            </ChildContent>
+                        </FluentAccordionItem>
+                    </FluentAccordion>
                 </div>
             </div>
         }
@@ -229,5 +247,11 @@
     public const string FeatureCreateSocialMediaPostsTextKey = "FeatureCreateSocialMediaPostsText";
     [ResourceKey(defaultValue: "Get New Video Scripts Based On Your Previously Uploaded Videos")]
     public const string FeatureGetNewVideoScriptsTextKey = "FeatureGetNewVideoScriptsText";
+    [ResourceKey(defaultValue: "Description")]
+    public const string VideoDescriptionTextKey = "VideoDescriptionText";
+    [ResourceKey(defaultValue: "More Info")]
+    public const string VideoMoreInfoTextKey = "VideoMoreInfoText";
+    [ResourceKey(defaultValue: "Play Video")]
+    public const string PlayVideoTextKey = "PlayVideoText";
     #endregion
 }
