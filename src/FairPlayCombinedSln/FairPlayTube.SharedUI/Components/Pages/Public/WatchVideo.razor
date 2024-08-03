@@ -25,6 +25,8 @@
 @inject PersistentComponentState ApplicationState
 
 <HeadContent>
+    <meta name="description" content="@OpenGraphDescription" />
+
     <meta name="thumbnail" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
 
     <meta property="og:title" content="@OpenGraphTitle" />
@@ -48,7 +50,7 @@
 @if (this.videoInfoModel != null)
 {
     <PageTitle>@this.videoInfoModel.Name</PageTitle>
-    <FluentLabel Typo="Typography.H3">@this.videoInfoModel.Name</FluentLabel>
+    <FluentLabel Typo="Typography.H1">@this.videoInfoModel.Name</FluentLabel>
 }
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -239,7 +241,7 @@ else
         }
         else
         {
-            this.OpenGraphTitle = restoredOpenGraphDescription!;
+            this.OpenGraphDescription = restoredOpenGraphDescription!;
         }
     }
 
