@@ -27,11 +27,6 @@
                       IconEnd="@(new Icons.Regular.Size20.Search())">
         </FluentButton>
     </Header>
-    <SubHeader>
-        <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
-            @localizer[ApplicationSubHeaderTextKey]
-        </FluentLabel>
-    </SubHeader>
     <Body>
         <AuthorizeView>
             <Authorized>
@@ -158,10 +153,4 @@
         await this.cancellationTokenSource.CancelAsync();
         this.cancellationTokenSource.Dispose();
     }
-
-
-    #region Resource Keys
-    [ResourceKey(defaultValue: Constants.ApplicationTitles.FairPlayTube)]
-    public const string ApplicationSubHeaderTextKey = "ApplicationSubHeaderText";
-    #endregion Resource Keys
 }

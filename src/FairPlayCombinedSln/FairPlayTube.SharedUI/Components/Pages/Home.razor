@@ -19,20 +19,30 @@
 @inject PersistentComponentState ApplicationState
 
 <HeadContent>
-    <meta name="description" content="Earn the money you deserve from your video content creations with instant access to monetization options" />
+    <meta name="description" content="Earn the money you deserve from your video content creations and get instant access to monetization options" />
     <meta name="keywords" content="money, monetization, creator, video, content creator, YouTube, portal" />
     <meta name="robots" content="index, follow" />
-
-    <title>FairPlayTube: The Next Generation of Video Sharing Portals!</title>
 </HeadContent>
 
-<PageTitle>@localizer[HomeTextKey]</PageTitle>
+<PageTitle>@nameof(Constants.ApplicationTitles.FairPlayTube) - @localizer[HomeTitleTextKey]</PageTitle>
 
-<h1>@localizer[HomeTextKey]</h1>
+<h1>@localizer[HomeTitleTextKey]</h1>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <FluentAccordion>
+    <FluentAccordionItem Expanded="true">
+        <HeadingTemplate>
+            <FluentLabel Typo="Typography.H2">
+                @localizer[WhatIsTextKey, nameof(Constants.ApplicationTitles.FairPlayTube)]
+            </FluentLabel>
+        </HeadingTemplate>
+        <ChildContent>
+            <FluentLabel Typo="Typography.Body">
+                @localizer[WhatIsDescriptionTextKey, nameof(Constants.ApplicationTitles.FairPlayTube)]
+            </FluentLabel>
+        </ChildContent>
+    </FluentAccordionItem>
     <FluentAccordionItem Expanded="true">
         <HeadingTemplate>
             <FluentLabel Typo="Typography.H3">
@@ -235,8 +245,8 @@
     }
 
     #region Resource Keys
-    [ResourceKey(defaultValue: "Home")]
-    public const string HomeTextKey = "HomeText";
+    [ResourceKey(defaultValue: "The Next Generation Of Video Sharing Portals")]
+    public const string HomeTitleTextKey = "HomeTitleText";
     [ResourceKey(defaultValue: "Lifetime Sessions")]
     public const string LifetimeSessionsTextKey = "LifetimeSessionsText";
     [ResourceKey(defaultValue: "Lifetime Viewers")]
@@ -261,5 +271,9 @@
     public const string VideoMoreInfoTextKey = "VideoMoreInfoText";
     [ResourceKey(defaultValue: "Play Video")]
     public const string PlayVideoTextKey = "PlayVideoText";
+    [ResourceKey(defaultValue: "What is {0}")]
+    public const string WhatIsTextKey = "WhatIsText";
+    [ResourceKey(defaultValue: "{0} is The Next Generation Of Video Sharing Portals focused on Users and Transparency. A platform which helps you improve your digital marketing strategies surrounding your video. Ideal for entrepreneurs, and content-creators.")]
+    public const string WhatIsDescriptionTextKey = "WhatIsDescriptionText";
     #endregion
 }
