@@ -40,11 +40,14 @@
         {
             var data = (await this.CultureService!
                 .GetSupportedCultures(this.CancellationTokenSource.Token));
-                return data;
+            return data;
         },
         expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
         this.CancellationTokenSource.Token);
-        this.supportedCultures ??= items.Select(p => new CultureInfo(p)).ToArray();
+        this.supportedCultures ??= items
+        .Select(p => new CultureInfo(p))
+        .OrderBy(p => p.DisplayName)
+        .ToArray();
         this.IsBusy = false;
     }
 

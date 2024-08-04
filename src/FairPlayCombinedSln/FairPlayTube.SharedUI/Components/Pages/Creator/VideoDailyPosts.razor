@@ -14,11 +14,14 @@
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
 @using System.Text
+@using System.Globalization
 
 
 @inject IJSRuntime jsRuntime
 @inject IVideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
 @inject IToastService toastService
+@inject ICustomCache customCache
+@inject ICultureService cultureService
 
 <PageTitle>
     Video Daily Posts
@@ -31,12 +34,10 @@
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <div>
-    <FluentSelect Appearance="Appearance.Accent"
-                  @bind-SelectedOption="@this.SelectedCulture"
-                  Items="@this.CaptionsCultures"
-                  Label="Posts Language"
-                  OptionText="@(p=>p!.DisplayName!)"
-                  OptionValue="@(p=>p!.Name!)"></FluentSelect>
+    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@supportedCultures"
+                  Embedded="true">
+        <OptionTemplate>@context!.DisplayName</OptionTemplate>
+    </FluentSelect>
 </div>
 <div>
     <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
@@ -75,28 +76,44 @@
     private string? DigitalMarketingDailyPostsIdeas { get; set; }
     private string? RevisedPrompt { get; set; }
     private GridItemsProvider<VideoDigitalMarketingDailyPostsModel>? ItemsProvider { get; set; }
-    private CultureModel? SelectedCulture { get; set; }
-    private CultureModel[]? CaptionsCultures = [
-        new CultureModel()
-        {
-            DisplayName="English US",
-            Name="en-US"
-        },
-    new CultureModel()
-        {
-            DisplayName="Spanish Mexico",
-            Name="es-MX"
-        }
-    ];
     private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
 
-    protected override void OnInitialized()
+    private CultureInfo[]? supportedCultures { get; set; }
+    private CultureInfo? SelectedCulture { get; set; }
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-        this.SelectedCulture ??= this.CaptionsCultures!.First();
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var items = await this.customCache!.GetOrCreateAsync<string[]>(
+                key: nameof(this.supportedCultures),
+                retrieveDataTask: async () =>
+                {
+                    var data = (await this.cultureService!
+                        .GetSupportedCultures(this.cancellationTokenSource.Token));
+                    return data;
+                },
+                expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
+                this.cancellationTokenSource.Token);
+            this.supportedCultures ??= items
+            .Select(p => new CultureInfo(p))
+            .OrderBy(p=>p.DisplayName)
+            .ToArray();
+            this.SelectedCulture ??= CultureInfo.CurrentCulture;
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
         if (ItemsProvider is null)
         {
             ItemsProvider = async req =>
@@ -137,7 +154,7 @@
             this.DigitalMarketingDailyPostsIdeas =
             await this.videoDigitalMarketingDailyPostsService
             .CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(this.VideoInfoId!.Value,
-                this.SelectedCulture!.Name!, this.cancellationTokenSource.Token);
+                $"{this.SelectedCulture!.DisplayName}({this.SelectedCulture.Name})", this.cancellationTokenSource.Token);
             await this.paginationState.SetCurrentPageIndexAsync(
                     this.paginationState.CurrentPageIndex);
         }
