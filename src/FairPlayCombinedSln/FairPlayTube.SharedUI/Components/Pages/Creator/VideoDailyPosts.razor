@@ -40,6 +40,12 @@
     </FluentSelect>
 </div>
 <div>
+    <FluentRadioGroup DisplayName="Social Network" @bind-Value="@this.SelectedSocialNetwork">
+        <FluentRadio Value="@("LinkedIn")">LinkedIn</FluentRadio>
+        <FluentRadio Value="@("X")">Twitter/X</FluentRadio>
+    </FluentRadioGroup>
+</div>
+<div>
     <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
                   OnClick="OnCreateVideoDailyPostAsync">Create Video Daily Posts</FluentButton>
 </div>
@@ -49,7 +55,7 @@
     <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
         <TemplateColumn Class="multiline-text" Title="Posts">
             <FluentAccordion>
-                <FluentAccordionItem Expanded="false" Heading="Expand to see the content">
+                <FluentAccordionItem Expanded="false" Heading="@($"({context.SocialNetworkName} - Expand to see the content)")">
                     @((MarkupString)context.HtmlVideoDigitalMarketingDailyPostsIdeas!)
                 </FluentAccordionItem>
             </FluentAccordion>
@@ -83,6 +89,7 @@
 
     private CultureInfo[]? supportedCultures { get; set; }
     private CultureInfo? SelectedCulture { get; set; }
+    private string? SelectedSocialNetwork = "LinkedIn";
     protected override async Task OnInitializedAsync()
     {
         try
@@ -101,7 +108,7 @@
                 this.cancellationTokenSource.Token);
             this.supportedCultures ??= items
             .Select(p => new CultureInfo(p))
-            .OrderBy(p=>p.DisplayName)
+            .OrderBy(p => p.DisplayName)
             .ToArray();
             this.SelectedCulture ??= CultureInfo.CurrentCulture;
         }
@@ -151,10 +158,21 @@
         {
             this.IsBusy = true;
             StateHasChanged();
-            this.DigitalMarketingDailyPostsIdeas =
-            await this.videoDigitalMarketingDailyPostsService
-            .CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(this.VideoInfoId!.Value,
-                $"{this.SelectedCulture!.DisplayName}({this.SelectedCulture.Name})", this.cancellationTokenSource.Token);
+            switch (this.SelectedSocialNetwork)
+            {
+                case "LinkedIn":
+                    this.DigitalMarketingDailyPostsIdeas =
+                await this.videoDigitalMarketingDailyPostsService
+                .CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(this.VideoInfoId!.Value,
+                    $"{this.SelectedCulture!.DisplayName}({this.SelectedCulture.Name})", this.cancellationTokenSource.Token);
+                    break;
+                case "X":
+                    this.DigitalMarketingDailyPostsIdeas =
+                await this.videoDigitalMarketingDailyPostsService
+                .CreateVideoDigitalMarketingDailyPostsForTwitterAsync(this.VideoInfoId!.Value,
+                    $"{this.SelectedCulture!.DisplayName}({this.SelectedCulture.Name})", this.cancellationTokenSource.Token);
+                    break;
+            }
             await this.paginationState.SetCurrentPageIndexAsync(
                     this.paginationState.CurrentPageIndex);
         }
