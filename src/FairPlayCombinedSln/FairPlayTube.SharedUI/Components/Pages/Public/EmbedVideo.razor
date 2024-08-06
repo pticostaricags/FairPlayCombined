@@ -1,0 +1,108 @@
+﻿@page "/Public/EmbedVideo/{VideoId}"
+@layout EmbedLayout
+@implements IAsyncDisposable
+@using FairPlayCombined.Common.GeneratorsAttributes
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.AzureVideoIndexer
+@using FairPlayCombined.Models.FairPlayTube.VideoComment
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+@using FairPlayCombined.Models.Pagination
+@using FairPlayTube.SharedUI.Components.Spinners
+@using FairPlayTube.SharedUI.Components.Video
+
+@inject IJSRuntime jsRuntime
+@inject IVideoWatchTimeService videoWatchTimeService
+@inject ILogger<EmbedVideo> logger;
+@inject ISupportedLanguageService supportedLanguageService
+@inject IVideoInfoService videoInfoService
+@inject IToastService toastService
+
+@inject NavigationManager navigationManager
+@inject HttpClient httpClient
+@inject PersistentComponentState ApplicationState
+
+
+@if (!String.IsNullOrWhiteSpace(this.VideoUrl))
+{
+    <div id="container" data-permanent>
+        <!-- HTML -->
+        <VideoJs SupportedLanguages="@this.SupportedLanguages"
+                 VideoId="@this.VideoId"
+                 VideoUrl="@this.VideoUrl"></VideoJs>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public string? VideoId { get; set; }
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private VideoInfoModel? videoInfoModel { get; set; }
+    private string? VideoUrl { get; set; }
+    private SupportedLanguageModel[]? SupportedLanguages { get; set; }
+    private PersistingComponentStateSubscription persistingSubscription;
+
+    private Task PersistData()
+    {
+        //Check https://learn.microsoft.com/en-us/aspnet/core/blazor/components/prerender?view=aspnetcore-9.0
+        ApplicationState.PersistAsJson<VideoInfoModel>(nameof(this.videoInfoModel), this.videoInfoModel!);
+        ApplicationState.PersistAsJson<SupportedLanguageModel[]?>(nameof(this.SupportedLanguages), this.SupportedLanguages);
+        return Task.CompletedTask;
+    }
+
+    private async Task PersistVideoInfoModelAsync()
+    {
+        if (!ApplicationState.TryTakeFromJson<VideoInfoModel>(
+                nameof(this.videoInfoModel), out var restoredVideoInfoModel))
+        {
+            this.videoInfoModel = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
+                this.VideoId!,
+                this.cancellationTokenSource.Token
+            );
+        }
+        else
+        {
+            this.videoInfoModel = restoredVideoInfoModel!;
+        }
+        this.VideoUrl = videoInfoModel!.PublishedUrl;
+    }
+
+    private async Task PersistSupportedLanguageAsync()
+    {
+        if (!ApplicationState.TryTakeFromJson<SupportedLanguageModel[]?>(
+                nameof(this.SupportedLanguages), out var restoredSupportedLanguages))
+        {
+            this.SupportedLanguages = await supportedLanguageService
+            .GetAllSupportedLanguageForVideoInfoIdAsync(videoInfoId: videoInfoModel!.VideoInfoId,
+                cancellationToken: this.cancellationTokenSource.Token);
+        }
+        else
+        {
+            this.SupportedLanguages = restoredSupportedLanguages!;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        persistingSubscription =
+            ApplicationState.RegisterOnPersisting(PersistData);
+
+        try
+        {
+            await PersistVideoInfoModelAsync();
+            await PersistSupportedLanguageAsync();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        this.persistingSubscription.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}
