@@ -46,6 +46,25 @@
     <meta name="twitter:description" content="@OpenGraphDescription" />
     <meta name="twitter:image" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
 
+    @if (this.videoInfoModel != null && this.OpenGraphTitle != null && this.OpenGraphDescription != null)
+    {
+        <script type='application/ld+json'>
+            {
+                "@@context": "http://schema.org",
+                "@@type": "VideoObject",
+                "name": "@OpenGraphTitle",
+                "description": "@OpenGraphDescription",
+                "thumbnailUrl": "@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")",
+                "uploadDate": "@this.videoInfoModel.RowCreationDateTime.ToString("yyyy-MM-dd")",
+                "duration": "@this.videoInfoModel.VideoObjectDuration",
+                "contentUrl": "@this.navigationManager.Uri",
+                "embedUrl": "@($"{apiBaseUrl}/Public/EmbedVideo/{this.VideoId}")",
+                "interactionCount": "1",
+                "expires": ""
+            }
+        </script>
+    }
+
 </HeadContent>
 @if (this.videoInfoModel != null)
 {

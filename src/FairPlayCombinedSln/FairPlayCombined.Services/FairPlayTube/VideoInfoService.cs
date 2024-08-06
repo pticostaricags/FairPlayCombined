@@ -268,6 +268,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                 VideoVisibilityId = p.VideoVisibilityId,
                 ThumbnailUrl = p.ThumbnailUrl,
                 YouTubeVideoId = p.YouTubeVideoId,
+                RowCreationDateTime = p.RowCreationDateTime,
                 PublishedUrl = p.PublishedUrl,
                 IsVideoGeneratedWithAi = p.IsVideoGeneratedWithAi,
                 VideoTopics = p.VideoTopic.Select(p => p.Topic).ToArray(),

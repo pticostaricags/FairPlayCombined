@@ -36,5 +36,13 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
         public decimal IndexingCost { get; set; }
         public string AllInsightsUrl => $"https://www.videoindexer.ai/embed/insights/{AccountId}/{VideoId}/?&locale=en&location={Location}&controls=search,presets,language";
         public bool? IsVideoGeneratedWithAi { get; set; }
+        public string VideoObjectDuration
+        {
+            get
+            {
+                var timeSpan = TimeSpan.FromSeconds(this.VideoDurationInSeconds);
+                return $"PT{timeSpan.Hours}H{timeSpan.Minutes}M{timeSpan.Seconds}S";
+            }
+        }
     }
 }
