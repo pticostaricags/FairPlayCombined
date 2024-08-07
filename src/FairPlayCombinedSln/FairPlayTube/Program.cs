@@ -224,23 +224,7 @@ app.MapGet("/api/photo/{photoId}",
         .AsSplitQuery()
         .Where(p => p.PhotoId == photoId)
         .SingleOrDefaultAsync(cancellationToken);
-        using MemoryStream inputStream = new(result!.PhotoBytes);
-        using var image = await Image.LoadAsync(inputStream, cancellationToken);
-        image.Mutate(operation =>
-        {
-            operation.Resize(options: new()
-            {
-                Size = new(width: 1024, height: 768),
-                Mode = ResizeMode.Max
-            });
-        });
-        using MemoryStream outputStream = new();
-        PngEncoder pngEncoder = new()
-        {
-            CompressionLevel = PngCompressionLevel.BestCompression
-        };
-        await image.SaveAsPngAsync(outputStream, pngEncoder, cancellationToken);
-        return TypedResults.File(outputStream.ToArray(), System.Net.Mime.MediaTypeNames.Image.Png);
+        return TypedResults.File(result!.PhotoBytes, System.Net.Mime.MediaTypeNames.Image.Png);
     });
 app.MapGet("/api/video/{videoId}/description",
     async (

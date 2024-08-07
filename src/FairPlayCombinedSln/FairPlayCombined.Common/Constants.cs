@@ -98,7 +98,7 @@
         }
         public static class Pagination
         {
-            public const int PageSize = 10;
+            public const int PageSize = 6;
         }
         public static class CacheConfiguration
         {

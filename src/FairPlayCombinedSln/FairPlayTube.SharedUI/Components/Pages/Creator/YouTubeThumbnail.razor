@@ -91,7 +91,7 @@
     @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
     {
         <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
-            <img width="400" class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" />
+            <img width="400" class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" loading="lazy" />
         </a>
         <p>
             <FluentLabel Typo="Typography.Body">
@@ -169,20 +169,18 @@
             this.IsBusy = false;
             this.PagePhotos.Clear();
             StateHasChanged();
-            await LoadImagesBase64Async();
+            LoadImages();
         }
     }
 
-    private async Task LoadImagesBase64Async()
+    private void LoadImages()
     {
         if (this.Items?.Items?.Length > 0)
         {
             foreach (var singlePhotoId in this.Items.Items.Select(p => p.PhotoId))
             {
-                string requestUrl = $"{navigationManager.BaseUri}api/photo/{singlePhotoId}";
-                var result = await httpClient.GetByteArrayAsync(requestUrl, this.cancellationTokenSource.Token);
-                string base64String = Convert.ToBase64String(result);
-                this.PagePhotos.TryAdd(singlePhotoId, $"data:image/png;base64, {base64String}");
+                string photoUrl = $"{navigationManager.BaseUri}api/photo/{singlePhotoId}";
+                this.PagePhotos.TryAdd(singlePhotoId, photoUrl);
                 StateHasChanged();
             }
         }
@@ -193,6 +191,8 @@
         try
         {
             this.IsBusy = true;
+            this.PagePhotos.Clear();
+            this.Items = null;
             StateHasChanged();
             var result = await this.videoThumbnailService
             .GenerateVideoThumbnailAsync(this.VideoInfoId!.Value, this.openAIService,

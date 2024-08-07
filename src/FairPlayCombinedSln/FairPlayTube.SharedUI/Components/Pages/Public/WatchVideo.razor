@@ -55,7 +55,7 @@
                 "name": "@OpenGraphTitle",
                 "description": "@OpenGraphDescription",
                 "thumbnailUrl": "@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")",
-                "uploadDate": "@this.videoInfoModel.RowCreationDateTime.ToString("yyyy-MM-dd")",
+                "uploadDate": "@this.videoInfoModel.RowCreationDateTime.ToString("yyyy-MM-ddTHH:mm:sszzz")",
                 "duration": "@this.videoInfoModel.VideoObjectDuration",
                 "contentUrl": "@this.navigationManager.Uri",
                 "embedUrl": "@($"{apiBaseUrl}/Public/EmbedVideo/{this.VideoId}")",

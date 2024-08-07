@@ -1,4 +1,9 @@
-﻿@if (ShowSpinners)
+﻿@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+
+@inject IStringLocalizer<LoadingIndicator> localizer
+
+@if (ShowSpinners)
 {
     <FluentOverlay Visible="@ShowSpinners"
                    Opacity="0.4"
@@ -7,10 +12,16 @@
                    PreventScroll="true"
                    Dismissable="false">
         <FluentProgressRing />
+        <FluentLabel Typo="Typography.Body">@localizer[LoadingTextKey]</FluentLabel>
     </FluentOverlay>
 }
 
 @code {
     [Parameter]
     public bool ShowSpinners { get; set; }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Our friend is doing its job. Please wait.")]
+    public const string LoadingTextKey = "LoadingText";
+    #endregion Resource Keys
 }
