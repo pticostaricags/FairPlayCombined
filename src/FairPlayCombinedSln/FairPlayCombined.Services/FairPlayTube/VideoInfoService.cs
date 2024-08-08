@@ -272,7 +272,9 @@ namespace FairPlayCombined.Services.FairPlayTube
                 PublishedUrl = p.PublishedUrl,
                 IsVideoGeneratedWithAi = p.IsVideoGeneratedWithAi,
                 VideoTopics = p.VideoTopic.Select(p => p.Topic).ToArray(),
-                VideoKeywords = p.VideoKeyword.Select(p => p.Keyword).ToArray()
+                VideoKeywords = p.VideoKeyword.Select(p => p.Keyword).ToArray(),
+                GitHubSponsorsUsername = p.ApplicationUser.UserMonetizationProfile.GitHubSponsors,
+                BuyMeACoffeeUsername = p.ApplicationUser.UserMonetizationProfile.BuyMeAcoffee
             })
             .SingleOrDefaultAsync(cancellationToken);
             return result;

@@ -44,5 +44,7 @@ namespace FairPlayCombined.Models.FairPlayTube.VideoInfo
                 return $"PT{timeSpan.Hours}H{timeSpan.Minutes}M{timeSpan.Seconds}S";
             }
         }
+        public string? GitHubSponsorsUsername { get; set; }
+        public string? BuyMeACoffeeUsername { get; set; }
     }
 }

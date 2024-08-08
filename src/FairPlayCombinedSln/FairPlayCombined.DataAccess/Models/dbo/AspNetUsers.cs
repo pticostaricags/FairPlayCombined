@@ -129,6 +129,9 @@ public partial class AspNetUsers
     public virtual ICollection<UserMessage> UserMessageToApplicationUser { get; set; } = new List<UserMessage>();
 
     [InverseProperty("ApplicationUser")]
+    public virtual UserMonetizationProfile UserMonetizationProfile { get; set; }
+
+    [InverseProperty("ApplicationUser")]
     public virtual UserProfile UserProfile { get; set; }
 
     [InverseProperty("ApplicationUser")]

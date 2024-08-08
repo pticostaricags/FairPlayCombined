@@ -98,4 +98,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="ImageStyleId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="5d7f6af8-9a06-4a8e-a421-034c5a77d0d2" ChangeDateTime="08/08/2024 10:46:26">
+    <Property Name="ElementName" Value="[dbo].[UserMonetizationProfile].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserMonetizationProfile]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UserMonetizationProfileId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="58f9968d-ffd7-4ae1-bc93-f01b6a7458ee" ChangeDateTime="08/08/2024 10:47:15">
+    <Property Name="ElementName" Value="[dbo].[UserMonetizationProfile].[GitHub]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserMonetizationProfile]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="GitHubSponsors" />
+  </Operation>
 </Operations>

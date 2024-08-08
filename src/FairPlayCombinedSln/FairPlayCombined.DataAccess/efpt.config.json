@@ -123,6 +123,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[UserMonetizationProfile]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[VisitorTracking]",
          "ObjectType": 0
       },

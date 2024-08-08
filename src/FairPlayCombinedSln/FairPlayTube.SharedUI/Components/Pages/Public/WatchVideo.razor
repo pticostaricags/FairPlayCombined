@@ -87,6 +87,36 @@
             <FluentAccordionItem Heading="Description" Expanded="true">
                 <FluentTextArea Rows="10" style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>
             </FluentAccordionItem>
+            @if (this.videoInfoModel.GitHubSponsorsUsername != null ||
+           this.videoInfoModel.BuyMeACoffeeUsername != null)
+            {
+                <FluentAccordionItem Heading="Monetization" Expanded="true">
+                    <FluentLabel Weight="FontWeight.Bold">
+                        Every single content creator, from unexperenced to experienced deserve your help. 
+                        Here are some ways in which you can help them.
+                    </FluentLabel>
+                    @if (this.videoInfoModel.GitHubSponsorsUsername != null)
+                    {
+                        <FluentLabel Typo="Typography.Body">
+                            <FluentAnchor Href="@($"https://github.com/sponsors/{this.videoInfoModel.GitHubSponsorsUsername}")" Target="_blank">
+                                <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                            Color="Color.Accent" Slot="start"></FluentIcon>
+                                GitHub Sponsors
+                            </FluentAnchor>
+                        </FluentLabel>
+                    }
+                    @if (this.videoInfoModel.BuyMeACoffeeUsername != null)
+                    {
+                        <FluentLabel Typo="Typography.Body">
+                            <FluentAnchor Href="@($"https://buymeacoffee.com/{this.videoInfoModel.BuyMeACoffeeUsername}")" Target="_blank">
+                                <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                            Color="Color.Accent" Slot="start"></FluentIcon>
+                                Buy Me A Coffee
+                            </FluentAnchor>
+                        </FluentLabel>
+                    }
+                </FluentAccordionItem>
+            }
         </FluentAccordion>
         @if (this.videoInfoModel.IsVideoGeneratedWithAi == true)
         {
