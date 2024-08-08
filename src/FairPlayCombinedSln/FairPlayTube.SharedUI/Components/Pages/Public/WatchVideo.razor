@@ -92,8 +92,11 @@
             {
                 <FluentAccordionItem Heading="Monetization" Expanded="true">
                     <FluentLabel Weight="FontWeight.Bold">
-                        Every single content creator, from unexperenced to experienced deserve your help. 
-                        Here are some ways in which you can help them.
+                        @nameof(Constants.ApplicationTitles.FairPlayTube) is all about been fair to everyone,
+                        that includes every single creator, even those just starting, even those totally unexperienced.
+                        No matter how small, how unexperienced, they all deserve to be compensated for their creations.
+                        Creating content takes effort, and sometimes, even money.
+                        We encourage you to help every creator by funding their efforts through their monenization profiles.
                     </FluentLabel>
                     @if (this.videoInfoModel.GitHubSponsorsUsername != null)
                     {
