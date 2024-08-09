@@ -87,6 +87,12 @@
             <FluentAccordionItem Heading="Description" Expanded="true">
                 <FluentTextArea Rows="10" style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>
             </FluentAccordionItem>
+            @if (this.videoInfoModel.IsVideoGeneratedWithAi == true)
+            {
+                <FluentLabel Typo="Typography.Body" Color="Color.Warning">
+                    Video was generated using AI, content could be innacurate.
+                </FluentLabel>
+            }
             @if (this.videoInfoModel.GitHubSponsorsUsername != null ||
            this.videoInfoModel.BuyMeACoffeeUsername != null)
             {
@@ -121,12 +127,6 @@
                 </FluentAccordionItem>
             }
         </FluentAccordion>
-        @if (this.videoInfoModel.IsVideoGeneratedWithAi == true)
-        {
-            <FluentLabel Typo="Typography.Body" Color="Color.Warning">
-                Video was generated using AI, content could be innacurate.
-            </FluentLabel>
-        }
         <AuthorizeView>
             <Authorized>
                 @if (this.videoInfoModel.ApplicationUserId == userProviderService.GetCurrentUserId())
