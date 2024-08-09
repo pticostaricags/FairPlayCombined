@@ -1,0 +1,20 @@
+﻿@using System.Net
+<FluentAnchor Href="@($"https://www.linkedin.com/shareArticle?mini=true&text={WebUtility.UrlEncode(this.Description)}&url={WebUtility.UrlEncode(this.Url)}")"
+              Target="_blank"
+              Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Neutral">
+    Share on LinkedIn
+</FluentAnchor>
+<FluentAnchor Href="@($"https://twitter.com/intent/tweet?text={WebUtility.UrlEncode(this.Description)}&url={WebUtility.UrlEncode(this.Url)}")"
+              Target="_blank"
+              Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Neutral">
+    Share on Twitter
+</FluentAnchor>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string? Description { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Url { get; set; }
+}
