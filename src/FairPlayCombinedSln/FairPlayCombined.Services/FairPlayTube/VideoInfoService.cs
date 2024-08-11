@@ -40,25 +40,27 @@ namespace FairPlayCombined.Services.FairPlayTube
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var videoEntity =
                 await dbContext.VideoInfo
-                .Include(p=>p.VideoCaptions)
+                .Include(p => p.VideoCaptions)
                 .Where(p => p.VideoInfoId == videoInfoId)
-                .SingleOrDefaultAsync(cancellationToken) 
+                .SingleOrDefaultAsync(cancellationToken)
                 ?? throw new RuleException($"Unable to find the video with id: {videoInfoId}");
-            var englishCaptions = 
+            var englishCaptions =
                 (videoEntity
                 .VideoCaptions?
-                .SingleOrDefault(p => p.Language == "en-US")) 
+                .SingleOrDefault(p => p.Language == "en-US"))
                 ?? throw new RuleException("Video captions have not been created yet");
-            
+
             StringBuilder promptBuilder = new();
             promptBuilder.AppendLine($"Video Title: {videoEntity.Name}.");
             promptBuilder.AppendLine($"Current Video Description: {videoEntity.Description}.");
             promptBuilder.AppendLine($"VTT Transcript: {englishCaptions.Content}");
-            
+
+            StringBuilder systemMessage = new("Create a description for the video based on the information I'll provide. Description must be less than 500 characters. Your response must be in simple text.");
+            systemMessage.AppendLine("The description must have the 3 best hashtags at the end.");
             var response = await openAIService
-                .GenerateChatCompletionAsync(systemMessage: "Create a description for the video based on the information I'll provide. Description must be less than 500 characters. Your response must be in simple text.",
+                .GenerateChatCompletionAsync(systemMessage.ToString(),
                 prompt: promptBuilder.ToString(), cancellationToken);
-            
+
             var result = response?.choices?[0].message?.content;
             videoEntity.Description = result;
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -200,7 +202,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                     preQuery.Where(p => EF.Functions.FreeText(p.Description, searchTerm!));
             }
             var query = preQuery
-                .Where(p => 
+                .Where(p =>
                 p.VideoIndexStatusId == (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed)
                 .Select(p => new VideoInfoModel
                 {
