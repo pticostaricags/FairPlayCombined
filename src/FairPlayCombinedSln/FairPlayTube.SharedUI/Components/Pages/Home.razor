@@ -6,6 +6,7 @@
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
+@using FairPlayTube.SharedUI.Components.Html
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Microsoft.Extensions.Localization
 
@@ -105,7 +106,9 @@
                                   OnClick="@( () => OnPlayVideoClicked(singleItem.VideoId!))">@localizer[PlayVideoTextKey]</FluentButton>
                 </div>
                 <div>
-                    <img src="@($"{apiBaseUrl}/api/video/{singleItem.VideoId}/thumbnail")" width="300" />
+                    <Image Src="@($"{apiBaseUrl}/api/video/{singleItem.VideoId}/thumbnail")"
+                           Width="300" Alt="@singleItem.Name">
+                    </Image>
                 </div>
                 <div>
                     <FluentLabel Alignment="HorizontalAlignment.Center"
