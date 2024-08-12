@@ -26,6 +26,11 @@
         <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.Lastname)"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.EmailAddress)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.LinkedInProfileUrl)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.YouTubeChannelUrl)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.BusinessPhoneNumber)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.MobilePhoneNumber)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.BirthDate)"></PropertyColumn>
     </FluentDataGrid>
     <FluentPaginator State="@this.paginationState"></FluentPaginator>
 }
