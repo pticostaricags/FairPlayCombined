@@ -237,7 +237,18 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<Company>(entity =>
         {
+            entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.Company)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Company_AspNetUsers");
+
             entity.HasOne(d => d.PrimaryContact).WithMany(p => p.Company).HasConstraintName("FK_Company_Contact");
+        });
+
+        modelBuilder.Entity<Contact>(entity =>
+        {
+            entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.Contact)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Contact_AspNetUsers");
         });
 
         modelBuilder.Entity<ContactCompany>(entity =>

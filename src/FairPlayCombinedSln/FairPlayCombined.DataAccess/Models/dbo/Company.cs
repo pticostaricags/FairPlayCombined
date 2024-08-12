@@ -33,8 +33,16 @@ public partial class Company
 
     public string YouTubeChannelUrl { get; set; }
 
+    [Required]
+    [StringLength(450)]
+    public string OwnerApplicationUserId { get; set; }
+
     [InverseProperty("Company")]
     public virtual ICollection<ContactCompany> ContactCompany { get; set; } = new List<ContactCompany>();
+
+    [ForeignKey("OwnerApplicationUserId")]
+    [InverseProperty("Company")]
+    public virtual AspNetUsers OwnerApplicationUser { get; set; }
 
     [ForeignKey("PrimaryContactId")]
     [InverseProperty("Company")]

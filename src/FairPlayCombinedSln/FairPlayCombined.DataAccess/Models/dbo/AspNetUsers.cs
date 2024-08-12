@@ -68,6 +68,12 @@ public partial class AspNetUsers
     [InverseProperty("User")]
     public virtual ICollection<AspNetUserTokens> AspNetUserTokens { get; set; } = new List<AspNetUserTokens>();
 
+    [InverseProperty("OwnerApplicationUser")]
+    public virtual ICollection<Company> Company { get; set; } = new List<Company>();
+
+    [InverseProperty("OwnerApplicationUser")]
+    public virtual ICollection<Contact> Contact { get; set; } = new List<Contact>();
+
     [InverseProperty("Owner")]
     public virtual ICollection<Expense> Expense { get; set; } = new List<Expense>();
 

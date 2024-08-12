@@ -46,9 +46,17 @@ public partial class Contact
 
     public DateTimeOffset? BirthDate { get; set; }
 
+    [Required]
+    [StringLength(450)]
+    public string OwnerApplicationUserId { get; set; }
+
     [InverseProperty("PrimaryContact")]
     public virtual ICollection<Company> Company { get; set; } = new List<Company>();
 
     [InverseProperty("Contact")]
     public virtual ICollection<ContactCompany> ContactCompany { get; set; } = new List<ContactCompany>();
+
+    [ForeignKey("OwnerApplicationUserId")]
+    [InverseProperty("Contact")]
+    public virtual AspNetUsers OwnerApplicationUser { get; set; }
 }
