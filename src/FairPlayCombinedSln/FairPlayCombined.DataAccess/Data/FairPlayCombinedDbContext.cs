@@ -38,7 +38,13 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<City> City { get; set; }
 
+    public virtual DbSet<Company> Company { get; set; }
+
     public virtual DbSet<ConfigurationSecret> ConfigurationSecret { get; set; }
+
+    public virtual DbSet<Contact> Contact { get; set; }
+
+    public virtual DbSet<ContactCompany> ContactCompany { get; set; }
 
     public virtual DbSet<Country> Country { get; set; }
 
@@ -227,6 +233,24 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.StateOrProvince).WithMany(p => p.City)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_City_StateOrProvince");
+        });
+
+        modelBuilder.Entity<Company>(entity =>
+        {
+            entity.HasOne(d => d.PrimaryContact).WithMany(p => p.Company).HasConstraintName("FK_Company_Contact");
+        });
+
+        modelBuilder.Entity<ContactCompany>(entity =>
+        {
+            entity.HasKey(e => e.ContactCompanyId).HasName("PL_ContactCompany");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.ContactCompany)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContactCompany_Company");
+
+            entity.HasOne(d => d.Contact).WithMany(p => p.ContactCompany)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContactCompany_Contact");
         });
 
         modelBuilder.Entity<Expense>(entity =>

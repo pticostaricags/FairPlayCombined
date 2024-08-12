@@ -6,5 +6,7 @@
     [Phone] NVARCHAR(50) NULL, 
     [PrimaryContactId] BIGINT NULL, 
     [YouTubeChannelUrl] NVARCHAR(MAX) NULL, 
-    CONSTRAINT [FK_Company_Contact] FOREIGN KEY ([PrimaryContactId]) REFERENCES [dbo].[Contact]([ContactId])
+    [OwnerApplicationUserId] NVARCHAR(450) NOT NULL, 
+    CONSTRAINT [FK_Company_Contact] FOREIGN KEY ([PrimaryContactId]) REFERENCES [dbo].[Contact]([ContactId]), 
+    CONSTRAINT [FK_Company_AspNetUsers] FOREIGN KEY ([OwnerApplicationUserId]) REFERENCES [AspNetUsers]([Id])
 )
