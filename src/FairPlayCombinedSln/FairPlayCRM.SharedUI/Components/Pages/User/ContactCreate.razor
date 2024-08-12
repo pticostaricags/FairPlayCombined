@@ -25,6 +25,7 @@
     @localizer[CreateContactTextKey]
 </h3>
 
+<LoadingIndicator ShowSpinners="@this.IsBusy"></LoadingIndicator>
 
 <FluentEditForm FormName="frmCreateContact" Model="@this.createContactModel"
                 OnValidSubmit="OnValidSubmitAsync">

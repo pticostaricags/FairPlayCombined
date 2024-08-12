@@ -18,7 +18,7 @@
     <link href="_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css" rel="stylesheet" />
 
 
-    <HeadOutlet @rendermode="RenderMode.InteractiveServer" />
+    <HeadOutlet @rendermode="@ServerNoPrerenderMode" />
 </head>
 
 <body>
@@ -35,6 +35,7 @@
 {
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
+    private static IComponentRenderMode ServerNoPrerenderMode = new InteractiveServerRenderMode(prerender: false);
     private IComponentRenderMode? PageRenderMode =>
-        HttpContext.AcceptsInteractiveRouting() ? RenderMode.InteractiveServer : null;
+        HttpContext.AcceptsInteractiveRouting() ? ServerNoPrerenderMode : null;
 }
