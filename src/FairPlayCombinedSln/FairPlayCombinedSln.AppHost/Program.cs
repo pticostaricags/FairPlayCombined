@@ -207,6 +207,46 @@ if (addFairPlayBudget)
     }
 }
 
+bool addFairPlayCRM = Convert.ToBoolean(builder.Configuration["AddFairPlayCRM"]);
+if (addFairPlayCRM)
+{
+    var fairPlayCRM =
+    builder.AddProject<Projects.FairPlayCRM>(ResourcesNames.FairPlayCRM);
+
+    if (builder.ExecutionContext.IsPublishMode)
+    {
+        fairPlayCRM = fairPlayCRM
+            .WithExternalHttpEndpoints()
+            .WithEndpoint(port: 19390, targetPort: 19390, scheme: "tcp");
+    }
+    fairPlayCRM = fairPlayCRM
+        .WithEnvironment(callback =>
+        {
+            callback.EnvironmentVariables.Add("GoogleAuthClientId", googleAuthClientId);
+            callback.EnvironmentVariables.Add("GoogleAuthProjectId", googleAuthProjectId);
+            callback.EnvironmentVariables.Add("GoogleAuthUri", googleAuthUri);
+            callback.EnvironmentVariables.Add("GoogleAuthTokenUri", googleAuthTokenUri);
+            callback.EnvironmentVariables.Add("GoogleAuthProviderCertUri", googleAuthProviderCertUri);
+            callback.EnvironmentVariables.Add("GoogleAuthClientSecret", googleAuthClientSecret);
+            callback.EnvironmentVariables.Add("GoogleAuthRedirectUri", googleAuthRedirectUri);
+
+            callback.EnvironmentVariables.Add("PayPalClientId", paypalClientId);
+            callback.EnvironmentVariables.Add("PayPalClientSecret", paypalClientSecret);
+
+            callback.EnvironmentVariables.Add("IpDataKey", ipDataKey);
+        })
+    .WithReference(fairPlayDbResource)
+    .WithReference(blobs);
+
+    if (!useSendGrid)
+        fairPlayCRM = fairPlayCRM.WithReference(mailDev!);
+    else
+        fairPlayCRM = fairPlayCRM.WithEnvironment(callback =>
+        {
+            AddSMTPEnvironmentVariables(callback, builder);
+        });
+}
+
 
 builder.AddProject<Projects.FairPlayCombined_WebApi>(ResourcesNames.FairPlayWebApi)
 .WithExternalHttpEndpoints()

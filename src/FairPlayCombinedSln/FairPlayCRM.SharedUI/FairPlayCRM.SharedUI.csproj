@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0-preview.6.24328.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
+  </ItemGroup>
+
+</Project>
