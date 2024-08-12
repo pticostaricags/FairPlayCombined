@@ -18,6 +18,7 @@ using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Common.Identity;
 using FairPlayCRM.Extensions;
 using FairPlayCombined.Interfaces.Common;
+using FairPlayCombined.Models.Common.IpData;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
@@ -127,7 +128,7 @@ builder.AddIdentityEmailSender();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient<ICustomCache, CustomCache>();
+AddPlatformServices(builder);
 
 var app = builder.Build();
 
@@ -175,3 +176,19 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 await app.RunAsync();
+
+static void AddPlatformServices(WebApplicationBuilder builder)
+{
+    builder.Services.AddTransient<ICustomCache, CustomCache>();
+    builder.Services.AddSingleton<IpDataConfiguration>(sp =>
+    {
+        var ipDataKey = builder.Configuration["IpDataKey"] ??
+        throw new InvalidOperationException("'IpDataKey' not found");
+        return new IpDataConfiguration()
+        {
+            Key = ipDataKey,
+        };
+    });
+    builder.Services.AddTransient<IpDataService>();
+    builder.Services.AddTransient<IVisitorTrackingService, VisitorTrackingService>();
+}
