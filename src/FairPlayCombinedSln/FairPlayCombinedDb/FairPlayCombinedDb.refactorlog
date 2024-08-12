@@ -112,4 +112,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="GitHubSponsors" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="c009b9d2-9cf6-454b-87e4-b006eb2eea7f" ChangeDateTime="08/12/2024 06:53:51">
+    <Property Name="ElementName" Value="[dbo].[Contact].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Contact]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ContactId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="baac09dc-a553-47ed-a528-88e5eca1c7aa" ChangeDateTime="08/12/2024 06:57:21">
+    <Property Name="ElementName" Value="[dbo].[Company].[Websiteurl]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Company]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="WebsiteUrl" />
+  </Operation>
 </Operations>

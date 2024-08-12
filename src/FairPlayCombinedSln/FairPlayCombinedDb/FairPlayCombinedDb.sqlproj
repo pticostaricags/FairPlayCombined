@@ -189,6 +189,9 @@
     <Build Include="dbo\Tables\ImageStyle.sql" />
     <Build Include="Storage\ftDefaultCatalog.sql" />
     <Build Include="dbo\Tables\UserMonetizationProfile.sql" />
+    <Build Include="dbo\Tables\Contact.sql" />
+    <Build Include="dbo\Tables\Company.sql" />
+    <Build Include="dbo\Tables\ContactCompany.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
