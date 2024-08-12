@@ -85,7 +85,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.WebApi", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.DataExportService", "FairPlayCombined.DataExportService\FairPlayCombined.DataExportService.csproj", "{A4CF7546-024C-417D-9B64-185B429E1F34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCRM.SharedUI", "FairPlayCRM.SharedUI\FairPlayCRM.SharedUI.csproj", "{CCCD9556-9376-4D25-9041-28ED6F41B619}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCRM.SharedUI", "FairPlayCRM.SharedUI\FairPlayCRM.SharedUI.csproj", "{CCCD9556-9376-4D25-9041-28ED6F41B619}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCRM", "FairPlayCRM\FairPlayCRM.csproj", "{B87BAAA1-1067-4E43-953A-91C3B8AD7AFB}"
 EndProject

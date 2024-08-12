@@ -4,6 +4,23 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<NavMenu> localizer
 
+
+<AuthorizeView>
+    <Authorized>
+        <FluentNavGroup Title="@localizer[ContactsTextKey]" Expanded="ShouldExpandContactsGroup"
+                        Icon="@(new Icons.Regular.Size20.ContactCardGroup())">
+            <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListContacts"
+                           Icon="@(new Icons.Regular.Size20.BookContacts())">
+                @localizer[ListContactsTextKey]
+            </FluentNavLink>
+            <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.CreateContact"
+                           Icon="@(new Icons.Regular.Size20.Add())">
+                @localizer[CreateContactTextKey]
+            </FluentNavLink>
+        </FluentNavGroup>
+    </Authorized>
+</AuthorizeView>
+
 <AuthorizeView>
     <Authorized>
         <FluentNavGroup Title="@localizer[AccountsTextKey]" Expanded="@ShouldExpandAccountsGroup"
@@ -32,6 +49,7 @@
 @code {
     private string? currentUrl;
     private bool ShouldExpandAccountsGroup => this.NavigationManager.Uri.IndexOf("/Account") >= 0;
+    private bool ShouldExpandContactsGroup => this.NavigationManager.Uri.IndexOf("/Contacts") >= 0;
     private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override void OnInitialized()
@@ -66,5 +84,11 @@
     public const string RegisterTextKey = "RegisterText";
     [ResourceKey(defaultValue: "Login")]
     public const string LoginTextKey = "LoginText";
+    [ResourceKey(defaultValue: "Contacts")]
+    public const string ContactsTextKey = "ContactsText";
+    [ResourceKey(defaultValue: "List Contacts")]
+    public const string ListContactsTextKey = "ListContactsText";
+    [ResourceKey(defaultValue: "Create Contact")]
+    public const string CreateContactTextKey = "CreateContactText";
     #endregion Resource Keys
 }

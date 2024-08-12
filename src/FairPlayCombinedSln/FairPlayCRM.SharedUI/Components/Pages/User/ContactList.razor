@@ -1,0 +1,21 @@
+﻿@using FairPlayCombined.Common
+@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+
+@attribute [Route(Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListContacts)]
+@attribute [Authorize]
+
+@inject IStringLocalizer<ContactList> localizer
+
+<PageTitle>@nameof(FairPlayCRM) - @localizer[ListContactsPageTitleTextKey]</PageTitle>
+
+<h3>
+    @localizer[ListContactsPageTitleTextKey]
+</h3>
+
+@code {
+    #region Resource Keys
+    [ResourceKey(defaultValue: "List Contacts")]
+    public const string ListContactsPageTitleTextKey = "ListContactsPageTitleText";
+    #endregion Resource Keys
+}
