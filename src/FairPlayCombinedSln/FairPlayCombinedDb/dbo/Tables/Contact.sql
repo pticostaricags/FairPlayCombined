@@ -12,3 +12,7 @@
     [OwnerApplicationUserId] NVARCHAR(450) NOT NULL, 
     CONSTRAINT [FK_Contact_AspNetUsers] FOREIGN KEY ([OwnerApplicationUserId]) REFERENCES [AspNetUsers]([Id])
 )
+
+GO
+
+CREATE UNIQUE INDEX [UI_Contact_EmailAddress] ON [dbo].[Contact] ([EmailAddress])

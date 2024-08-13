@@ -15,6 +15,7 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
+[Index("EmailAddress", Name = "UI_Contact_EmailAddress", IsUnique = true)]
 public partial class Contact
 {
     [Key]

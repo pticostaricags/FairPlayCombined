@@ -1,6 +1,7 @@
 ﻿@implements IAsyncDisposable
 
 @using FairPlayCombined.Common
+@using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.Common.Contacts
@@ -100,6 +101,7 @@
             this.IsBusy = true;
             StateHasChanged();
             await this.contactService.CreateContactAsync(this.createContactModel, this.cancellationTokenSource.Token);
+            this.toastService.ShowSuccess(this.localizer[ContactCreatedTextKey]);
             this.navigationManager.NavigateTo(Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListContacts);
         }
         catch (Exception ex)
@@ -122,6 +124,9 @@
 
 
     #region Resource Keys
+    [ResourceKey(defaultValue:"Create Contact")]
     public const string CreateContactTextKey = "CreateContactText";
+    [ResourceKey(defaultValue: "Contact has been created")]
+    public const string ContactCreatedTextKey = "ContactCreatedText";
     #endregion Resource Keys
 }

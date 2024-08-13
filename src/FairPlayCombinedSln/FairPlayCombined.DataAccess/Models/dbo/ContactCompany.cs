@@ -15,6 +15,7 @@ using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 namespace FairPlayCombined.DataAccess.Models.dboSchema;
 
+[Index("ContactId", "CompanyId", Name = "IX_ContactCompany_ContactId_CompanyId", IsUnique = true)]
 public partial class ContactCompany
 {
     [Key]
@@ -27,6 +28,10 @@ public partial class ContactCompany
     [Required]
     [StringLength(50)]
     public string JobTitle { get; set; }
+
+    [Required]
+    [StringLength(50)]
+    public string EmailAddress { get; set; }
 
     [ForeignKey("CompanyId")]
     [InverseProperty("ContactCompany")]

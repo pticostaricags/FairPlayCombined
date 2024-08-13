@@ -36,7 +36,7 @@
     <a class="dismiss">🗙</a>
 </div>
 
-<FluentToastProvider />
+<FluentToastProvider @rendermode="@(new InteractiveServerRenderMode(prerender:false))" />
 <FluentDialogProvider />
 <FluentTooltipProvider />
 <FluentMessageBarProvider />
