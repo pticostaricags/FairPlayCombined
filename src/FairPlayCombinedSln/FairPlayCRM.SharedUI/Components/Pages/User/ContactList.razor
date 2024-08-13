@@ -22,16 +22,20 @@
 
 @if (this.ItemsProvider != null)
 {
-    <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
-        <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
-        <PropertyColumn Property="@(p=>p.Lastname)"></PropertyColumn>
-        <PropertyColumn Property="@(p=>p.EmailAddress)"></PropertyColumn>
-        <PropertyColumn Property="@(p=>p.LinkedInProfileUrl)"></PropertyColumn>
-        <PropertyColumn Property="@(p=>p.YouTubeChannelUrl)"></PropertyColumn>
-        <PropertyColumn Property="@(p=>p.BusinessPhoneNumber)"></PropertyColumn>
-        <PropertyColumn Property="@(p=>p.MobilePhoneNumber)"></PropertyColumn>
-        <PropertyColumn Property="@(p=>p.BirthDate)"></PropertyColumn>
-    </FluentDataGrid>
+    <div style="display: table; table-layout: fixed; width: 100%;">
+        <div style="overflow-x: auto;">
+            <FluentDataGrid Style="min-width: max-content;" ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
+                <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.Lastname)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.EmailAddress)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.LinkedInProfileUrl)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.YouTubeChannelUrl)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.BusinessPhoneNumber)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.MobilePhoneNumber)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.BirthDate)"></PropertyColumn>
+            </FluentDataGrid>
+        </div>
+    </div>
     <FluentPaginator State="@this.paginationState"></FluentPaginator>
 }
 
@@ -68,7 +72,7 @@
                         }
                     }
                 };
-            var items = await this.contactService.GetPaginatedContactAsync(paginationRequest,this.cancellationTokenSource.Token);
+            var items = await this.contactService.GetPaginatedContactAsync(paginationRequest, this.cancellationTokenSource.Token);
             var result = GridItemsProviderResult.From<ContactModel>(items.Items!, items.TotalItems);
             this.IsBusy = false;
             StateHasChanged();
