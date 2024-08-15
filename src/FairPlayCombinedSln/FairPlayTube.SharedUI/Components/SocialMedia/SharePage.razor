@@ -1,13 +1,18 @@
 ﻿@using System.Net
+@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+
+@inject IStringLocalizer<SharePage> localizer
+
 <FluentAnchor Href="@($"https://www.linkedin.com/shareArticle?mini=true&text={WebUtility.UrlEncode(this.Description)}&url={WebUtility.UrlEncode(this.Url)}")"
               Target="_blank"
               Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
-    Share on LinkedIn
+    @localizer[ShareOnLinkedInTextKey]
 </FluentAnchor>
 <FluentAnchor Href="@($"https://twitter.com/intent/tweet?text={WebUtility.UrlEncode(this.Description)}&url={WebUtility.UrlEncode(this.Url)}")"
               Target="_blank"
               Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
-    Share on X (Formerly Twitter)
+    @localizer[ShareOnXTextKey]
 </FluentAnchor>
 
 @code {
@@ -17,4 +22,11 @@
     [Parameter]
     [EditorRequired]
     public string? Url { get; set; }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Share on LinkedIn")]
+    public const string ShareOnLinkedInTextKey = "ShareOnLinkedInText";
+    [ResourceKey(defaultValue: "Share on X (Formerly Twitter)")]
+    public const string ShareOnXTextKey = "ShareOnXText";
+    #endregion Resource Keys
 }

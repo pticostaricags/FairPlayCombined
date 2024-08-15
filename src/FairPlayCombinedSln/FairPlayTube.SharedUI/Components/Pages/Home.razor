@@ -7,6 +7,7 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Html
+@using FairPlayTube.SharedUI.Components.SocialMedia
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Microsoft.Extensions.Localization
 
@@ -23,6 +24,25 @@
     <meta name="description" content="Earn the money you deserve from your video content creations and get instant access to monetization options" />
     <meta name="keywords" content="money, monetization, creator, video, content creator, YouTube, portal" />
     <meta name="robots" content="index, follow" />
+
+    <meta name="thumbnail" content="@($"{apiBaseUrl}/favicon.png")" />
+
+    <meta property="og:title" content="FairPlayTube" />
+    <meta property="og:description" content="FairPlayTube - The Next Generation Of Video Sharing Portals" />
+
+    <meta property="og:image" content="@($"{apiBaseUrl}/favicon.png")" />
+    <meta property="og:image:secure_url" content="@($"{apiBaseUrl}/favicon.png")" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="400" />
+    <meta property="og:image:height" content="300" />
+    <meta property="og:image:alt" content="FairPlayTube Logo" />
+
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@@pticostarica" />
+    <meta name="twitter:title" content="FairPlayTube" />
+    <meta name="twitter:description" content="FairPlayTube - The Next Generation Of Video Sharing Portals" />
+    <meta name="twitter:image" content="@($"{apiBaseUrl}/favicon.png")" />
 </HeadContent>
 
 <PageTitle>@nameof(Constants.ApplicationTitles.FairPlayTube) - @localizer[HomeTitleTextKey]</PageTitle>
@@ -30,6 +50,9 @@
 <h1>@localizer[HomeTitleTextKey]</h1>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+
+<SharePage Description="@localizer[SharePageMessageTextKey]" Url="@this.navigationManager.Uri"></SharePage>
+
 
 <FluentAccordion>
     <FluentAccordionItem Expanded="true">
@@ -280,5 +303,7 @@
     public const string WhatIsTextKey = "WhatIsText";
     [ResourceKey(defaultValue: "{0} is The Next Generation Of Video Sharing Portals focused on Users and Transparency. A platform which helps you improve your digital marketing strategies surrounding your video. Ideal for entrepreneurs, and content-creators.")]
     public const string WhatIsDescriptionTextKey = "WhatIsDescriptionText";
-    #endregion
+    [ResourceKey(defaultValue: "Check out FairPlayTube: The Next Generation of Video Sharing, empowering entrepreneurs, digital marketers, and those impacted by global layoffs!")]
+    public const string SharePageMessageTextKey = "SharePageMessageTextKey";
+    #endregion Resource Keys
 }
