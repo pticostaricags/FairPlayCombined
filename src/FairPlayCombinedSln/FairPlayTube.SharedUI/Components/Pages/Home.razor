@@ -152,14 +152,14 @@
                 </div>
                 <div>
                     <FluentLabel Alignment="HorizontalAlignment.Center"
-                                 Typo="Typography.Subject"
+                                 Typo="Typography.Body" Weight="FontWeight.Bold"
                                  Class="multiline-text" style="width:250px; height:50px;">
                         @singleItem.Name
                     </FluentLabel>
                     <FluentAccordion>
                         <FluentAccordionItem Expanded="true">
                             <HeadingTemplate>
-                                <FluentLabel Weight="FontWeight.Bold">@localizer[VideoDescriptionTextKey]</FluentLabel>
+                                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@localizer[VideoDescriptionTextKey]</FluentLabel>
                             </HeadingTemplate>
                             <ChildContent>
                                 <FluentTextArea Rows="3" style="width:100%;" Value="@singleItem.Description"></FluentTextArea>
