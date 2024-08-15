@@ -21,6 +21,7 @@
 @inject PersistentComponentState ApplicationState
 
 <HeadContent>
+    <link rel="canonical" href="@this.navigationManager.Uri" />
     <meta name="description" content="Earn the money you deserve from your video content creations and get instant access to monetization options" />
     <meta name="keywords" content="money, monetization, creator, video, content creator, YouTube, portal" />
     <meta name="robots" content="index, follow" />
@@ -43,6 +44,20 @@
     <meta name="twitter:title" content="FairPlayTube" />
     <meta name="twitter:description" content="FairPlayTube - The Next Generation Of Video Sharing Portals" />
     <meta name="twitter:image" content="@($"{apiBaseUrl}/favicon.png")" />
+
+    <script type="application/ld+json">
+        {
+          "@@context": "https://schema.org/",
+          "@@type": "WebSite",
+          "name": "FairPlayTube",
+          "url": "@this.navigationManager.Uri",
+          "potentialAction": {
+            "@@type": "SearchAction",
+            "target": "@($"{this.navigationManager.Uri}?SearchTerm={{search_term_string}}")",
+            "query-input": "required name=search_term_string"
+          }
+        }
+    </script>
 </HeadContent>
 
 <PageTitle>@nameof(Constants.ApplicationTitles.FairPlayTube) - @localizer[HomeTitleTextKey]</PageTitle>
