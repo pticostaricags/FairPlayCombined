@@ -17,6 +17,8 @@
 	<ProjectReference Include="..\FairPlayAdminPortal\FairPlayAdminPortal.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\FairPlayCRM.SharedUI\FairPlayCRM.SharedUI.csproj" />
+    <ProjectReference Include="..\FairPlayCRM\FairPlayCRM.csproj" />
     <ProjectReference Include="..\FairPlayDating\FairPlayDating.csproj" />
     <ProjectReference Include="..\FairPlaySocial\FairPlaySocial.csproj" />
     <ProjectReference Include="..\FairPlayTube.SharedUI\FairPlayTube.SharedUI.csproj" />

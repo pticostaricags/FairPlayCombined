@@ -11,6 +11,7 @@ namespace FairPlayCombined.Services.Common
         {
             using var fairPlayShopDatabaseContext = await dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
             var result = await fairPlayShopDatabaseContext.Culture.AsNoTracking()
+                .OrderBy(c=> c.Name)
                 .Select(c => c.Name)
                 .ToArrayAsync(cancellationToken: cancellationToken);
             return result;

@@ -58,6 +58,15 @@
                     public const string BillingInfo = $"/User/{nameof(BillingInfo)}";
                 }
             }
+
+            public static class FairPlayCrmRoutes
+            {
+                public static class UserRoutes
+                {
+                    public const string ListContacts = $"/User/{nameof(ListContacts)}";
+                    public const string CreateContact = $"/User/{nameof(CreateContact)}";
+                }
+            }
         }
         public static class ConfigurationSecretsKeys
         {
@@ -98,7 +107,7 @@
         }
         public static class Pagination
         {
-            public const int PageSize = 10;
+            public const int PageSize = 15;
         }
         public static class CacheConfiguration
         {

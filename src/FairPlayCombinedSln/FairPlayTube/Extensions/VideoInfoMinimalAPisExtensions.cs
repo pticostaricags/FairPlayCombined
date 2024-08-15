@@ -27,7 +27,7 @@ namespace FairPlayTube.Extensions
                             }]
                     };
                     var result = await videoInfoService
-                    .GetPaginatedCompletedVideoInfoAsync(paginationRequest, cancellationToken);
+                    .GetPaginatedCompletedVideoInfoAsync(paginationRequest, null, cancellationToken);
                     return result;
                 });
             return app;

@@ -146,6 +146,13 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
 
         var commonAssembly = typeof(Common.Constants).Assembly;
         var commonTypes = commonAssembly.GetTypes();
+
+        var fairplayCrmAssembly = typeof(FairPlayCRM.Components.App).Assembly;
+        var fairplayCrmTypes = fairplayCrmAssembly.GetTypes();
+
+        var fairplayCrmSharedUIAssembly = typeof(FairPlayCRM.SharedUI._Imports).Assembly;
+        var fairplayCrmSharedUITypes = fairplayCrmSharedUIAssembly.GetTypes();
+
         List<Type> typesToCheck = [
             .. fairplayTubeTypes,
             .. fairplayTubeSharedUITypes,
@@ -154,7 +161,9 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
             .. serverSideServicesTypes,
             .. commonTypes,
             .. fairplaySocialTypes,
-            .. fairPlayDatingTypes];
+            .. fairPlayDatingTypes,
+            .. fairplayCrmTypes,
+            .. fairplayCrmSharedUITypes];
         return typesToCheck;
     }
 }

@@ -7,8 +7,10 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoComment
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
+@using FairPlayTube.SharedUI.Components.SocialMedia
 @using FairPlayTube.SharedUI.Components.Spinners
 @using FairPlayTube.SharedUI.Components.Video
+@using System.Net
 
 @inject IJSRuntime jsRuntime
 @inject IVideoWatchTimeService videoWatchTimeService
@@ -25,6 +27,8 @@
 @inject PersistentComponentState ApplicationState
 
 <HeadContent>
+    <meta name="description" content="@OpenGraphDescription" />
+
     <meta name="thumbnail" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
 
     <meta property="og:title" content="@OpenGraphTitle" />
@@ -44,26 +48,40 @@
     <meta name="twitter:description" content="@OpenGraphDescription" />
     <meta name="twitter:image" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
 
+    @if (this.videoInfoModel != null && this.OpenGraphTitle != null && this.OpenGraphDescription != null)
+    {
+        <script type='application/ld+json'>
+            {
+                "@@context": "http://schema.org",
+                "@@type": "VideoObject",
+                "name": "@OpenGraphTitle",
+                "description": "@OpenGraphDescription",
+                "thumbnailUrl": "@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")",
+                "uploadDate": "@this.videoInfoModel.RowCreationDateTime.ToString("yyyy-MM-ddTHH:mm:sszzz")",
+                "duration": "@this.videoInfoModel.VideoObjectDuration",
+                "contentUrl": "@this.navigationManager.Uri",
+                "embedUrl": "@($"{apiBaseUrl}/Public/EmbedVideo/{this.VideoId}")",
+                "interactionCount": "1",
+                "expires": ""
+            }
+        </script>
+    }
+
 </HeadContent>
 @if (this.videoInfoModel != null)
 {
-    <PageTitle>@this.videoInfoModel.Name</PageTitle>
-    <FluentLabel Typo="Typography.H3">@this.videoInfoModel.Name</FluentLabel>
+    <PageTitle>@($"{nameof(Constants.ApplicationTitles.FairPlayTube)} - {this.videoInfoModel.Name}")</PageTitle>
+    <FluentLabel Typo="Typography.H1">@this.videoInfoModel.Name</FluentLabel>
 }
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-@if (!this.UseFallbackMode && !String.IsNullOrWhiteSpace(this.VideoUrl))
+@if (!String.IsNullOrWhiteSpace(this.VideoUrl))
 {
     <div id="container" data-permanent>
         <!-- HTML -->
         <VideoJs SupportedLanguages="@this.SupportedLanguages"
                  VideoId="@this.VideoId"
                  VideoUrl="@this.VideoUrl"></VideoJs>
-    </div>
-    <div>
-        <FluentButton Type="ButtonType.Button"
-                      Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
-                      OnClick="OnUseFallbackMode">Can't see the video? Click here!</FluentButton>
     </div>
     @if (this.videoInfoModel != null)
     {
@@ -74,20 +92,56 @@
             </FluentLabel>
         }
         <FluentAccordion>
+            <FluentAccordionItem Heading="Share" Expanded="true">
+                <SharePage Description="@this.videoInfoModel.Description" Url="@this.navigationManager.Uri"></SharePage>
+            </FluentAccordionItem>
             <FluentAccordionItem Heading="Description" Expanded="true">
                 <FluentTextArea Rows="10" style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>
+                <AuthorizeView>
+                    <Authorized>
+                        @if (this.videoInfoModel.ApplicationUserId == userProviderService.GetCurrentUserId())
+                        {
+                            <FluentButton Type="ButtonType.Button"
+                                          Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
+                                          OnClick="OnCreateDescriptionWithAIAsync">Create With AI</FluentButton>
+                        }
+                    </Authorized>
+                </AuthorizeView>
             </FluentAccordionItem>
+            @if (this.videoInfoModel.GitHubSponsorsUsername != null ||
+           this.videoInfoModel.BuyMeACoffeeUsername != null)
+            {
+                <FluentAccordionItem Heading="Monetization" Expanded="true">
+                    <FluentLabel Weight="FontWeight.Bold">
+                        @nameof(Constants.ApplicationTitles.FairPlayTube) is all about been fair to everyone,
+                        that includes every single creator, even those just starting, even those totally unexperienced.
+                        No matter how small, how unexperienced, they all deserve to be compensated for their creations.
+                        Creating content takes effort, and sometimes, even money.
+                        We encourage you to help every creator by funding their efforts through their monenization profiles.
+                    </FluentLabel>
+                    @if (this.videoInfoModel.GitHubSponsorsUsername != null)
+                    {
+                        <FluentLabel Typo="Typography.Body">
+                            <FluentAnchor Href="@($"https://github.com/sponsors/{this.videoInfoModel.GitHubSponsorsUsername}")" Target="_blank">
+                                <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                            Color="Color.Accent" Slot="start"></FluentIcon>
+                                GitHub Sponsors
+                            </FluentAnchor>
+                        </FluentLabel>
+                    }
+                    @if (this.videoInfoModel.BuyMeACoffeeUsername != null)
+                    {
+                        <FluentLabel Typo="Typography.Body">
+                            <FluentAnchor Href="@($"https://buymeacoffee.com/{this.videoInfoModel.BuyMeACoffeeUsername}")" Target="_blank">
+                                <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                            Color="Color.Accent" Slot="start"></FluentIcon>
+                                Buy Me A Coffee
+                            </FluentAnchor>
+                        </FluentLabel>
+                    }
+                </FluentAccordionItem>
+            }
         </FluentAccordion>
-        <AuthorizeView>
-            <Authorized>
-                @if (this.videoInfoModel.ApplicationUserId == userProviderService.GetCurrentUserId())
-                {
-                    <FluentButton Type="ButtonType.Button"
-                                  Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
-                                  OnClick="OnCreateDescriptionWithAIAsync">Create With AI</FluentButton>
-                }
-            </Authorized>
-        </AuthorizeView>
     }
     @if (this.videoInfoModel?.VideoKeywords?.Length > 0)
     {
@@ -137,12 +191,6 @@
         </FluentAccordionItem>
     </FluentAccordion>
 }
-else
-{
-    <div>
-        <iframe src="@this.FallbackModeUrl" width="600" allowfullscreen></iframe>
-    </div>
-}
 
 <FluentLabel Typo="Typography.H3">Comments</FluentLabel>
 <AuthorizeView>
@@ -187,8 +235,6 @@ else
     public string? VideoId { get; set; }
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    private bool UseFallbackMode { get; set; }
-    private string? FallbackModeUrl { get; set; }
     private VideoInfoModel? videoInfoModel { get; set; }
     private string? VideoUrl { get; set; }
     private SupportedLanguageModel[]? SupportedLanguages { get; set; }
@@ -239,7 +285,7 @@ else
         }
         else
         {
-            this.OpenGraphTitle = restoredOpenGraphDescription!;
+            this.OpenGraphDescription = restoredOpenGraphDescription!;
         }
     }
 
@@ -371,13 +417,6 @@ else
             this.IsBusy = false;
             StateHasChanged();
         }
-    }
-
-    private void OnUseFallbackMode()
-    {
-        this.FallbackModeUrl = $"https://www.videoindexer.ai/embed/player/{this.videoInfoModel!.AccountId}/{this.VideoId}/?locale=en&location={this.videoInfoModel.Location}";
-        this.UseFallbackMode = true;
-        StateHasChanged();
     }
 
     private async Task OnCreateDescriptionWithAIAsync()

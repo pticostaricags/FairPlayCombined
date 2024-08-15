@@ -2,6 +2,7 @@
 @using System.Globalization
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
 @using Microsoft.Extensions.Localization
 
 @inject NavigationManager Navigation
@@ -24,6 +25,8 @@
     private ICultureService? CultureService { get; set; }
     [Inject]
     private IStringLocalizer<CultureSelector>? Localizer { get; set; }
+    [Inject]
+    private ICustomCache? CustomCache { get; set; }
     private readonly CancellationTokenSource CancellationTokenSource = new();
     private CultureInfo[]? supportedCultures { get; set; }
     private bool IsBusy { get; set; }
@@ -31,9 +34,20 @@
     {
         this.IsBusy = true;
         this.Culture = CultureInfo.CurrentCulture;
-        this.supportedCultures = (await this.CultureService!
-        .GetSupportedCultures(this.CancellationTokenSource.Token))
-        .Select(p => new CultureInfo(p)).ToArray();
+        var items = await this.CustomCache!.GetOrCreateAsync<string[]>(
+        key: nameof(this.supportedCultures),
+        retrieveDataTask: async () =>
+        {
+            var data = (await this.CultureService!
+                .GetSupportedCultures(this.CancellationTokenSource.Token));
+            return data;
+        },
+        expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
+        this.CancellationTokenSource.Token);
+        this.supportedCultures ??= items
+        .Select(p => new CultureInfo(p))
+        .OrderBy(p => p.DisplayName)
+        .ToArray();
         this.IsBusy = false;
     }
 

@@ -164,7 +164,7 @@ public class OpenAIService(
             model = model,
             prompt = prompt,
             n = 1,
-            size = "1024x1024"
+            size = "1792x1024"
         };
         var response = await openAIAuthorizedHttpClient.PostAsJsonAsync<GenerateDallE3RequestModel>(requestUrl,
             requestModel, cancellationToken: cancellationToken);

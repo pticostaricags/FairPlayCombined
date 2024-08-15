@@ -1,0 +1,94 @@
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Common
+@using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Models.Common.Contacts
+@using Microsoft.Extensions.Localization
+
+@attribute [Route(Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListContacts)]
+@attribute [Authorize]
+
+@inject IStringLocalizer<ContactList> localizer
+@inject IContactService contactService
+
+<PageTitle>@nameof(FairPlayCRM) - @localizer[ListContactsPageTitleTextKey]</PageTitle>
+
+<h3>
+    @localizer[ListContactsPageTitleTextKey]
+</h3>
+
+<LoadingIndicator ShowSpinners="@this.IsBusy"></LoadingIndicator>
+
+@if (this.ItemsProvider != null)
+{
+    <div style="display: table; table-layout: fixed; width: 100%;">
+        <div style="overflow-x: auto;">
+            <FluentDataGrid Style="min-width: max-content;" ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
+                <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.Lastname)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.EmailAddress)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.LinkedInProfileUrl)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.YouTubeChannelUrl)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.BusinessPhoneNumber)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.MobilePhoneNumber)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.BirthDate)"></PropertyColumn>
+            </FluentDataGrid>
+        </div>
+    </div>
+    <FluentPaginator State="@this.paginationState"></FluentPaginator>
+}
+
+@code {
+    private GridItemsProvider<ContactModel>? ItemsProvider { get; set; }
+    private PaginationState paginationState { get; set; } = new()
+        {
+            ItemsPerPage = FairPlayCombined.Common.Constants.Pagination.PageSize
+        };
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ItemsProvider ??= async req =>
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            PaginationRequest paginationRequest = new()
+                {
+                    PageSize = paginationState.ItemsPerPage,
+                    StartIndex = req.StartIndex,
+                    SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName=nameof(ContactModel.Name),
+                            SortType = FairPlayCombined.Common.GeneratorsAttributes.SortType.Ascending
+                        },
+                        new SortingItem()
+                        {
+                            PropertyName=nameof(ContactModel.Lastname),
+                            SortType = FairPlayCombined.Common.GeneratorsAttributes.SortType.Ascending
+                        }
+                    }
+                };
+            var items = await this.contactService.GetPaginatedContactAsync(paginationRequest, this.cancellationTokenSource.Token);
+            var result = GridItemsProviderResult.From<ContactModel>(items.Items!, items.TotalItems);
+            this.IsBusy = false;
+            StateHasChanged();
+            return result;
+        };
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Cancel(throwOnFirstException: false);
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "List Contacts")]
+    public const string ListContactsPageTitleTextKey = "ListContactsPageTitleText";
+    #endregion Resource Keys
+}

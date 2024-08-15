@@ -38,7 +38,13 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<City> City { get; set; }
 
+    public virtual DbSet<Company> Company { get; set; }
+
     public virtual DbSet<ConfigurationSecret> ConfigurationSecret { get; set; }
+
+    public virtual DbSet<Contact> Contact { get; set; }
+
+    public virtual DbSet<ContactCompany> ContactCompany { get; set; }
 
     public virtual DbSet<Country> Country { get; set; }
 
@@ -134,6 +140,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<UserMessage> UserMessage { get; set; }
 
+    public virtual DbSet<UserMonetizationProfile> UserMonetizationProfile { get; set; }
+
     public virtual DbSet<UserProfile> UserProfile { get; set; }
 
     public virtual DbSet<VideoCaptions> VideoCaptions { get; set; }
@@ -225,6 +233,35 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.StateOrProvince).WithMany(p => p.City)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_City_StateOrProvince");
+        });
+
+        modelBuilder.Entity<Company>(entity =>
+        {
+            entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.Company)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Company_AspNetUsers");
+
+            entity.HasOne(d => d.PrimaryContact).WithMany(p => p.Company).HasConstraintName("FK_Company_Contact");
+        });
+
+        modelBuilder.Entity<Contact>(entity =>
+        {
+            entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.Contact)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Contact_AspNetUsers");
+        });
+
+        modelBuilder.Entity<ContactCompany>(entity =>
+        {
+            entity.HasKey(e => e.ContactCompanyId).HasName("PL_ContactCompany");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.ContactCompany)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContactCompany_Company");
+
+            entity.HasOne(d => d.Contact).WithMany(p => p.ContactCompany)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContactCompany_Contact");
         });
 
         modelBuilder.Entity<Expense>(entity =>
@@ -471,6 +508,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.ToApplicationUser).WithMany(p => p.UserMessageToApplicationUser)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ToApplicationUserId_AspNetUsers");
+        });
+
+        modelBuilder.Entity<UserMonetizationProfile>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithOne(p => p.UserMonetizationProfile)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserMonetizationProfile_AspNetUsers");
         });
 
         modelBuilder.Entity<UserProfile>(entity =>

@@ -15,5 +15,6 @@
         public static string FairPlayCombinedLocalizationGenerator => "fairplaycombinedlocalizationgenerator";
         public static string FairPlayBudget => nameof(Projects.FairPlayBudget).ToLower();
         public static string FairPlayWebApi => "fairplaywebapi";
+        public static string FairPlayCRM => nameof(Projects.FairPlayCRM).ToLower();
     }
 }

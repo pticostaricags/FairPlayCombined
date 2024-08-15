@@ -1,0 +1,132 @@
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Common
+@using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Models.Common.Contacts
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization
+
+@attribute [Route(Constants.Routes.FairPlayCrmRoutes.UserRoutes.CreateContact)]
+@attribute [Authorize]
+
+@inject NavigationManager navigationManager
+
+@inject IStringLocalizer<ContactCreate> localizer
+@inject IToastService toastService
+@inject IContactService contactService
+@inject IUserProviderService userProviderService
+
+<PageTitle>
+    @localizer[CreateContactTextKey]
+</PageTitle>
+
+<h3>
+    @localizer[CreateContactTextKey]
+</h3>
+
+<LoadingIndicator ShowSpinners="@this.IsBusy"></LoadingIndicator>
+
+<FluentEditForm FormName="frmCreateContact" Model="@this.createContactModel"
+                OnValidSubmit="OnValidSubmitAsync">
+    <div>
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <FluentValidationSummary></FluentValidationSummary>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Name</FluentLabel>
+        <FluentTextField @bind-Value="@this.createContactModel.Name" Maxlength="50" style="width:100%;"></FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Lastname</FluentLabel>
+        <FluentTextField @bind-Value="@this.createContactModel.Lastname" Maxlength="50" style="width:100%;"></FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Email</FluentLabel>
+        <FluentTextField @bind-Value="@this.createContactModel.EmailAddress" Maxlength="50"
+                         InputMode="InputMode.Email" TextFieldType="TextFieldType.Email"
+                         style="width:100%;">
+        </FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">LinkedIn Profile Url</FluentLabel>
+        <FluentTextField @bind-Value="@this.createContactModel.LinkedInProfileUrl" Maxlength="50"
+                         InputMode="InputMode.Url" TextFieldType="TextFieldType.Url"
+                         style="width:100%;">
+        </FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">YouTube Channel Url</FluentLabel>
+        <FluentTextField @bind-Value="@this.createContactModel.YouTubeChannelUrl" Maxlength="50"
+                         InputMode="InputMode.Url" TextFieldType="TextFieldType.Url"
+                         style="width:100%;">
+        </FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Business Phone Number</FluentLabel>
+        <FluentTextField @bind-Value="@this.createContactModel.BusinessPhoneNumber" Maxlength="50"
+                         InputMode="InputMode.Telephone" TextFieldType="TextFieldType.Tel"
+                         style="width:100%;">
+        </FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Mobile Phone Number</FluentLabel>
+        <FluentTextField @bind-Value="@this.createContactModel.MobilePhoneNumber" Maxlength="50"
+                         InputMode="InputMode.Telephone" TextFieldType="TextFieldType.Tel"
+                         style="width:100%;">
+        </FluentTextField>
+    </div>
+    <div>
+        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Save</FluentButton>
+    </div>
+</FluentEditForm>
+
+
+@code {
+    [SupplyParameterFromForm]
+    private CreateContactModel createContactModel { get; set; } = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.createContactModel.OwnerApplicationUserId = this.userProviderService.GetCurrentUserId();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            await this.contactService.CreateContactAsync(this.createContactModel, this.cancellationTokenSource.Token);
+            this.toastService.ShowSuccess(this.localizer[ContactCreatedTextKey]);
+            this.navigationManager.NavigateTo(Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListContacts);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Cancel(throwOnFirstException: false);
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+
+
+    #region Resource Keys
+    [ResourceKey(defaultValue:"Create Contact")]
+    public const string CreateContactTextKey = "CreateContactText";
+    [ResourceKey(defaultValue: "Contact has been created")]
+    public const string ContactCreatedTextKey = "ContactCreatedText";
+    #endregion Resource Keys
+}

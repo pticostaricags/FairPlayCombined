@@ -141,6 +141,7 @@ await app.RunAsync();
 
 static void AddPlatformServices(WebApplicationBuilder builder)
 {
+    builder.Services.AddTransient<ICustomCache, CustomCache>();
     builder.Services.AddAzureOpenAIService();
     builder.AddOpenAI();
     builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();

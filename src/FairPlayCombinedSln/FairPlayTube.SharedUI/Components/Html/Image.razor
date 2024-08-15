@@ -1,0 +1,14 @@
+﻿<img src="@this.Src" width="@this.Width" alt="@this.Alt" />
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public string? Src { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public int? Width { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Alt { get; set; }
+}

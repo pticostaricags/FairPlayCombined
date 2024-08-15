@@ -50,3 +50,7 @@ CREATE UNIQUE INDEX [UI_VideoInfo_VideoId] ON [FairPlayTube].[VideoInfo] ([Video
 GO
 
 CREATE UNIQUE INDEX [UI_VideoInfo_YouTubeVideoId] ON [FairPlayTube].[VideoInfo] ([YouTubeVideoId]) WHERE YouTubeVideoId IS NOT NULL
+
+GO
+
+CREATE FULLTEXT INDEX ON [FairPlayTube].[VideoInfo] ([Description]) KEY INDEX [PK_VideoInfo] ON [ftDefaultCatalog] WITH CHANGE_TRACKING AUTO

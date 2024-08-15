@@ -5,7 +5,10 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
 {
     public interface IVideoDigitalMarketingDailyPostsService
     {
-        Task<string> CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(long videoInfoId, CancellationToken cancellationToken);
+        Task<string> CreateVideoDigitalMarketingDailyPostsForTwitterAsync
+            (long videoInfoId, string languageCode, CancellationToken cancellationToken);
+        Task<string> CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(
+            long videoInfoId, string languageCode, CancellationToken cancellationToken);
         Task<string?> GetVideoDigitalMarketingDailyPostsAsync(long videoInfoId, string socialNetworkName,
             CancellationToken cancellationToken);
         Task SaveVideoDigitalMarketingDailyPostsAsync(long videoInfoId,

@@ -26,6 +26,7 @@ using OpenTelemetry.Metrics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
+using System.IO.Compression;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +51,19 @@ builder.Services.AddResponseCompression(opts =>
 {
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
           ["application/octet-stream"]);
+    //Check https://learn.microsoft.com/en-us/aspnet/core/performance/response-compression?view=aspnetcore-8.0#response-compression
+    opts.EnableForHttps = true;
+    opts.Providers.Add<BrotliCompressionProvider>();
+    opts.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.SmallestSize;
 });
 builder.Services.AddSignalR();
 builder.Services.AddDatabaseDrivenLocalization();
@@ -210,23 +224,7 @@ app.MapGet("/api/photo/{photoId}",
         .AsSplitQuery()
         .Where(p => p.PhotoId == photoId)
         .SingleOrDefaultAsync(cancellationToken);
-        using MemoryStream inputStream = new(result!.PhotoBytes);
-        using var image = await Image.LoadAsync(inputStream, cancellationToken);
-        image.Mutate(operation =>
-        {
-            operation.Resize(options: new()
-            {
-                Size = new(width: 1024, height: 768),
-                Mode = ResizeMode.Max
-            });
-        });
-        using MemoryStream outputStream = new();
-        PngEncoder pngEncoder = new()
-        {
-            CompressionLevel = PngCompressionLevel.BestCompression
-        };
-        await image.SaveAsPngAsync(outputStream, pngEncoder, cancellationToken);
-        return TypedResults.File(outputStream.ToArray(), System.Net.Mime.MediaTypeNames.Image.Png);
+        return TypedResults.File(result!.PhotoBytes, System.Net.Mime.MediaTypeNames.Image.Png);
     });
 app.MapGet("/api/video/{videoId}/description",
     async (
@@ -292,12 +290,3 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 await app.RunAsync();
-
-namespace FairPlayTube.UIConfiguration
-{
-    public static class AdditionalSetup
-    {
-        internal static readonly Assembly[] AdditionalAssemblies =
-                [typeof(FairPlayTube.SharedUI.Components.Pages.Home).Assembly];
-    }
-}

@@ -6,6 +6,8 @@
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
+@using FairPlayTube.SharedUI.Components.Html
+@using FairPlayTube.SharedUI.Components.SocialMedia
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Microsoft.Extensions.Localization
 
@@ -18,26 +20,118 @@
 @inject NavigationManager navigationManager
 @inject PersistentComponentState ApplicationState
 
-<PageTitle>@localizer[HomeTextKey]</PageTitle>
+<HeadContent>
+    <link rel="canonical" href="@this.navigationManager.Uri" />
+    <meta name="description" content="FairPlayTube: Empowering creators with innovative video tools for digital marketing and entrepreneurship, helping you grow your audience and brand seamlessly" />
+    <meta name="keywords" content="digital marketing, entrepreneurship, money, monetization, creator, video, content creator, YouTube, portal" />
+    <meta name="robots" content="index, follow" />
 
-<h1>@localizer[HomeTextKey]</h1>
+    <meta name="thumbnail" content="@($"{apiBaseUrl}/favicon.png")" />
+
+    <meta property="og:title" content="FairPlayTube" />
+    <meta property="og:description" content="FairPlayTube - The Next Generation Of Video Sharing Portals" />
+
+    <meta property="og:image" content="@($"{apiBaseUrl}/favicon.png")" />
+    <meta property="og:image:secure_url" content="@($"{apiBaseUrl}/favicon.png")" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="400" />
+    <meta property="og:image:height" content="300" />
+    <meta property="og:image:alt" content="FairPlayTube Logo" />
+
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@@pticostarica" />
+    <meta name="twitter:title" content="FairPlayTube" />
+    <meta name="twitter:description" content="FairPlayTube - The Next Generation Of Video Sharing Portals" />
+    <meta name="twitter:image" content="@($"{apiBaseUrl}/favicon.png")" />
+
+    <script type="application/ld+json">
+        {
+          "@@context": "https://schema.org/",
+          "@@type": "WebSite",
+          "name": "FairPlayTube",
+          "url": "@this.navigationManager.Uri",
+          "potentialAction": {
+            "@@type": "SearchAction",
+            "target": "@($"{this.navigationManager.Uri}?SearchTerm={{search_term_string}}")",
+            "query-input": "required name=search_term_string"
+          }
+        }
+    </script>
+</HeadContent>
+
+<PageTitle>@nameof(Constants.ApplicationTitles.FairPlayTube) - @localizer[HomeTitleTextKey]</PageTitle>
+
+<h1>@localizer[HomeTitleTextKey]</h1>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
+<SharePage Description="@localizer[SharePageMessageTextKey]" Url="@this.navigationManager.Uri"></SharePage>
+
+
 <FluentAccordion>
-    <FluentAccordionItem Expanded="true" Heading="Important Note!">
-        <FluentIcon Value="@(new Icons.Regular.Size20.Info())"></FluentIcon>
-        <FluentLabel Color="Color.Warning">
-            This published version is intentionally limited in functionality.
-            To learn about the current full capabilities use the following link:
-            <FluentAnchor data-enhance-nav="false" Appearance="Appearance.Hypertext"
-                          Target="_blank"
-                          Href="https://us11.list-manage.com/contact-form?u=8b82a1556651be6b90abb39cb&form_id=ec99fae0af90bd739e8a29962e37657a">
-                Request a Demo
-            </FluentAnchor>
-        </FluentLabel>
+    <FluentAccordionItem Expanded="true">
+        <HeadingTemplate>
+            <FluentLabel Typo="Typography.H2">
+                @localizer[WhatIsTextKey, nameof(Constants.ApplicationTitles.FairPlayTube)]
+            </FluentLabel>
+        </HeadingTemplate>
+        <ChildContent>
+            <FluentLabel Typo="Typography.Body">
+                @localizer[WhatIsDescriptionTextKey, nameof(Constants.ApplicationTitles.FairPlayTube)]
+            </FluentLabel>
+        </ChildContent>
+    </FluentAccordionItem>
+    <FluentAccordionItem Expanded="true">
+        <HeadingTemplate>
+            <FluentLabel Typo="Typography.H3">
+                @localizer[FeaturesTextKey]
+            </FluentLabel>
+        </HeadingTemplate>
+        <ChildContent>
+            <ul>
+                <li>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.Image())"></FluentIcon>
+                        @localizer[FeatureCreateThumbnailTextKey]
+                    </FluentLabel>
+                </li>
+                <li>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.DocumentText())"></FluentIcon>
+                        @localizer[FeatureCreateSocialMediaPostsTextKey]
+                    </FluentLabel>
+                </li>
+                <li>
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.DesignIdeas())"></FluentIcon>
+                        @localizer[FeatureGetNewVideoScriptsTextKey]
+                    </FluentLabel>
+                </li>
+            </ul>
+            <div style="text-align:center;">
+                <iframe style="width:100%;"
+                        src="https://www.youtube.com/embed/mxXoD2YXCxQ?si=F3m6iIzQztXzEB-o"
+                        title="FairPlayTube Features Demo" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; xr-spatial-tracking; allowvr"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen></iframe>
+            </div>
+            <FluentLabel Color="Color.Warning">
+                <FluentIcon Value="@(new Icons.Regular.Size20.Info())"></FluentIcon>
+                This published version is intentionally limited in functionality.
+                To learn about the current full capabilities use the following link:
+                <FluentAnchor data-enhance-nav="false" Appearance="Appearance.Hypertext"
+                              Target="_blank"
+                              Href="https://us11.list-manage.com/contact-form?u=8b82a1556651be6b90abb39cb&form_id=ec99fae0af90bd739e8a29962e37657a">
+                    Request a Demo
+                </FluentAnchor>
+            </FluentLabel>
+        </ChildContent>
     </FluentAccordionItem>
 </FluentAccordion>
+
+<FluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged"></FluentPaginator>
 
 @if (this.PageItems != null)
 {
@@ -46,31 +140,55 @@
         {
             <div>
                 <div>
-                    <img src="@($"{apiBaseUrl}/api/video/{singleItem.VideoId}/thumbnail")" width="300" />
+                    <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                                  style="width:100%;"
+                                  IconStart="@(new Icons.Regular.Size16.Play())"
+                                  OnClick="@( () => OnPlayVideoClicked(singleItem.VideoId!))">@localizer[PlayVideoTextKey]</FluentButton>
+                </div>
+                <div>
+                    <Image Src="@($"{apiBaseUrl}/api/video/{singleItem.VideoId}/thumbnail")"
+                           Width="300" Alt="@singleItem.Name">
+                    </Image>
                 </div>
                 <div>
                     <FluentLabel Alignment="HorizontalAlignment.Center"
-                                 Typo="Typography.Subject"
+                                 Typo="Typography.Body" Weight="FontWeight.Bold"
                                  Class="multiline-text" style="width:250px; height:50px;">
                         @singleItem.Name
                     </FluentLabel>
-                    <FluentLabel Typo="Typography.Body">
-                        <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
-                        <strong>@localizer[LifetimeSessionsTextKey]:</strong> @singleItem.LifetimeSessions</FluentLabel>
-                    <FluentLabel Typo="Typography.Body">
-                        <FluentIcon Value="@(new Icons.Regular.Size20.Eye())"></FluentIcon>
-                        <strong>@localizer[LifetimeViewersTextKey]:</strong> @singleItem.LifetimeViewers</FluentLabel>
-                    <FluentLabel Typo="Typography.Body">
-                        <FluentIcon Value="@(new Icons.Regular.Size20.Timer())"></FluentIcon>
-                        <strong>@localizer[WatchTimeTextKey]:</strong> @singleItem.LifetimeWatchTime</FluentLabel>
-                    <FluentLabel Typo="Typography.Body">
-                        <FluentIcon Value="@(new Icons.Regular.Size20.CalendarDate())"></FluentIcon>
-                        <strong>@localizer[PublishedTextKey]:</strong> @singleItem.PublishedOnString</FluentLabel>
-                </div>
-                <div>
-                    <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
-                                  IconStart="@(new Icons.Regular.Size16.Play())"
-                                  OnClick="@( () => OnPlayVideoClicked(singleItem.VideoId!))">Play</FluentButton>
+                    <FluentAccordion>
+                        <FluentAccordionItem Expanded="true">
+                            <HeadingTemplate>
+                                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@localizer[VideoDescriptionTextKey]</FluentLabel>
+                            </HeadingTemplate>
+                            <ChildContent>
+                                <FluentTextArea Rows="3" style="width:100%;" Value="@singleItem.Description"></FluentTextArea>
+                            </ChildContent>
+                        </FluentAccordionItem>
+                        <FluentAccordionItem Heading="More Info" Expanded="true">
+                            <HeadingTemplate>
+                                <FluentLabel Weight="FontWeight.Bold">@localizer[VideoMoreInfoTextKey]</FluentLabel>
+                            </HeadingTemplate>
+                            <ChildContent>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
+                                    <strong>@localizer[LifetimeSessionsTextKey]:</strong> @singleItem.LifetimeSessions
+                                </FluentLabel>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentIcon Value="@(new Icons.Regular.Size20.Eye())"></FluentIcon>
+                                    <strong>@localizer[LifetimeViewersTextKey]:</strong> @singleItem.LifetimeViewers
+                                </FluentLabel>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentIcon Value="@(new Icons.Regular.Size20.Timer())"></FluentIcon>
+                                    <strong>@localizer[WatchTimeTextKey]:</strong> @singleItem.LifetimeWatchTime
+                                </FluentLabel>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentIcon Value="@(new Icons.Regular.Size20.CalendarDate())"></FluentIcon>
+                                    <strong>@localizer[PublishedTextKey]:</strong> @singleItem.PublishedOnString
+                                </FluentLabel>
+                            </ChildContent>
+                        </FluentAccordionItem>
+                    </FluentAccordion>
                 </div>
             </div>
         }
@@ -78,8 +196,18 @@
 }
 <FluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged"></FluentPaginator>
 
+<!-- Calendly inline widget begin -->
+<div class="calendly-inline-widget" data-url="https://calendly.com/eduardo-fonseca" style="min-width:320px;height:700px;"></div>
+<script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+<!-- Calendly inline widget end -->
+
+<FairPlayTube.SharedUI.Components.Mailchimp.EmbeddedForm></FairPlayTube.SharedUI.Components.Mailchimp.EmbeddedForm>
+
 @code
 {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? SearchTerm { get; set; }
     private bool IsBusy { get; set; }
     private GridItemsProvider<VideoInfoModel>? ItemsProvider;
     private readonly PaginationState paginationState = new()
@@ -121,6 +249,7 @@
                     }
                 };
             var items = await videoInfoService.GetPaginatedCompletedVideoInfoAsync(paginationRequest,
+                this.SearchTerm,
             this.cancellationTokenSource.Token);
             this.IsBusy = false;
             StateHasChanged();
@@ -166,8 +295,8 @@
     }
 
     #region Resource Keys
-    [ResourceKey(defaultValue: "Home")]
-    public const string HomeTextKey = "HomeText";
+    [ResourceKey(defaultValue: "The Next Generation Of Video Sharing Portals")]
+    public const string HomeTitleTextKey = "HomeTitleText";
     [ResourceKey(defaultValue: "Lifetime Sessions")]
     public const string LifetimeSessionsTextKey = "LifetimeSessionsText";
     [ResourceKey(defaultValue: "Lifetime Viewers")]
@@ -178,5 +307,25 @@
     public const string PublishedTextKey = "PublishedText";
     [ResourceKey(defaultValue: "Play")]
     public const string PlayTextKey = "PlayText";
-    #endregion
+    [ResourceKey(defaultValue: "Features")]
+    public const string FeaturesTextKey = "FeaturesText";
+    [ResourceKey(defaultValue: "Create Thumbnails Tailored To Your Video")]
+    public const string FeatureCreateThumbnailTextKey = "FeatureCreateThumbnailText";
+    [ResourceKey(defaultValue: "Create Social Media Posts Tailored To Your Video")]
+    public const string FeatureCreateSocialMediaPostsTextKey = "FeatureCreateSocialMediaPostsText";
+    [ResourceKey(defaultValue: "Get New Video Scripts Based On Your Previously Uploaded Videos")]
+    public const string FeatureGetNewVideoScriptsTextKey = "FeatureGetNewVideoScriptsText";
+    [ResourceKey(defaultValue: "Description")]
+    public const string VideoDescriptionTextKey = "VideoDescriptionText";
+    [ResourceKey(defaultValue: "More Info")]
+    public const string VideoMoreInfoTextKey = "VideoMoreInfoText";
+    [ResourceKey(defaultValue: "Play Video")]
+    public const string PlayVideoTextKey = "PlayVideoText";
+    [ResourceKey(defaultValue: "What is {0}")]
+    public const string WhatIsTextKey = "WhatIsText";
+    [ResourceKey(defaultValue: "{0} is The Next Generation Of Video Sharing Portals focused on Users and Transparency. A platform which helps you improve your digital marketing strategies surrounding your video. Ideal for entrepreneurs, and content-creators.")]
+    public const string WhatIsDescriptionTextKey = "WhatIsDescriptionText";
+    [ResourceKey(defaultValue: "Check out FairPlayTube: The Next Generation of Video Sharing, empowering entrepreneurs, digital marketers, and those impacted by global layoffs!")]
+    public const string SharePageMessageTextKey = "SharePageMessageTextKey";
+    #endregion Resource Keys
 }

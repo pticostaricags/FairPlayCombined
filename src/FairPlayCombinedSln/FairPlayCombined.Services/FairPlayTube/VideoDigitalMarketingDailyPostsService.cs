@@ -10,6 +10,7 @@ using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
+using System.Text;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
@@ -35,7 +36,8 @@ namespace FairPlayCombined.Services.FairPlayTube
             this.userFundService = userFundService;
             this.openAIService = openAIService;
         }
-        public async Task<string> CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(long videoInfoId, CancellationToken cancellationToken)
+        public async Task<string> CreateVideoDigitalMarketingDailyPostsForLinkedInAsync
+            (long videoInfoId, string languageCode, CancellationToken cancellationToken)
         {
             var hasRequiredFunds = await userFundService.HasFundsToCreateDailyPostsAsync(cancellationToken);
             if (!hasRequiredFunds)
@@ -58,8 +60,12 @@ namespace FairPlayCombined.Services.FairPlayTube
                     EnglishCaptions = p.VideoCaptions.Single(p => p.Language == "en-US").Content
                 })
                 .SingleAsync(cancellationToken);
+            StringBuilder promptBuilder = new(promptEntity.BaseText);
+
+            promptBuilder.AppendLine("Posts are for LinkedIn");
+            promptBuilder.AppendLine($"The posts must be in language culture: {languageCode}");
             var userMessage = $"Today's Date: {DateTimeOffset.UtcNow.Date}. Video Title: {videoDataEntity.Description}. Video Captions: {videoDataEntity.EnglishCaptions}";
-            var result = await this.openAIService.GenerateChatCompletionAsync(promptEntity.BaseText,
+            var result = await this.openAIService.GenerateChatCompletionAsync(promptBuilder.ToString(),
                 userMessage, cancellationToken);
             var resultText = result!.choices![0].message!.content;
             await dbContext.VideoDigitalMarketingDailyPosts.AddAsync(new()
@@ -67,6 +73,48 @@ namespace FairPlayCombined.Services.FairPlayTube
                 HtmlVideoDigitalMarketingDailyPostsIdeas = resultText,
                 OpenAipromptId = result.OpenAIPromptId,
                 SocialNetworkName = "LinkedIn",
+                VideoInfoId = videoInfoId
+            }, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+            return resultText!;
+        }
+
+        public async Task<string> CreateVideoDigitalMarketingDailyPostsForTwitterAsync
+            (long videoInfoId, string languageCode, CancellationToken cancellationToken)
+        {
+            var hasRequiredFunds = await userFundService.HasFundsToCreateDailyPostsAsync(cancellationToken);
+            if (!hasRequiredFunds)
+            {
+                string message = "You don't have available funds left to perform the operation.";
+                throw new RuleException(message);
+            }
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var promptEntity = await dbContext.Prompt
+                .AsNoTracking()
+                .SingleAsync(p => p.PromptName ==
+                Constants.PromptsNames.CreateVideoDailyPosts, cancellationToken);
+            var videoDataEntity = await dbContext.VideoInfo
+                .AsNoTracking()
+                .Where(p => p.VideoInfoId == videoInfoId)
+                .Select(p => new
+                {
+                    p.Name,
+                    p.Description,
+                    EnglishCaptions = p.VideoCaptions.Single(p => p.Language == "en-US").Content
+                })
+                .SingleAsync(cancellationToken);
+            StringBuilder promptBuilder = new(promptEntity.BaseText);
+            promptBuilder.AppendLine("Posts are for Twitter/X");
+            promptBuilder.AppendLine($"The posts must be in language culture: {languageCode}");
+            var userMessage = $"Today's Date: {DateTimeOffset.UtcNow.Date}. Video Title: {videoDataEntity.Description}. Video Captions: {videoDataEntity.EnglishCaptions}";
+            var result = await this.openAIService.GenerateChatCompletionAsync(promptBuilder.ToString(),
+                userMessage, cancellationToken);
+            var resultText = result!.choices![0].message!.content;
+            await dbContext.VideoDigitalMarketingDailyPosts.AddAsync(new()
+            {
+                HtmlVideoDigitalMarketingDailyPostsIdeas = resultText,
+                OpenAipromptId = result.OpenAIPromptId,
+                SocialNetworkName = "Twitter",
                 VideoInfoId = videoInfoId
             }, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);

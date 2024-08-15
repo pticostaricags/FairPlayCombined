@@ -21,12 +21,12 @@
                 @nameof(FairPlayTube)
             </FluentLabel>
         </div>
+        <FluentTextField @bind-Value="@this.SearchTerm" Placeholder="Search">
+        </FluentTextField>
+        <FluentButton Type="ButtonType.Button" OnClick="OnSearchButtonClicked"
+                      IconEnd="@(new Icons.Regular.Size20.Search())">
+        </FluentButton>
     </Header>
-    <SubHeader>
-        <FluentLabel Typo="Typography.H2" Alignment="HorizontalAlignment.Center">
-            @localizer[ApplicationSubHeaderTextKey]
-        </FluentLabel>
-    </SubHeader>
     <Body>
         <AuthorizeView>
             <Authorized>
@@ -58,6 +58,9 @@
     private System.Timers.Timer? VisitsTimer { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private long? VisitorTrackingId { get; set; }
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? SearchTerm { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -132,15 +135,22 @@
         }
     }
 
+    private void OnSearchButtonClicked()
+    {
+        if (!String.IsNullOrWhiteSpace(this.SearchTerm))
+        {
+            this.navigationManager.NavigateTo($"/?SearchTerm={this.SearchTerm}",
+            forceLoad: true);
+        }
+        else
+        {
+            this.navigationManager.NavigateTo($"/", forceLoad: true);
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
         await this.cancellationTokenSource.CancelAsync();
         this.cancellationTokenSource.Dispose();
     }
-
-
-    #region Resource Keys
-    [ResourceKey(defaultValue: Constants.ApplicationTitles.FairPlayTube)]
-    public const string ApplicationSubHeaderTextKey = "ApplicationSubHeaderText";
-    #endregion Resource Keys
 }

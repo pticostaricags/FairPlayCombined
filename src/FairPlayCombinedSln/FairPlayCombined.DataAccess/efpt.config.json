@@ -47,7 +47,19 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Company]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[ConfigurationSecret]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Contact]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ContactCompany]",
          "ObjectType": 0
       },
       {
@@ -120,6 +132,10 @@
       },
       {
          "Name": "[dbo].[UserMessage]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserMonetizationProfile]",
          "ObjectType": 0
       },
       {

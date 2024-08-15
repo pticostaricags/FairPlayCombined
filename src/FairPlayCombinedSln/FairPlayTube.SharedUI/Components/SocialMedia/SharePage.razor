@@ -1,0 +1,77 @@
+﻿@using System.Net
+@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+
+@inject IStringLocalizer<SharePage> localizer
+
+<FluentAnchor Id="lnkShareOnLinkedIn"
+              Href="@($"https://www.linkedin.com/shareArticle?mini=true&text={WebUtility.UrlEncode(this.Description)}&url={WebUtility.UrlEncode(this.Url)}")"
+              Target="_blank"
+              Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
+    <i class="bi bi-linkedin" style="font-size:larger;"></i>
+</FluentAnchor>
+<FluentTooltip Anchor="lnkShareOnLinkedIn">
+    @localizer[ShareOnLinkedInTextKey]
+</FluentTooltip>
+
+<FluentAnchor Id="lnkShareOnX"
+              Href="@($"https://twitter.com/intent/tweet?text={WebUtility.UrlEncode(this.Description)}&url={WebUtility.UrlEncode(this.Url)}")"
+              Target="_blank"
+              Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
+    <i class="bi bi-twitter-x" style="font-size:larger;"></i>
+</FluentAnchor>
+<FluentTooltip Anchor="lnkShareOnX">
+    @localizer[ShareOnXTextKey]
+</FluentTooltip>
+
+<FluentAnchor Id="lnkShareOnFacebook"
+              Href="@($"https://www.facebook.com/sharer/sharer.php?u={WebUtility.UrlEncode(this.Url)}")"
+              Target="_blank"
+              Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
+    <i class="bi bi-facebook" style="font-size:larger;"></i>
+</FluentAnchor>
+<FluentTooltip Anchor="lnkShareOnFacebook">
+    @localizer[ShareOnFacebookTextKey]
+</FluentTooltip>
+
+<FluentAnchor Id="lnkShareOnWhatsApp"
+              Href="@($"https://api.whatsapp.com/send?text={WebUtility.UrlEncode(this.Url)}")"
+              Target="_blank"
+              Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
+    <i class="bi bi-whatsapp" style="font-size:larger;"></i>
+</FluentAnchor>
+<FluentTooltip Anchor="lnkShareOnWhatsApp">
+    @localizer[ShareOnWhatsAppTextKey]
+</FluentTooltip>
+
+<FluentAnchor Id="lnkShareOnEmail"
+              Href="@($"mailto:?&subject=&body={WebUtility.UrlEncode(this.Url)}")"
+              Target="_blank"
+              Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
+    <i class="bi bi-envelope-fill" style="font-size:larger;"></i>
+</FluentAnchor>
+<FluentTooltip Anchor="lnkShareOnEmail">
+    @localizer[ShareOnEmailTextKey]
+</FluentTooltip>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string? Description { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Url { get; set; }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Share on LinkedIn")]
+    public const string ShareOnLinkedInTextKey = "ShareOnLinkedInText";
+    [ResourceKey(defaultValue: "Share on X (Formerly Twitter)")]
+    public const string ShareOnXTextKey = "ShareOnXText";
+    [ResourceKey(defaultValue: "Share on Facebook")]
+    public const string ShareOnFacebookTextKey = "ShareOnFacebookText";
+    [ResourceKey(defaultValue: "Share on WhatsApp")]
+    public const string ShareOnWhatsAppTextKey = "ShareOnWhatsAppText";
+    [ResourceKey(defaultValue: "Share on Email")]
+    public const string ShareOnEmailTextKey = "ShareOnEmailText";
+    #endregion Resource Keys
+}
