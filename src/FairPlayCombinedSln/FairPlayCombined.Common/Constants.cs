@@ -45,6 +45,11 @@
             }
             public static class FairPlayTubeRoutes
             {
+                public static class PublicRoutes
+                {
+                    public const string PrivacyPolicy = $"/{nameof(PrivacyPolicy)}";
+                    public const string UsageTerms = $"/{nameof(UsageTerms)}";
+                }
                 public static class CreatorRoutes
                 {
                     public const string MyVideos = $"/Creator/{nameof(MyVideos)}";
