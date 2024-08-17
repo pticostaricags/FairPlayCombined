@@ -1,13 +1,18 @@
 ﻿@implements IAsyncDisposable
 
 @using System.ComponentModel.DataAnnotations
+@using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Google.Apis.YouTube.v3.Data
+@using Microsoft.Extensions.Localization
 @inject IYouTubeClientService youTubeClientService
 @inject IToastService toastService
+@inject IStringLocalizer<SearchYouTubeVideo> localizer
 
-<h3>SearchYouTubeVideo</h3>
+<h3>
+    @localizer[SearchYouTubeVideoTextKey]
+</h3>
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
     <FluentEditForm Model="this.searchYoutubeVideoModel" OnValidSubmit="OnValidSubmitAsync">
@@ -17,8 +22,10 @@
         </div>
         <div>
             <FluentLabel Typo="Typography.Body"></FluentLabel>
-            <FluentTextField Placeholder="Video Title" @bind-Value="this.searchYoutubeVideoModel!.VideoTitle"></FluentTextField>
-            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Search</FluentButton>
+            <FluentTextField Placeholder="@localizer[VideoTitleTextKey]" @bind-Value="this.searchYoutubeVideoModel!.VideoTitle"></FluentTextField>
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">
+                @localizer[SearchTextKey]
+            </FluentButton>
         </div>
     </FluentEditForm>
 </div>
@@ -77,4 +84,13 @@
         this.cancellationTokenSource.Dispose();
         return ValueTask.CompletedTask;
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Search YouTube Video")]
+    public const string SearchYouTubeVideoTextKey = "SearchYouTubeVideoText";
+    [ResourceKey(defaultValue: "Video Title")]
+    public const string VideoTitleTextKey = "VideoTitleText";
+    [ResourceKey(defaultValue: "Search")]
+    public const string SearchTextKey = "SearchText";
+    #endregion
 }
