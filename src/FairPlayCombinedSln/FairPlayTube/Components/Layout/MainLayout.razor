@@ -15,17 +15,24 @@
 
 <FluentMainLayout NavMenuWidth="400">
     <Header>
-        <div class="header-content">
-            <img src="images/brand-logo.png" alt="@nameof(FairPlayTube) Logo" class="logo" />
-            <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center">
+        <div class="header-content" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
+            <img src="images/brand-logo.png" alt="@nameof(FairPlayTube) Logo" class="logo" style="max-width: 100%; height: auto;" />
+            <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center" style="display: flex; align-items: center; flex-wrap: nowrap;">
                 @nameof(FairPlayTube)
+                <FluentBadge Circular="true"
+                             Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Neutral"
+                             style="margin-left: 8px; white-space: nowrap;">
+                    Beta
+                </FluentBadge>
             </FluentLabel>
         </div>
-        <FluentTextField @bind-Value="@this.SearchTerm" Placeholder="Search">
-        </FluentTextField>
-        <FluentButton Type="ButtonType.Button" OnClick="OnSearchButtonClicked"
-                      IconEnd="@(new Icons.Regular.Size20.Search())">
-        </FluentButton>
+        <div class="search-controls" style="display: flex; align-items: center; margin-top: 16px;">
+            <FluentTextField @bind-Value="@this.SearchTerm" Placeholder="Search" style="flex: 1 1 auto;">
+            </FluentTextField>
+            <FluentButton Type="ButtonType.Button" OnClick="OnSearchButtonClicked"
+                          IconEnd="@(new Icons.Regular.Size20.Search())" style="margin-left: 8px;">
+            </FluentButton>
+        </div>
     </Header>
     <Body>
         <AuthorizeView>
@@ -39,6 +46,7 @@
         <NavMenu></NavMenu>
     </NavMenuContent>
 </FluentMainLayout>
+
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
