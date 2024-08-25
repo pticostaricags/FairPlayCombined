@@ -96,13 +96,13 @@
     private static IComponentRenderMode ServerWithPrerender = new InteractiveServerRenderMode(prerender: true);
     protected override void OnParametersSet()
     {
+        if (!this.HttpContext!.AcceptsInteractiveRouting())
+        {
+            this.PageRenderMode = null;
+            return;
+        }
         if (HttpContext.AcceptsInteractiveRouting())
         {
-            if (!this.HttpContext!.AcceptsInteractiveRouting())
-            {
-                this.PageRenderMode = null;
-                return;
-            }
             if (navigationManager.Uri.IndexOf("/User/") >= 0 || 
             navigationManager.Uri.IndexOf("/Creator/") >= 0)
             {
