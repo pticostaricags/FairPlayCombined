@@ -10,7 +10,17 @@ namespace FairPlayTube.ClientServices
         KiotaClient.ApiClient anonymousClient
         ) : IVideoInfoService
     {
+        public Task CreateDescriptionForVideoAsync(long videoInfoId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<long> CreateVideoInfoAsync(CreateVideoInfoModel createModel, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteMyVideoAsync(long videoInfoId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -47,6 +57,11 @@ namespace FairPlayTube.ClientServices
                 TotalItems=result.TotalItems!.Value,
                 TotalPages=result.TotalPages!.Value,
             };
+        }
+
+        public Task<PaginationOfT<VideoInfoModel>> GetPaginatedCompletedVideoInfoAsync(PaginationRequest paginationRequest, string? searchTerm, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<PaginationOfT<VideoInfoModel>> GetPaginatedCompletedVideoInfobyUserIdAsync(PaginationRequest paginationRequest, string userId, CancellationToken cancellationToken)
