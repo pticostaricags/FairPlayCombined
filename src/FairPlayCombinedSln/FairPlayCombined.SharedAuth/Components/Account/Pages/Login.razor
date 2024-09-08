@@ -12,58 +12,52 @@
 
 <PageTitle>Log in</PageTitle>
 
-<FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.H1">
-    Log in
-</FluentLabel>
+<h1>Log in</h1>
 <div class="row">
     <div class="col-md-4">
         <section>
             <StatusMessage Message="@errorMessage" />
-            <FluentEditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                 <DataAnnotationsValidator />
-                <FluentLabel Typo="Typography.H2">Use a local account to log in.</FluentLabel>
+                <h2>Use a local account to log in.</h2>
                 <hr />
-                <FluentValidationSummary class="text-danger" role="alert" />
-                <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
-                    <FluentTextField @bind-Value="Input.Email" AutoComplete="username" 
-                    aria-required="true" Placeholder="name@example.com" 
-                    InputMode="InputMode.Email" TextFieldType="TextFieldType.Email" />
-                    <FluentLabel for="email">Email</FluentLabel>
-                    <FluentValidationMessage For="() => Input.Email" class="text-danger" />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label for="email" class="form-label">Email</label>
+                    <ValidationMessage For="() => Input.Email" class="text-danger" />
                 </div>
-                <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
-                    <FluentTextField TextFieldType="TextFieldType.Password" 
-                    @bind-Value="Input.Password" AutoComplete="current-password" aria-required="true" 
-                    Placeholder="password" />
-                    <FluentLabel for="password">Password</FluentLabel>
-                    <FluentValidationMessage For="() => Input.Password" class="text-danger" />
+                <div class="form-floating mb-3">
+                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label for="password" class="form-label">Password</label>
+                    <ValidationMessage For="() => Input.Password" class="text-danger" />
                 </div>
-                <div class="checkbox @ThemeConfiguration.Divisions.DefaultCss">
-                    <FluentLabel>
-                        <FluentCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
+                <div class="checkbox mb-3">
+                    <label class="form-label">
+                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
                         Remember me
-                    </FluentLabel>
+                    </label>
                 </div>
                 <div>
-                    <FluentButton Type="ButtonType.Submit">Log in</FluentButton>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                 </div>
                 <div>
                     <p>
-                        <FluentAnchor Href="Account/ForgotPassword">Forgot your password?</FluentAnchor>
+                        <a href="Account/ForgotPassword">Forgot your password?</a>
                     </p>
                     <p>
-                        <FluentAnchor Href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</FluentAnchor>
+                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
                     </p>
                     <p>
-                        <FluentAnchor Href="Account/ResendEmailConfirmation">Resend email confirmation</FluentAnchor>
+                        <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
                     </p>
                 </div>
-            </FluentEditForm>
+            </EditForm>
         </section>
     </div>
     <div class="col-md-6 col-md-offset-2">
         <section>
-            <FluentLabel Typo="Typography.H3">Use another service to log in.</FluentLabel>
+            <h3>Use another service to log in.</h3>
             <hr />
             <ExternalLoginPicker />
         </section>

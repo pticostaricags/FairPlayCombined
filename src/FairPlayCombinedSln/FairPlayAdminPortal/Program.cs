@@ -1,6 +1,5 @@
 
 using FairPlayAdminPortal.Components;
-using FairPlayAdminPortal.Components.Account;
 using FairPlayAdminPortal.Data;
 using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
@@ -12,6 +11,7 @@ using FairPlayCombined.Services.AI.Extensions;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlayDating;
+using FairPlayCombined.SharedAuth.Components.Account;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -111,7 +111,8 @@ app.UseAntiforgery();
 await app.UseDatabaseDrivenLocalization();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(FairPlayAdminPortal.UIConfiguration.AdditionalSetup.AdditionalAssemblies);
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
