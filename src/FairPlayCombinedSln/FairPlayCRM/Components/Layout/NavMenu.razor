@@ -18,6 +18,17 @@
                 @localizer[CreateContactTextKey]
             </FluentNavLink>
         </FluentNavGroup>
+        <FluentNavGroup Title="@localizer[CompaniesTextKey]" Expanded="ShouldExpandCompaniesGroup"
+                        Icon="@(new Icons.Regular.Size20.ContactCardGroup())">
+            <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListCompanies"
+                           Icon="@(new Icons.Regular.Size20.BookContacts())">
+                @localizer[ListCompaniesTextKey]
+            </FluentNavLink>
+            <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.CreateCompany"
+                           Icon="@(new Icons.Regular.Size20.Add())">
+                @localizer[CreateCompanyTextKey]
+            </FluentNavLink>
+        </FluentNavGroup>
     </Authorized>
 </AuthorizeView>
 
@@ -50,6 +61,7 @@
     private string? currentUrl;
     private bool ShouldExpandAccountsGroup => this.NavigationManager.Uri.IndexOf("/Account") >= 0;
     private bool ShouldExpandContactsGroup => this.NavigationManager.Uri.IndexOf("/Contacts") >= 0;
+    private bool ShouldExpandCompaniesGroup => this.NavigationManager.Uri.IndexOf("/Companies") >= 0;
     private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override void OnInitialized()
@@ -90,5 +102,11 @@
     public const string ListContactsTextKey = "ListContactsText";
     [ResourceKey(defaultValue: "Create Contact")]
     public const string CreateContactTextKey = "CreateContactText";
+    [ResourceKey(defaultValue: "Companies")]
+    public const string CompaniesTextKey = "CompaniesText";
+    [ResourceKey(defaultValue: "List Companies")]
+    public const string ListCompaniesTextKey = "ListCompaniesText";
+    [ResourceKey(defaultValue: "Create Company")]
+    public const string CreateCompanyTextKey = "CreateCompanyText";
     #endregion Resource Keys
 }

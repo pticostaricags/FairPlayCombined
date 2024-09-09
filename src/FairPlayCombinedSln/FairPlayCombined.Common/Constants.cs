@@ -68,8 +68,11 @@
             {
                 public static class UserRoutes
                 {
-                    public const string ListContacts = $"/User/{nameof(ListContacts)}";
-                    public const string CreateContact = $"/User/{nameof(CreateContact)}";
+                    public const string ListContacts = $"/User/Contacts/{nameof(ListContacts)}";
+                    public const string CreateContact = $"/User/Contacts/{nameof(CreateContact)}";
+
+                    public const string ListCompanies = $"/User/Companies/{nameof(ListCompanies)}";
+                    public const string CreateCompany = $"/User/Companies/{nameof(CreateCompany)}";
                 }
             }
         }

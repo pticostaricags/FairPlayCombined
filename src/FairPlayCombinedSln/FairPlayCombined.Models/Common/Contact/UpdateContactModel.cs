@@ -1,7 +1,7 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace FairPlayCombined.Models.Common.Contacts
+namespace FairPlayCombined.Models.Common.Contact
 {
     public class UpdateContactModel : IUpdateModel
     {

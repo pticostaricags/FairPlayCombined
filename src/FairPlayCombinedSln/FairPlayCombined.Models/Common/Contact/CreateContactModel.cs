@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FairPlayCombined.Models.Common.Contacts
+namespace FairPlayCombined.Models.Common.Contact
 {
     public class CreateContactModel : ICreateModel
     {

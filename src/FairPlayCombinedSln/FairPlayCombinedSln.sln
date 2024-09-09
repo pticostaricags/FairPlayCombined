@@ -89,7 +89,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCRM.SharedUI", "Fai
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCRM", "FairPlayCRM\FairPlayCRM.csproj", "{B87BAAA1-1067-4E43-953A-91C3B8AD7AFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.SharedAuth", "FairPlayCombined.SharedAuth\FairPlayCombined.SharedAuth.csproj", "{B62337AF-F8C4-4EC1-9C01-281112EDB877}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.SharedAuth", "FairPlayCombined.SharedAuth\FairPlayCombined.SharedAuth.csproj", "{B62337AF-F8C4-4EC1-9C01-281112EDB877}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

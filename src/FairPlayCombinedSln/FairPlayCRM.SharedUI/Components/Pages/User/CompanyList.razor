@@ -3,19 +3,19 @@
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Interfaces.Common
-@using FairPlayCombined.Models.Common.Contact
+@using FairPlayCombined.Models.Common.Company
 @using Microsoft.Extensions.Localization
 
-@attribute [Route(Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListContacts)]
+@attribute [Route(Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListCompanies)]
 @attribute [Authorize]
 
-@inject IStringLocalizer<ContactList> localizer
-@inject IContactService contactService
+@inject IStringLocalizer<CompanyList> localizer
+@inject ICompanyService CompanyService
 
-<PageTitle>@nameof(FairPlayCRM) - @localizer[ListContactsPageTitleTextKey]</PageTitle>
+<PageTitle>@nameof(FairPlayCRM) - @localizer[ListCompaniesPageTitleTextKey]</PageTitle>
 
 <h3>
-    @localizer[ListContactsPageTitleTextKey]
+    @localizer[ListCompaniesPageTitleTextKey]
 </h3>
 
 <LoadingIndicator ShowSpinners="@this.IsBusy"></LoadingIndicator>
@@ -26,13 +26,9 @@
         <div style="overflow-x: auto;">
             <FluentDataGrid Style="min-width: max-content;" ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
                 <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.Lastname)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.EmailAddress)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.LinkedInProfileUrl)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.Phone)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.WebsiteUrl)"></PropertyColumn>
                 <PropertyColumn Property="@(p=>p.YouTubeChannelUrl)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.BusinessPhoneNumber)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.MobilePhoneNumber)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.BirthDate)"></PropertyColumn>
             </FluentDataGrid>
         </div>
     </div>
@@ -40,7 +36,7 @@
 }
 
 @code {
-    private GridItemsProvider<ContactModel>? ItemsProvider { get; set; }
+    private GridItemsProvider<CompanyModel>? ItemsProvider { get; set; }
     private PaginationState paginationState { get; set; } = new()
         {
             ItemsPerPage = FairPlayCombined.Common.Constants.Pagination.PageSize
@@ -62,18 +58,13 @@
                     {
                         new SortingItem()
                         {
-                            PropertyName=nameof(ContactModel.Name),
-                            SortType = FairPlayCombined.Common.GeneratorsAttributes.SortType.Ascending
-                        },
-                        new SortingItem()
-                        {
-                            PropertyName=nameof(ContactModel.Lastname),
+                            PropertyName=nameof(CompanyModel.Name),
                             SortType = FairPlayCombined.Common.GeneratorsAttributes.SortType.Ascending
                         }
                     }
                 };
-            var items = await this.contactService.GetPaginatedContactAsync(paginationRequest, this.cancellationTokenSource.Token);
-            var result = GridItemsProviderResult.From<ContactModel>(items.Items!, items.TotalItems);
+            var items = await this.CompanyService.GetPaginatedCompanyAsync(paginationRequest, this.cancellationTokenSource.Token);
+            var result = GridItemsProviderResult.From<CompanyModel>(items.Items!, items.TotalItems);
             this.IsBusy = false;
             StateHasChanged();
             return result;
@@ -88,7 +79,7 @@
     }
 
     #region Resource Keys
-    [ResourceKey(defaultValue: "List Contacts")]
-    public const string ListContactsPageTitleTextKey = "ListContactsPageTitleText";
+    [ResourceKey(defaultValue: "List Companies")]
+    public const string ListCompaniesPageTitleTextKey = "ListCompaniesPageTitleText";
     #endregion Resource Keys
 }

@@ -1,24 +1,24 @@
-using FairPlayCombined.Models.Common.Contact;
+﻿using FairPlayCombined.Models.Common.Company;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.Interfaces.Common;
-public interface IContactService
+public interface ICompanyService
 {
-    Task<long> CreateContactAsync(
-    CreateContactModel createModel,
+    Task<long> CreateCompanyAsync(
+    CreateCompanyModel createModel,
     CancellationToken cancellationToken
     );
-    Task<ContactModel[]> GetAllContactAsync(
+    Task<CompanyModel[]> GetAllCompanyAsync(
     CancellationToken cancellationToken);
-    Task<ContactModel> GetContactByIdAsync(
+    Task<CompanyModel> GetCompanyByIdAsync(
     long id,
     CancellationToken cancellationToken);
-    Task DeleteContactByIdAsync(
+    Task DeleteCompanyByIdAsync(
     long id,
     CancellationToken cancellationToken);
-    Task<PaginationOfT<ContactModel>> GetPaginatedContactAsync(
+    Task<PaginationOfT<CompanyModel>> GetPaginatedCompanyAsync(
     PaginationRequest paginationRequest,
     CancellationToken cancellationToken);
 }
