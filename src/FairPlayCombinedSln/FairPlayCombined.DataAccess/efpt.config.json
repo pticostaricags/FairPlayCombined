@@ -334,6 +334,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoPassiveIncome]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoPlan]",
          "ObjectType": 0
       },

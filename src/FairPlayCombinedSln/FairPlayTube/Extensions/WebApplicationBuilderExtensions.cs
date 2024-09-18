@@ -77,7 +77,7 @@ namespace FairPlayTube.Extensions
             builder.Services.AddTransient<IApiResolver, ApiResolver>();
             builder.Services.AddTransient<IFairPlayTubeUserDataService, FairPlayTubeUserDataService>();
             builder.Services.AddTransient<IFairPlayTubeBillingService, FairPlayTubeBillingService>();
-            builder.Services.AddSingleton<IpDataConfiguration>(sp => 
+            builder.Services.AddSingleton<IpDataConfiguration>(sp =>
             {
                 var ipDataKey = builder.Configuration["IpDataKey"] ??
                 throw new InvalidOperationException("'IpDataKey' not found");
@@ -90,6 +90,7 @@ namespace FairPlayTube.Extensions
             builder.Services.AddTransient<IVisitorTrackingService, VisitorTrackingService>();
             builder.Services.AddTransient<IUserFundsUniqueCodesService, UserFundsUniqueCodesService>();
             builder.Services.AddTransient<IImageStyleService, ImageStyleService>();
+            builder.Services.AddTransient<IVideoPassiveIncomeIdeaService, VideoPassiveIncomeIdeaService>();
         }
     }
 }

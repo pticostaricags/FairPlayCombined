@@ -174,6 +174,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<VideoKeyword> VideoKeyword { get; set; }
 
+    public virtual DbSet<VideoPassiveIncome> VideoPassiveIncome { get; set; }
+
     public virtual DbSet<VideoPlan> VideoPlan { get; set; }
 
     public virtual DbSet<VideoPlanThumbnail> VideoPlanThumbnail { get; set; }
@@ -698,6 +700,17 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoKeyword)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoKeyword_VideoInfo");
+        });
+
+        modelBuilder.Entity<VideoPassiveIncome>(entity =>
+        {
+            entity.HasOne(d => d.OpenAiprompt).WithMany(p => p.VideoPassiveIncome)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoPassiveIncome_OpenAIPrompt");
+
+            entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoPassiveIncome)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoPassiveIncome_VideoInfo");
         });
 
         modelBuilder.Entity<VideoPlan>(entity =>

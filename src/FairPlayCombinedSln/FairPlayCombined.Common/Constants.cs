@@ -26,6 +26,7 @@
         }
         public static class PromptsNames
         {
+            #region FairPlayTube
             public const string CreateYouTubeThumbnail = "YouTubeThumbnail";
             public const string CreateVideoPassiveIncomeStrategy = nameof(CreateVideoPassiveIncomeStrategy);
             public const string CreateVideoLinkedInArticle = nameof(CreateVideoLinkedInArticle);
@@ -33,9 +34,13 @@
             public const string CreateDigitalMarketingIdeas = nameof(CreateDigitalMarketingIdeas);
             public const string CreateVideoInfographic = nameof(CreateVideoInfographic);
             public const string CreateNewVideoRecommendationIdea = nameof(CreateNewVideoRecommendationIdea);
+            #endregion FairPlayTube
+
+            #region FairPlayDating
             public const string AnalyzeDatingProfilePhoto = nameof(AnalyzeDatingProfilePhoto);
             public const string CreateDatingProfileAboutMe = nameof(CreateDatingProfileAboutMe);
             public const string AnalyzePotentialMatch = nameof(AnalyzePotentialMatch);
+            #endregion FairPlayDating
         }
         public static class Routes
         {
