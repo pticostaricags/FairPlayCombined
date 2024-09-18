@@ -6,6 +6,7 @@
             CancellationToken cancellationToken);
         Task SaveVideoDigitalMarketingPlanAsync(long videoInfoId, string htmlDigitalMarketingPlan,
             string socialNetworkName, bool replaceExistent, CancellationToken cancellationToken);
-        Task<string> CreateVideoDigitalMarketingPlanAsync(long videoInfoId, CancellationToken cancellationToken);
+        Task<string> CreateVideoDigitalMarketingPlanAsync(long videoInfoId, string languageCode,
+            CancellationToken cancellationToken);
     }
 }
