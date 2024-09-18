@@ -33,11 +33,16 @@
     </FluentButton>
 </div>
 <div>
-    @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
+    @if (this.DigitalMarketingIdeas?.Count > 0)
     {
-        <p>
-            @((MarkupString)this.DigitalMarketingIdeas)
-        </p>
+        foreach (var singleDigitalMarketingIdea in this.DigitalMarketingIdeas)
+        {
+            <div>
+                <p>
+                    @((MarkupString)singleDigitalMarketingIdea)
+                </p>
+            </div>
+        }
     }
 </div>
 
@@ -47,7 +52,7 @@
     public long? VideoInfoId { get; set; }
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    private string? DigitalMarketingIdeas { get; set; }
+    private List<string>? DigitalMarketingIdeas { get; set; }
     private string? RevisedPrompt { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -56,12 +61,12 @@
         StateHasChanged();
         var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
         cancellationToken: this.cancellationTokenSource.Token);
-        this.DigitalMarketingIdeas = await this.videoDigitalMarketingPlanService
-        .GetVideoDigitalMarketingPlanAsync(
+        this.DigitalMarketingIdeas = (await this.videoDigitalMarketingPlanService
+        .GetVideoDigitalMarketingPlansAsync(
             videoInfoId: videoInfoModel.VideoInfoId,
             socialNetworkName: "LinkedIn",
-            cancellationToken: this.cancellationTokenSource.Token);
-        if (String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
+            cancellationToken: this.cancellationTokenSource.Token))?.ToList();
+        if (this.DigitalMarketingIdeas is null)
         {
             await this.GenerateDigitalMarketingIdeasAsync();
         }
@@ -80,8 +85,9 @@
 
     private async Task GenerateDigitalMarketingIdeasAsync()
     {
-        this.DigitalMarketingIdeas =
+        var result =
         await this.videoDigitalMarketingPlanService.CreateVideoDigitalMarketingPlanAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
+        this.DigitalMarketingIdeas?.Add(result);
         StateHasChanged();
     }
 

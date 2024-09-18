@@ -14,7 +14,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         IOpenAIService openAIService)
         : BaseService, IVideoDigitalMarketingPlanService
     {
-        public async Task<string?> GetVideoDigitalMarketingPlanAsync(
+        public async Task<string[]?> GetVideoDigitalMarketingPlansAsync(
             long videoInfoId,
             string socialNetworkName,
             CancellationToken cancellationToken)
@@ -23,7 +23,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             var result = await dbContext.VideoDigitalMarketingPlan.Where(
                 p => p.VideoInfoId == videoInfoId && p.SocialNetworkName == socialNetworkName)
                 .Select(p => p.HtmlDigitalMarketingPlan)
-                .SingleOrDefaultAsync(cancellationToken: cancellationToken);
+                .ToArrayAsync(cancellationToken: cancellationToken);
             return result;
         }
         public async Task SaveVideoDigitalMarketingPlanAsync(long videoInfoId,
