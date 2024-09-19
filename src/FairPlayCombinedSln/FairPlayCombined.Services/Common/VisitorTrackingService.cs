@@ -28,7 +28,15 @@ namespace FairPlayCombined.Services.Common
                 {
                     referer = httpContext!.Request.Headers.Referer.ToString();
                 }
-                var remoteIpAddress = httpContext!.Connection.RemoteIpAddress!.ToString();
+                string? remoteIpAddress = null;
+                if (httpContext != null && httpContext.Connection.RemoteIpAddress != null)
+                {
+                    remoteIpAddress = httpContext!.Connection.RemoteIpAddress!.ToString();
+                }
+                else
+                {
+                    remoteIpAddress = "Unknown";
+                }
                 if (remoteIpAddress == "::1")
                 {
                     var ipAddresses = await IpAddressProvider.GetCurrentHostIPv4AddressesAsync();
@@ -37,7 +45,7 @@ namespace FairPlayCombined.Services.Common
                 var parsedIpAddress = System.Net.IPAddress.Parse(remoteIpAddress);
                 var ipGeoLocationInfo = await ipDataService.GetIpGeoLocationInfoAsync(ipAddress: parsedIpAddress, cancellationToken);
                 string? country = ipGeoLocationInfo?.country_name;
-                var host = httpContext.Request!.Host.Value;
+                var host = httpContext!.Request!.Host.Value;
                 var userAgent = httpContext.Request.Headers!.UserAgent.ToString();
                 AspNetUsers? userEntity = null;
                 if (!String.IsNullOrWhiteSpace(visitorTrackingModel.ApplicationUserId))

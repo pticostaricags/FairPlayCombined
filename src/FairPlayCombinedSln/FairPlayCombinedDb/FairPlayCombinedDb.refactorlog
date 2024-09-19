@@ -126,4 +126,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="WebsiteUrl" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="e7c611c2-7ea2-40f6-a18a-e15d9aff750e" ChangeDateTime="09/18/2024 21:37:50">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoPassiveIncome].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoPassiveIncome]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoPassiveIncome" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="da789729-13ec-424a-a877-0129d72462e5" ChangeDateTime="09/18/2024 21:37:53">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoPassiveIncome].[VideoPassiveIncome]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoPassiveIncome]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoPassiveIncomeId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b0566b66-e20e-4ca0-87f5-43bdbdcc178d" ChangeDateTime="09/18/2024 21:54:08">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoPassiveIncome].[VideoPassiveIncomeId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoPassiveIncome]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="VideoPassiveIncomeIdeaId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="34b39e4d-7043-4f43-8525-c360eac58afd" ChangeDateTime="09/18/2024 21:54:12">
+    <Property Name="ElementName" Value="[FairPlayTube].[VideoPassiveIncome].[HtmlPassiveIncome]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FairPlayTube].[VideoPassiveIncome]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="HtmlPassiveIncomeIdea" />
+  </Operation>
 </Operations>

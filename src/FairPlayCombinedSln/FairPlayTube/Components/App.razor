@@ -1,4 +1,5 @@
 ﻿@inject IConfiguration configuration
+@inject NavigationManager navigationManager
 @{
     string payPalClientId = configuration["PayPalClientId"]!;
     string payPalScriptSrc = $"https://www.paypal.com/sdk/js?client-id={payPalClientId}&enable-funding=venmo&currency=USD";
@@ -46,12 +47,11 @@
     <!--VideoJS-->
     <link href="video-js.min.css" rel="stylesheet" />
 
-
-    <HeadOutlet @rendermode="RenderMode.InteractiveServer" />
+    <HeadOutlet @rendermode="@PageRenderMode" />
 </head>
 
 <body>
-    <Routes @rendermode="PageRenderMode" />
+    <Routes @rendermode="@PageRenderMode" />
     <script src="scripts/videojs/video.min.js"></script>
     <script src="scripts/videojs.js"></script>
     <script src="_framework/blazor.web.js"></script>
@@ -91,6 +91,27 @@
 {
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
-    private IComponentRenderMode? PageRenderMode =>
-        HttpContext.AcceptsInteractiveRouting() ? RenderMode.InteractiveServer : null;
+    private IComponentRenderMode? PageRenderMode { get; set; }
+    private static IComponentRenderMode ServerNoPrerender = new InteractiveServerRenderMode(prerender: false);
+    private static IComponentRenderMode ServerWithPrerender = new InteractiveServerRenderMode(prerender: true);
+    protected override void OnParametersSet()
+    {
+        if (!this.HttpContext!.AcceptsInteractiveRouting())
+        {
+            this.PageRenderMode = null;
+            return;
+        }
+        if (HttpContext.AcceptsInteractiveRouting())
+        {
+            if (navigationManager.Uri.IndexOf("/User/") >= 0 || 
+            navigationManager.Uri.IndexOf("/Creator/") >= 0)
+            {
+                this.PageRenderMode = ServerNoPrerender;
+            }
+            else
+            {
+                this.PageRenderMode = ServerWithPrerender;
+            }
+        }
+    }
 }

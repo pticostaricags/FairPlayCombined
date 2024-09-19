@@ -86,6 +86,14 @@
     </FluentNavGroup>
 </AuthorizeView>
 
+<FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.PublicRoutes.PrivacyPolicy"
+               Icon="@(new Icons.Regular.Size20.Note())">
+    @localizer[PrivacyPolicyTextKey]
+</FluentNavLink>
+<FluentNavLink Href="@Constants.Routes.FairPlayTubeRoutes.PublicRoutes.UsageTerms"
+               Icon="@(new Icons.Regular.Size20.Important())">
+    @localizer[UsageTermsTextKey]
+</FluentNavLink>
 
 @code {
     private string? currentUrl;
@@ -111,7 +119,7 @@
         try
         {
             await fairPlayTubeUserDataService.EnqueueMyDataExportAsync(this.cancellationTokenSource.Token);
-            toastService.ShowSuccess("Your data will be sent yo your email once it is ready");
+            toastService.ShowSuccess(localizer[ExportEnqueuedTextKey]);
         }
         catch (Exception ex)
         {
@@ -177,6 +185,12 @@
     public const string FeatureRequestTextKey = "FeatureRequestText";
     [ResourceKey(defaultValue: "Report Issue")]
     public const string ReportIssueTextKey = "ReportIssueText";
+    [ResourceKey(defaultValue: "Privacy Policy")]
+    public const string PrivacyPolicyTextKey = "PrivacyPolicyText";
+    [ResourceKey(defaultValue: "Usage Terms")]
+    public const string UsageTermsTextKey = "UsageTermsText";
+    [ResourceKey(defaultValue: "Your data will be sent yo your email once it is ready")]
+    public const string ExportEnqueuedTextKey = "ExportEnqueuedTextKey";
     #endregion Resource Keys
 }
 

@@ -1,4 +1,4 @@
-using FairPlayCombined.Models.Common.Contacts;
+using FairPlayCombined.Models.Common.Contact;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;

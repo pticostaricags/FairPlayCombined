@@ -5,6 +5,7 @@ using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Services.Common;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace FairPlayCombined.Services.FairPlayTube
 {
@@ -14,7 +15,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         IOpenAIService openAIService)
         : BaseService, IVideoDigitalMarketingPlanService
     {
-        public async Task<string?> GetVideoDigitalMarketingPlanAsync(
+        public async Task<string[]?> GetVideoDigitalMarketingPlansAsync(
             long videoInfoId,
             string socialNetworkName,
             CancellationToken cancellationToken)
@@ -23,7 +24,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             var result = await dbContext.VideoDigitalMarketingPlan.Where(
                 p => p.VideoInfoId == videoInfoId && p.SocialNetworkName == socialNetworkName)
                 .Select(p => p.HtmlDigitalMarketingPlan)
-                .SingleOrDefaultAsync(cancellationToken: cancellationToken);
+                .ToArrayAsync(cancellationToken: cancellationToken);
             return result;
         }
         public async Task SaveVideoDigitalMarketingPlanAsync(long videoInfoId,
@@ -49,7 +50,9 @@ namespace FairPlayCombined.Services.FairPlayTube
             await dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
         }
 
-        public async Task<string> CreateVideoDigitalMarketingPlanAsync(long videoInfoId, CancellationToken cancellationToken)
+        public async Task<string> CreateVideoDigitalMarketingPlanAsync(long videoInfoId, 
+            string languageCode,
+            CancellationToken cancellationToken)
         {
             var hasRequiredFunds = await userFundService.HasFundsToCreateDailyPostsAsync(cancellationToken);
             if (!hasRequiredFunds)
@@ -73,7 +76,10 @@ namespace FairPlayCombined.Services.FairPlayTube
                 })
                 .SingleAsync(cancellationToken);
             var userMessage = $"Today's Date: {DateTimeOffset.UtcNow.Date}. Video Title: {videoDataEntity.Description}. Video Captions: {videoDataEntity.EnglishCaptions}";
-            var result = await openAIService.GenerateChatCompletionAsync(promptEntity.BaseText,
+            StringBuilder promptBuilder = new();
+            promptBuilder.AppendLine(promptEntity!.BaseText!);
+            promptBuilder.AppendLine($"The result must be in language culture: {languageCode}");
+            var result = await openAIService.GenerateChatCompletionAsync(promptBuilder.ToString(),
                 userMessage, cancellationToken);
             var resultText = result!.choices![0].message!.content;
             await dbContext.VideoDigitalMarketingPlan.AddAsync(new()

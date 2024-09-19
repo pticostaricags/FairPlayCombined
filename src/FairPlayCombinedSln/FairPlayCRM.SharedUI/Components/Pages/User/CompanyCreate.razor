@@ -1,0 +1,113 @@
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Common
+@using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Models.Common.Company
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization
+
+@attribute [Route(Constants.Routes.FairPlayCrmRoutes.UserRoutes.CreateCompany)]
+@attribute [Authorize]
+
+@inject NavigationManager navigationManager
+
+@inject IStringLocalizer<CompanyCreate> localizer
+@inject IToastService toastService
+@inject ICompanyService companyService
+@inject IUserProviderService userProviderService
+
+<PageTitle>
+    @localizer[CreateCompanyTextKey]
+</PageTitle>
+
+<h3>
+    @localizer[CreateCompanyTextKey]
+</h3>
+
+<LoadingIndicator ShowSpinners="@this.IsBusy"></LoadingIndicator>
+
+<FluentEditForm FormName="frmCreateCompany" Model="@this.createCompanyModel"
+                OnValidSubmit="OnValidSubmitAsync">
+    <div>
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <FluentValidationSummary></FluentValidationSummary>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Name</FluentLabel>
+        <FluentTextField @bind-Value="@this.createCompanyModel.Name" Maxlength="50" style="width:100%;"></FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Website Url</FluentLabel>
+        <FluentTextField @bind-Value="@this.createCompanyModel.WebsiteUrl"
+                         InputMode="InputMode.Url" TextFieldType="TextFieldType.Url"
+                         style="width:100%;"></FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Phone</FluentLabel>
+        <FluentTextField @bind-Value="@this.createCompanyModel.Phone" Maxlength="50"
+                         InputMode="InputMode.Telephone" TextFieldType="TextFieldType.Tel"
+                         style="width:100%;">
+        </FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">YouTube Channel Url</FluentLabel>
+        <FluentTextField @bind-Value="@this.createCompanyModel.YouTubeChannelUrl"
+                         InputMode="InputMode.Url" TextFieldType="TextFieldType.Url"
+                         style="width:100%;">
+        </FluentTextField>
+    </div>
+    <div>
+        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Save</FluentButton>
+    </div>
+</FluentEditForm>
+
+
+@code {
+    [SupplyParameterFromForm]
+    private CreateCompanyModel createCompanyModel { get; set; } = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.createCompanyModel.OwnerApplicationUserId = this.userProviderService.GetCurrentUserId();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            await this.companyService.CreateCompanyAsync(this.createCompanyModel, this.cancellationTokenSource.Token);
+            this.toastService.ShowSuccess(this.localizer[CompanyCreatedTextKey]);
+            this.navigationManager.NavigateTo(Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListCompanies);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Cancel(throwOnFirstException: false);
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Create Company")]
+    public const string CreateCompanyTextKey = "CreateContactText";
+    [ResourceKey(defaultValue: "Company has been created")]
+    public const string CompanyCreatedTextKey = "CompanyCreatedText";
+    #endregion Resource Keys
+}

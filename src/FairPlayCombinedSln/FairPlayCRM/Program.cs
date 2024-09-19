@@ -192,4 +192,5 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddTransient<IpDataService>();
     builder.Services.AddTransient<IVisitorTrackingService, VisitorTrackingService>();
     builder.Services.AddTransient<IContactService, ContactService>();
+    builder.Services.AddTransient<ICompanyService, CompanyService>();
 }

@@ -26,6 +26,7 @@
         }
         public static class PromptsNames
         {
+            #region FairPlayTube
             public const string CreateYouTubeThumbnail = "YouTubeThumbnail";
             public const string CreateVideoPassiveIncomeStrategy = nameof(CreateVideoPassiveIncomeStrategy);
             public const string CreateVideoLinkedInArticle = nameof(CreateVideoLinkedInArticle);
@@ -33,9 +34,13 @@
             public const string CreateDigitalMarketingIdeas = nameof(CreateDigitalMarketingIdeas);
             public const string CreateVideoInfographic = nameof(CreateVideoInfographic);
             public const string CreateNewVideoRecommendationIdea = nameof(CreateNewVideoRecommendationIdea);
+            #endregion FairPlayTube
+
+            #region FairPlayDating
             public const string AnalyzeDatingProfilePhoto = nameof(AnalyzeDatingProfilePhoto);
             public const string CreateDatingProfileAboutMe = nameof(CreateDatingProfileAboutMe);
             public const string AnalyzePotentialMatch = nameof(AnalyzePotentialMatch);
+            #endregion FairPlayDating
         }
         public static class Routes
         {
@@ -45,6 +50,11 @@
             }
             public static class FairPlayTubeRoutes
             {
+                public static class PublicRoutes
+                {
+                    public const string PrivacyPolicy = $"/{nameof(PrivacyPolicy)}";
+                    public const string UsageTerms = $"/{nameof(UsageTerms)}";
+                }
                 public static class CreatorRoutes
                 {
                     public const string MyVideos = $"/Creator/{nameof(MyVideos)}";
@@ -63,8 +73,11 @@
             {
                 public static class UserRoutes
                 {
-                    public const string ListContacts = $"/User/{nameof(ListContacts)}";
-                    public const string CreateContact = $"/User/{nameof(CreateContact)}";
+                    public const string ListContacts = $"/User/Contacts/{nameof(ListContacts)}";
+                    public const string CreateContact = $"/User/Contacts/{nameof(CreateContact)}";
+
+                    public const string ListCompanies = $"/User/Companies/{nameof(ListCompanies)}";
+                    public const string CreateCompany = $"/User/Companies/{nameof(CreateCompany)}";
                 }
             }
         }

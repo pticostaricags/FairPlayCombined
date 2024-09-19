@@ -10,6 +10,7 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
+@using System.Globalization
 
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
@@ -17,6 +18,9 @@
 @inject IOpenAIService openAIService
 @inject IVideoCaptionsService videoCaptionsService
 @inject IVideoDigitalMarketingPlanService videoDigitalMarketingPlanService
+@inject ICultureService cultureService
+@inject ICustomCache customCache
+
 <PageTitle>
     Video Digital Marketing Strategy
 </PageTitle>
@@ -28,16 +32,27 @@
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <div>
+    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@supportedCultures"
+                  Embedded="true">
+        <OptionTemplate>@context!.DisplayName</OptionTemplate>
+    </FluentSelect>
+</div>
+<div>
     <FluentButton Type="ButtonType.Button" OnClick="OnRecreatePlanButtonclickedAsync">
-        Re-Create Plan
+        Create New Plan
     </FluentButton>
 </div>
 <div>
-    @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
+    @if (this.DigitalMarketingIdeas?.Count > 0)
     {
-        <p>
-            @((MarkupString)this.DigitalMarketingIdeas)
-        </p>
+        foreach (var singleDigitalMarketingIdea in this.DigitalMarketingIdeas)
+        {
+            <div>
+                <p>
+                    @((MarkupString)singleDigitalMarketingIdea)
+                </p>
+            </div>
+        }
     }
 </div>
 
@@ -45,9 +60,11 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
+    private CultureInfo[]? supportedCultures { get; set; }
+    private CultureInfo? SelectedCulture { get; set; }
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    private string? DigitalMarketingIdeas { get; set; }
+    private List<string>? DigitalMarketingIdeas { get; set; }
     private string? RevisedPrompt { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -56,12 +73,27 @@
         StateHasChanged();
         var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
         cancellationToken: this.cancellationTokenSource.Token);
-        this.DigitalMarketingIdeas = await this.videoDigitalMarketingPlanService
-        .GetVideoDigitalMarketingPlanAsync(
+        var items = await this.customCache!.GetOrCreateAsync<string[]>(
+                key: nameof(this.supportedCultures),
+                retrieveDataTask: async () =>
+                {
+                    var data = (await this.cultureService!
+                        .GetSupportedCultures(this.cancellationTokenSource.Token));
+                    return data;
+                },
+                expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
+                this.cancellationTokenSource.Token);
+        this.supportedCultures ??= items
+        .Select(p => new CultureInfo(p))
+        .OrderBy(p => p.DisplayName)
+        .ToArray();
+        this.SelectedCulture ??= CultureInfo.CurrentCulture;
+        this.DigitalMarketingIdeas = (await this.videoDigitalMarketingPlanService
+        .GetVideoDigitalMarketingPlansAsync(
             videoInfoId: videoInfoModel.VideoInfoId,
             socialNetworkName: "LinkedIn",
-            cancellationToken: this.cancellationTokenSource.Token);
-        if (String.IsNullOrWhiteSpace(this.DigitalMarketingIdeas))
+            cancellationToken: this.cancellationTokenSource.Token))?.ToList();
+        if (this.DigitalMarketingIdeas is null)
         {
             await this.GenerateDigitalMarketingIdeasAsync();
         }
@@ -80,8 +112,12 @@
 
     private async Task GenerateDigitalMarketingIdeasAsync()
     {
-        this.DigitalMarketingIdeas =
-        await this.videoDigitalMarketingPlanService.CreateVideoDigitalMarketingPlanAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
+        var result =
+        await this.videoDigitalMarketingPlanService
+        .CreateVideoDigitalMarketingPlanAsync(this.VideoInfoId!.Value, 
+            this.SelectedCulture!.DisplayName!,
+            this.cancellationTokenSource.Token);
+        this.DigitalMarketingIdeas?.Insert(0,result);
         StateHasChanged();
     }
 

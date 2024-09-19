@@ -79,7 +79,7 @@
 </FluentEditForm>
 
 <FluentDialog @ref="searchYoutubeVideosDialog"
-              @bind-Hidden="@showSearchYoutubeVideosDialog"
+              @bind-Hidden="@hideSearchYoutubeVideosDialog"
               Modal="true" TrapFocus="true"
               PreventScroll="false">
     <FluentDialogHeader Visible="false"></FluentDialogHeader>
@@ -94,7 +94,7 @@
     private bool IsBusy { get; set; }
     private EditForm? frmCreateVideoInfo;
     private long bytesSent { get; set; }
-    private bool showSearchYoutubeVideosDialog { get; set; } = false;
+    private bool hideSearchYoutubeVideosDialog { get; set; } = false;
     private FluentDialog? searchYoutubeVideosDialog { get; set; }
     private bool IsAuthenticatedWithGoogle { get; set; }
 

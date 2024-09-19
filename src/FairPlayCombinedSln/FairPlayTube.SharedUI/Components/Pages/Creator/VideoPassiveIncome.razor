@@ -10,6 +10,7 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
+@using System.Globalization
 
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
@@ -18,6 +19,10 @@
 @inject IVideoCaptionsService videoCaptionsService
 @inject IVideoDigitalMarketingPlanService videoDigitalMarketingPlanService
 @inject IPromptGeneratorService promptGeneratorService
+@inject IVideoPassiveIncomeIdeaService videoPassiveIncomeIdeaService
+@inject ICustomCache customCache
+@inject ICultureService cultureService
+@inject IToastService toastService
 
 <PageTitle>
     Video Passive Income
@@ -29,13 +34,28 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-
 <div>
-    @if (!String.IsNullOrWhiteSpace(this.PassiveIncomeIdeas))
+    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@supportedCultures"
+                  Embedded="true">
+        <OptionTemplate>@context!.DisplayName</OptionTemplate>
+    </FluentSelect>
+</div>
+<div>
+    <FluentButton Type="ButtonType.Button" OnClick="OnCreatePassiveIncomeIdeaButtonClickedAsync">
+        Create Passive Income Idea
+    </FluentButton>
+</div>
+<div>
+    @if (this.PassiveIncomeIdeas?.Count > 0)
     {
-        <p>
-            @((MarkupString)this.PassiveIncomeIdeas)
-        </p>
+        @foreach (var singlePassiveIncomeIdea in this.PassiveIncomeIdeas)
+        {
+            <div>
+                <p>
+                    @((MarkupString)singlePassiveIncomeIdea)
+                </p>
+            </div>
+        }
     }
 </div>
 
@@ -43,29 +63,59 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
+    private CultureInfo[]? supportedCultures { get; set; }
+    private CultureInfo? SelectedCulture { get; set; }
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    private string? PassiveIncomeIdeas { get; set; }
+    private List<string>? PassiveIncomeIdeas { get; set; }
     private string? RevisedPrompt { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         this.IsBusy = true;
         StateHasChanged();
-        var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        var englishCaptions = await this.videoCaptionsService
-        .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-        language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        var promptModel = await this.promptGeneratorService
-        .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateVideoPassiveIncomeStrategy,
-        this.cancellationTokenSource.Token);
-        var systemMessage = promptModel!.BaseText!;
-        var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
-        this.PassiveIncomeIdeas = result!.choices![0]!.message!.content!;
+        var items = await this.customCache!.GetOrCreateAsync<string[]>(
+                key: nameof(this.supportedCultures),
+                retrieveDataTask: async () =>
+                {
+                    var data = (await this.cultureService!
+                        .GetSupportedCultures(this.cancellationTokenSource.Token));
+                    return data;
+                },
+                expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
+                this.cancellationTokenSource.Token);
+        this.supportedCultures ??= items
+        .Select(p => new CultureInfo(p))
+        .OrderBy(p => p.DisplayName)
+        .ToArray();
+        this.SelectedCulture ??= CultureInfo.CurrentCulture;
+        this.PassiveIncomeIdeas = (await this.videoPassiveIncomeIdeaService
+        .GetVideoPassiveIncomeIdeasAsync(
+            videoInfoId: this.VideoInfoId!.Value!,
+            cancellationToken: this.cancellationTokenSource.Token))?.ToList();
         this.IsBusy = false;
         StateHasChanged();
+    }
+
+    private async Task OnCreatePassiveIncomeIdeaButtonClickedAsync()
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            var result = await this.videoPassiveIncomeIdeaService.CreateVideoPassiveIncomeIdeaAsync(
+            this.VideoInfoId!.Value, this.SelectedCulture!.DisplayName!, this.cancellationTokenSource.Token);
+            this.PassiveIncomeIdeas?.Insert(0, result);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
     }
 
     void IDisposable.Dispose()
