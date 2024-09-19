@@ -41,6 +41,11 @@
     </FluentSelect>
 </div>
 <div>
+    <FluentButton Type="ButtonType.Button" OnClick="OnCreatePassiveIncomeIdeaButtonClickedAsync">
+        Create Passive Income Idea
+    </FluentButton>
+</div>
+<div>
     @if (this.PassiveIncomeIdeas?.Count > 0)
     {
         @foreach (var singlePassiveIncomeIdea in this.PassiveIncomeIdeas)
@@ -52,11 +57,6 @@
             </div>
         }
     }
-</div>
-<div>
-    <FluentButton Type="ButtonType.Button" OnClick="OnCreatePassiveIncomeIdeaButtonClickedAsync">
-        Create Passive Income Idea
-    </FluentButton>
 </div>
 
 @code
