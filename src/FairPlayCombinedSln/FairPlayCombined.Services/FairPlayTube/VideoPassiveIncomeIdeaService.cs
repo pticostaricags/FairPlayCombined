@@ -54,5 +54,17 @@ namespace FairPlayCombined.Services.FairPlayTube
             await dbContext.SaveChangesAsync(cancellationToken);
             return resultText!;
         }
+
+        public async Task<string[]?> GetVideoPassiveIncomeIdeasAsync(long videoInfoId, CancellationToken cancellationToken)
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            var result = (await
+                dbContext.VideoPassiveIncome
+                .AsNoTracking()
+                .Where(p => p.VideoInfoId == videoInfoId)
+                .Select(p=>p.HtmlPassiveIncomeIdea)
+                .ToArrayAsync(cancellationToken));
+            return result;
+        }
     }
 }
