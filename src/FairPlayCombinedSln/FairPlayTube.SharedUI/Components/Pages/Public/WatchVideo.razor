@@ -11,6 +11,7 @@
 @using FairPlayTube.SharedUI.Components.Spinners
 @using FairPlayTube.SharedUI.Components.Video
 @using System.Net
+@using FairPlayTube.SharedUI.Components.WebComponents.SEO
 
 @inject IJSRuntime jsRuntime
 @inject IVideoWatchTimeService videoWatchTimeService
@@ -33,37 +34,29 @@
 
         <meta name="thumbnail" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
 
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@@pticostarica" />
-        <meta name="twitter:title" content="@OpenGraphTitle" />
-        <meta name="twitter:description" content="@OpenGraphDescription" />
-        <meta name="twitter:image" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
+        <TwitterCard Site="@("@pticostarica")"
+                     Title="@this.OpenGraphTitle"
+                     Description="@this.OpenGraphDescription"
+                     ImageUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"></TwitterCard>
 
-        <meta property="og:title" content="@OpenGraphTitle" />
-        <meta property="og:description" content="@OpenGraphDescription" />
+        <OpenGraph Title="@this.OpenGraphTitle"
+                   Description="@this.OpenGraphDescription"
+                   ImageUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
+                   ImageSecureUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
+                   ImageType="image/jpeg"
+                   ImageWidth="400"
+                   ImageHeight="300"
+                   ImageAlt="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")"></OpenGraph>
 
-        <meta property="og:image" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
-        <meta property="og:image:secure_url" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta property="og:image:width" content="400" />
-        <meta property="og:image:height" content="300" />
-        <meta property="og:image:alt" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")" />
 
-        <script type='application/ld+json'>
-            {
-                "@@context": "http://schema.org",
-                "@@type": "VideoObject",
-                "name": "@OpenGraphTitle",
-                "description": "@OpenGraphDescription",
-                "thumbnailUrl": "@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")",
-                "uploadDate": "@this.videoInfoModel.RowCreationDateTime.ToString("yyyy-MM-ddTHH:mm:sszzz")",
-                "duration": "@this.videoInfoModel.VideoObjectDuration",
-                "contentUrl": "@this.navigationManager.Uri",
-                "embedUrl": "@($"{apiBaseUrl}/Public/EmbedVideo/{this.VideoId}")",
-                "interactionCount": "1",
-                "expires": ""
-            }
-        </script>
+        <JsonLdForSingleVideo Name="@this.OpenGraphTitle"
+                              Description="@this.OpenGraphDescription"
+                              ThumbnailUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
+                              UploadDate="@this.videoInfoModel.RowCreationDateTime.ToString("yyyy-MM-ddTHH:mm:sszzz")"
+                              Duration="@this.videoInfoModel.VideoObjectDuration"
+                              ContentUrl="@this.navigationManager.Uri"
+                              EmbedUrl="@($"{apiBaseUrl}/Public/EmbedVideo/{this.VideoId}")"
+                              InteractionCount="1"></JsonLdForSingleVideo>
     }
 
 </HeadContent>
