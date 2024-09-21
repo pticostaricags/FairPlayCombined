@@ -13,10 +13,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0-rc.1.24452.1" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.0-rc.1.24452.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FairPlayCombined.Models\FairPlayCombined.Models.csproj" />
   </ItemGroup>
 
 </Project>
