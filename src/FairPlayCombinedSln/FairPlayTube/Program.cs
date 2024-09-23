@@ -5,6 +5,7 @@ using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.GoogleAuth;
+using FairPlayCombined.Models.LinkedInAuth;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
@@ -84,6 +85,8 @@ builder.Services.AddSingleton<YouTubeClientServiceConfiguration>(new YouTubeClie
     GoogleAuthClientSecretInfo = googleAuthClientSecretInfo
 });
 
+LinkedInAuthClientSecretInfo linkedInAuthClientSecretInfo = builder.GetLinkedInAuthClientSecretInfo();
+
 builder.AddPayPalCore();
 
 builder.Services.AddAuthentication(configureOptions =>
@@ -98,6 +101,12 @@ builder.Services.AddAuthentication(configureOptions =>
         options.Scope.Add(YouTubeService.Scope.YoutubeUpload);
         options.Scope.Add(YouTubeService.Scope.YoutubeForceSsl);
         options.Scope.Add(YouTubeService.Scope.Youtubepartner);
+        options.SaveTokens = true;
+    })
+    .AddLinkedIn(options => 
+    {
+        options.ClientId = linkedInAuthClientSecretInfo.ClientId!;
+        options.ClientSecret = linkedInAuthClientSecretInfo.ClientSecret!;
         options.SaveTokens = true;
     })
     .AddBearerToken(IdentityConstants.BearerScheme)
