@@ -4,11 +4,11 @@ namespace FairPlayTube.MAUI
 {
     public partial class App : Application
     {
-        public App([FromKeyedServices("AnonymousApiClient")] ApiClient apiClient)
+        public App()
         {
             InitializeComponent();
 
-            MainPage = new MauiPages.Login(apiClient);
+            MainPage = new MainPage();
         }
     }
 }

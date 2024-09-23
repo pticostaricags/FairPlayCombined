@@ -2,6 +2,7 @@
 @using FairPlayTube.ClientServices.KiotaClient
 @using FairPlayTube.ClientServices.KiotaClient.Models
 @using FairPlayTube.MAUI.Authentication
+@using FairPlayTube.MAUI.Helpers
 @using Microsoft.Kiota.Abstractions
 @using System.Net
 <h3>Login</h3>
@@ -42,7 +43,11 @@
                 UserContext.AccessTokenExpiresIn = result.ExpiresIn;
                 UserContext.RefreshToken = result.RefreshToken;
                 UserContext.TokenExpiraton = DateTimeOffset.UtcNow.AddMinutes(result!.ExpiresIn!.Value);
-                this.navingationManager!.NavigateTo("/", true);
+                ReloadService.IsReloading = true;
+                StateHasChanged();
+                this.navingationManager!.NavigateTo("/", false);
+                ReloadService.IsReloading = false;
+                StateHasChanged();
             }
             else
             {
