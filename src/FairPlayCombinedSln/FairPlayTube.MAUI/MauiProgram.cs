@@ -5,7 +5,9 @@ using FairPlayTube.ClientServices.CustomLocalization;
 using FairPlayTube.ClientServices.KiotaClient;
 using FairPlayTube.MAUI.Authentication;
 using FairPlayTube.MAUI.Helpers;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -34,6 +36,12 @@ namespace FairPlayTube.MAUI
             builder.Services.AddFluentUIComponents();
             builder.Services.AddMemoryCache();
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton<ComponentStatePersistenceManager>();
+            builder.Services.AddSingleton<PersistentComponentState>(sp =>
+            {
+                var manager = sp.GetRequiredService<ComponentStatePersistenceManager>();
+                return manager.State;
+            });
             builder.Services.AddSingleton<IStringLocalizerFactory, ApiLocalizerFactory>();
             builder.Services.AddSingleton<IStringLocalizer, ApiLocalizer>();
             builder.Services.AddLocalization();
