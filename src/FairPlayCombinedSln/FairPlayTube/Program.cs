@@ -107,6 +107,7 @@ builder.Services.AddAuthentication(configureOptions =>
     {
         options.ClientId = linkedInAuthClientSecretInfo.ClientId!;
         options.ClientSecret = linkedInAuthClientSecretInfo.ClientSecret!;
+        options.Scope.Add("w_member_social");
         options.SaveTokens = true;
     })
     .AddBearerToken(IdentityConstants.BearerScheme)
