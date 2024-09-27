@@ -59,6 +59,20 @@
         </FluentTextField>
     </div>
     <div>
+        <FluentLabel Typo="Typography.Body">LinkedIn Url</FluentLabel>
+        <FluentTextField @bind-Value="@this.createCompanyModel.LinkedInUrl"
+                         InputMode="InputMode.Url" TextFieldType="TextFieldType.Url"
+                         style="width:100%;">
+        </FluentTextField>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">Instagram Url</FluentLabel>
+        <FluentTextField @bind-Value="@this.createCompanyModel.InstagramUrl"
+                         InputMode="InputMode.Url" TextFieldType="TextFieldType.Url"
+                         style="width:100%;">
+        </FluentTextField>
+    </div>
+    <div>
         <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Save</FluentButton>
     </div>
 </FluentEditForm>

@@ -21,6 +21,10 @@ public partial class Company
     public long CompanyId { get; set; }
 
     [Required]
+    [StringLength(450)]
+    public string OwnerApplicationUserId { get; set; }
+
+    [Required]
     [StringLength(50)]
     public string Name { get; set; }
 
@@ -33,9 +37,9 @@ public partial class Company
 
     public string YouTubeChannelUrl { get; set; }
 
-    [Required]
-    [StringLength(450)]
-    public string OwnerApplicationUserId { get; set; }
+    public string InstagramUrl { get; set; }
+
+    public string LinkedInUrl { get; set; }
 
     [InverseProperty("Company")]
     public virtual ICollection<ContactCompany> ContactCompany { get; set; } = new List<ContactCompany>();
