@@ -27,10 +27,47 @@
             <FluentDataGrid Style="min-width: max-content;" ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
                 <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
                 <PropertyColumn Property="@(p=>p.Lastname)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.EmailAddress)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.BusinessPhoneNumber)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.MobilePhoneNumber)"></PropertyColumn>
                 <PropertyColumn Property="@(p=>p.BirthDate)"></PropertyColumn>
+                <TemplateColumn Title="Contact Info">
+                    <ul>
+                        @if (!String.IsNullOrWhiteSpace(context.EmailAddress))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Type="" Href="@($"mailto:{context.EmailAddress}")" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        Email
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(context.BusinessPhoneNumber))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Type="" Href="@($"tel:{context.BusinessPhoneNumber}")" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Phone())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        Business Phone Number
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(context.MobilePhoneNumber))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Type="" Href="@($"tel:{context.MobilePhoneNumber}")" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Phone())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        Mobile Phone Number
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                    </ul>
+                </TemplateColumn>
                 <TemplateColumn Title="Online presence">
                     <ul>
                         @if (!String.IsNullOrWhiteSpace(context.LinkedInProfileUrl))
