@@ -8,6 +8,7 @@
     [LinkedInProfileUrl] NVARCHAR(50) NULL, 
     [YouTubeChannelUrl] NVARCHAR(50) NULL, 
     [InstagramUrl] NVARCHAR(MAX) NULL, 
+    [XFormerlyTwitterUrl] NVARCHAR(MAX) NULL, 
     [BusinessPhoneNumber] NVARCHAR(50) NULL, 
     [MobilePhoneNumber] NVARCHAR(50) NULL, 
     [BirthDate] DATETIMEOFFSET NULL, 

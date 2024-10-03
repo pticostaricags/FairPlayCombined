@@ -41,6 +41,9 @@ public partial class Company
 
     public string LinkedInUrl { get; set; }
 
+    [Column("XFormerlyTwitterUrl")]
+    public string XformerlyTwitterUrl { get; set; }
+
     [InverseProperty("Company")]
     public virtual ICollection<ContactCompany> ContactCompany { get; set; } = new List<ContactCompany>();
 

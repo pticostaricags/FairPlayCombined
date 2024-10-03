@@ -21,6 +21,7 @@ namespace FairPlayCombined.Models.Common.Company
         public string? YouTubeChannelUrl { get; set; }
         public string? InstagramUrl { get; set; }
         public string? LinkedInUrl { get; set; }
+        public string? XformerlyTwitterUrl { get; set; }
         public string? OwnerApplicationUserId { get; set; }
     }
 }

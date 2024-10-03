@@ -17,6 +17,7 @@ namespace FairPlayCombined.Models.Common.Contact
         public string? LinkedInProfileUrl { get; set; }
         public string? YouTubeChannelUrl { get; set; }
         public string? InstagramUrl { get; set; }
+        public string? XformerlyTwitterUrl { get; set; }
         public string? BusinessPhoneNumber { get; set; }
         public string? MobilePhoneNumber { get; set; }
         public DateTimeOffset? BirthDate { get; set; }

@@ -28,11 +28,61 @@
                 <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
                 <PropertyColumn Property="@(p=>p.Lastname)"></PropertyColumn>
                 <PropertyColumn Property="@(p=>p.EmailAddress)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.LinkedInProfileUrl)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.YouTubeChannelUrl)"></PropertyColumn>
                 <PropertyColumn Property="@(p=>p.BusinessPhoneNumber)"></PropertyColumn>
                 <PropertyColumn Property="@(p=>p.MobilePhoneNumber)"></PropertyColumn>
                 <PropertyColumn Property="@(p=>p.BirthDate)"></PropertyColumn>
+                <TemplateColumn Title="Online presence">
+                    <ul>
+                        @if (!String.IsNullOrWhiteSpace(context.LinkedInProfileUrl))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.LinkedInProfileUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        LinkedIn
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(context.InstagramUrl))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.InstagramUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        Instagram
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(context.YouTubeChannelUrl))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.YouTubeChannelUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        YouTube Channel
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(context.XformerlyTwitterUrl))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.XformerlyTwitterUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        X (Formerly Twitter)
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                    </ul>
+                </TemplateColumn>
             </FluentDataGrid>
         </div>
     </div>

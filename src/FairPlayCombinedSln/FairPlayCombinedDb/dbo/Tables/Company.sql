@@ -9,6 +9,7 @@
     [YouTubeChannelUrl] NVARCHAR(MAX) NULL,
     [InstagramUrl] NVARCHAR(MAX) NULL, 
     [LinkedInUrl] NVARCHAR(MAX) NULL, 
+    [XFormerlyTwitterUrl] NVARCHAR(MAX) NULL, 
     CONSTRAINT [FK_Company_Contact] FOREIGN KEY ([PrimaryContactId]) REFERENCES [dbo].[Contact]([ContactId]), 
     CONSTRAINT [FK_Company_AspNetUsers] FOREIGN KEY ([OwnerApplicationUserId]) REFERENCES [AspNetUsers]([Id])
 )

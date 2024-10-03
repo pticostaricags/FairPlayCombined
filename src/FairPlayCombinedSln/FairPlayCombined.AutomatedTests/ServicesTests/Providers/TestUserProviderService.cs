@@ -18,5 +18,10 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.Providers
         {
             throw new NotImplementedException();
         }
+
+        public bool IsAuthenticatedWithLinkedIn()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

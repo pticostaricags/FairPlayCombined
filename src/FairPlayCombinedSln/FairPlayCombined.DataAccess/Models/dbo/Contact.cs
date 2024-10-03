@@ -45,6 +45,9 @@ public partial class Contact
 
     public string InstagramUrl { get; set; }
 
+    [Column("XFormerlyTwitterUrl")]
+    public string XformerlyTwitterUrl { get; set; }
+
     [StringLength(50)]
     public string BusinessPhoneNumber { get; set; }
 

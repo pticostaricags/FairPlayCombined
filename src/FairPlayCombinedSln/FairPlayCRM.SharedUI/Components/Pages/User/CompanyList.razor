@@ -77,6 +77,18 @@
                                 </FluentLabel>
                             </li>
                         }
+                        @if (!String.IsNullOrWhiteSpace(context.XformerlyTwitterUrl))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.XformerlyTwitterUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        X (Formerly Twitter)
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
                     </ul>
                 </TemplateColumn>
             </FluentDataGrid>

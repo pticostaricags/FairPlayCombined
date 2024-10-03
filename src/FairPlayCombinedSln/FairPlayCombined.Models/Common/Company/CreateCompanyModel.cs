@@ -28,6 +28,8 @@ namespace FairPlayCombined.Models.Common.Company
         public string? InstagramUrl { get; set; }
         [Url]
         public string? LinkedInUrl { get; set; }
+        [Url]
+        public string? XformerlyTwitterUrl { get; set; }
         [Required]
         [StringLength(450)]
         public string? OwnerApplicationUserId { get; set; }
