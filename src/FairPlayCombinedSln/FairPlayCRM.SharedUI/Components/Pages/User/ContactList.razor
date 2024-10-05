@@ -24,12 +24,19 @@
 {
     <div style="display: table; table-layout: fixed; width: 100%;">
         <div style="overflow-x: auto;">
-            <FluentDataGrid Style="min-width: max-content;" ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
-                <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.Lastname)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.BirthDate)"></PropertyColumn>
-                <TemplateColumn Title="Contact Info">
+            <FluentDataGrid Style="min-width: max-content;"
+                            ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
+                <TemplateColumn Title="Name">
+                    @($"{context.Name} {context.Lastname}")
+                </TemplateColumn>
+                <TemplateColumn Title="Information">
                     <ul>
+                        @if (context.BirthDate.HasValue)
+                        {
+                            <li>
+                                BirthDate: @context.BirthDate
+                            </li>
+                        }
                         @if (!String.IsNullOrWhiteSpace(context.EmailAddress))
                         {
                             <li>
@@ -66,10 +73,6 @@
                                 </FluentLabel>
                             </li>
                         }
-                    </ul>
-                </TemplateColumn>
-                <TemplateColumn Title="Online presence">
-                    <ul>
                         @if (!String.IsNullOrWhiteSpace(context.LinkedInProfileUrl))
                         {
                             <li>
