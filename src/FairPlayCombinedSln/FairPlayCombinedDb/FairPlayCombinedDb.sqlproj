@@ -193,6 +193,7 @@
     <Build Include="dbo\Tables\Company.sql" />
     <Build Include="dbo\Tables\ContactCompany.sql" />
     <Build Include="FairPlayTube\Tables\VideoPassiveIncomeIdea.sql" />
+    <Build Include="dbo\Tables\CompanyContact.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
