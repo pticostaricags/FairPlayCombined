@@ -31,8 +31,10 @@ namespace FairPlayCombined.Services.Common
             AspNetUserTokens accessTokenEntity = await GetAccessTokenAsync(dbContextFactory, userProviderService);
             httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessTokenEntity.Value);
+#pragma warning disable S1075 // URIs should not be hardcoded
             string requestUrl = "https://api.linkedin.com/v2/userinfo";
-            var result = await httpClient.GetFromJsonAsync<UserInfoModel>(requestUrl);
+#pragma warning restore S1075 // URIs should not be hardcoded
+            var result = await httpClient.GetFromJsonAsync<UserInfoModel>(requestUrl, cancellationToken);
             return result!;
         }
 
@@ -63,13 +65,15 @@ namespace FairPlayCombined.Services.Common
 }
 """;
 
+#pragma warning disable S1075 // URIs should not be hardcoded
             string requestUrl = "https://api.linkedin.com/v2/ugcPosts";
+#pragma warning restore S1075 // URIs should not be hardcoded
             StringContent stringContent = new(json);
             var response = await httpClient.PostAsync(requestUrl, stringContent, cancellationToken: cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
-                logger.LogError(error);
+                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                logger.LogError("Error: {ErrorMessage}", error);
             }
         }
 
@@ -113,13 +117,15 @@ namespace FairPlayCombined.Services.Common
 }
 """;
 
+#pragma warning disable S1075 // URIs should not be hardcoded
             string requestUrl = "https://api.linkedin.com/v2/ugcPosts";
+#pragma warning restore S1075 // URIs should not be hardcoded
             StringContent stringContent = new(json);
             var response = await httpClient.PostAsync(requestUrl, stringContent, cancellationToken: cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
-                logger.LogError(error);
+                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                logger.LogError("Error: {ErrorMessage}", error);
             }
         }
     }

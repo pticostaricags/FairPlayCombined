@@ -27,7 +27,7 @@ namespace FairPlayCombined.Services.FairPlayTube
     >]
     public partial class VideoThumbnailService : BaseService, IVideoThumbnailService
     {
-        private readonly IUserFundService userFundService;
+        private readonly IUserFundService? userFundService;
         public VideoThumbnailService(
             IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
             ILogger<VideoThumbnailService> logger,
@@ -43,7 +43,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             HttpClient httpClient,
             CancellationToken cancellationToken)
         {
-            var hasRequiredFunds = await userFundService.HasFundsToCreateThumbnailsAsync(cancellationToken);
+            var hasRequiredFunds = await userFundService!.HasFundsToCreateThumbnailsAsync(cancellationToken);
             if (!hasRequiredFunds)
             {
                 string message = "You don't have available funds left to perform the operation.";
