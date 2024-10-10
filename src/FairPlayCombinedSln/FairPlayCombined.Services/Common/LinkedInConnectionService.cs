@@ -56,6 +56,7 @@ namespace FairPlayCombined.Services.Common
             var emailAddress = csvReader.GetField(3);
             var company = csvReader.GetField(4);
             var position = csvReader.GetField(5);
+            var connectedOn = csvReader.GetField(6);
 
             LinkedInConnection linkedInConnectionEntity = new()
             {
@@ -89,6 +90,12 @@ namespace FairPlayCombined.Services.Common
             if (!String.IsNullOrWhiteSpace(position))
             {
                 linkedInConnectionEntity.Position = position;
+            }
+            if (!String.IsNullOrWhiteSpace(connectedOn))
+            {
+                var connectedOnDate = DateOnly.ParseExact(connectedOn, "dd MMM yyyy",
+                    CultureInfo.InvariantCulture);
+                linkedInConnectionEntity.ConnectedOn = connectedOnDate;
             }
             if (!String.IsNullOrWhiteSpace(linkedInConnectionEntity.FirstName))
             {
