@@ -27,8 +27,70 @@
             <FluentDataGrid Style="min-width: max-content;" ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
                 <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
                 <PropertyColumn Property="@(p=>p.Phone)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.WebsiteUrl)"></PropertyColumn>
-                <PropertyColumn Property="@(p=>p.YouTubeChannelUrl)"></PropertyColumn>
+                <TemplateColumn Title="Online presence">
+                    <ul>
+                        @if (!String.IsNullOrWhiteSpace(context.WebsiteUrl))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.WebsiteUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        Website
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(context.LinkedInUrl))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.LinkedInUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        LinkedIn
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(context.InstagramUrl))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.InstagramUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        Instagram
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(context.YouTubeChannelUrl))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.YouTubeChannelUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        YouTube Channel
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(context.XformerlyTwitterUrl))
+                        {
+                            <li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.XformerlyTwitterUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        X (Formerly Twitter)
+                                    </FluentAnchor>
+                                </FluentLabel>
+                            </li>
+                        }
+                    </ul>
+                </TemplateColumn>
             </FluentDataGrid>
         </div>
     </div>

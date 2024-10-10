@@ -154,4 +154,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="HtmlPassiveIncomeIdea" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="6565f8ff-f1cf-4ace-81a0-79b82798017c" ChangeDateTime="10/06/2024 13:42:58">
+    <Property Name="ElementName" Value="[dbo].[CompanyContact].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CompanyContact]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CompanyContactId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bf9c4614-fdb0-4c71-98d1-8b5604423b92" ChangeDateTime="10/09/2024 19:19:16">
+    <Property Name="ElementName" Value="[dbo].[LinkedInConnection].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LinkedInConnection]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LinkedInConnectionId" />
+  </Operation>
 </Operations>

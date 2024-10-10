@@ -50,13 +50,13 @@
     <Content Remove="appSettings.local.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="9.0.0-preview.4.24267.6" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0-preview.4.24266.19" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="9.0.0-rc.1.24452.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0-rc.1.24431.7" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.0-preview.4.10690" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0-preview.4.24266.19" />
-    <PackageReference Include="System.Text.Json" Version="9.0.0-preview.4.24266.19" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.0-rc.1.24453.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0-rc.1.24431.7" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0-rc.1.24431.7" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />

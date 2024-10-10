@@ -35,6 +35,12 @@ var googleAuthRedirectUri = builder.Configuration["GoogleAuthRedirectUri"] ??
 var paypalClientId = builder.Configuration["PayPalClientId"] ??
     throw new InvalidOperationException("'PayPalClientId' not found");
 
+var linkedInAuthClientId = builder.Configuration["LinkedInAuthClientId"] ??
+    throw new InvalidOperationException("'LinkedInAuthClientId' not found");
+
+var linkedInAuthClientSecret = builder.Configuration["LinkedInAuthClientSecret"] ??
+    throw new InvalidOperationException("'LinkedInAuthClientSecret' not found");
+
 var paypalClientSecret = builder.Configuration["PayPalClientSecret"] ??
     throw new InvalidOperationException("'PayPalClientSecret' not found");
 
@@ -95,6 +101,9 @@ if (addFairPlayTube)
 
             callback.EnvironmentVariables.Add("PayPalClientId", paypalClientId);
             callback.EnvironmentVariables.Add("PayPalClientSecret", paypalClientSecret);
+
+            callback.EnvironmentVariables.Add("LinkedInAuthClientId", linkedInAuthClientId);
+            callback.EnvironmentVariables.Add("LinkedInAuthClientSecret", linkedInAuthClientSecret);
 
             callback.EnvironmentVariables.Add("IpDataKey", ipDataKey);
         })

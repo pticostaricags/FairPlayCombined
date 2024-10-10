@@ -7,7 +7,9 @@ namespace FairPlayTube.ClientServices
 {
     public class VideoInfoClientService(
         [FromKeyedServices("AnonymousApiClient")]
-        KiotaClient.ApiClient anonymousClient
+        KiotaClient.ApiClient anonymousClient,
+        [FromKeyedServices("AuthenticatedApiClient")]
+        KiotaClient.ApiClient authenticatedClient
         ) : IVideoInfoService
     {
         public Task CreateDescriptionForVideoAsync(long videoInfoId, CancellationToken cancellationToken)
@@ -44,24 +46,43 @@ namespace FairPlayTube.ClientServices
                 }, cancellationToken);
             return new PaginationOfT<VideoInfoModel>()
             {
-                Items=result!.Items!.Select(p=>new  VideoInfoModel()
+                Items = result!.Items!.Select(p => new VideoInfoModel()
                 {
                     VideoId = p.VideoId,
                     Name = p.Name,
-                    LifetimeSessions=p.LifetimeSessions!.Value,
-                    LifetimeViewers=p.LifetimeViewers!.Value,
-                    LifetimeWatchTime=TimeSpan.Parse(p.LifetimeWatchTime!),
-                    PublishedOnString=p.PublishedOnString
+                    LifetimeSessions = p.LifetimeSessions!.Value,
+                    LifetimeViewers = p.LifetimeViewers!.Value,
+                    LifetimeWatchTime = TimeSpan.Parse(p.LifetimeWatchTime!),
+                    PublishedOnString = p.PublishedOnString
                 }).ToArray(),
-                PageSize=result.PageSize!.Value,
-                TotalItems=result.TotalItems!.Value,
-                TotalPages=result.TotalPages!.Value,
+                PageSize = result.PageSize!.Value,
+                TotalItems = result.TotalItems!.Value,
+                TotalPages = result.TotalPages!.Value,
             };
         }
 
-        public Task<PaginationOfT<VideoInfoModel>> GetPaginatedCompletedVideoInfoAsync(PaginationRequest paginationRequest, string? searchTerm, CancellationToken cancellationToken)
+        public async Task<PaginationOfT<VideoInfoModel>> GetPaginatedCompletedVideoInfoAsync(PaginationRequest paginationRequest, string? searchTerm, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var result = await authenticatedClient.Videoinfo.GetPaginatedCompletedVideoInfoAsync
+                .GetAsync(requestConfiguration =>
+                {
+                    requestConfiguration.QueryParameters.StartIndex = paginationRequest.StartIndex;
+                }, cancellationToken);
+            return new PaginationOfT<VideoInfoModel>()
+            {
+                Items = result!.Items!.Select(p => new VideoInfoModel()
+                {
+                    VideoId = p.VideoId,
+                    Name = p.Name,
+                    LifetimeSessions = p.LifetimeSessions!.Value,
+                    LifetimeViewers = p.LifetimeViewers!.Value,
+                    LifetimeWatchTime = TimeSpan.Parse(p.LifetimeWatchTime!),
+                    PublishedOnString = p.PublishedOnString
+                }).ToArray(),
+                PageSize = result.PageSize!.Value,
+                TotalItems = result.TotalItems!.Value,
+                TotalPages = result.TotalPages!.Value,
+            };
         }
 
         public Task<PaginationOfT<VideoInfoModel>> GetPaginatedCompletedVideoInfobyUserIdAsync(PaginationRequest paginationRequest, string userId, CancellationToken cancellationToken)

@@ -91,6 +91,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCRM", "FairPlayCRM\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.SharedAuth", "FairPlayCombined.SharedAuth\FairPlayCombined.SharedAuth.csproj", "{B62337AF-F8C4-4EC1-9C01-281112EDB877}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.WebComponents", "FairPlayCombined.WebComponents\FairPlayCombined.WebComponents.csproj", "{434607F4-A5DC-46FC-A2DB-D09942BE5A55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Enable_Paid_Tests|Any CPU = Debug_Enable_Paid_Tests|Any CPU
@@ -350,6 +352,12 @@ Global
 		{B62337AF-F8C4-4EC1-9C01-281112EDB877}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B62337AF-F8C4-4EC1-9C01-281112EDB877}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B62337AF-F8C4-4EC1-9C01-281112EDB877}.Release|Any CPU.Build.0 = Release|Any CPU
+		{434607F4-A5DC-46FC-A2DB-D09942BE5A55}.Debug_Enable_Paid_Tests|Any CPU.ActiveCfg = Debug|Any CPU
+		{434607F4-A5DC-46FC-A2DB-D09942BE5A55}.Debug_Enable_Paid_Tests|Any CPU.Build.0 = Debug|Any CPU
+		{434607F4-A5DC-46FC-A2DB-D09942BE5A55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{434607F4-A5DC-46FC-A2DB-D09942BE5A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{434607F4-A5DC-46FC-A2DB-D09942BE5A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{434607F4-A5DC-46FC-A2DB-D09942BE5A55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

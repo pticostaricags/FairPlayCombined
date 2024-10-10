@@ -20,5 +20,10 @@ namespace FairPlaySocial.TestDataGenerator.Providers
         {
             throw new NotImplementedException();
         }
+
+        public bool IsAuthenticatedWithLinkedIn()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

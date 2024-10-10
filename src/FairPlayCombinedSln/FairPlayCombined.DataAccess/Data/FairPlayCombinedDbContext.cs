@@ -76,6 +76,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<LikedUserProfile> LikedUserProfile { get; set; }
 
+    public virtual DbSet<LinkedInConnection> LinkedInConnection { get; set; }
+
     public virtual DbSet<MonthlyBudgetInfo> MonthlyBudgetInfo { get; set; }
 
     public virtual DbSet<NewVideoRecommendation> NewVideoRecommendation { get; set; }
@@ -314,6 +316,13 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_LikedUserProfile_LikingApplicactionUser");
         });
 
+        modelBuilder.Entity<LinkedInConnection>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.LinkedInConnection)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LinkedInConnection_AspNetUsers");
+        });
+
         modelBuilder.Entity<MonthlyBudgetInfo>(entity =>
         {
             entity.HasOne(d => d.Owner).WithMany(p => p.MonthlyBudgetInfo)
@@ -366,8 +375,8 @@ public partial class FairPlayCombinedDbContext : DbContext
                             .HasColumnName("ValidTo");
                     }));
 
-            entity.Property(e => e.PostTypeId).HasDefaultValueSql("1");
-            entity.Property(e => e.PostVisibilityId).HasDefaultValueSql("1");
+            entity.Property(e => e.PostTypeId).HasDefaultValue(1);
+            entity.Property(e => e.PostVisibilityId).HasDefaultValue(1);
 
             entity.HasOne(d => d.CreatedFromPost).WithMany(p => p.InverseCreatedFromPost).HasConstraintName("FK_Post_Post");
 
@@ -650,12 +659,12 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasFilter("YouTubeVideoId IS NOT NULL");
 
             entity.Property(e => e.ApplicationUserId).HasComment("Video Owner Id");
-            entity.Property(e => e.IsVideoGeneratedWithAi).HasDefaultValueSql("0");
+            entity.Property(e => e.IsVideoGeneratedWithAi).HasDefaultValue(false);
             entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
-            entity.Property(e => e.RowCreationUser).HasDefaultValueSql("'Unknown'");
-            entity.Property(e => e.SourceApplication).HasDefaultValueSql("'Unknown'");
-            entity.Property(e => e.VideoIndexingProcessingPercentage).HasDefaultValueSql("0");
-            entity.Property(e => e.VideoVisibilityId).HasDefaultValueSql("1");
+            entity.Property(e => e.RowCreationUser).HasDefaultValue("Unknown");
+            entity.Property(e => e.SourceApplication).HasDefaultValue("Unknown");
+            entity.Property(e => e.VideoIndexingProcessingPercentage).HasDefaultValue(0);
+            entity.Property(e => e.VideoVisibilityId).HasDefaultValue((short)1);
 
             entity.HasOne(d => d.ApplicationUser).WithMany(p => p.VideoInfo)
                 .OnDelete(DeleteBehavior.ClientSetNull)

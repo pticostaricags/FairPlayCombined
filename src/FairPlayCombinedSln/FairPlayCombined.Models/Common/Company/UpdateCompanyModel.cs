@@ -23,5 +23,11 @@ namespace FairPlayCombined.Models.Common.Company
         public long? PrimaryContactId { get; set; }
         [Url]
         public string? YouTubeChannelUrl { get; set; }
+        [Url]
+        public string? InstagramUrl { get; set; }
+        [Url]
+        public string? LinkedInUrl { get; set; }
+        [Url]
+        public string? XformerlyTwitterUrl { get; set; }
     }
 }

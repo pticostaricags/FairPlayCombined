@@ -24,6 +24,7 @@
       "FairPlayCombined.SharedAuth\\FairPlayCombined.SharedAuth.csproj",
       "FairPlayCombined.Shared\\FairPlayCombined.Shared.csproj",
       "FairPlayCombined.WebApi\\FairPlayCombined.WebApi.csproj",
+      "FairPlayCombined.WebComponents\\FairPlayCombined.WebComponents.csproj",
       "FairPlayCombinedDb\\FairPlayCombinedDb.sqlproj",
       "FairPlayCombinedSln.AppHost\\FairPlayCombinedSln.AppHost.csproj",
       "FairPlayCombinedSln.ServiceDefaults\\FairPlayCombinedSln.ServiceDefaults.csproj",

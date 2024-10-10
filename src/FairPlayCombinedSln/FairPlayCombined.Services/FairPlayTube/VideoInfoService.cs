@@ -24,8 +24,8 @@ namespace FairPlayCombined.Services.FairPlayTube
         >]
     public partial class VideoInfoService : BaseService, IVideoInfoService
     {
-        private readonly IAzureVideoIndexerService azureVideoIndexerService;
-        private readonly IOpenAIService openAIService;
+        private readonly IAzureVideoIndexerService? azureVideoIndexerService;
+        private readonly IOpenAIService? openAIService;
         public VideoInfoService(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
             ILogger<VideoInfoService> logger, IAzureVideoIndexerService azureVideoIndexerService,
             IOpenAIService openAIService) :
@@ -58,7 +58,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             StringBuilder systemMessage = new("Create a description for the video based on the information I'll provide. Description must be less than 500 characters. Your response must be in simple text.");
             systemMessage.AppendLine("The description must have the 3 best hashtags at the end.");
             systemMessage.AppendLine("The description must be in the language of the Video Title.");
-            var response = await openAIService
+            var response = await openAIService!
                 .GenerateChatCompletionAsync(systemMessage.ToString(),
                 prompt: promptBuilder.ToString(), cancellationToken);
 
@@ -356,7 +356,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                     await transaction.CommitAsync(cancellationToken);
 
                     // Call the Azure Video Indexer service to delete the video by ID
-                    var armAccessToken = await azureVideoIndexerService.AuthenticateToAzureArmAsync();
+                    var armAccessToken = await azureVideoIndexerService!.AuthenticateToAzureArmAsync();
                     var getAccessTokenResult = await azureVideoIndexerService.GetAccessTokenForArmAccountAsync(armAccessToken, cancellationToken);
                     await azureVideoIndexerService.DeleteVideoByIdAsync(videoInfoEntity.VideoId, getAccessTokenResult!.AccessToken!, cancellationToken);
                 }

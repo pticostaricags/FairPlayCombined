@@ -156,6 +156,9 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         var fairplayCombinedSharedAuthAssembly = typeof(SharedAuth._Imports).Assembly;
         var fairplayCombinedSharedAuthTypes = fairplayCombinedSharedAuthAssembly.GetTypes();
 
+        var fairplayCombinedWebComponentsAssembly = typeof(WebComponents._Imports).Assembly;
+        var fairplayCombinedWebComponentsTypes = fairplayCombinedWebComponentsAssembly.GetTypes();
+
         List<Type> typesToCheck = [
             .. fairplayTubeTypes,
             .. fairplayTubeSharedUITypes,
@@ -167,7 +170,8 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
             .. fairPlayDatingTypes,
             .. fairplayCrmTypes,
             .. fairplayCrmSharedUITypes,
-            .. fairplayCombinedSharedAuthTypes];
+            .. fairplayCombinedSharedAuthTypes,
+            .. fairplayCombinedWebComponentsTypes];
         return typesToCheck;
     }
 }

@@ -1,0 +1,21 @@
+﻿<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@this.Site" />
+<meta name="twitter:title" content="@this.Title" />
+<meta name="twitter:description" content="@this.Description" />
+<meta name="twitter:image" content="@this.ImageUrl" />
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public string? Site { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Title { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Description { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? ImageUrl { get; set; }
+}

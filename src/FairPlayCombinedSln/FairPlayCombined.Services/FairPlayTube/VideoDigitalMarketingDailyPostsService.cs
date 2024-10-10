@@ -25,8 +25,8 @@ namespace FairPlayCombined.Services.FairPlayTube
         >]
     public partial class VideoDigitalMarketingDailyPostsService : BaseService, IVideoDigitalMarketingDailyPostsService
     {
-        private readonly IUserFundService userFundService;
-        private readonly IOpenAIService openAIService;
+        private readonly IUserFundService? userFundService;
+        private readonly IOpenAIService? openAIService;
         public VideoDigitalMarketingDailyPostsService(
             IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
             ILogger<VideoDigitalMarketingDailyPostsService> logger,
@@ -39,7 +39,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         public async Task<string> CreateVideoDigitalMarketingDailyPostsForLinkedInAsync
             (long videoInfoId, string languageCode, CancellationToken cancellationToken)
         {
-            var hasRequiredFunds = await userFundService.HasFundsToCreateDailyPostsAsync(cancellationToken);
+            var hasRequiredFunds = await userFundService!.HasFundsToCreateDailyPostsAsync(cancellationToken);
             if (!hasRequiredFunds)
             {
                 string message = "You don't have available funds left to perform the operation.";
@@ -65,7 +65,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             promptBuilder.AppendLine("Posts are for LinkedIn");
             promptBuilder.AppendLine($"The posts must be in language culture: {languageCode}");
             var userMessage = $"Today's Date: {DateTimeOffset.UtcNow.Date}. Video Title: {videoDataEntity.Description}. Video Captions: {videoDataEntity.EnglishCaptions}";
-            var result = await this.openAIService.GenerateChatCompletionAsync(promptBuilder.ToString(),
+            var result = await this.openAIService!.GenerateChatCompletionAsync(promptBuilder.ToString(),
                 userMessage, cancellationToken);
             var resultText = result!.choices![0].message!.content;
             await dbContext.VideoDigitalMarketingDailyPosts.AddAsync(new()
@@ -82,7 +82,7 @@ namespace FairPlayCombined.Services.FairPlayTube
         public async Task<string> CreateVideoDigitalMarketingDailyPostsForTwitterAsync
             (long videoInfoId, string languageCode, CancellationToken cancellationToken)
         {
-            var hasRequiredFunds = await userFundService.HasFundsToCreateDailyPostsAsync(cancellationToken);
+            var hasRequiredFunds = await userFundService!.HasFundsToCreateDailyPostsAsync(cancellationToken);
             if (!hasRequiredFunds)
             {
                 string message = "You don't have available funds left to perform the operation.";
@@ -107,7 +107,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             promptBuilder.AppendLine("Posts are for Twitter/X");
             promptBuilder.AppendLine($"The posts must be in language culture: {languageCode}");
             var userMessage = $"Today's Date: {DateTimeOffset.UtcNow.Date}. Video Title: {videoDataEntity.Description}. Video Captions: {videoDataEntity.EnglishCaptions}";
-            var result = await this.openAIService.GenerateChatCompletionAsync(promptBuilder.ToString(),
+            var result = await this.openAIService!.GenerateChatCompletionAsync(promptBuilder.ToString(),
                 userMessage, cancellationToken);
             var resultText = result!.choices![0].message!.content;
             await dbContext.VideoDigitalMarketingDailyPosts.AddAsync(new()

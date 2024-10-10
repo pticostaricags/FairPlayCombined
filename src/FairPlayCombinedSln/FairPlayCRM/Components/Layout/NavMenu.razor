@@ -28,6 +28,10 @@
                            Icon="@(new Icons.Regular.Size20.Add())">
                 @localizer[CreateCompanyTextKey]
             </FluentNavLink>
+            <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.LinkedInConnectionsImport"
+                           Icon="@(new Icons.Regular.Size20.CallConnecting())">
+                @localizer[ImportLinkedInConnectionsTextKey]
+            </FluentNavLink>
         </FluentNavGroup>
     </Authorized>
 </AuthorizeView>
@@ -108,5 +112,7 @@
     public const string ListCompaniesTextKey = "ListCompaniesText";
     [ResourceKey(defaultValue: "Create Company")]
     public const string CreateCompanyTextKey = "CreateCompanyText";
+    [ResourceKey(defaultValue: "Import LinkedIn Connections")]
+    public const string ImportLinkedInConnectionsTextKey = "ImportLinkedInConnectionsText";
     #endregion Resource Keys
 }

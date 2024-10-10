@@ -17,4 +17,9 @@ internal class VideoIndexingUserProviderService : IUserProviderService
     {
         throw new NotImplementedException();
     }
+
+    public bool IsAuthenticatedWithLinkedIn()
+    {
+        throw new NotImplementedException();
+    }
 }

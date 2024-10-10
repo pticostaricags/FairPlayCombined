@@ -1,15 +1,11 @@
 ﻿@implements IAsyncDisposable
 
 @using FairPlayCombined.Common.CustomAttributes
-@using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Models.PayPal
 @using Microsoft.Extensions.Localization
 
 @inject IStringLocalizer<PayPalCheckout> Localizer
 @inject IJSRuntime JSRuntime
-@inject IToastService toastService
-@inject IUserFundService userFundService
-@inject IPayPalOrderService payPalOrderService
 
 <div>
     <div id="smart-button-container">
@@ -31,7 +27,12 @@
 
 @code {
     [Parameter]
-    public EventCallback OnFundsAdded { get; set; }
+    [EditorRequired]
+    public EventCallback<(PaypalCheckoutApprovedDataModel data,
+        PaypalCheckoutApprovedDetailsModel details)> OnPayPalOrderApproved { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<string> OnError { get; set; }
     private DotNetObjectReference<PayPalCheckout>? objRef;
     private readonly CancellationTokenSource cancellationTokenSource = new();
 
@@ -52,7 +53,7 @@
         }
         catch (Exception ex)
         {
-            this.toastService.ShowError(ex.Message);
+            await this.OnError.InvokeAsync(ex.Message);
         }
     }
 
@@ -62,20 +63,18 @@
     {
         try
         {
-            await this.userFundService.AddMyFundsAsync(data.orderID!, this.cancellationTokenSource.Token);
-            this.toastService.ShowSuccess($"Funds have been added to your Wallet");
-            await OnFundsAdded.InvokeAsync();
+            await OnPayPalOrderApproved.InvokeAsync((data, details));
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message);
+            await this.OnError.InvokeAsync(ex.Message);
         }
     }
 
     [JSInvokable]
-    public void ShowPayPalNotFoundError()
+    public async void ShowPayPalNotFoundError()
     {
-        this.toastService.ShowError(Localizer[PayPalNotFoundErrorTextKey]);
+        await this.OnError.InvokeAsync(Localizer[PayPalNotFoundErrorTextKey]);
     }
 
     public async ValueTask DisposeAsync()

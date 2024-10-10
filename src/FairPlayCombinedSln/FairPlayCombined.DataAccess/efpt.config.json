@@ -79,6 +79,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[LinkedInConnection]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[OpenAIPrompt]",
          "ObjectType": 0
       },

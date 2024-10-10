@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
 using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Services.Common;
-using Google.Apis.YouTube.v3;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.DataAccess.Interceptors;
@@ -193,4 +192,5 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddTransient<IVisitorTrackingService, VisitorTrackingService>();
     builder.Services.AddTransient<IContactService, ContactService>();
     builder.Services.AddTransient<ICompanyService, CompanyService>();
+    builder.Services.AddTransient<ILinkedInConnectionService, LinkedInConnectionService>();
 }

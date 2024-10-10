@@ -1,0 +1,43 @@
+﻿<script type='application/ld+json'>
+    {
+        "@@context": "http://schema.org",
+        "@@type": "VideoObject",
+        "name": "@this.Name",
+        "description": "@this.Description",
+        "thumbnailUrl": "@this.ThumbnailUrl",
+        "uploadDate": "@this.UploadDate",
+        "duration": "@this.Duration",
+        "contentUrl": "@this.ContentUrl",
+        "embedUrl": "@this.EmbedUrl",
+        "interactionCount": "@this.InteractionCount",
+        "expires": ""
+    }
+</script>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public string? Name { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Description { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? ThumbnailUrl { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? UploadDate { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Duration { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? ContentUrl { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? EmbedUrl { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public int? InteractionCount { get; set; }
+}

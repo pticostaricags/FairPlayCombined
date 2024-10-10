@@ -4,7 +4,8 @@
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
 @using FairPlayCombined.Interfaces.Common
-@using FairPlayTube.SharedUI.Components.PayPal
+@using FairPlayCombined.Models.PayPal
+@using FairPlayCombined.WebComponents.PayPal
 
 @inject IUserFundService userFundService
 @inject IToastService toastService
@@ -22,7 +23,7 @@
 </div>
 <FluentDivider Style="width: 100%;" Role="DividerRole.Presentation"></FluentDivider>
 <div>
-    <PayPalCheckout OnFundsAdded="OnFundsAdded"></PayPalCheckout>
+    <PayPalCheckout OnPayPalOrderApproved="OnPayPalOrderApprovedAsync" OnError="OnError"></PayPalCheckout>
 </div>
 
 
@@ -51,9 +52,23 @@
         StateHasChanged();
     }
 
-    private async Task OnFundsAdded()
+    private async Task OnPayPalOrderApprovedAsync(
+        (
+            PaypalCheckoutApprovedDataModel data,
+            PaypalCheckoutApprovedDetailsModel details
+        ) tuple
+    )
     {
-        await LoadDataAsync();
+        try
+        {
+            await this.userFundService.AddMyFundsAsync(tuple.data.orderID!, this.cancellationTokenSource.Token);
+            this.toastService.ShowSuccess($"Funds have been added to your Wallet");
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
     }
 
     private async Task OnClaimCodeClickAsync()
@@ -70,6 +85,11 @@
         {
             this.toastService.ShowError(ex.Message);
         }
+    }
+
+    private void OnError(string errorMessage)
+    {
+        this.toastService.ShowError(errorMessage);
     }
 
     public async ValueTask DisposeAsync()

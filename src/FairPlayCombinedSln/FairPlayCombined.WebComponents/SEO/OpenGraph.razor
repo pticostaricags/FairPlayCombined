@@ -1,0 +1,37 @@
+﻿<meta property="og:title" content="@this.Title" />
+<meta property="og:description" content="@this.Description" />
+
+<meta property="og:image" content="@this.ImageUrl" />
+<meta property="og:image:secure_url" content="@this.ImageSecureUrl" />
+<meta property="og:image:type" content="@this.ImageType" />
+<meta property="og:image:width" content="@this.ImageWidth" />
+<meta property="og:image:height" content="@this.ImageHeight" />
+<meta property="og:image:alt" content="@this.ImageAlt" />
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public string? Title { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Description { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? ImageUrl { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? ImageSecureUrl { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? ImageType { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public int? ImageWidth { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public int? ImageHeight { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? ImageAlt { get; set; }
+}
