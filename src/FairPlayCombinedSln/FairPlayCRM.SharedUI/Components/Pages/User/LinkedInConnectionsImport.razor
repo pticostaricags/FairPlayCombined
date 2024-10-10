@@ -1,0 +1,43 @@
+﻿@using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces.Common
+@attribute [Route(Constants.Routes.FairPlayCrmRoutes.UserRoutes.LinkedInConnectionsImport)]
+@attribute [Authorize]
+
+@inject ILinkedInConnectionService linkedInConnectionService
+@inject IToastService toastService
+
+<h3>LinkedInConnectionsImport</h3>
+
+
+<LoadingIndicator ShowSpinners="@this.IsBusy"></LoadingIndicator>
+
+<p>
+    Select file to import
+</p>
+<InputFile OnChange="OnFileSelectedAsync"></InputFile>
+
+@code {
+    private bool IsBusy { get; set; }
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+
+    private async Task OnFileSelectedAsync(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            if (inputFileChangeEventArgs.FileCount == 1)
+            {
+                var stream = inputFileChangeEventArgs.File.OpenReadStream();
+                await this.linkedInConnectionService
+                .ImportFromConnectionsFileAsync(stream, this.cancellationTokenSource.Token);
+                this.toastService.ShowSuccess("Connections have been imported");
+            }
+        }
+        catch (Exception ex)
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+}
