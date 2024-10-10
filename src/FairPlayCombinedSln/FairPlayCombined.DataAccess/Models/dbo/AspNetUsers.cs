@@ -89,6 +89,9 @@ public partial class AspNetUsers
     [InverseProperty("LikingApplicationUser")]
     public virtual ICollection<LikedUserProfile> LikedUserProfileLikingApplicationUser { get; set; } = new List<LikedUserProfile>();
 
+    [InverseProperty("ApplicationUser")]
+    public virtual ICollection<LinkedInConnection> LinkedInConnection { get; set; } = new List<LinkedInConnection>();
+
     [InverseProperty("Owner")]
     public virtual ICollection<MonthlyBudgetInfo> MonthlyBudgetInfo { get; set; } = new List<MonthlyBudgetInfo>();
 

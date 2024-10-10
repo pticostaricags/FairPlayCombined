@@ -76,6 +76,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<LikedUserProfile> LikedUserProfile { get; set; }
 
+    public virtual DbSet<LinkedInConnection> LinkedInConnection { get; set; }
+
     public virtual DbSet<MonthlyBudgetInfo> MonthlyBudgetInfo { get; set; }
 
     public virtual DbSet<NewVideoRecommendation> NewVideoRecommendation { get; set; }
@@ -312,6 +314,13 @@ public partial class FairPlayCombinedDbContext : DbContext
             entity.HasOne(d => d.LikingApplicationUser).WithMany(p => p.LikedUserProfileLikingApplicationUser)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_LikedUserProfile_LikingApplicactionUser");
+        });
+
+        modelBuilder.Entity<LinkedInConnection>(entity =>
+        {
+            entity.HasOne(d => d.ApplicationUser).WithMany(p => p.LinkedInConnection)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LinkedInConnection_AspNetUsers");
         });
 
         modelBuilder.Entity<MonthlyBudgetInfo>(entity =>
