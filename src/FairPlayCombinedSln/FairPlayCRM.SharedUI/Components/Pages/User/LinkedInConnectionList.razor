@@ -1,0 +1,102 @@
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Common
+@using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Models.Common.Company
+@using FairPlayCombined.Models.Common.LinkedInConnection
+@using Microsoft.Extensions.Localization
+
+@attribute [Route(Constants.Routes.FairPlayCrmRoutes.UserRoutes.LinkedInConnectionList)]
+@attribute [Authorize]
+
+@inject IStringLocalizer<LinkedInConnectionList> localizer
+@inject ILinkedInConnectionService linkedInConnectionService
+
+<PageTitle>@nameof(FairPlayCRM) - @localizer[LinkedInConnectionListPageTitleTextKey]</PageTitle>
+
+<h3>
+    @localizer[LinkedInConnectionListPageTitleTextKey]
+</h3>
+
+<LoadingIndicator ShowSpinners="@this.IsBusy"></LoadingIndicator>
+
+@if (this.ItemsProvider != null)
+{
+    <div style="display: table; table-layout: fixed; width: 100%;">
+        <div style="overflow-x: auto;">
+            <FluentDataGrid Style="min-width: max-content;" ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
+                <PropertyColumn Property="@(p=>p.FirstName)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.LastName)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.EmailAddress)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.Company)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.Position)"></PropertyColumn>
+                <PropertyColumn Property="@(p=>p.ConnectedOn)"></PropertyColumn>
+                <TemplateColumn Title="ProfileUrl">
+                    <FluentLabel Typo="Typography.Body">
+                        <FluentAnchor Href="@context.ProfileUrl" Target="_blank">
+                            <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                        Color="Color.Accent" Slot="start"></FluentIcon>
+                            LinkedIn Profile
+                        </FluentAnchor>
+                    </FluentLabel>
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
+    </div>
+    <FluentPaginator State="@this.paginationState"></FluentPaginator>
+}
+
+@code {
+    private GridItemsProvider<LinkedInConnectionModel>? ItemsProvider { get; set; }
+    private PaginationState paginationState { get; set; } = new()
+        {
+            ItemsPerPage = FairPlayCombined.Common.Constants.Pagination.PageSize
+        };
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private bool IsBusy { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ItemsProvider ??= async req =>
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            PaginationRequest paginationRequest = new()
+                {
+                    PageSize = paginationState.ItemsPerPage,
+                    StartIndex = req.StartIndex,
+                    SortingItems = new SortingItem[]
+                    {
+                        new SortingItem()
+                        {
+                            PropertyName=nameof(LinkedInConnectionModel.FirstName),
+                            SortType = FairPlayCombined.Common.GeneratorsAttributes.SortType.Ascending
+                        },
+                        new SortingItem()
+                        {
+                            PropertyName=nameof(LinkedInConnectionModel.LastName),
+                            SortType = FairPlayCombined.Common.GeneratorsAttributes.SortType.Ascending
+                        }
+                    }
+                };
+            var items = await this.linkedInConnectionService.GetPaginatedLinkedInConnectionAsync(paginationRequest, this.cancellationTokenSource.Token);
+            var result = GridItemsProviderResult.From<LinkedInConnectionModel>(items.Items!, items.TotalItems);
+            this.IsBusy = false;
+            StateHasChanged();
+            return result;
+        };
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Cancel(throwOnFirstException: false);
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "LinkedIn Connections List")]
+    public const string LinkedInConnectionListPageTitleTextKey = "LinkedInConnectionListPageTitleTextKey";
+    #endregion Resource Keys
+}

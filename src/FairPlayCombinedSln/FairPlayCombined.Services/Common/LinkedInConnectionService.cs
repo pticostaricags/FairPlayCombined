@@ -7,14 +7,30 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using Microsoft.Extensions.Logging;
+using FairPlayCombined.Common.GeneratorsAttributes;
+using FairPlayCombined.Models.Common.LinkedInConnection;
+using FairPlayCombined.Models.Pagination;
 
 namespace FairPlayCombined.Services.Common
 {
-    public class LinkedInConnectionService(
-        ILogger<LinkedInConnectionService> logger,
-        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IUserProviderService userProviderService) : ILinkedInConnectionService
+    [ServiceOfT<
+        CreateLinkedInConnectionModel,
+        UpdateLinkedInConnectionModel,
+        LinkedInConnectionModel,
+        FairPlayCombinedDbContext,
+        LinkedInConnection,
+        PaginationRequest,
+        PaginationOfT<LinkedInConnectionModel>
+        >]
+    public partial class LinkedInConnectionService : BaseService, ILinkedInConnectionService
     {
+        private readonly IUserProviderService? userProviderService = null;
+        public LinkedInConnectionService(ILogger<LinkedInConnectionService> logger,
+        IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+        IUserProviderService userProviderService):this(dbContextFactory, logger)
+        {
+            this.userProviderService = userProviderService;
+        }
         public async Task ImportFromConnectionsFileAsync(Stream stream, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -60,7 +76,7 @@ namespace FairPlayCombined.Services.Common
 
             LinkedInConnection linkedInConnectionEntity = new()
             {
-                ApplicationUserId = userProviderService.GetCurrentUserId()
+                ApplicationUserId = userProviderService!.GetCurrentUserId()
             };
             if (!String.IsNullOrWhiteSpace(firstName))
             {
