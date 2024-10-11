@@ -36,6 +36,10 @@
         }
         catch (Exception ex)
         {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
             this.IsBusy = false;
             StateHasChanged();
         }
