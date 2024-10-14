@@ -52,7 +52,7 @@ namespace FairPlayCombined.Services.Common
                     logger.LogInformation("Read a new row");
                     if (!firstNameHeaderFound)
                     {
-                        firstNameHeaderFound = IsFirstNameHeader(logger, csvReader);
+                        firstNameHeaderFound = IsFirstNameHeader(csvReader);
                     }
                     else
                     {
@@ -123,7 +123,7 @@ namespace FairPlayCombined.Services.Common
             }
         }
 
-        private bool IsFirstNameHeader(ILogger<LinkedInConnectionService> logger, CsvReader csvReader)
+        private bool IsFirstNameHeader(CsvReader csvReader)
         {
             bool couldRead = csvReader.TryGetField(0, out string? firstColumnText);
             logger.LogInformation("Checking First Column Value: {Value}", firstColumnText);
@@ -135,7 +135,7 @@ namespace FairPlayCombined.Services.Common
             {
                 logger.LogInformation("First Name Header found");
                 return true;
-            };
+            }
 
             return false;
         }

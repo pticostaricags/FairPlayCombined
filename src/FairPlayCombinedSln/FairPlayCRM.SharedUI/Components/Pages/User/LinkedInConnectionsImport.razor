@@ -1,4 +1,6 @@
-﻿@using FairPlayCombined.Common
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Common
 @using FairPlayCombined.Interfaces.Common
 @attribute [Route(Constants.Routes.FairPlayCrmRoutes.UserRoutes.LinkedInConnectionsImport)]
 @attribute [Authorize]
@@ -43,5 +45,11 @@
             this.IsBusy = false;
             StateHasChanged();
         }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
 }
