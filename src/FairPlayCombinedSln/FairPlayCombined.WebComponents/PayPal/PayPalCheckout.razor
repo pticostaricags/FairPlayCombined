@@ -72,7 +72,7 @@
     }
 
     [JSInvokable]
-    public async void ShowPayPalNotFoundError()
+    public async Task ShowPayPalNotFoundError()
     {
         await this.OnError.InvokeAsync(Localizer[PayPalNotFoundErrorTextKey]);
     }
