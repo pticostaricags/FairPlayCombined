@@ -21,8 +21,10 @@ namespace FairPlayCombined.Common.ValidationAttributes
                     return true;
                 try
                 {
-                    Uri uri = new(value!.ToString()!);
-                    return true;
+                    if (Uri.IsWellFormedUriString(value!.ToString()!, UriKind.Absolute))
+                        return true;
+                    else
+                        return false;
                 }
                 catch (Exception)
                 {
