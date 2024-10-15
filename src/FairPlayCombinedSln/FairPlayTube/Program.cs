@@ -10,6 +10,7 @@ using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using FairPlayCombined.SharedAuth.Components.Account;
+using FairPlayCombined.SharedAuth.Extensions;
 using FairPlayTube.Components;
 using FairPlayTube.Data;
 using FairPlayTube.Extensions;
@@ -27,6 +28,7 @@ using OpenTelemetry.Metrics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
+using System.Globalization;
 using System.IO.Compression;
 using System.Reflection;
 
@@ -94,16 +96,14 @@ builder.Services.AddAuthentication(configureOptions =>
     configureOptions.DefaultScheme = IdentityConstants.ApplicationScheme;
     configureOptions.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
-    .AddGoogle(options =>
-    {
-        options.ClientId = googleAuthClientSecretInfo.installed!.client_id!;
-        options.ClientSecret = googleAuthClientSecretInfo.installed.client_secret!;
-        options.Scope.Add(YouTubeService.Scope.YoutubeUpload);
-        options.Scope.Add(YouTubeService.Scope.YoutubeForceSsl);
-        options.Scope.Add(YouTubeService.Scope.Youtubepartner);
-        options.SaveTokens = true;
-    })
-    .AddLinkedIn(options => 
+    .AddGoogleAuth(googleAuthClientSecretInfo,
+    scopes:
+    [
+        YouTubeService.Scope.YoutubeUpload,
+        YouTubeService.Scope.YoutubeForceSsl,
+        YouTubeService.Scope.Youtubepartner
+        ], true)
+    .AddLinkedIn(options =>
     {
         options.ClientId = linkedInAuthClientSecretInfo.ClientId!;
         options.ClientSecret = linkedInAuthClientSecretInfo.ClientSecret!;
@@ -260,7 +260,7 @@ app.MapGet("/api/video/{videoId}/title",
         var result = await dbContext.VideoInfo
         .AsNoTracking()
         .Where(p => p.VideoId == videoId)
-        .Select(p=>p.Name)
+        .Select(p => p.Name)
         .SingleOrDefaultAsync(cancellationToken);
         return TypedResults.Content(result);
     });
