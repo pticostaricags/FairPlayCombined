@@ -53,6 +53,14 @@ public partial class AspNetUsers
 
     public int AccessFailedCount { get; set; }
 
+    [Required]
+    [StringLength(50)]
+    public string Name { get; set; }
+
+    [Required]
+    [StringLength(50)]
+    public string Lastname { get; set; }
+
     [InverseProperty("FromApplicationUser")]
     public virtual ICollection<ApplicationUserVouch> ApplicationUserVouchFromApplicationUser { get; set; } = new List<ApplicationUserVouch>();
 

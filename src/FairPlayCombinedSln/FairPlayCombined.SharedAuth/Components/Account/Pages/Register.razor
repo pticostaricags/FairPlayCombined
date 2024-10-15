@@ -27,20 +27,30 @@
             <h2>Create a new account.</h2>
             <hr />
             <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
-                <InputText @bind-Value="Input.Email" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="email">Email</label>
+                <InputText @bind-Value="Input.Email" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
-            <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
-                <InputText type="password" @bind-Value="Input.Password" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="new-password" aria-required="true" placeholder="password" />
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="password">Password</label>
+                <InputText type="password" @bind-Value="Input.Password" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="new-password" aria-required="true" placeholder="password" />
                 <ValidationMessage For="() => Input.Password" class="text-danger" />
             </div>
-            <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
-                <InputText type="password" @bind-Value="Input.ConfirmPassword" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="new-password" aria-required="true" placeholder="password" />
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="confirm-password">Confirm Password</label>
+                <InputText type="password" @bind-Value="Input.ConfirmPassword" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="new-password" aria-required="true" placeholder="password" />
                 <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+            </div>
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
+                <label for="name">Name</label>
+                <InputText @bind-Value="Input.Name" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="name" aria-required="true" placeholder="Name" />
+                <ValidationMessage For="() => Input.Name" class="text-danger" />
+            </div>
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
+                <label for="name">Lastname</label>
+                <InputText @bind-Value="Input.Lastname" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="lastname" aria-required="true" placeholder="Lastname" />
+                <ValidationMessage For="() => Input.Lastname" class="text-danger" />
             </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </EditForm>
@@ -68,7 +78,8 @@
     public async Task RegisterUser(EditContext editContext)
     {
         var user = CreateUser();
-
+        user.Name = Input.Name;
+        user.Lastname = Input.Lastname;
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -141,5 +152,15 @@
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
+
+        [Required]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
+        [Display(Name = "Name")]
+        public string Name { get; set; } = "";
+
+        [Required]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
+        [Display(Name = "Lastname")]
+        public string Lastname { get; set; } = "";
     }
 }

@@ -7,5 +7,9 @@ namespace FairPlayCombined.Common.Identity;
 public class ApplicationUser : IdentityUser
 #pragma warning restore S2094 // Classes should not be empty
 {
+    [ProtectedPersonalData]
+    public string? Name { get; set; }
+    [ProtectedPersonalData]
+    public string? Lastname { get; set; }
 }
 
