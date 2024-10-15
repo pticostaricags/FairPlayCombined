@@ -80,8 +80,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             await dbContext.SaveChangesAsync();
             TestUserProviderService.CurrentUserId = testUser.Id;
             var linkedInConnectionService = sp.GetRequiredService<LinkedInConnectionService>();
-            var filePath = configuration["LinkedInConnectionsFilePath"];
-            Stream fileStream = File.OpenRead(filePath!);
+            Stream fileStream = File.OpenRead(linkedInConnectionsFilePath!);
             await linkedInConnectionService.ImportFromConnectionsFileAsync(
                 fileStream, CancellationToken.None);
             var connectionsCount = await dbContext.LinkedInConnection.CountAsync();

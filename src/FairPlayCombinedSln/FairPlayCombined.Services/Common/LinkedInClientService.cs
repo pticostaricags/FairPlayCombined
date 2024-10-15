@@ -17,6 +17,7 @@ namespace FairPlayCombined.Services.Common
     {
         private async Task<AspNetUserTokens> GetAccessTokenAsync(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory, IUserProviderService userProviderService)
         {
+            logger.LogInformation("Start of method: {MethodName}", nameof(GetAccessTokenAsync));
             var userId = userProviderService.GetCurrentUserId();
             var dbContext = await dbContextFactory.CreateDbContextAsync();
             var accessTokenEntity = await
@@ -24,6 +25,7 @@ namespace FairPlayCombined.Services.Common
                 .AsNoTracking()
                 .SingleAsync(p => p.UserId == userId && p.LoginProvider == "LinkedIn" &&
                 p.Name == "access_token");
+            logger.LogInformation("End of method: {MethodName}", nameof(GetAccessTokenAsync));
             return accessTokenEntity;
         }
         public async Task<UserInfoModel> GetUserInfoAsync(CancellationToken cancellationToken)
