@@ -18,7 +18,7 @@
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.9.3" />
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.6.0" />
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.9.3" />
-	<PackageReference Include="SonarAnalyzer.CSharp" Version="9.30.0.95878">
+	<PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
