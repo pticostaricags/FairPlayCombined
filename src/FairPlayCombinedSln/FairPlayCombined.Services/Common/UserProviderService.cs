@@ -29,5 +29,13 @@ namespace FairPlayCombined.Services.Common
                 "Google");
             return result;
         }
+
+        public bool IsAuthenticatedWithLinkedIn()
+        {
+            var result = httpContextAccessor.HttpContext!.User
+                .HasClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod",
+                "LinkedIn");
+            return result;
+        }
     }
 }

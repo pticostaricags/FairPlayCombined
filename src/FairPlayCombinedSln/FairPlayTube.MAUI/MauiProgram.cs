@@ -5,7 +5,9 @@ using FairPlayTube.ClientServices.CustomLocalization;
 using FairPlayTube.ClientServices.KiotaClient;
 using FairPlayTube.MAUI.Authentication;
 using FairPlayTube.MAUI.Helpers;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -34,13 +36,17 @@ namespace FairPlayTube.MAUI
             builder.Services.AddFluentUIComponents();
             builder.Services.AddMemoryCache();
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton<ComponentStatePersistenceManager>();
+            builder.Services.AddSingleton<PersistentComponentState>(sp =>
+            {
+                var manager = sp.GetRequiredService<ComponentStatePersistenceManager>();
+                return manager.State;
+            });
             builder.Services.AddSingleton<IStringLocalizerFactory, ApiLocalizerFactory>();
             builder.Services.AddSingleton<IStringLocalizer, ApiLocalizer>();
             builder.Services.AddLocalization();
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();
-            builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddRoles<IdentityRole>();
             builder.Services.AddCascadingAuthenticationState();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddScoped<LocalizationMessageHandler>();
@@ -84,7 +90,8 @@ namespace FairPlayTube.MAUI
 
         public Task<string> GetAuthorizationTokenAsync(Uri uri, Dictionary<string, object>? additionalAuthenticationContext = null, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(UserContext.AccessToken ?? String.Empty);
+            var result = UserContext.AccessToken ?? String.Empty;
+            return Task.FromResult(result);
         }
     }
 

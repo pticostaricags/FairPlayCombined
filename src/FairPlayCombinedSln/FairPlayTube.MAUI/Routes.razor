@@ -1,6 +1,10 @@
-﻿<Router AppAssembly="@typeof(MauiProgram).Assembly" AdditionalAssemblies="FairPlayTube.MAUI.AdditionalSetup.AdditionalAssemblies">
+﻿@using FairPlayTube.MAUI.Helpers
+<Router AppAssembly="@typeof(MauiProgram).Assembly" AdditionalAssemblies="FairPlayTube.MAUI.AdditionalSetup.AdditionalAssemblies">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Components.Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        @if (!ReloadService.IsReloading)
+        {
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Components.Layout.MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        }
     </Found>
 </Router>

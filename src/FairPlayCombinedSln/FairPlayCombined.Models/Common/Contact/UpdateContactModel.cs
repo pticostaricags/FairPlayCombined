@@ -23,6 +23,10 @@ namespace FairPlayCombined.Models.Common.Contact
         [StringLength(50)]
         [Url]
         public string? YouTubeChannelUrl { get; set; }
+        [Url]
+        public string? InstagramUrl { get; set; }
+        [Url]
+        public string? XformerlyTwitterUrl { get; set; }
         [StringLength(50)]
         [Phone]
         public string? BusinessPhoneNumber { get; set; }

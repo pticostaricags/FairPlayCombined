@@ -78,6 +78,9 @@
 
                     public const string ListCompanies = $"/User/Companies/{nameof(ListCompanies)}";
                     public const string CreateCompany = $"/User/Companies/{nameof(CreateCompany)}";
+
+                    public const string LinkedInConnectionsImport = $"/User/LinkedInConnectionsImport";
+                    public const string LinkedInConnectionList = $"/User/LinkedInConnectionList";
                 }
             }
         }

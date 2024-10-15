@@ -22,6 +22,10 @@ public partial class Contact
     public long ContactId { get; set; }
 
     [Required]
+    [StringLength(450)]
+    public string OwnerApplicationUserId { get; set; }
+
+    [Required]
     [StringLength(50)]
     public string Name { get; set; }
 
@@ -39,6 +43,11 @@ public partial class Contact
     [StringLength(50)]
     public string YouTubeChannelUrl { get; set; }
 
+    public string InstagramUrl { get; set; }
+
+    [Column("XFormerlyTwitterUrl")]
+    public string XformerlyTwitterUrl { get; set; }
+
     [StringLength(50)]
     public string BusinessPhoneNumber { get; set; }
 
@@ -46,10 +55,6 @@ public partial class Contact
     public string MobilePhoneNumber { get; set; }
 
     public DateTimeOffset? BirthDate { get; set; }
-
-    [Required]
-    [StringLength(450)]
-    public string OwnerApplicationUserId { get; set; }
 
     [InverseProperty("PrimaryContact")]
     public virtual ICollection<Company> Company { get; set; } = new List<Company>();

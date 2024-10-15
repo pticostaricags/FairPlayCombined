@@ -2,6 +2,7 @@
 
 namespace FairPlayCombined.Common.ValidationAttributes
 {
+    [AttributeUsage(AttributeTargets.Property)]
     public class ProhibitDuplicateStringsAttribute : ValidationAttribute
     {
         public override bool IsValid(object? value)

@@ -64,6 +64,13 @@
         </FluentTextField>
     </div>
     <div>
+        <FluentLabel Typo="Typography.Body">X (Formerly Twitter) Url</FluentLabel>
+        <FluentTextField @bind-Value="@this.createContactModel.XformerlyTwitterUrl" Maxlength="50"
+                         InputMode="InputMode.Url" TextFieldType="TextFieldType.Url"
+                         style="width:100%;">
+        </FluentTextField>
+    </div>
+    <div>
         <FluentLabel Typo="Typography.Body">Business Phone Number</FluentLabel>
         <FluentTextField @bind-Value="@this.createContactModel.BusinessPhoneNumber" Maxlength="50"
                          InputMode="InputMode.Telephone" TextFieldType="TextFieldType.Tel"

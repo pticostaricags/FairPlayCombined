@@ -24,7 +24,7 @@ namespace FairPlayCombined.Services.FairPlaySocial
         >]
     public partial class PostService : BaseService
     {
-        private readonly IHubContext<PostNotificationHub, IPostNotificationHub> hubContext;
+        private readonly IHubContext<PostNotificationHub, IPostNotificationHub>? hubContext;
 
         public PostService(
             IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
@@ -43,7 +43,7 @@ namespace FairPlayCombined.Services.FairPlaySocial
             var userEntity = await dbContext
                 .AspNetUsers.SingleAsync(p => p.Id == postEntity.OwnerApplicationUserId,
                 cancellationToken: cancellationToken);
-            await hubContext.Clients.All.ReceiveMessage(new PostNotificationModel()
+            await hubContext!.Clients.All.ReceiveMessage(new PostNotificationModel()
             {
                 PostAction = PostAction.PostCreated,
                 From = userEntity.UserName,
