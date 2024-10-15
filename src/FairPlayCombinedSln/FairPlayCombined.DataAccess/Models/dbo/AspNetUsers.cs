@@ -61,6 +61,15 @@ public partial class AspNetUsers
     [StringLength(50)]
     public string Lastname { get; set; }
 
+    public string LinkedInProfileUrl { get; set; }
+
+    public string InstagramProfileUrl { get; set; }
+
+    [Column("XFormerlyTwitterUrl")]
+    public string XformerlyTwitterUrl { get; set; }
+
+    public string WebsiteUrl { get; set; }
+
     [InverseProperty("FromApplicationUser")]
     public virtual ICollection<ApplicationUserVouch> ApplicationUserVouchFromApplicationUser { get; set; } = new List<ApplicationUserVouch>();
 

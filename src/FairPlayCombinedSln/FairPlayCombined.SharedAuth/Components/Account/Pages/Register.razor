@@ -3,6 +3,7 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
+@using FairPlayCombined.Common.ValidationAttributes
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.Extensions.Logging
@@ -48,9 +49,41 @@
                 <ValidationMessage For="() => Input.Name" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
-                <label for="name">Lastname</label>
+                <label for="lastname">Lastname</label>
                 <InputText @bind-Value="Input.Lastname" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="lastname" aria-required="true" placeholder="Lastname" />
                 <ValidationMessage For="() => Input.Lastname" class="text-danger" />
+            </div>
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
+                <label for="linkedinprofileurl"
+                       class="@ThemeConfiguration.Labels.DefaultCss">LinkedIn Profile Url</label>
+                <InputText @bind-Value="Input.LinkedInProfileUrl"
+                           class="@ThemeConfiguration.GenericControls.DefaultCss"
+                           autocomplete="linkedinprofileurl" placeholder="Please enter your Linkedin profile URL." />
+                <ValidationMessage For="() => Input.LinkedInProfileUrl" />
+            </div>
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
+                <label for="instagramprofileurl"
+                       class="@ThemeConfiguration.Labels.DefaultCss">Instagram Profile Url</label>
+                <InputText @bind-Value="Input.InstagramProfileUrl"
+                           class="@ThemeConfiguration.GenericControls.DefaultCss"
+                           autocomplete="instagramprofileurl" placeholder="Please enter your Instagram profile URL." />
+                <ValidationMessage For="() => Input.InstagramProfileUrl" />
+            </div>
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
+                <label for="xformerlytwitterurl"
+                       class="@ThemeConfiguration.Labels.DefaultCss">X (formerlyTwitter) Profile Url</label>
+                <InputText @bind-Value="Input.XformerlyTwitterUrl"
+                           class="@ThemeConfiguration.GenericControls.DefaultCss"
+                           autocomplete="xformerlytwitterurl" placeholder="Please enter your X(formerly Twitter) profile URL." />
+                <ValidationMessage For="() => Input.XformerlyTwitterUrl" />
+            </div>
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
+                <label for="websiteurl"
+                       class="@ThemeConfiguration.Labels.DefaultCss">Website Url</label>
+                <InputText @bind-Value="Input.WebsiteUrl"
+                           class="@ThemeConfiguration.GenericControls.DefaultCss"
+                           autocomplete="websiteUrl" placeholder="Please enter your Website URL." />
+                <ValidationMessage For="() => Input.WebsiteUrl" />
             </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </EditForm>
@@ -80,6 +113,22 @@
         var user = CreateUser();
         user.Name = Input.Name;
         user.Lastname = Input.Lastname;
+        if (!String.IsNullOrWhiteSpace(Input.LinkedInProfileUrl))
+        {
+            user.LinkedInProfileUrl = Input.LinkedInProfileUrl;
+        }
+        if (!String.IsNullOrWhiteSpace(Input.InstagramProfileUrl))
+        {
+            user.InstagramProfileUrl = Input.InstagramProfileUrl;
+        }
+        if (!String.IsNullOrWhiteSpace(Input.XformerlyTwitterUrl))
+        {
+            user.XformerlyTwitterUrl = Input.XformerlyTwitterUrl;
+        }
+        if (!String.IsNullOrWhiteSpace(Input.WebsiteUrl))
+        {
+            user.WebsiteUrl = Input.WebsiteUrl;
+        }
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -162,5 +211,21 @@
         [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
         [Display(Name = "Lastname")]
         public string Lastname { get; set; } = "";
+
+        [NullableUrl]
+        [Display(Name = "LinkedIn Profile Url")]
+        public string? LinkedInProfileUrl { get; set; }
+
+        [NullableUrl]
+        [Display(Name = "Instagram Profile Url")]
+        public string? InstagramProfileUrl { get; set; }
+
+        [NullableUrl]
+        [Display(Name = "X (formerly Twitter) Url")]
+        public string? XformerlyTwitterUrl { get; set; }
+
+        [NullableUrl]
+        [Display(Name = "Website Url")]
+        public string? WebsiteUrl { get; set; }
     }
 }
