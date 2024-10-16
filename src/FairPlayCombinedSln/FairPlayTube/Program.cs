@@ -103,13 +103,11 @@ builder.Services.AddAuthentication(configureOptions =>
         YouTubeService.Scope.YoutubeForceSsl,
         YouTubeService.Scope.Youtubepartner
         ], true)
-    .AddLinkedIn(options =>
-    {
-        options.ClientId = linkedInAuthClientSecretInfo.ClientId!;
-        options.ClientSecret = linkedInAuthClientSecretInfo.ClientSecret!;
-        options.Scope.Add("w_member_social");
-        options.SaveTokens = true;
-    })
+    .AddLinkedInAuth(linkedInAuthClientSecretInfo,
+    scopes: 
+    [
+        "w_member_social"
+        ], saveTokens:true)
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
 
