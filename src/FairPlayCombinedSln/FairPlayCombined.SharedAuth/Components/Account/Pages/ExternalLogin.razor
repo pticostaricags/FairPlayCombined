@@ -4,10 +4,12 @@
 @using System.Security.Claims
 @using System.Text
 @using System.Text.Encodings.Web
+@using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.ValidationAttributes
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Logging
 
 @inject SignInManager<ApplicationUser> SignInManager
@@ -17,18 +19,18 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<ExternalLogin> Logger
+@inject IStringLocalizer<ExternalLogin> localizer
 
-<PageTitle>Register</PageTitle>
+<PageTitle>@localizer[RegisterTextKey]</PageTitle>
 
 <StatusMessage Message="@message" />
-<h1>Register</h1>
-<h2>Associate your @ProviderDisplayName account.</h2>
+<h1>@localizer[RegisterTextKey]</h1>
+<h2>@localizer[AssociateYourProviderAccountTextKey, @ProviderDisplayName!].</h2>
 <hr />
 
 <div class="alert alert-info">
-    You've successfully authenticated with <strong>@ProviderDisplayName</strong>.
-    Please enter your information below and click the Register button to finish
-    logging in.
+    @localizer[SuccessfullyAuthenticatedWithProviderTextKey] <strong>@ProviderDisplayName</strong>.
+    @localizer[EnterYourInformationTextKey].
 </div>
 
 <div class="row">
@@ -37,34 +39,42 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
-                <label for="email" class="@ThemeConfiguration.Labels.DefaultCss">Email</label>
-                <InputText @bind-Value="Input.Email" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="email" placeholder="Please enter your email." />
+                <label for="email" class="@ThemeConfiguration.Labels.DefaultCss">@localizer[EmailTextKey]</label>
+                <InputText @bind-Value="Input.Email" 
+                class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="email" 
+                placeholder="@EnterYourEmailText" />
                 <ValidationMessage For="() => Input.Email" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
-                <label for="name" class="@ThemeConfiguration.Labels.DefaultCss">Name</label>
-                <InputText @bind-Value="Input.Name" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="name" placeholder="Please enter your name." />
+                <label for="name" class="@ThemeConfiguration.Labels.DefaultCss">@localizer[NameTextKey]</label>
+                <InputText @bind-Value="Input.Name" 
+                class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="name"
+                           placeholder="@EnterYourNameText" />
                 <ValidationMessage For="() => Input.Name" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
-                <label for="lastname" class="@ThemeConfiguration.Labels.DefaultCss">Lastname</label>
-                <InputText @bind-Value="Input.Lastname" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="lastname" placeholder="Please enter your lastname." />
+                <label for="lastname" class="@ThemeConfiguration.Labels.DefaultCss">@localizer[LastnameTextKey]</label>
+                <InputText @bind-Value="Input.Lastname" 
+                class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="lastname" 
+                placeholder="@EnterYourLastname" />
                 <ValidationMessage For="() => Input.Lastname" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="linkedinprofileurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">LinkedIn Profile Url</label>
+                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[LinkedInProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.LinkedInProfileUrl"
                            class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="linkedinprofileurl" placeholder="Please enter your Linkedin profile URL." />
+                           autocomplete="linkedinprofileurl" 
+                           placeholder="@EnterYourLinkedInProfileURL" />
                 <ValidationMessage For="() => Input.LinkedInProfileUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="instagramprofileurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">Instagram Profile Url</label>
+                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[InstagramProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.InstagramProfileUrl"
                            class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="instagramprofileurl" placeholder="Please enter your Instagram profile URL." />
+                           autocomplete="instagramprofileurl" 
+                           placeholder="@EnterYourInstagramProfileUrl" />
                 <ValidationMessage For="() => Input.InstagramProfileUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
@@ -286,4 +296,41 @@
         [Display(Name = "Website Url")]
         public string? WebsiteUrl { get; set; }
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Register")]
+    public const string RegisterTextKey = "RegisterText";
+    [ResourceKey(defaultValue: "Associate your {0} account")]
+    public const string AssociateYourProviderAccountTextKey = "AssociateYourProviderAccountText";
+    [ResourceKey(defaultValue: "You've successfully authenticated with")]
+    public const string SuccessfullyAuthenticatedWithProviderTextKey = "SuccessfullyAuthenticatedWithProviderText";
+    [ResourceKey(defaultValue: "Please enter your information below and submit it to finish logging in")]
+    public const string EnterYourInformationTextKey = "EnterYourInformationText";
+    [ResourceKey(defaultValue:"Email")]
+    public const string EmailTextKey = "EmailText";
+    [ResourceKey(defaultValue: "Please enter your email")]
+    public const string EnterYourEmailTextKey = "EnterYourEmailText";
+    private string EnterYourEmailText => localizer[EnterYourEmailTextKey];
+    [ResourceKey(defaultValue: "Name")]
+    public const string NameTextKey = "NameText";
+    [ResourceKey(defaultValue: "Please enter your name")]
+    public const string EnterYourNameTextKey = "EnterYourNameText";
+    private string EnterYourNameText => localizer[EnterYourNameTextKey];
+    [ResourceKey(defaultValue: "Lastname")]
+    public const string LastnameTextKey = "LastnameText";
+    [ResourceKey(defaultValue: "Please enter your lastname")]
+    public const string EnterYourLastnameTextKey = "EnterYourLastnameText";
+    private string EnterYourLastname => localizer[EnterYourLastnameTextKey];
+    [ResourceKey(defaultValue: "LinkedIn Profile Url")]
+    public const string LinkedInProfileUrlTextKey = "LinkedInProfileUrlText";
+    [ResourceKey(defaultValue: "Please enter your Linkedin profile URL")]
+    public const string EnterYourLinkedInProfileURLTextKey = "EnterYourLinkedInProfileURLText";
+    private string EnterYourLinkedInProfileURL => localizer[EnterYourLinkedInProfileURLTextKey];
+    [ResourceKey(defaultValue: "Instagram Profile Url")]
+    public const string InstagramProfileUrlTextKey = "InstagramProfileUrlText";
+    [ResourceKey(defaultValue: "Please enter your Instagram profile URL")]
+    public const string EnterYourInstagramProfileUrlTextKey = "EnterYourInstagramProfileUrlText";
+    private string EnterYourInstagramProfileUrl => localizer[EnterYourInstagramProfileUrlTextKey];
+    #endregion Resource Keys
+
 }
