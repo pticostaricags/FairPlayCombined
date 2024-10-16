@@ -127,13 +127,13 @@
     {
         if (RemoteError is not null)
         {
-            RedirectManager.RedirectToWithStatus("Account/Login", $"Error from external provider: {RemoteError}", HttpContext);
+            RedirectManager.RedirectToWithStatus("Account/Login", $"{localizer[ErrorFromExternalProviderTextKey]}: {RemoteError}", HttpContext);
         }
 
         var info = await SignInManager.GetExternalLoginInfoAsync();
         if (info is null)
         {
-            RedirectManager.RedirectToWithStatus("Account/Login", "Error loading external login information.", HttpContext);
+            RedirectManager.RedirectToWithStatus("Account/Login", $"{localizer[ErrorLoadingExternalLoginInformationTextKey]}.", HttpContext);
         }
 
         externalLoginInfo = info;
@@ -343,6 +343,10 @@
     [ResourceKey(defaultValue: "Please enter your Website URL")]
     public const string EnterYourWebsiteURLTextKey = "EnterYourWebsiteURLText";
     private string EnterYourWebsiteURL => localizer[EnterYourWebsiteURLTextKey];
+    [ResourceKey(defaultValue: "Error from external provider")]
+    public const string ErrorFromExternalProviderTextKey = "ErrorFromExternalProviderText";
+    [ResourceKey(defaultValue: "Error loading external login information")]
+    public const string ErrorLoadingExternalLoginInformationTextKey = "ErrorLoadingExternalLoginInformationText";
     #endregion Resource Keys
 
 }
