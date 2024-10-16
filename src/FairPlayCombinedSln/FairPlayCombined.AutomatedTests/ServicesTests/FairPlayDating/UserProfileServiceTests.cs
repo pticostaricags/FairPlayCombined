@@ -166,7 +166,9 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 UserName = fromUserName,
                 NormalizedUserName = fromUserName.Normalize(),
                 Email = fromUserName,
-                NormalizedEmail = fromUserName.Normalize()
+                NormalizedEmail = fromUserName.Normalize(),
+                Name = "AT FROM NAME",
+                Lastname = "AT FROM LASTNAME"
             };
             AspNetUsers toUser = new()
             {
@@ -174,7 +176,9 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 UserName = toUserName,
                 NormalizedUserName = toUserName.Normalize(),
                 Email = toUserName,
-                NormalizedEmail = toUserName.Normalize()
+                NormalizedEmail = toUserName.Normalize(),
+                Name = "AT TO NAME",
+                Lastname = "AT TO LASTNAME"
             };
             await dbContext.AspNetUsers.AddRangeAsync(fromUser);
             await dbContext.AspNetUsers.AddRangeAsync(toUser);

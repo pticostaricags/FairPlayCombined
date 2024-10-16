@@ -79,6 +79,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 NormalizedUserName = testUserName.Normalize(),
                 Email = testUserName,
                 NormalizedEmail = testUserName.Normalize(),
+                Name = "AT FROM NAME",
+                Lastname = "AT FROM LASTNAME"
             };
             await dbContext.AspNetUsers.AddAsync(testUser);
             PostType postType = new()
@@ -139,7 +141,9 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 UserName = testUserName,
                 NormalizedUserName = testUserName.Normalize(),
                 Email = testUserName,
-                NormalizedEmail = testUserName.Normalize()
+                NormalizedEmail = testUserName.Normalize(),
+                Name = "AT FROM NAME",
+                Lastname = "AT FROM LASTNAME"
             };
             await dbContext.AspNetUsers.AddAsync(testUser);
             await dbContext.SaveChangesAsync();
@@ -201,7 +205,9 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 UserName = testUserName,
                 NormalizedUserName = testUserName.Normalize(),
                 Email = testUserName,
-                NormalizedEmail = testUserName.Normalize()
+                NormalizedEmail = testUserName.Normalize(),
+                Name = "AT FROM NAME",
+                Lastname = "AT FROM LASTNAME"
             };
             await dbContext.AspNetUsers.AddAsync(testUser);
             await dbContext.SaveChangesAsync();
@@ -276,7 +282,9 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
                 UserName = testUserName,
                 NormalizedUserName = testUserName.Normalize(),
                 Email = testUserName,
-                NormalizedEmail = testUserName.Normalize()
+                NormalizedEmail = testUserName.Normalize(),
+                Name = "AT FROM NAME",
+                Lastname = "AT FROM LASTNAME"
             };
             await dbContext.AspNetUsers.AddAsync(testUser);
             await dbContext.SaveChangesAsync();
