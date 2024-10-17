@@ -3,9 +3,12 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
+@using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.ValidationAttributes
+@using FairPlayCombined.Models.Auth.Register
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Logging
 
 @inject UserManager<ApplicationUser> UserManager
@@ -15,6 +18,8 @@
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+
+@inject IStringLocalizer<Register> localizer
 
 <PageTitle>Register</PageTitle>
 
@@ -29,7 +34,7 @@
             <hr />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
-                <label for="email">Email</label>
+                <label for="email">@localizer[EmailTextKey]</label>
                 <InputText @bind-Value="Input.Email" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
@@ -184,48 +189,8 @@
         return (IUserEmailStore<ApplicationUser>)UserStore;
     }
 
-    private sealed class InputModel
-    {
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; } = "";
-
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; } = "";
-
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; } = "";
-
-        [Required]
-        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
-        [Display(Name = "Name")]
-        public string Name { get; set; } = "";
-
-        [Required]
-        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
-        [Display(Name = "Lastname")]
-        public string Lastname { get; set; } = "";
-
-        [NullableUrl]
-        [Display(Name = "LinkedIn Profile Url")]
-        public string? LinkedInProfileUrl { get; set; }
-
-        [NullableUrl]
-        [Display(Name = "Instagram Profile Url")]
-        public string? InstagramProfileUrl { get; set; }
-
-        [NullableUrl]
-        [Display(Name = "X (formerly Twitter) Url")]
-        public string? XformerlyTwitterUrl { get; set; }
-
-        [NullableUrl]
-        [Display(Name = "Website Url")]
-        public string? WebsiteUrl { get; set; }
-    }
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Email")]
+    public const string EmailTextKey = "EmailText";
+    #endregion Resource Keys
 }

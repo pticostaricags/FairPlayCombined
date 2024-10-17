@@ -172,6 +172,6 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
             .. fairplayCrmSharedUITypes,
             .. fairplayCombinedSharedAuthTypes,
             .. fairplayCombinedWebComponentsTypes];
-        return typesToCheck;
+        return typesToCheck.DistinctBy(p=>p.FullName).ToList();
     }
 }

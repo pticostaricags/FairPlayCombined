@@ -6,6 +6,7 @@
 @using System.Text.Encodings.Web
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.ValidationAttributes
+@using FairPlayCombined.Models.Auth.ExternalLogin
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
@@ -265,38 +266,6 @@
             throw new NotSupportedException($"{localizer[DefaultUIRequiresUserStoreWithEmailTextKey]}.");
         }
         return (IUserEmailStore<ApplicationUser>)UserStore;
-    }
-
-    private sealed class InputModel
-    {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; } = "";
-        [Required]
-        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
-        [Display(Name = "Name")]
-        public string Name { get; set; } = "";
-
-        [Required]
-        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
-        [Display(Name = "Lastname")]
-        public string Lastname { get; set; } = "";
-
-        [NullableUrl]
-        [Display(Name = "LinkedIn Profile Url")]
-        public string? LinkedInProfileUrl { get; set; }
-
-        [NullableUrl]
-        [Display(Name = "Instagram Profile Url")]
-        public string? InstagramProfileUrl { get; set; }
-
-        [NullableUrl]
-        [Display(Name = "X (formerly Twitter) Url")]
-        public string? XformerlyTwitterUrl { get; set; }
-
-        [NullableUrl]
-        [Display(Name = "Website Url")]
-        public string? WebsiteUrl { get; set; }
     }
 
     #region Resource Keys
