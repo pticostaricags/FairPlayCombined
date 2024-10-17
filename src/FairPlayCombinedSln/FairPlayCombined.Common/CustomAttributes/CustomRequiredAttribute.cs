@@ -1,14 +1,11 @@
 ﻿using Microsoft.Extensions.Localization;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FairPlayCombined.Common.CustomAttributes
 {
     [LocalizerOfT<CustomRequiredAttribute>]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter,
+        AllowMultiple = false)]
     public class CustomRequiredAttribute : RequiredAttribute
     {
         public static IStringLocalizer<CustomRequiredAttribute>? Localizer { get; set; }

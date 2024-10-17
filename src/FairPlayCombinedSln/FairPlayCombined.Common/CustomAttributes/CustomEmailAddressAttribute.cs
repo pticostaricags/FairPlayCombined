@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 namespace FairPlayCombined.Common.CustomAttributes
 {
     [LocalizerOfT<CustomEmailAddressAttribute>]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter,
+        AllowMultiple = false)]
     public class CustomEmailAddressAttribute : ValidationAttribute
     {
         public static IStringLocalizer<CustomEmailAddressAttribute>? Localizer { get; set; }

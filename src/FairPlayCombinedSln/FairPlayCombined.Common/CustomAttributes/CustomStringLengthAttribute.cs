@@ -1,14 +1,10 @@
 ﻿using Microsoft.Extensions.Localization;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace FairPlayCombined.Common.CustomAttributes
 {
     [LocalizerOfT<CustomStringLengthAttribute>]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter,
+        AllowMultiple = false)]
     public class CustomStringLengthAttribute(int maximumLength) : StringLengthAttribute(maximumLength)
     {
         public static IStringLocalizer<CustomStringLengthAttribute>? Localizer { get; set; }
