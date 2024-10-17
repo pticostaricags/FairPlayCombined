@@ -253,8 +253,8 @@
         }
         catch
         {
-            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
-                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor");
+            throw new InvalidOperationException($"{localizer[CantCreateAnInstanceOfTextKey, nameof(ApplicationUser)]}. " +
+                $"{localizer[EnsureClassIsValidTextKey, nameof(ApplicationUser)]}");
         }
     }
 
@@ -262,7 +262,7 @@
     {
         if (!UserManager.SupportsUserEmail)
         {
-            throw new NotSupportedException("The default UI requires a user store with email support.");
+            throw new NotSupportedException($"{localizer[DefaultUIRequiresUserStoreWithEmailTextKey]}.");
         }
         return (IUserEmailStore<ApplicationUser>)UserStore;
     }
@@ -347,6 +347,12 @@
     public const string ErrorFromExternalProviderTextKey = "ErrorFromExternalProviderText";
     [ResourceKey(defaultValue: "Error loading external login information")]
     public const string ErrorLoadingExternalLoginInformationTextKey = "ErrorLoadingExternalLoginInformationText";
+    [ResourceKey(defaultValue: "Can't create an instance of '{0}'")]
+    public const string CantCreateAnInstanceOfTextKey = "CantCreateAnInstanceOfText";
+    [ResourceKey(defaultValue: "Ensure that '{0}' is not an abstract class and has a parameterless constructor")]
+    public const string EnsureClassIsValidTextKey = "EnsureClassIsValidText";
+    [ResourceKey(defaultValue: "The default UI requires a user store with email support")]
+    public const string DefaultUIRequiresUserStoreWithEmailTextKey = "DefaultUIRequiresUserStoreWithEmailText";
     #endregion Resource Keys
 
 }
