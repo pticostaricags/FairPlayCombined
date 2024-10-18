@@ -400,3 +400,4 @@ FodyWeavers.xsd
 /src/FairPlayCombinedSln/FairPlaySocial.MAUI/appSettings.local.json
 .azure
 /src/FairPlayCombinedSln/storage.module.bicep
+/src/FairPlayCombinedSln/aspire-manifest.json
