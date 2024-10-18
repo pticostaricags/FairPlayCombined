@@ -75,6 +75,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 NormalizedUserName = testUserName.Normalize(),
                 Email = testUserName,
                 NormalizedEmail = testUserName.Normalize(),
+                Name = "AT FROM NAME",
+                Lastname = "AT FROM LASTNAME"
             };
             await dbContext.AspNetUsers.AddAsync(testUser);
             await dbContext.SaveChangesAsync();

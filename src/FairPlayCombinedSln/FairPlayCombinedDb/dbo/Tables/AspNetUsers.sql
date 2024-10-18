@@ -14,7 +14,13 @@
     [LockoutEnd]           DATETIMEOFFSET (7) NULL,
     [LockoutEnabled]       BIT                NOT NULL,
     [AccessFailedCount]    INT                NOT NULL,
-    CONSTRAINT [PK_AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC)
+    [Name] NVARCHAR(50) NOT NULL, 
+    [Lastname] NVARCHAR(50) NOT NULL 
+    CONSTRAINT [PK_AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC), 
+    [LinkedInProfileUrl] NVARCHAR(MAX) NULL, 
+    [InstagramProfileUrl] NVARCHAR(MAX) NULL, 
+    [XFormerlyTwitterUrl] NVARCHAR(MAX) NULL,
+    [WebsiteUrl] NVARCHAR(MAX) NULL 
 );
 
 

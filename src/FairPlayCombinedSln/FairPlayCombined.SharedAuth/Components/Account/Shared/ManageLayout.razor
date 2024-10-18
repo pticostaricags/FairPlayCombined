@@ -1,10 +1,14 @@
-﻿@inherits LayoutComponentBase
+﻿@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+@inherits LayoutComponentBase
 @layout AccountLayout
 
-<h1>Manage your account</h1>
+@inject IStringLocalizer<ManageLayout> localizer
+
+<h1>@localizer[ManageAccountTextKey]</h1>
 
 <div>
-    <h2>Change your account settings</h2>
+    <h2>@localizer[ChangeAccountSettingsTextKey]</h2>
     <hr />
     <div class="row">
         <div class="col-md-3">
@@ -15,3 +19,13 @@
         </div>
     </div>
 </div>
+
+@code
+{
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Manage your account")]
+    public const string ManageAccountTextKey = "ManageAccountText";
+    [ResourceKey(defaultValue: "Change your account settings")]
+    public const string ChangeAccountSettingsTextKey = "ChangeAccountSettingsText";
+    #endregion Resource Keys
+}

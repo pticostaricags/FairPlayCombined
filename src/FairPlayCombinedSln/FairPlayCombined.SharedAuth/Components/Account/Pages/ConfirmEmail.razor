@@ -2,17 +2,21 @@
 @implements IAsyncDisposable
 
 @using System.Text
+@using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Interfaces.Common
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Localization
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityRedirectManager RedirectManager
+
 @inject IUserFundService userFundService
+@inject IStringLocalizer<ConfirmEmail> localizer
 
-<PageTitle>Confirm email</PageTitle>
+<PageTitle>@localizer[ConfirmEmailTextKey]</PageTitle>
 
-<h1>Confirm email</h1>
+<h1>@localizer[ConfirmEmailTextKey]</h1>
 <StatusMessage Message="@statusMessage" />
 
 @code {
@@ -39,13 +43,15 @@
         if (user is null)
         {
             HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-            statusMessage = $"Error loading user with ID {UserId}";
+            statusMessage = $"{localizer[ErrorLoadingUserTextKey]} {UserId}";
         }
         else
         {
             var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
             var result = await UserManager.ConfirmEmailAsync(user, code);
-            statusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+            statusMessage = result.Succeeded ? $"{localizer[ThankYouForConfirmingEmailTextKey]}."
+            :
+            $"{localizer[ErrorConfirmingEmailTextKey]}.";
             if (result.Succeeded)
             {
                 await this.userFundService.InitializeUserFundsAsync(user.Id, this.cancellationTokenSource.Token);
@@ -58,4 +64,15 @@
         this.cancellationTokenSource.Dispose();
         return ValueTask.CompletedTask;
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Confirm email")]
+    public const string ConfirmEmailTextKey = "ConfirmEmailText";
+    [ResourceKey(defaultValue: "Error loading user with ID")]
+    public const string ErrorLoadingUserTextKey = "ErrorLoadingUserText";
+    [ResourceKey(defaultValue: "Thank you for confirming your email")]
+    public const string ThankYouForConfirmingEmailTextKey = "ThankYouForConfirmingEmailText";
+    [ResourceKey(defaultValue: "Error confirming your email")]
+    public const string ErrorConfirmingEmailTextKey = "ErrorConfirmingEmailText";
+    #endregion Resource Keys
 }

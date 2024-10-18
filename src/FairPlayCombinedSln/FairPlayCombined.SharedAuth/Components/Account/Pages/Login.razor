@@ -136,11 +136,11 @@
 
     private sealed class InputModel
     {
-        [Required]
-        [EmailAddress]
+        [CustomRequired]
+        [CustomEmailAddress]
         public string Email { get; set; } = "";
 
-        [Required]
+        [CustomRequired]
         [DataType(DataType.Password)]
         public string Password { get; set; } = "";
 

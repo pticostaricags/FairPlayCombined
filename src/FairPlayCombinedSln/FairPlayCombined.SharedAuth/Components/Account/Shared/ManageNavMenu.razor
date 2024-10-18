@@ -1,28 +1,35 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Localization
+@using System.Globalization
 
 @inject SignInManager<ApplicationUser> SignInManager
 
+@inject IStringLocalizer<ManageNavMenu> localizer
+
+Culture: @CultureInfo.CurrentCulture.Name
+
 <ul class="nav nav-pills flex-column">
     <li class="nav-item">
-        <NavLink class="nav-link" href="Account/Manage" Match="NavLinkMatch.All">Profile</NavLink>
+        <NavLink class="nav-link" href="Account/Manage" Match="NavLinkMatch.All">localizer[ProfileTextKey]</NavLink>
     </li>
     <li class="nav-item">
-        <NavLink class="nav-link" href="Account/Manage/Email">Email</NavLink>
+        <NavLink class="nav-link" href="Account/Manage/Email">@localizer[EmailTextKey]</NavLink>
     </li>
     <li class="nav-item">
-        <NavLink class="nav-link" href="Account/Manage/ChangePassword">Password</NavLink>
+        <NavLink class="nav-link" href="Account/Manage/ChangePassword">@localizer[PasswordTextKey]</NavLink>
     </li>
     @if (hasExternalLogins)
     {
         <li class="nav-item">
-            <NavLink class="nav-link" href="Account/Manage/ExternalLogins">External logins</NavLink>
+            <NavLink class="nav-link" href="Account/Manage/ExternalLogins">@localizer[ExternalLoginsTextKey]</NavLink>
         </li>
     }
     <li class="nav-item">
-        <NavLink class="nav-link" href="Account/Manage/TwoFactorAuthentication">Two-factor authentication</NavLink>
+        <NavLink class="nav-link" href="Account/Manage/TwoFactorAuthentication">@localizer[TwoFactorAuthenticationTextKey]</NavLink>
     </li>
     <li class="nav-item">
-        <NavLink class="nav-link" href="Account/Manage/PersonalData">Personal data</NavLink>
+        <NavLink class="nav-link" href="Account/Manage/PersonalData">@localizer[PersonalDataTextKey]</NavLink>
     </li>
 </ul>
 
@@ -33,4 +40,19 @@
     {
         hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Profile")]
+    public const string ProfileTextKey = "ProfileText";
+    [ResourceKey(defaultValue: "Email")]
+    public const string EmailTextKey = "EmailText";
+    [ResourceKey(defaultValue: "Password")]
+    public const string PasswordTextKey = "PasswordText";
+    [ResourceKey(defaultValue: "External logins")]
+    public const string ExternalLoginsTextKey = "ExternalLoginsText";
+    [ResourceKey(defaultValue: "Two-factor authentication")]
+    public const string TwoFactorAuthenticationTextKey = "TwoFactorAuthenticationText";
+    [ResourceKey(defaultValue: "Personal data")]
+    public const string PersonalDataTextKey = "PersonalDataText";
+    #endregion Resource Keys
 }
