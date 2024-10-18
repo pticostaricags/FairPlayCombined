@@ -307,7 +307,7 @@ await app.RunAsync();
 static void ConfigureCustomValidationAttributes(IServiceProvider services)
 {
     //Find a way to use Source Generators for this in order to avoid using reflection
-    var modelsAssembly = typeof(FairPlayCombined.Common.CustomAttributes.CustomRequiredAttribute).Assembly;
+    var modelsAssembly = typeof(CustomRequiredAttribute).Assembly;
     var typesWithLocalizerAttribute =
         modelsAssembly.GetTypes()
         .Where(p =>

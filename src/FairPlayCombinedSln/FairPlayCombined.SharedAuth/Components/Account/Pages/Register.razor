@@ -21,16 +21,16 @@
 
 @inject IStringLocalizer<Register> localizer
 
-<PageTitle>Register</PageTitle>
+<PageTitle>@localizer[RegisterTextKey]</PageTitle>
 
-<h1>Register</h1>
+<h1>@localizer[RegisterTextKey]</h1>
 
 <div class="row">
     <div class="col-md-4">
         <StatusMessage Message="@Message" />
         <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
             <DataAnnotationsValidator />
-            <h2>Create a new account.</h2>
+            <h2>@localizer[CreateNewAccountTextKey]</h2>
             <hr />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
@@ -39,63 +39,63 @@
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
-                <label for="password">Password</label>
+                <label for="password">@localizer[PasswordTextKey]</label>
                 <InputText type="password" @bind-Value="Input.Password" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="new-password" aria-required="true" placeholder="password" />
                 <ValidationMessage For="() => Input.Password" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
-                <label for="confirm-password">Confirm Password</label>
+                <label for="confirm-password">@localizer[ConfirmPasswordTextKey]</label>
                 <InputText type="password" @bind-Value="Input.ConfirmPassword" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="new-password" aria-required="true" placeholder="password" />
                 <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
-                <label for="name">Name</label>
+                <label for="name">@localizer[NameTextKey]</label>
                 <InputText @bind-Value="Input.Name" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="name" aria-required="true" placeholder="Name" />
                 <ValidationMessage For="() => Input.Name" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
-                <label for="lastname">Lastname</label>
+                <label for="lastname">@localizer[LastnameTextKey]</label>
                 <InputText @bind-Value="Input.Lastname" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="lastname" aria-required="true" placeholder="Lastname" />
                 <ValidationMessage For="() => Input.Lastname" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="linkedinprofileurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">LinkedIn Profile Url</label>
+                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[LinkedInProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.LinkedInProfileUrl"
                            class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="linkedinprofileurl" placeholder="Please enter your Linkedin profile URL." />
+                           autocomplete="linkedinprofileurl" placeholder="@EnterLinkedInProfileURL" />
                 <ValidationMessage For="() => Input.LinkedInProfileUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="instagramprofileurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">Instagram Profile Url</label>
+                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[InstagramProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.InstagramProfileUrl"
                            class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="instagramprofileurl" placeholder="Please enter your Instagram profile URL." />
+                           autocomplete="instagramprofileurl" placeholder="@EnterInstagramProfileURL" />
                 <ValidationMessage For="() => Input.InstagramProfileUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="xformerlytwitterurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">X (formerlyTwitter) Profile Url</label>
+                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[XFormerlyTwitterProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.XformerlyTwitterUrl"
                            class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="xformerlytwitterurl" placeholder="Please enter your X(formerly Twitter) profile URL." />
+                           autocomplete="xformerlytwitterurl" placeholder="@EnterXFormerlyTwitterProfileURL" />
                 <ValidationMessage For="() => Input.XformerlyTwitterUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="websiteurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">Website Url</label>
+                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[WebsiteUrlTextKey]</label>
                 <InputText @bind-Value="Input.WebsiteUrl"
                            class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="websiteUrl" placeholder="Please enter your Website URL." />
+                           autocomplete="websiteUrl" placeholder="@EnterWebsiteURL" />
                 <ValidationMessage For="() => Input.WebsiteUrl" />
             </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">@localizer[RegisterTextKey]</button>
         </EditForm>
     </div>
     <div class="col-md-6 col-md-offset-2">
         <section>
-            <h3>Use another service to register.</h3>
+            <h3>@localizer[UseAnotherServiceToRegisterTextKey]</h3>
             <hr />
             <ExternalLoginPicker />
         </section>
@@ -190,7 +190,41 @@
     }
 
     #region Resource Keys
+    [ResourceKey(defaultValue: "Register")]
+    public const string RegisterTextKey = "RegisterText";
+    [ResourceKey(defaultValue: "Create a new account")]
+    public const string CreateNewAccountTextKey = "CreateNewAccountText";
+    [ResourceKey(defaultValue: "Password")]
+    public const string PasswordTextKey = "PasswordText";
+    [ResourceKey(defaultValue: "Confirm Password")]
+    public const string ConfirmPasswordTextKey = "ConfirmPasswordText";
+    [ResourceKey(defaultValue: "Name")]
+    public const string NameTextKey = "NameText";
     [ResourceKey(defaultValue: "Email")]
     public const string EmailTextKey = "EmailText";
+    [ResourceKey(defaultValue: "Lastname")]
+    public const string LastnameTextKey = "LastnameText";
+    [ResourceKey(defaultValue: "LinkedIn Profile Url")]
+    public const string LinkedInProfileUrlTextKey = "LinkedInProfileUrlText";
+    [ResourceKey(defaultValue: "Please enter your Linkedin profile URL")]
+    public const string EnterLinkedInProfileURLTextKey = "EnterLinkedInProfileURLText";
+    public string EnterLinkedInProfileURL => localizer[EnterLinkedInProfileURLTextKey];
+    [ResourceKey(defaultValue: "Instagram Profile Url")]
+    public const string InstagramProfileUrlTextKey = "InstagramProfileUrlText";
+    [ResourceKey(defaultValue: "Please enter your Instagram profile URL")]
+    public const string EnterInstagramProfileTextKey = "EnterInstagramProfileText";
+    public string EnterInstagramProfileURL => localizer[EnterInstagramProfileTextKey];
+    [ResourceKey(defaultValue: "X (formerlyTwitter) Profile Url")]
+    public const string XFormerlyTwitterProfileUrlTextKey = "XFormerlyTwitterProfileUrlText";
+    [ResourceKey(defaultValue: "Please enter your X(formerly Twitter) profile URL")]
+    public string EnterXFormerlyTwitterProfileURLTextKey = "EnterXFormerlyTwitterProfileURLText";
+    public string EnterXFormerlyTwitterProfileURL => localizer[EnterXFormerlyTwitterProfileURLTextKey];
+    [ResourceKey(defaultValue: "Website Url")]
+    public const string WebsiteUrlTextKey = "WebsiteUrlText";
+    [ResourceKey(defaultValue: "Please enter your Website URL")]
+    public const string EnterWebsiteURLTextKey = "EnterWebsiteURLText";
+    public string EnterWebsiteURL => localizer[EnterWebsiteURLTextKey];
+    [ResourceKey(defaultValue: "Use another service to register")]
+    public const string UseAnotherServiceToRegisterTextKey = "UseAnotherServiceToRegisterText";
     #endregion Resource Keys
 }
