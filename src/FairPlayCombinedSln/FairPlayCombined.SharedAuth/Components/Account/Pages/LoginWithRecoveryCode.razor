@@ -1,22 +1,24 @@
 ﻿@page "/Account/LoginWithRecoveryCode"
 
 @using System.ComponentModel.DataAnnotations
+@using FairPlayCombined.Common.CustomAttributes
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Logging
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<LoginWithRecoveryCode> Logger
+@inject IStringLocalizer<LoginWithRecoveryCode> localizer
 
-<PageTitle>Recovery code verification</PageTitle>
+<PageTitle>@localizer[RecoveryCodeVerificationTextKey]</PageTitle>
 
-<h1>Recovery code verification</h1>
+<h1>@localizer[RecoveryCodeVerificationTextKey]</h1>
 <hr />
 <StatusMessage Message="@message" />
 <p>
-    You have requested to log in with a recovery code. This login will not be remembered until you provide
-    an authenticator app code at log in or disable 2FA and log in again.
+    @localizer[LoginWithRecoveryCodeMessageTextKey]
 </p>
 <div class="row">
     <div class="col-md-4">
@@ -24,11 +26,13 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
-                <InputText @bind-Value="Input.RecoveryCode" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="off" placeholder="RecoveryCode" />
-                <label for="recovery-code" class="@ThemeConfiguration.Labels.DefaultCss">Recovery Code</label>
+                <InputText @bind-Value="Input.RecoveryCode"
+                           class="@ThemeConfiguration.GenericControls.DefaultCss"
+                           autocomplete="off" placeholder="@RecoveryCode" />
+                <label for="recovery-code" class="@ThemeConfiguration.Labels.DefaultCss">@localizer[RecoveryCodeTextKey]</label>
                 <ValidationMessage For="() => Input.RecoveryCode" class="text-danger" />
             </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">@localizer[LoginTextKey]</button>
         </EditForm>
     </div>
 </div>
@@ -71,7 +75,7 @@
         else
         {
             Logger.LogWarning("Invalid recovery code entered for user with ID '{UserId}' ", userId);
-            message = "Error: Invalid recovery code entered.";
+            message = localizer[InvalidRecoveryCodeTextKey];
         }
     }
 
@@ -82,4 +86,18 @@
         [Display(Name = "Recovery Code")]
         public string RecoveryCode { get; set; } = "";
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Recovery code verification")]
+    public const string RecoveryCodeVerificationTextKey = "RecoveryCodeVerificationText";
+    [ResourceKey(defaultValue: "You have requested to log in with a recovery code. This login will not be remembered until you provide an authenticator app code at log in or disable 2FA and log in again")]
+    public const string LoginWithRecoveryCodeMessageTextKey = "LoginWithRecoveryCodeMessageText";
+    [ResourceKey(defaultValue: "Recovery Code")]
+    public const string RecoveryCodeTextKey = "RecoveryCodeText";
+    public string RecoveryCode => localizer[RecoveryCodeTextKey];
+    [ResourceKey(defaultValue: "Log in")]
+    public const string LoginTextKey = "LoginText";
+    [ResourceKey(defaultValue: "Error: Invalid recovery code entered")]
+    public const string InvalidRecoveryCodeTextKey = "InvalidRecoveryCodeText";
+    #endregion Resource Keys
 }

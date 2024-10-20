@@ -1,10 +1,8 @@
 ﻿using FairPlayCombined.Common.CustomAttributes;
 using FairPlayCombined.Common.ValidationAttributes;
 using Microsoft.Extensions.Localization;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FairPlayCombined.Models.Auth.Register
 {
@@ -53,15 +51,21 @@ namespace FairPlayCombined.Models.Auth.Register
         public string? LinkedInProfileUrl { get; set; }
 
         [NullableUrl]
-        [Display(Name = "Instagram Profile Url")]
+        [Display(
+        ResourceType = typeof(InputModelLocalizer),
+            Name = nameof(InputModelLocalizer.DisplayFor_InstagramProfileUrl))]
         public string? InstagramProfileUrl { get; set; }
 
         [NullableUrl]
-        [Display(Name = "X (formerly Twitter) Url")]
+        [Display(
+        ResourceType = typeof(InputModelLocalizer),
+            Name = nameof(InputModelLocalizer.DisplayFor_XFormerlyTwitterUrl))]
         public string? XformerlyTwitterUrl { get; set; }
 
         [NullableUrl]
-        [Display(Name = "Website Url")]
+        [Display(
+        ResourceType = typeof(InputModelLocalizer),
+            Name = nameof(InputModelLocalizer.DisplayFor_WebsiteUrl))]
         public string? WebsiteUrl { get; set; }
     }
 
@@ -77,7 +81,11 @@ namespace FairPlayCombined.Models.Auth.Register
         public static string? DisplayFor_Name => Localizer![DisplayFor_Name_TextKey];
         public static string? DisplayFor_Lastname => Localizer![DisplayFor_Lastname_TextKey];
         public static string? DisplayFor_LinkedInProfileUrl => Localizer![DisplayFor_LinkedInProfileUrlTextKey];
-        
+        public static string? DisplayFor_InstagramProfileUrl => Localizer![DisplayFor_InstagramProfileUrlTextKey];
+        public static string? DisplayFor_XFormerlyTwitterUrl => Localizer![DisplayFor_XFormerlyTwitterUrlTextKey];
+        public static string? DisplayFor_WebsiteUrl => Localizer![DisplayFor_WebsiteUrlTextKey];
+
+
         #region Resource Keys
         [ResourceKey(defaultValue: "Email")]
         public const string DisplayFor_Email_TextKey = "DisplayFor_Email_Text";
@@ -91,6 +99,12 @@ namespace FairPlayCombined.Models.Auth.Register
         public const string DisplayFor_Lastname_TextKey = "DisplayFor_Lastname_Text";
         [ResourceKey(defaultValue: "LinkedIn Profile Url")]
         public const string DisplayFor_LinkedInProfileUrlTextKey = "DisplayFor_LinkedInProfileUrlText";
+        [ResourceKey(defaultValue: "Instagram Profile Url")]
+        public const string DisplayFor_InstagramProfileUrlTextKey = "DisplayFor_InstagramProfileUrlText";
+        [ResourceKey(defaultValue: "X (formerly Twitter) Url")]
+        public const string DisplayFor_XFormerlyTwitterUrlTextKey = "DisplayFor_XFormerlyTwitterUrlText";
+        [ResourceKey(defaultValue: "Website Url")]
+        public const string DisplayFor_WebsiteUrlTextKey = "DisplayFor_WebsiteUrlText";
         #endregion Resource Keys
     }
 }

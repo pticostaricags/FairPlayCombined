@@ -1,7 +1,19 @@
 ﻿@page "/Account/InvalidUser"
+@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
 
-<PageTitle>Invalid user</PageTitle>
+@inject IStringLocalizer<InvalidUser> localizer
 
-<h3>Invalid user</h3>
+<PageTitle>@localizer[InvalidUserTextKey]</PageTitle>
+
+<h3>@localizer[InvalidUserTextKey]</h3>
 
 <StatusMessage />
+
+@code
+{
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Invalid user")]
+    public const string InvalidUserTextKey = "InvalidUserText";
+    #endregion Resource Keys
+}

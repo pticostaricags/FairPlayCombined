@@ -1,8 +1,22 @@
 ﻿@page "/Account/Lockout"
+@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
 
-<PageTitle>Locked out</PageTitle>
+@inject IStringLocalizer<Lockout> localizer
+
+<PageTitle>@localizer[LockedoutTextKey]</PageTitle>
 
 <header>
-    <h1 class="text-danger">Locked out</h1>
-    <p class="text-danger">This account has been locked out, please try again later.</p>
+    <h1 class="text-danger">@localizer[LockedoutTextKey]</h1>
+    <p class="text-danger">@localizer[AccountLockedoutMessageTextKey]</p>
 </header>
+
+@code
+{
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Locked out")]
+    public const string LockedoutTextKey = "LockedoutText";
+    [ResourceKey(defaultValue: "This account has been locked out, please try again later")]
+    public const string AccountLockedoutMessageTextKey = "AccountLockedoutMessageText";
+    #endregion Resource Keys
+}
