@@ -32,12 +32,14 @@
                 <hr />
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <InputText @bind-Value="Input.Email" class="form-control" 
+                    autocomplete="username" aria-required="true" placeholder="name@example.com" />
                     <label for="email" class="form-label">@localizer[EmailTextKey]</label>
                     <ValidationMessage For="() => Input.Email" class="text-danger" />
                 </div>
                 <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <InputText type="password" @bind-Value="Input.Password" class="form-control" 
+                    autocomplete="current-password" aria-required="true" placeholder="@PasswordText" />
                     <label for="password" class="form-label">@localizer[PasswordTextKey]</label>
                     <ValidationMessage For="() => Input.Password" class="text-danger" />
                 </div>
@@ -136,16 +138,28 @@
 
     private sealed class InputModel
     {
-        [Required]
-        [EmailAddress]
+        [CustomRequired]
+        [CustomEmailAddress]
         public string Email { get; set; } = "";
 
-        [Required]
+        [CustomRequired]
         [DataType(DataType.Password)]
         public string Password { get; set; } = "";
 
-        [Display(Name = "Remember me?")]
+        [Display(
+            ResourceType = typeof(InputModelLocalizer),
+            Name = nameof(InputModelLocalizer.DisplayFor_RememberMe))]
         public bool RememberMe { get; set; }
+    }
+
+    [LocalizerOfT<InputModel>]
+    public class InputModelLocalizer
+    {
+        public IStringLocalizer<InputModelLocalizer>? Localizer { get; set; }
+
+        [ResourceKey(defaultValue: "Remember me?")]
+        public const string DisplayFor_RememberMe_TextKey = "DisplayFor_RememberMe_Text";
+        public string DisplayFor_RememberMe => Localizer![DisplayFor_RememberMe_TextKey];
     }
 
     #region Resource Keys
@@ -157,6 +171,7 @@
     public const string EmailTextKey = "EmailText";
     [ResourceKey(defaultValue: "PasswordTextKey")]
     public const string PasswordTextKey = "PasswordText";
+    public string PasswordText => localizer[PasswordTextKey];
     [ResourceKey(defaultValue: "Remember me")]
     public const string RememberMeTextKey = "RememberMeText";
     [ResourceKey(defaultValue: "Forgot your password?")]

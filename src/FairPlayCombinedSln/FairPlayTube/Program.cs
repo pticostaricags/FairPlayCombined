@@ -1,4 +1,5 @@
 using FairPlayCombined.Common;
+using FairPlayCombined.Common.CustomAttributes;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
@@ -9,7 +10,9 @@ using FairPlayCombined.Models.LinkedInAuth;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
+using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayCombined.SharedAuth.Components.Account;
+using FairPlayCombined.SharedAuth.Extensions;
 using FairPlayTube.Components;
 using FairPlayTube.Data;
 using FairPlayTube.Extensions;
@@ -22,11 +25,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.IO.Compression;
 using System.Reflection;
 
@@ -94,22 +100,18 @@ builder.Services.AddAuthentication(configureOptions =>
     configureOptions.DefaultScheme = IdentityConstants.ApplicationScheme;
     configureOptions.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
-    .AddGoogle(options =>
-    {
-        options.ClientId = googleAuthClientSecretInfo.installed!.client_id!;
-        options.ClientSecret = googleAuthClientSecretInfo.installed.client_secret!;
-        options.Scope.Add(YouTubeService.Scope.YoutubeUpload);
-        options.Scope.Add(YouTubeService.Scope.YoutubeForceSsl);
-        options.Scope.Add(YouTubeService.Scope.Youtubepartner);
-        options.SaveTokens = true;
-    })
-    .AddLinkedIn(options => 
-    {
-        options.ClientId = linkedInAuthClientSecretInfo.ClientId!;
-        options.ClientSecret = linkedInAuthClientSecretInfo.ClientSecret!;
-        options.Scope.Add("w_member_social");
-        options.SaveTokens = true;
-    })
+    .AddGoogleAuth(googleAuthClientSecretInfo,
+    scopes:
+    [
+        YouTubeService.Scope.YoutubeUpload,
+        YouTubeService.Scope.YoutubeForceSsl,
+        YouTubeService.Scope.Youtubepartner
+        ], true)
+    .AddLinkedInAuth(linkedInAuthClientSecretInfo,
+    scopes: 
+    [
+        "w_member_social"
+        ], saveTokens:true)
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
 
@@ -170,7 +172,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+ConfigureCustomValidationAttributes(app.Services);
+ConfigureModelsLocalizers(app.Services);
 //Check https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/signalr?view=aspnetcore-9.0#disable-response-compression-for-hot-reload
 if (!app.Environment.IsDevelopment())
 {
@@ -260,7 +263,7 @@ app.MapGet("/api/video/{videoId}/title",
         var result = await dbContext.VideoInfo
         .AsNoTracking()
         .Where(p => p.VideoId == videoId)
-        .Select(p=>p.Name)
+        .Select(p => p.Name)
         .SingleOrDefaultAsync(cancellationToken);
         return TypedResults.Content(result);
     });
@@ -300,3 +303,42 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 await app.RunAsync();
+
+static void ConfigureCustomValidationAttributes(IServiceProvider services)
+{
+    //Find a way to use Source Generators for this in order to avoid using reflection
+    var modelsAssembly = typeof(CustomRequiredAttribute).Assembly;
+    var typesWithLocalizerAttribute =
+        modelsAssembly.GetTypes()
+        .Where(p =>
+        p.CustomAttributes
+        .Any(x => x.AttributeType.Name.Contains("LocalizerOfTAttribute")))
+        .ToList();
+    var localizerFactory = services.GetRequiredService<IStringLocalizerFactory>();
+    foreach (var singleLocalizerType in typesWithLocalizerAttribute)
+    {
+        var newLocalizerInstance = localizerFactory.Create(singleLocalizerType);
+        var field = singleLocalizerType
+            .GetProperty("Localizer", BindingFlags.Public | BindingFlags.Static);
+        field!.SetValue(null, newLocalizerInstance);
+    }
+}
+static void ConfigureModelsLocalizers(IServiceProvider services)
+{
+    //Find a way to use Source Generators for this in order to avoid using reflection
+    var modelsAssembly = typeof(FairPlayCombined.Models.UserModel).Assembly;
+    var typesWithLocalizerAttribute =
+        modelsAssembly.GetTypes()
+        .Where(p => 
+        p.CustomAttributes
+        .Any(x => x.AttributeType.Name.Contains("LocalizerOfTAttribute")))
+        .ToList();
+    var localizerFactory = services.GetRequiredService<IStringLocalizerFactory>();
+    foreach (var singleLocalizerType in typesWithLocalizerAttribute)
+    {
+        var newLocalizerInstance = localizerFactory.Create(singleLocalizerType);
+        var field = singleLocalizerType
+            .GetProperty("Localizer", BindingFlags.Public | BindingFlags.Static);
+        field!.SetValue(null, newLocalizerInstance);
+    }
+}

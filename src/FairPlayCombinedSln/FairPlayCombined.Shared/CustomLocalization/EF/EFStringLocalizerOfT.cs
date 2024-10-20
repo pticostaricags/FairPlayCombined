@@ -2,7 +2,6 @@
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
@@ -72,7 +71,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
             var db = dbContextFactory.CreateDbContext();
             var typeFullName = typeof(T).FullName;
             var cacheKey = $"{typeFullName}-{nameof(GetAllStrings)}-{CultureInfo.CurrentCulture.Name}";
-            var result = customCache!.GetOrCreateAsync<IQueryable<LocalizedString>>(
+            var result = customCache!.GetOrCreateAsync<IEnumerable<CustomLocalizedString>>(
                 cacheKey, retrieveDataTask: () =>
                 {
                     logger.LogInformation("Executing method {MethodName}", nameof(GetAllStrings));
@@ -81,31 +80,30 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
                     .Include(r => r.Culture)
                     .Where(r => r.Culture.Name == CultureInfo.CurrentCulture.Name
                     && r.Type == typeFullName)
-                    .Select(r => new LocalizedString(r.Key, r.Value, true));
+                    .Select(r => new CustomLocalizedString 
+                    {
+                        Name=r.Key,
+                        Value = r.Value
+                    })
+                    .AsEnumerable();
                     return Task.FromResult(data);
                 }, expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
                 cancellationToken: CancellationToken.None)
                 .Result;
-            return result!;
+            return result!.Select(r=>new LocalizedString(r.Name!, r.Value!));
         }
 
         private string? GetString(string name)
         {
-            var db = dbContextFactory.CreateDbContext();
             var typeFullName = typeof(T).FullName;
             var cacheKey = $"{typeFullName}-{nameof(GetString)}-{name}-{CultureInfo.CurrentCulture.Name}";
             var result = customCache!.GetOrCreateAsync<string?>(cacheKey,
                 retrieveDataTask: () =>
             {
                 logger.LogInformation("Executing method {MethodName} for resource {ResourceName}", nameof(GetString), name);
-                var data =
-                db.Resource
-                .AsNoTracking()
-                .Include(r => r.Culture)
-                .Where(r => r.Culture.Name == CultureInfo.CurrentCulture.Name &&
-                r.Type == typeFullName
-                )
-                .FirstOrDefault(r => r.Key == name)?.Value;
+                var allStrings = this.GetAllStrings();
+                var data = allStrings
+                .FirstOrDefault(r => r.Name == name)?.Value;
                 return Task.FromResult(data);
             }, expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
             cancellationToken: CancellationToken.None).Result;

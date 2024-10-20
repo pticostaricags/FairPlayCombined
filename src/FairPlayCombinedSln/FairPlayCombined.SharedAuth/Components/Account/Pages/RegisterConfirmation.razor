@@ -1,22 +1,26 @@
 ﻿@page "/Account/RegisterConfirmation"
 
 @using System.Text
+@using FairPlayCombined.Common.CustomAttributes
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Localization
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IEmailSender<ApplicationUser> EmailSender
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Register confirmation</PageTitle>
+@inject IStringLocalizer<RegisterConfirmation> localizer
 
-<h1>Register confirmation</h1>
+<PageTitle>@localizer[RegisterConfirmationTextKey]</PageTitle>
+
+<h1>@localizer[RegisterConfirmationTextKey]</h1>
 
 <StatusMessage Message="@statusMessage" />
 
 
-<p>Please check your email to confirm your account.</p>
+<p>@localizer[CheckYourEmailTextKey]</p>
 
 @code {
     private string? statusMessage;
@@ -41,7 +45,16 @@
         if (user is null)
         {
             HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-            statusMessage = "Error finding user for unspecified email";
+            statusMessage = localizer[ErrorFindingUserTextKey];
         }
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Register confirmation")]
+    public const string RegisterConfirmationTextKey = "RegisterConfirmationText";
+    [ResourceKey(defaultValue: "Please check your email to confirm your account")]
+    public const string CheckYourEmailTextKey = "CheckYourEmailText";
+    [ResourceKey(defaultValue: "Error finding user for unspecified email")]
+    public const string ErrorFindingUserTextKey = "ErrorFindingUserText";
+    #endregion Resource Keys
 }
