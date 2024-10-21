@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Metrics;
 
 
-namespace FairPlayTube.MetricsConfiguration
+namespace FairPlayTube.Metrics
 {
     public class FairPlayTubeMetrics(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory)
         : IFairPlayTubeMetrics
@@ -14,7 +14,7 @@ namespace FairPlayTube.MetricsConfiguration
         public void Initialize()
         {
             SessionsMeter = new(IFairPlayTubeMetrics.SESSION_METER_NAME);
-            SessionsMeter!.CreateObservableGauge<int>($"{SessionsMeter!.Name}.RealtimeVideoSessions",
+            SessionsMeter!.CreateObservableGauge($"{SessionsMeter!.Name}.RealtimeVideoSessions",
                 observeValue: () =>
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
@@ -24,7 +24,7 @@ namespace FairPlayTube.MetricsConfiguration
                     .Count();
                     return result;
                 });
-            SessionsMeter!.CreateObservableGauge<int>($"{SessionsMeter!.Name}.RealtimeAuthenticatedVideoSessions",
+            SessionsMeter!.CreateObservableGauge($"{SessionsMeter!.Name}.RealtimeAuthenticatedVideoSessions",
                 observeValue: () =>
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
@@ -35,7 +35,7 @@ namespace FairPlayTube.MetricsConfiguration
                     .Count();
                     return result;
                 });
-            SessionsMeter!.CreateObservableGauge<int>($"{SessionsMeter!.Name}.LifetimeAuthenticatedVideoSessions",
+            SessionsMeter!.CreateObservableGauge($"{SessionsMeter!.Name}.LifetimeAuthenticatedVideoSessions",
                 observeValue: () =>
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
