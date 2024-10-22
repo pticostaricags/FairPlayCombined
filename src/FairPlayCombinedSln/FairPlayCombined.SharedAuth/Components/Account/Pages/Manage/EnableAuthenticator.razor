@@ -12,8 +12,9 @@
 @inject UrlEncoder UrlEncoder
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<EnableAuthenticator> Logger
+@inject IStringLocalizer<EnableAuthenticator> localizer
 
-<PageTitle>Configure authenticator app</PageTitle>
+<PageTitle>@localizer[ConfigureAuthenticatorAppTextKey]</PageTitle>
 
 @if (recoveryCodes is not null)
 {
@@ -22,41 +23,54 @@
 else
 {
     <StatusMessage Message="@message" />
-    <h3>Configure authenticator app</h3>
+    <h3>@localizer[ConfigureAuthenticatorAppTextKey]</h3>
     <div>
-        <p>To use an authenticator app go through the following steps:</p>
+        <p>@localizer[StepsIntroTextKey]:</p>
         <ol class="list">
             <li>
                 <p>
-                    Download a two-factor authenticator app like Microsoft Authenticator for
-                    <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> and
-                    <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> or
-                    Google Authenticator for
-                    <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and
-                    <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
+                    @localizer[DownloadAuthenticatorAppTextKey]
+                    <ul class="list">
+                        <li>
+                            <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a>
+                        </li>
+                        <li>
+                            <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a>
+                        </li>
+                    </ul>
+                    @localizer[GoogleAuthenticatorTextKey]
+                    <ul class="list">
+                        <li>
+                            <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a>
+                        </li>
+                        <li>
+                            <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>
+                        </li>
+                    </ul>
                 </p>
             </li>
             <li>
-                <p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-                <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
+                <p>@localizer[ScanQROrEnterKeyTextKey]: <kbd>@sharedKey</kbd></p>
+                <div class="alert alert-info"> <a href="https://go.microsoft.com/fwlink/?Linkid=852423">@localizer[LearnHowToEnableQRCodeGenerationTextKey]</a></div>
                 <div></div>
                 <div data-url="@authenticatorUri"></div>
             </li>
             <li>
                 <p>
-                    Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
-                    with a unique code. Enter the code in the confirmation box below.
+                    @localizer[UniqueCodeMessageTextKey]
                 </p>
                 <div class="row">
                     <div class="col-md-6">
                         <EditForm Model="Input" FormName="send-code" OnValidSubmit="OnValidSubmitAsync" method="post">
                             <DataAnnotationsValidator />
                             <div class="form-floating @ThemeConfiguration.Divisions.DefaultCss">
-                                <InputText @bind-Value="Input.Code" class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="off" placeholder="Please enter the code." />
-                                <label for="code" class="control-label @ThemeConfiguration.Labels.DefaultCss">Verification Code</label>
+                                <InputText @bind-Value="Input.Code" 
+                                class="@ThemeConfiguration.GenericControls.DefaultCss" 
+                                autocomplete="off" placeholder=@PleaseEnterCodeText />
+                                <label for="code" class="control-label @ThemeConfiguration.Labels.DefaultCss">@localizer[VerificationCodeTextKey]</label>
                                 <ValidationMessage For="() => Input.Code" class="text-danger" />
                             </div>
-                            <button type="submit" class="w-100 btn btn-lg btn-primary">Verify</button>
+                            <button type="submit" class="w-100 btn btn-lg btn-primary">@localizer[VerifyTextKey]</button>
                             <ValidationSummary class="text-danger" role="alert" />
                         </EditForm>
                     </div>
@@ -98,7 +112,7 @@ else
 
         if (!is2faTokenValid)
         {
-            message = "Error: Verification code is invalid.";
+            message = localizer[InvalidVerificationCodeTextKey];
             return;
         }
 
@@ -106,7 +120,7 @@ else
         var userId = await UserManager.GetUserIdAsync(user);
         Logger.LogInformation("User with ID '{UserId}' has enabled 2FA with an authenticator app.", userId);
 
-        message = "Your authenticator app has been verified.";
+        message = localizer[VerifiedAuthenticatorAppTextKey];
 
         if (await UserManager.CountRecoveryCodesAsync(user) == 0)
         {
@@ -163,10 +177,49 @@ else
 
     private sealed class InputModel
     {
-        [Required]
-        [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [CustomRequired]
+        [CustomStringLength(7, MinimumLength = 6)]
         [DataType(DataType.Text)]
-        [Display(Name = "Verification Code")]
+        [Display(ResourceType = typeof(InputModelLocalizer),
+        Name = nameof(InputModelLocalizer.DisplayFor_VerificationCode))]
         public string Code { get; set; } = "";
     }
+
+    [LocalizerOfT<InputModel>]
+    public class InputModelLocalizer
+    {
+        public static IStringLocalizer<InputModelLocalizer>? Localizer { get; set; }
+
+        [ResourceKey(defaultValue: "Verification Code")]
+        public const string DisplayFor_VerificationCode_TextKey = "DisplayFor_VerificationCode_Text";
+        public string DisplayFor_VerificationCode => Localizer![DisplayFor_VerificationCode_TextKey];
+    }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Configure authenticator app")]
+    public const string ConfigureAuthenticatorAppTextKey = "ConfigureAuthenticatorAppText";
+    [ResourceKey(defaultValue: "To use an authenticator app go through the following steps")]
+    public const string StepsIntroTextKey = "StepsIntroText";
+    [ResourceKey(defaultValue: "Download a two-factor authenticator app like Microsoft Authenticator")]
+    public const string DownloadAuthenticatorAppTextKey = "DownloadAuthenticatorAppText";
+    [ResourceKey(defaultValue: "Google Authenticator")]
+    public const string GoogleAuthenticatorTextKey = "GoogleAuthenticatorText";
+    [ResourceKey(defaultValue: "Scan the QR Code or enter this key into your two factor authenticator app. Spaces and casing do not matter")]
+    public const string ScanQROrEnterKeyTextKey = "ScanQROrEnterKeyText";
+    [ResourceKey(defaultValue: "Learn how to enable QR code generation")]
+    public const string LearnHowToEnableQRCodeGenerationTextKey = "LearnHowToEnableQRCodeGenerationText";
+    [ResourceKey(defaultValue: "Once you have scanned the QR code or input the key above, your two factor authentication app will provide you with a unique code. Enter the code in the confirmation box below")]
+    public const string UniqueCodeMessageTextKey = "UniqueCodeMessageText";
+    [ResourceKey(defaultValue: "Please enter the code")]
+    public const string PleaseEnterCodeTextKey = "PleaseEnterCodeText";
+    public string PleaseEnterCodeText => localizer[PleaseEnterCodeTextKey];
+    [ResourceKey(defaultValue: "Verification Code")]
+    public const string VerificationCodeTextKey = "VerificationCodeText";
+    [ResourceKey(defaultValue: "Verify")]
+    public const string VerifyTextKey = "VerifyText";
+    [ResourceKey(defaultValue: "Error: Verification code is invalid.")]
+    public const string InvalidVerificationCodeTextKey = "InvalidVerificationCodeText";
+    [ResourceKey(defaultValue: "Your authenticator app has been verified")]
+    public const string VerifiedAuthenticatorAppTextKey = "VerifiedAuthenticatorAppText";
+    #endregion Resource Keys
 }
