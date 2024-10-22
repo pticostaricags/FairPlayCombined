@@ -9,12 +9,14 @@
 @inject IUserStore<ApplicationUser> UserStore
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Manage your external logins</PageTitle>
+@inject IStringLocalizer<ExternalLogins> localizer
+
+<PageTitle>@localizer[ManageYourExternalLoginsTextKey]</PageTitle>
 
 <StatusMessage />
 @if (currentLogins?.Count > 0)
 {
-    <h3>Registered Logins</h3>
+    <h3>@localizer[RegisteredLoginsTextKey]</h3>
     <table class="table">
         <tbody>
             @foreach (var login in currentLogins)
@@ -29,7 +31,7 @@
                                 <div>
                                     <input type="hidden" name="@nameof(LoginProvider)" value="@login.LoginProvider" />
                                     <input type="hidden" name="@nameof(ProviderKey)" value="@login.ProviderKey" />
-                                    <button type="submit" class="@ThemeConfiguration.Buttons.PrimaryButtonCss" title="Remove this @login.ProviderDisplayName login from your account">Remove</button>
+                                    <button type="submit" class="@ThemeConfiguration.Buttons.PrimaryButtonCss" title="@localizer[RemoveProviderFromAccountTitleTextKey, login!.ProviderDisplayName!]">@localizer[RemoveTextKey]</button>
                                 </div>
                             </form>
                         }
@@ -45,7 +47,7 @@
 }
 @if (otherLogins?.Count > 0)
 {
-    <h4>Add another service to log in.</h4>
+    <h4>@localizer[UseAnotherServiceToLoginTextKey]</h4>
     <hr />
     <form class="form-horizontal" action="Account/Manage/LinkExternalLogin" method="post">
         <AntiforgeryToken />
@@ -53,7 +55,7 @@
             <p>
                 @foreach (var provider in otherLogins)
                 {
-                    <button type="submit" class="@ThemeConfiguration.Buttons.PrimaryButtonCss" name="Provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                    <button type="submit" class="@ThemeConfiguration.Buttons.PrimaryButtonCss" name="Provider" value="@provider.Name" title=@localizer[LoginUsingProviderTextKey, provider.DisplayName!]>
                         @provider.DisplayName
                     </button>
                 }
@@ -109,11 +111,11 @@
         var result = await UserManager.RemoveLoginAsync(user, LoginProvider!, ProviderKey!);
         if (!result.Succeeded)
         {
-            RedirectManager.RedirectToCurrentPageWithStatus("Error: The external login was not removed.", HttpContext);
+            RedirectManager.RedirectToCurrentPageWithStatus(localizer[ExternalLoginNotRemovedTextKey], HttpContext);
         }
 
         await SignInManager.RefreshSignInAsync(user);
-        RedirectManager.RedirectToCurrentPageWithStatus("The external login was removed.", HttpContext);
+        RedirectManager.RedirectToCurrentPageWithStatus(localizer[ExternalLoginRemovedTextKey], HttpContext);
     }
 
     private async Task OnGetLinkLoginCallbackAsync()
@@ -122,18 +124,43 @@
         var info = await SignInManager.GetExternalLoginInfoAsync(userId);
         if (info is null)
         {
-            RedirectManager.RedirectToCurrentPageWithStatus("Error: Could not load external login info.", HttpContext);
+            RedirectManager.RedirectToCurrentPageWithStatus(localizer[ErrorLoadingExternalLoginTextKey], HttpContext);
         }
 
         var result = await UserManager.AddLoginAsync(user, info);
         if (!result.Succeeded)
         {
-            RedirectManager.RedirectToCurrentPageWithStatus("Error: The external login was not added. External logins can only be associated with one account.", HttpContext);
+            RedirectManager.RedirectToCurrentPageWithStatus(localizer[OnlyOneAccountSupportedTextKey], HttpContext);
         }
 
         // Clear the existing external cookie to ensure a clean login process
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-        RedirectManager.RedirectToCurrentPageWithStatus("The external login was added.", HttpContext);
+        RedirectManager.RedirectToCurrentPageWithStatus(localizer[ExternalLoginAddedTextKey], HttpContext);
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Manage your external logins")]
+    public const string ManageYourExternalLoginsTextKey = "ManageYourExternalLoginsText";
+    [ResourceKey(defaultValue: "Registered Logins")]
+    public const string RegisteredLoginsTextKey = "RegisteredLoginsText";
+    [ResourceKey(defaultValue: "Remove this {0} login from your account")]
+    public const string RemoveProviderFromAccountTitleTextKey = "RemoveProviderFromAccountTitleText";
+    [ResourceKey(defaultValue: "Remove")]
+    public const string RemoveTextKey = "RemoveText";
+    [ResourceKey(defaultValue: "Add another service to log in")]
+    public const string UseAnotherServiceToLoginTextKey = "UseAnotherServiceToLoginText";
+    [ResourceKey(defaultValue: "Log in using your {0} account")]
+    public const string LoginUsingProviderTextKey = "LoginUsingProviderText";
+    [ResourceKey(defaultValue: "Error: The external login was not removed")]
+    public const string ExternalLoginNotRemovedTextKey = "ExternalLoginNotRemovedText";
+    [ResourceKey(defaultValue: "The external login was removed")]
+    public const string ExternalLoginRemovedTextKey = "ExternalLoginRemovedText";
+    [ResourceKey(defaultValue: "Error: Could not load external login info")]
+    public const string ErrorLoadingExternalLoginTextKey = "ErrorLoadingExternalLoginText";
+    [ResourceKey(defaultValue: "Error: The external login was not added. External logins can only be associated with one account")]
+    public const string OnlyOneAccountSupportedTextKey = "OnlyOneAccountSupportedText";
+    [ResourceKey(defaultValue: "The external login was added")]
+    public const string ExternalLoginAddedTextKey = "ExternalLoginAddedText";
+    #endregion Resource Keys
 }
