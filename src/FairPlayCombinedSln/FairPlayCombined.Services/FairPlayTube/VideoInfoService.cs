@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.Common.CustomExceptions;
+﻿using FairPlayCombined.Common.CustomAttributes;
+using FairPlayCombined.Common.CustomExceptions;
 using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
@@ -7,6 +8,7 @@ using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
 using System.Text;
@@ -26,13 +28,16 @@ namespace FairPlayCombined.Services.FairPlayTube
     {
         private readonly IAzureVideoIndexerService? azureVideoIndexerService;
         private readonly IOpenAIService? openAIService;
+        private readonly IStringLocalizer<VideoInfoService>? localizer;
         public VideoInfoService(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
             ILogger<VideoInfoService> logger, IAzureVideoIndexerService azureVideoIndexerService,
-            IOpenAIService openAIService) :
+            IOpenAIService openAIService,
+            IStringLocalizer<VideoInfoService>? localizer) :
             this(dbContextFactory, logger)
         {
             this.azureVideoIndexerService = azureVideoIndexerService;
             this.openAIService = openAIService;
+            this.localizer = localizer;
         }
 
         public async Task CreateDescriptionForVideoAsync(long videoInfoId, CancellationToken cancellationToken)
@@ -229,7 +234,7 @@ namespace FairPlayCombined.Services.FairPlayTube
                     LifetimeViewers = p.VideoWatchTime.Select(p => p.WatchedByApplicationUserId).Distinct().Count(),
                     LifetimeSessions = p.VideoWatchTime.Count,
                     LifetimeWatchTime = TimeSpan.FromSeconds(p.VideoWatchTime.Sum(p => p.WatchTime)),
-                    PublishedOnString = (DateTimeOffset.UtcNow.Subtract(p.RowCreationDateTime).TotalDays < 1 ? "Today" : $"{DateTimeOffset.UtcNow.Subtract(p.RowCreationDateTime).Days} Day(s) ago")
+                    PublishedOnString = (DateTimeOffset.UtcNow.Subtract(p.RowCreationDateTime).TotalDays < 1 ? "Today" : $"{DateTimeOffset.UtcNow.Subtract(p.RowCreationDateTime).Days} {localizer![DaysAgoTextKey]}")
                 });
             if (!String.IsNullOrEmpty(orderByString))
                 query = query.OrderBy(orderByString);
@@ -362,6 +367,11 @@ namespace FairPlayCombined.Services.FairPlayTube
                 }
             });
         }
+
+        #region Resource Keys
+        [ResourceKey(defaultValue: "Day(s) ago")]
+        public const string DaysAgoTextKey = "DaysAgoText";
+        #endregion Resource Keys
 
     }
 }

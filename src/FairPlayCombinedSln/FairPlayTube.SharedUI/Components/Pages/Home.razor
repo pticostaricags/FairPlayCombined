@@ -139,7 +139,14 @@
     </FluentAccordionItem>
 </FluentAccordion>
 
-<FluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged"></FluentPaginator>
+<FluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged">
+    <PaginationTextTemplate>
+        @localizer[PaginatorTextKey, this.paginationState.CurrentPageIndex + 1, this.paginationState.LastPageIndex!.Value + 1]
+    </PaginationTextTemplate>
+    <SummaryTemplate>
+        @localizer[PaginatorSummaryTextKey, this.paginationState.TotalItemCount!.Value]
+    </SummaryTemplate>
+</FluentPaginator>
 
 @if (this.PageItems != null)
 {
@@ -173,7 +180,7 @@
                                 <FluentTextArea Rows="3" style="width:100%;" Value="@singleItem.Description"></FluentTextArea>
                             </ChildContent>
                         </FluentAccordionItem>
-                        <FluentAccordionItem Heading="More Info" Expanded="true">
+                        <FluentAccordionItem Heading=@localizer[VideoMoreInfoTextKey] Expanded="true">
                             <HeadingTemplate>
                                 <FluentLabel Weight="FontWeight.Bold">@localizer[VideoMoreInfoTextKey]</FluentLabel>
                             </HeadingTemplate>
@@ -202,7 +209,15 @@
         }
     </FluentStack>
 }
-<FluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged"></FluentPaginator>
+
+<FluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged">
+    <PaginationTextTemplate>
+        @localizer[PaginatorTextKey, this.paginationState.CurrentPageIndex + 1, this.paginationState.LastPageIndex!.Value + 1]
+    </PaginationTextTemplate>
+    <SummaryTemplate>
+        @localizer[PaginatorSummaryTextKey, this.paginationState.TotalItemCount!.Value]
+    </SummaryTemplate>
+</FluentPaginator>
 
 <!-- Calendly inline widget begin -->
 <div class="calendly-inline-widget" data-url="https://calendly.com/eduardo-fonseca" style="min-width:320px;height:700px;"></div>
@@ -335,5 +350,9 @@
     public const string WhatIsDescriptionTextKey = "WhatIsDescriptionText";
     [ResourceKey(defaultValue: "Check out FairPlayTube: The Next Generation of Video Sharing, empowering entrepreneurs, digital marketers, and those impacted by global layoffs!")]
     public const string SharePageMessageTextKey = "SharePageMessageTextKey";
+    [ResourceKey(defaultValue: "Page {0} of {1}")]
+    public const string PaginatorTextKey = "PaginatorText";
+    [ResourceKey(defaultValue: "Total Items: {0}")]
+    public const string PaginatorSummaryTextKey = "PaginatorSummaryText";
     #endregion Resource Keys
 }

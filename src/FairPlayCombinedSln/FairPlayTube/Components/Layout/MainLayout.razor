@@ -12,6 +12,7 @@
 @inject NavigationManager navigationManager
 @inject IVisitorTrackingService visitorTrackingService
 @inject IUserProviderService userProviderService
+@inject IStringLocalizer<MainLayout> localizer
 
 <FluentMainLayout NavMenuWidth="400">
     <Header>
@@ -27,7 +28,7 @@
             </FluentLabel>
         </div>
         <div class="search-controls" style="display: flex; align-items: center; margin-top: 16px;">
-            <FluentTextField @bind-Value="@this.SearchTerm" Placeholder="Search" style="flex: 1 1 auto;">
+            <FluentTextField @bind-Value="@this.SearchTerm" Placeholder=@SearchText style="flex: 1 1 auto;">
             </FluentTextField>
             <FluentButton Type="ButtonType.Button" OnClick="OnSearchButtonClicked"
                           IconEnd="@(new Icons.Regular.Size20.Search())" style="margin-left: 8px;">
@@ -161,4 +162,10 @@
         await this.cancellationTokenSource.CancelAsync();
         this.cancellationTokenSource.Dispose();
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Search")]
+    public const string SearchTextKey = "SearchText";
+    public string SearchText => localizer[SearchTextKey];
+    #endregion
 }
