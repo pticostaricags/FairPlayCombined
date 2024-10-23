@@ -7,6 +7,7 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Html
+@using FairPlayTube.SharedUI.Components.Paginators
 @using FairPlayTube.SharedUI.Components.SocialMedia
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Microsoft.Extensions.Localization
@@ -139,14 +140,8 @@
     </FluentAccordionItem>
 </FluentAccordion>
 
-<FluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged">
-    <PaginationTextTemplate>
-        @localizer[PaginatorTextKey, this.paginationState.CurrentPageIndex + 1, this.paginationState.LastPageIndex!.Value + 1]
-    </PaginationTextTemplate>
-    <SummaryTemplate>
-        @localizer[PaginatorSummaryTextKey, this.paginationState.TotalItemCount!.Value]
-    </SummaryTemplate>
-</FluentPaginator>
+<CustomFluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged">
+</CustomFluentPaginator>
 
 @if (this.PageItems != null)
 {

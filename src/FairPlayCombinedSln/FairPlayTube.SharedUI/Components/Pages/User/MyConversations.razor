@@ -10,6 +10,7 @@
 @using FairPlayCombined.Models.FairPlayTube.Conversation
 @using FairPlayCombined.Models.Common.UserMessage
 @using FairPlayCombined.Models.Pagination
+@using FairPlayTube.SharedUI.Components.Paginators
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Microsoft.Extensions.Localization
 
@@ -51,14 +52,7 @@
                         </FluentButton>
                     </TemplateColumn>
                 </FluentDataGrid>
-                <FluentPaginator State="this.paginationState">
-                    <PaginationTextTemplate>
-                        @localizer[PaginatorTextKey, this.paginationState.CurrentPageIndex + 1, this.paginationState.LastPageIndex!.Value + 1]
-                    </PaginationTextTemplate>
-                    <SummaryTemplate>
-                        @localizer[PaginatorSummaryTextKey, this.paginationState.TotalItemCount!.Value]
-                    </SummaryTemplate>
-                </FluentPaginator>
+                <CustomFluentPaginator State="this.paginationState"></CustomFluentPaginator>
             </div>
         </div>
         <div class="col" style="max-height: 250px; overflow:auto;">
