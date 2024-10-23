@@ -1,8 +1,9 @@
 ﻿@page "/User/MyConversations"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
+@using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Interfaces.Common
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.Common.AspNetUsers
@@ -10,6 +11,7 @@
 @using FairPlayCombined.Models.Common.UserMessage
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
+@using Microsoft.Extensions.Localization
 
 
 @attribute [StreamRendering(enabled: true)]
@@ -18,10 +20,12 @@
 @inject IToastService toastService
 @inject IAspNetUsersService aspNetUsersService
 
-<PageTitle>MyConversations</PageTitle>
+@inject IStringLocalizer<MyConversations> localizer
+
+<PageTitle>@localizer[MyConversationsTextKey]</PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    MyConversations
+    @localizer[MyConversationsTextKey]
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -77,12 +81,12 @@
                 }
                 else
                 {
-                    <p>You have no conversations with this user</p>
+                    <p>@localizer[NoConversationsWithUserTextKey]</p>
                 }
             }
             else
             {
-                <p>Please select a user</p>
+                <p>@localizer[SelectUserTextKey]</p>
             }
         </div>
     </div>
@@ -96,9 +100,14 @@
                         <FluentValidationSummary></FluentValidationSummary>
                     </div>
                     <div class="mb-3">
-                        <FluentTextField style="width:100%;" @bind-Value="MessageToSend!.Message">
+                        <FluentLabel Typo="Typography.H3">
+                            @localizer[MessageTextKey]
+                        </FluentLabel>
+                        <FluentTextField style="width:100%;"
+                                         @bind-Value="MessageToSend!.Message"
+                                         Placeholder="@localizer[MessageTextKey]">
                         </FluentTextField>
-                        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Send</FluentButton>
+                        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">@localizer[SendTextKey]</FluentButton>
                     </div>
                 </FluentEditForm>
             }
@@ -175,8 +184,22 @@
         StateHasChanged();
     }
 
-    void IDisposable.Dispose()
+    public ValueTask DisposeAsync()
     {
         this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "My Conversations")]
+    public const string MyConversationsTextKey = "MyConversationsText";
+    [ResourceKey(defaultValue: "You have no conversations with this user")]
+    public const string NoConversationsWithUserTextKey = "NoConversationsWithUserText";
+    [ResourceKey(defaultValue: "Please select a user")]
+    public const string SelectUserTextKey = "SelectUserText";
+    [ResourceKey(defaultValue: "Message")]
+    public const string MessageTextKey = "MessageText";
+    [ResourceKey(defaultValue: "Send")]
+    public const string SendTextKey = "SendText";
+    #endregion Resource Keys
 }
