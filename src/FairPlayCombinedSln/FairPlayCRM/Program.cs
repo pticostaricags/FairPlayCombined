@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCRM.Components;
-using FairPlayCRM.Components.Account;
 using FairPlayCRM.Data;
 using FairPlayCombined.Common;
 using FairPlayCombined.Services.Extensions;
@@ -18,6 +17,7 @@ using FairPlayCombined.Common.Identity;
 using FairPlayCRM.Extensions;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.Common.IpData;
+using FairPlayCombined.SharedAuth.Components.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
