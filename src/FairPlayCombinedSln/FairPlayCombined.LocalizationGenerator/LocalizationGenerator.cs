@@ -6,6 +6,7 @@ using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.AzureOpenAI;
 using FairPlayCombined.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace FairPlayCombined.LocalizationGenerator;
@@ -15,6 +16,7 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var stopwatch = Stopwatch.StartNew();
         using var scope = serviceScopeFactory.CreateScope();
         var conf = scope.ServiceProvider.GetRequiredService<IConfiguration>();
         var skipTranslations = Convert.ToBoolean(conf["skipTranslations"]);
@@ -48,7 +50,8 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         {
             logger.LogError(ex, "{Message}", ex.Message);
         }
-        logger.LogInformation("Process {ProcessName} completed", nameof(LocalizationGenerator));
+        logger.LogInformation("Process {ProcessName} completed. Time Elapsed: {TimeElapsed}", nameof(LocalizationGenerator), stopwatch.Elapsed);
+        stopwatch.Stop();
     }
 
     private static async Task InsertTranslations(ILogger<LocalizationGenerator> logger, FairPlayCombinedDbContext fairPlayCombinedDbContext, IAzureOpenAIService azureOpenAIService, Resource? resource, Culture? singleCulture, CancellationToken stoppingToken)

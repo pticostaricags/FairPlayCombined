@@ -17,7 +17,7 @@ using FairPlayTube.Components;
 using FairPlayTube.Data;
 using FairPlayTube.Extensions;
 using FairPlayTube.HealthChecks;
-using FairPlayTube.MetricsConfiguration;
+using FairPlayTube.Metrics;
 using Google.Apis.YouTube.v3;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;

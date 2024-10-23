@@ -2,23 +2,25 @@
 
 @inject IdentityUserAccessor UserAccessor
 
-<PageTitle>Personal Data</PageTitle>
+@inject IStringLocalizer<PersonalData> localizer
+
+<PageTitle>@localizer[PersonalDataTextKey]</PageTitle>
 
 <StatusMessage />
-<h3>Personal Data</h3>
+<h3>@localizer[PersonalDataTextKey]</h3>
 
 <div class="row">
     <div class="col-md-6">
-        <p>Your account contains personal data that you have given us. This page allows you to download or delete that data.</p>
+        <p>@localizer[AccountContainsPersonalDataTextKey]</p>
         <p>
-            <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
+            <strong>@localizer[PermanentAccountDeleteTextKey]</strong>
         </p>
         <form action="Account/Manage/DownloadPersonalData" method="post">
             <AntiforgeryToken />
-            <button class="@ThemeConfiguration.Buttons.PrimaryButtonCss" type="submit">Download</button>
+            <button class="@ThemeConfiguration.Buttons.PrimaryButtonCss" type="submit">@localizer[DownloadTextKey]</button>
         </form>
         <p>
-            <a href="Account/Manage/DeletePersonalData" class="btn btn-danger">Delete</a>
+            <a href="Account/Manage/DeletePersonalData" class="btn btn-danger">@localizer[DeleteTextKey]</a>
         </p>
     </div>
 </div>
@@ -31,4 +33,17 @@
     {
         _ = await UserAccessor.GetRequiredUserAsync(HttpContext);
     }
+
+    #region Resource Keys
+    [ResourceKey("Personal Data")]
+    public const string PersonalDataTextKey = "PersonalDataText";
+    [ResourceKey(defaultValue: "Your account contains personal data that you have given us. This page allows you to download or delete that data.")]
+    public const string AccountContainsPersonalDataTextKey = "AccountContainsPersonalDataText";
+    [ResourceKey(defaultValue: "Deleting this data will permanently remove your account, and this cannot be recovered.")]
+    public const string PermanentAccountDeleteTextKey = "PermanentAccountDeleteText";
+    [ResourceKey(defaultValue: "Download")]
+    public const string DownloadTextKey = "DownloadText";
+    [ResourceKey(defaultValue: "Delete")]
+    public const string DeleteTextKey = "DeleteText";
+    #endregion Resource Keys
 }

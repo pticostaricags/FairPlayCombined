@@ -20,7 +20,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
     public class EFStringLocalizer(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
         ICustomCache customCache, ILogger<EFStringLocalizer> logger) : IStringLocalizer
     {
-
+        private readonly Lock _lock=new();
         /// <summary>
         /// Returns the value for the given key
         /// </summary>
@@ -71,7 +71,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
         {
             string cacheKey = $"{nameof(GetAllStrings)} -{CultureInfo.CurrentCulture.Name}";
             var db = dbContextFactory.CreateDbContext();
-            var result = customCache!.GetOrCreateAsync<IEnumerable<CustomLocalizedString>>(cacheKey,
+            var result = customCache!.GetOrCreateAsync<CustomLocalizedString[]>(cacheKey,
                 retrieveDataTask:() =>
                 {
                     logger.LogInformation("Executing method {MethodName}", nameof(GetAllStrings));
@@ -85,7 +85,7 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
                         Name = r.Key,
                         Value = r.Value
                     })
-                    .AsEnumerable();
+                    .ToArray();
                     return Task.FromResult(data);
                 },
                 expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
@@ -95,19 +95,22 @@ namespace FairPlayCombined.Shared.CustomLocalization.EF
 
         private string? GetString(string name)
         {
-            var cacheKey = $"{name}-{CultureInfo.CurrentCulture.Name}";
-            var result = customCache!.GetOrCreateAsync<string?>(key:cacheKey, 
-                retrieveDataTask: () =>
+            using (this._lock.EnterScope())
             {
-                logger.LogInformation("Executing method {MethodName} for resource {ResourceName}", nameof(GetString), name);
-                var allStrings = this.GetAllStrings();
-                var data = allStrings
-                .FirstOrDefault(r => r.Name == name)?.Value;
-                return Task.FromResult(data);
-            }, expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
-            cancellationToken: CancellationToken.None)
-                .Result;
-            return result;
+                var cacheKey = $"{name}-{CultureInfo.CurrentCulture.Name}";
+                var result = customCache!.GetOrCreateAsync<string?>(key: cacheKey,
+                    retrieveDataTask: () =>
+                {
+                    logger.LogInformation("Executing method {MethodName} for resource {ResourceName}", nameof(GetString), name);
+                    var allStrings = this.GetAllStrings(false);
+                    var data = allStrings
+                    .FirstOrDefault(r => r.Name == name)?.Value;
+                    return Task.FromResult(data);
+                }, expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
+                cancellationToken: CancellationToken.None)
+                    .Result;
+                return result;
+            }
         }
     }
 }

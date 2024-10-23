@@ -19,7 +19,7 @@ namespace FairPlayCombined.Services.Common
             var result = await hybridCache.GetOrCreateAsync<T>(key: key,
                 factory: async (token) =>
                 {
-                    logger.LogInformation("Cache Factory. Executing method {MethodName} for resource {ResourceName}", nameof(GetOrCreateAsync), key);
+                    logger.LogInformation("Cache Factory. Executing method {MethodName} for key {KeyValue}", nameof(GetOrCreateAsync), key);
                     token.ThrowIfCancellationRequested();
                     var data = await retrieveDataTask();
                     return data;

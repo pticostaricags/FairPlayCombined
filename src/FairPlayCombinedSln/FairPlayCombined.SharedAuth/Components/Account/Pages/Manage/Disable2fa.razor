@@ -8,25 +8,29 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<Disable2fa> Logger
 
-<PageTitle>Disable two-factor authentication (2FA)</PageTitle>
+@inject IStringLocalizer<Disable2fa> localizer
+
+<PageTitle>@localizer[Disable2faTextKey]</PageTitle>
 
 <StatusMessage />
-<h3>Disable two-factor authentication (2FA)</h3>
+<h3>@localizer[Disable2faTextKey]</h3>
 
 <div class="alert alert-warning" role="alert">
     <p>
-        <strong>This action only disables 2FA.</strong>
+        <strong>@localizer[OnlyDisable2faTextKey]</strong>
     </p>
     <p>
-        Disabling 2FA does not change the keys used in authenticator apps. If you wish to change the key
-        used in an authenticator app you should <a href="Account/Manage/ResetAuthenticator">reset your authenticator keys.</a>
+        @localizer[DoesNotChangeKeysTextKey] 
+        <a href="Account/Manage/ResetAuthenticator">
+            @localizer[ResetAuthenticatorKeysTextKey]
+        </a>
     </p>
 </div>
 
 <div>
     <form @formname="disable-2fa" @onsubmit="OnSubmitAsync" method="post">
         <AntiforgeryToken />
-        <button class="btn btn-danger" type="submit">Disable 2FA</button>
+        <button class="btn btn-danger" type="submit">@localizer[Disable2FAShortTextKey]</button>
     </form>
 </div>
 
@@ -42,7 +46,7 @@
 
         if (HttpMethods.IsGet(HttpContext.Request.Method) && !await UserManager.GetTwoFactorEnabledAsync(user))
         {
-            throw new InvalidOperationException("Cannot disable 2FA for user as it's not currently enabled.");
+            throw new InvalidOperationException(localizer[CannotDisableTextKey]);
         }
     }
 
@@ -51,14 +55,33 @@
         var disable2faResult = await UserManager.SetTwoFactorEnabledAsync(user, false);
         if (!disable2faResult.Succeeded)
         {
-            throw new InvalidOperationException("Unexpected error occurred disabling 2FA.");
+            throw new InvalidOperationException(localizer[UnexpectedErrorTextKey]);
         }
 
         var userId = await UserManager.GetUserIdAsync(user);
         Logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", userId);
         RedirectManager.RedirectToWithStatus(
             "Account/Manage/TwoFactorAuthentication",
-            "2fa has been disabled. You can reenable 2fa when you setup an authenticator app",
+            localizer[DisabledSuccessTextKey],
             HttpContext);
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Disable two-factor authentication (2FA)")]
+    public const string Disable2faTextKey = "Disable2faText";
+    [ResourceKey(defaultValue: "This action only disables 2FA")]
+    public const string OnlyDisable2faTextKey = "OnlyDisable2faText";
+    [ResourceKey(defaultValue: "Disabling 2FA does not change the keys used in authenticator apps.")]
+    public const string DoesNotChangeKeysTextKey = "DoesNotChangeKeysText";
+    [ResourceKey(defaultValue: "Reset your authenticator keys to change the key used in an authenticator app")]
+    public const string ResetAuthenticatorKeysTextKey = "ResetAuthenticatorKeysText";
+    [ResourceKey(defaultValue: "Disable 2FA")]
+    public const string Disable2FAShortTextKey = "Disable2FAShortText";
+    [ResourceKey(defaultValue: "Cannot disable 2FA for user as it's not currently enabled")]
+    public const string CannotDisableTextKey = "CannotDisableText";
+    [ResourceKey(defaultValue: "Unexpected error occurred disabling 2FA")]
+    public const string UnexpectedErrorTextKey = "UnexpectedErrorText";
+    [ResourceKey(defaultValue: "2fa has been disabled. You can reenable 2fa when you setup an authenticator app")]
+    public const string DisabledSuccessTextKey = "DisabledSuccessText";
+    #endregion Resource Keys
 }

@@ -8,10 +8,12 @@
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Two-factor authentication (2FA)</PageTitle>
+@inject IStringLocalizer<TwoFactorAuthentication> localizer
+
+<PageTitle>@localizer[TwoFactorAuthTextKey]</PageTitle>
 
 <StatusMessage />
-<h3>Two-factor authentication (2FA)</h3>
+<h3>@localizer[TwoFactorAuthTextKey]</h3>
 @if (canTrack)
 {
     if (is2faEnabled)
@@ -19,22 +21,22 @@
         if (recoveryCodesLeft == 0)
         {
             <div class="alert alert-danger">
-                <strong>You have no recovery codes left.</strong>
-                <p>You must <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a> before you can log in with a recovery code.</p>
+                <strong>@localizer[NoRecoveryCodesLeftTextKey]</strong>
+                <p><a href="Account/Manage/GenerateRecoveryCodes">@localizer[MustGenerateNewSetOfCodesTextKey]</a></p>
             </div>
         }
         else if (recoveryCodesLeft == 1)
         {
             <div class="alert alert-danger">
-                <strong>You have 1 recovery code left.</strong>
-                <p>You can <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+                <strong>@localizer[CodesLeftTextKey, 1]</strong>
+                <p><a href="Account/Manage/GenerateRecoveryCodes">@localizer[CanGenerateNewSetOfCodesTextKey]</a>.</p>
             </div>
         }
         else if (recoveryCodesLeft <= 3)
         {
             <div class="alert alert-warning">
-                <strong>You have @recoveryCodesLeft recovery codes left.</strong>
-                <p>You should <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+                <strong>@localizer[CodesLeftTextKey, recoveryCodesLeft]</strong>
+                <p> <a href="Account/Manage/GenerateRecoveryCodes">@localizer[ShouldGenerateNewSetOfCodesTextKey]</a>.</p>
             </div>
         }
 
@@ -42,30 +44,30 @@
         {
             <form style="display: inline-block" @formname="forget-browser" @onsubmit="OnSubmitForgetBrowserAsync" method="post">
                 <AntiforgeryToken />
-                <button type="submit" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Forget this browser</button>
+                <button type="submit" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">@localizer[ForgetBrowserTextKey]</button>
             </form>
         }
 
-        <a href="Account/Manage/Disable2fa" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Disable 2FA</a>
-        <a href="Account/Manage/GenerateRecoveryCodes" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Reset recovery codes</a>
+        <a href="Account/Manage/Disable2fa" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">@localizer[Disable2FATextKey]</a>
+        <a href="Account/Manage/GenerateRecoveryCodes" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">@localizer[ResetRecoveryCodesTextKey]</a>
     }
 
-    <h4>Authenticator app</h4>
+    <h4>@localizer[AuthenticatorAppTextKey]</h4>
     @if (!hasAuthenticator)
     {
-        <a href="Account/Manage/EnableAuthenticator" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Add authenticator app</a>
+        <a href="Account/Manage/EnableAuthenticator" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">@localizer[AddAuthenticatorAppTextKey]</a>
     }
     else
     {
-        <a href="Account/Manage/EnableAuthenticator" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Set up authenticator app</a>
-        <a href="Account/Manage/ResetAuthenticator" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">Reset authenticator app</a>
+        <a href="Account/Manage/EnableAuthenticator" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">@localizer[SetupAuthenticatorAppTextKey]</a>
+        <a href="Account/Manage/ResetAuthenticator" class="@ThemeConfiguration.Buttons.PrimaryButtonCss">@localizer[ResetAuthenticatorAppTextKey]</a>
     }
 }
 else
 {
     <div class="alert alert-danger">
-        <strong>Privacy and cookie policy have not been accepted.</strong>
-        <p>You must accept the policy before you can enable two factor authentication.</p>
+        <strong>@localizer[PrivacyAndCookiePolicyNotAcceptedTextKey]</strong>
+        <p>@localizer[MustAcceptPolicyTextKey]</p>
     </div>
 }
 
@@ -94,7 +96,41 @@ else
         await SignInManager.ForgetTwoFactorClientAsync();
 
         RedirectManager.RedirectToCurrentPageWithStatus(
-            "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.",
-            HttpContext);
+            localizer[ForgottenBrowserTextKey], HttpContext);
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Two-factor authentication (2FA)")]
+    public const string TwoFactorAuthTextKey = "TwoFactorAuthText";
+    [ResourceKey(defaultValue: "You have no recovery codes left")]
+    public const string NoRecoveryCodesLeftTextKey = "NoRecoveryCodesLeftText";
+    [ResourceKey(defaultValue: "You must generate a new set of recovery codes before you can log in with a recovery code")]
+    public const string MustGenerateNewSetOfCodesTextKey = "MustGenerateNewSetOfCodesText";
+    [ResourceKey(defaultValue: "You have {0} recovery code left")]
+    public const string CodesLeftTextKey = "CodesLeftText";
+    [ResourceKey(defaultValue: "You can generate a new set of recovery codes")]
+    public const string CanGenerateNewSetOfCodesTextKey = "CanGenerateNewSetOfCodesText";
+    [ResourceKey(defaultValue: "You should generate a new set of recovery codes")]
+    public const string ShouldGenerateNewSetOfCodesTextKey = "ShouldGenerateNewSetOfCodesText";
+    [ResourceKey(defaultValue: "Forget this browser")]
+    public const string ForgetBrowserTextKey = "ForgetBrowserText";
+    [ResourceKey(defaultValue: "Disable 2FA")]
+    public const string Disable2FATextKey = "Disable2FAText";
+    [ResourceKey(defaultValue: "Reset recovery codes")]
+    public const string ResetRecoveryCodesTextKey = "ResetRecoveryCodesText";
+    [ResourceKey(defaultValue: "Authenticator app")]
+    public const string AuthenticatorAppTextKey = "AuthenticatorAppText";
+    [ResourceKey(defaultValue: "Add authenticator app")]
+    public const string AddAuthenticatorAppTextKey = "AddAuthenticatorAppText";
+    [ResourceKey(defaultValue: "Set up authenticator app")]
+    public const string SetupAuthenticatorAppTextKey = "SetupAuthenticatorAppText";
+    [ResourceKey(defaultValue: "Reset authenticator app")]
+    public const string ResetAuthenticatorAppTextKey = "ResetAuthenticatorAppText";
+    [ResourceKey(defaultValue: "Privacy and cookie policy have not been accepted")]
+    public const string PrivacyAndCookiePolicyNotAcceptedTextKey = "PrivacyAndCookiePolicyNotAcceptedText";
+    [ResourceKey(defaultValue: "You must accept the policy before you can enable two factor authentication")]
+    public const string MustAcceptPolicyTextKey = "MustAcceptPolicyText";
+    [ResourceKey(defaultValue: "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code")]
+    public const string ForgottenBrowserTextKey = "ForgottenBrowserTextK";
+    #endregion Resource Keys
 }
