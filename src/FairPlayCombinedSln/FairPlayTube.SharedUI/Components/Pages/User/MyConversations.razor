@@ -51,7 +51,14 @@
                         </FluentButton>
                     </TemplateColumn>
                 </FluentDataGrid>
-                <FluentPaginator State="this.paginationState"></FluentPaginator>
+                <FluentPaginator State="this.paginationState">
+                    <PaginationTextTemplate>
+                        @localizer[PaginatorTextKey, this.paginationState.CurrentPageIndex + 1, this.paginationState.LastPageIndex!.Value + 1]
+                    </PaginationTextTemplate>
+                    <SummaryTemplate>
+                        @localizer[PaginatorSummaryTextKey, this.paginationState.TotalItemCount!.Value]
+                    </SummaryTemplate>
+                </FluentPaginator>
             </div>
         </div>
         <div class="col" style="max-height: 250px; overflow:auto;">
@@ -201,5 +208,9 @@
     public const string MessageTextKey = "MessageText";
     [ResourceKey(defaultValue: "Send")]
     public const string SendTextKey = "SendText";
+    [ResourceKey(defaultValue: "Page {0} of {1}")]
+    public const string PaginatorTextKey = "PaginatorText";
+    [ResourceKey(defaultValue: "Total Items: {0}")]
+    public const string PaginatorSummaryTextKey = "PaginatorSummaryText";
     #endregion Resource Keys
 }
