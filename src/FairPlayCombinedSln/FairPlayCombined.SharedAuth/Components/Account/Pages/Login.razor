@@ -99,9 +99,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var c = CultureInfo.CurrentCulture;
-        var d = localizer[InvalidLoginAttemptTextKey];
-        Logger.LogDebug(d);
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
             // Clear the existing external cookie to ensure a clean login process

@@ -1,0 +1,29 @@
+﻿@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<CustomFluentPaginator> localizer
+
+@if (this.State != null)
+{
+    <FluentPaginator State="this.State" CurrentPageIndexChanged="@this.CurrentPageIndexChanged">
+        <PaginationTextTemplate>
+            @localizer[PaginatorTextKey, this.State.CurrentPageIndex + 1, this.State.LastPageIndex!.Value + 1]
+        </PaginationTextTemplate>
+        <SummaryTemplate>
+            @localizer[PaginatorSummaryTextKey, this.State.TotalItemCount!.Value]
+        </SummaryTemplate>
+    </FluentPaginator>
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public PaginationState? State { get; set; }
+    [Parameter]
+    public EventCallback<int> CurrentPageIndexChanged { get; set; } = default;
+
+    [ResourceKey(defaultValue: "Page {0} of {1}")]
+    public const string PaginatorTextKey = "PaginatorText";
+    [ResourceKey(defaultValue: "Total Items: {0}")]
+    public const string PaginatorSummaryTextKey = "PaginatorSummaryText";
+}

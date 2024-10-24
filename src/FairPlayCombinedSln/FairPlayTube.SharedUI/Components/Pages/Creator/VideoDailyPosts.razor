@@ -89,7 +89,8 @@
 
     private CultureInfo[]? supportedCultures { get; set; }
     private CultureInfo? SelectedCulture { get; set; }
-    private string? SelectedSocialNetwork = "LinkedIn";
+    private string? SelectedSocialNetwork { get; set; } = "LinkedIn";
+
     protected override async Task OnInitializedAsync()
     {
         try

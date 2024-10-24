@@ -122,6 +122,8 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 CurrentLatitude = (double)randomGeoLocation.nearest!.latt,
                 CurrentLongitude = (double)randomGeoLocation.nearest.longt
             },
+            Name = Faker.Name.First(),
+            Lastname = Faker.Name.Last()
         };
         var randomActivities = Random.Shared.GetItems<Activity>(allActivities, 1);
         foreach (var activity in randomActivities)
