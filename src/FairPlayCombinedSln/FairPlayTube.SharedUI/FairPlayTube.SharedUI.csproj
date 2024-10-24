@@ -52,7 +52,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\WebComponents\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
