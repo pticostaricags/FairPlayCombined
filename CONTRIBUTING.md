@@ -6,12 +6,15 @@ We encourage community contribution so that all can create a great system togeth
 How To Contribute
 ------------
 
-* Use the Discussions section to inform us you'd like to contribute.
+* Fix Bugs, Code Smells and Vulnerabilities referenced in main page. Search if there is any GitHub issue created for that, if not, create one.
+![image](https://github.com/user-attachments/assets/c8023707-5254-4919-b1ba-0cd2ebc611eb)
+ 
 * Check the Issues section and decide in which issues you'd like to contribute
   * Find the ones labeled with "Good first issue" assigned which are not assigned to anyone.
 * Let us know in the Issue that you are working on it, so we assign it to you.
 * Use the Discussions section to post your ideas
 * Share the repo on your social networks (Twitter, Facebook, LinkedIn, etc)
+
 
 Coding Standards
 ------------
