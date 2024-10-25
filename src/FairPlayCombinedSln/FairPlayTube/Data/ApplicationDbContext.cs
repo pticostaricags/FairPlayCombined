@@ -13,10 +13,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public override EntityEntry<TEntity> Add<TEntity>(TEntity entity)
     {
-        if (entity is ApplicationUser)
+        if (entity is ApplicationUser entry)
         {
             var applicationName = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Name;
-            var entry = entity as ApplicationUser;
             entry!.SourceApplication = applicationName;
             entry.RowCreationDateTime = DateTimeOffset.UtcNow;
             entry.RowCreationUser = entry.UserName!;
@@ -27,10 +26,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public override async ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
     {
-        if (entity is ApplicationUser)
+        if (entity is ApplicationUser entry)
         {
             var applicationName = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Name;
-            var entry = entity as ApplicationUser;
             entry!.SourceApplication = applicationName;
             entry.RowCreationDateTime = DateTimeOffset.UtcNow;
             entry.RowCreationUser = entry.UserName!;
