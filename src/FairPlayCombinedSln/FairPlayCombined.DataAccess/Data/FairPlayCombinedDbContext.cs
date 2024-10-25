@@ -220,6 +220,11 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .IsUnique()
                 .HasFilter("([NormalizedUserName] IS NOT NULL)");
 
+            entity.Property(e => e.OriginatorIpaddress).HasDefaultValue("Test");
+            entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.RowCreationUser).HasDefaultValue("Test");
+            entity.Property(e => e.SourceApplication).HasDefaultValue("Test");
+
             entity.HasMany(d => d.Role).WithMany(p => p.User)
                 .UsingEntity<Dictionary<string, object>>(
                     "AspNetUserRoles",

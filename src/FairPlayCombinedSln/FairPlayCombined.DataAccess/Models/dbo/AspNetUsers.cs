@@ -70,6 +70,21 @@ public partial class AspNetUsers
 
     public string WebsiteUrl { get; set; }
 
+    public DateTimeOffset RowCreationDateTime { get; set; }
+
+    [Required]
+    [StringLength(256)]
+    public string RowCreationUser { get; set; }
+
+    [Required]
+    [StringLength(250)]
+    public string SourceApplication { get; set; }
+
+    [Required]
+    [Column("OriginatorIPAddress")]
+    [StringLength(100)]
+    public string OriginatorIpaddress { get; set; }
+
     [InverseProperty("FromApplicationUser")]
     public virtual ICollection<ApplicationUserVouch> ApplicationUserVouchFromApplicationUser { get; set; } = new List<ApplicationUserVouch>();
 
