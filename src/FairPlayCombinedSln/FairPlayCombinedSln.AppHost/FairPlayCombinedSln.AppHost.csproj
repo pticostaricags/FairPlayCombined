@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.1.0-preview.1.24525.1" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
@@ -18,15 +19,15 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.1" />
-    <PackageReference Include="Aspire.Hosting.Azure" Version="8.2.1" />
-    <PackageReference Include="Aspire.Hosting.Azure.Storage" Version="8.2.1" />
-    <PackageReference Include="Aspire.Hosting.SqlServer" Version="8.2.1" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.1.0-preview.1.24525.1" />
+    <PackageReference Include="Aspire.Hosting.Azure" Version="9.1.0-preview.1.24525.1" />
+    <PackageReference Include="Aspire.Hosting.Azure.Storage" Version="9.1.0-preview.1.24525.1" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.1.0-preview.1.24525.1" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0-rtm.24516.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FairPlayAdminPortal\FairPlayAdminPortal.csproj">
