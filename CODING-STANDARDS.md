@@ -30,6 +30,20 @@ The names of variables and properties must specify what the variable contents ar
 
 ## Blazor Pages & components
 * Components that load data must have the "Loading" component so that the spinners are shown while data is being load.
+* Razor pages will have the following order
+  * @page
+  * @attribute
+  * @implements
+  * @using
+  * @inject (of interfaces)
+  * @inject (of classes)
+  * Main html code
+  * @code section
+ 
+    Check FairPlayTube's [Home Page](https://github.com/pticostaricags/FairPlayCombined/blob/main/src/FairPlayCombinedSln/FairPlayTube.SharedUI/Components/Pages/Home.razor)
+    
+    ![image](https://github.com/user-attachments/assets/90ec002a-c77d-4116-8cf8-8a4f3808cb89)
+
 
 ## SQL Tables
 * Tables must not contain more than 20 columns, if a table is about to reach that many columns, chances are many columns can be converted into an "AdditionalAttributes" kind of table.

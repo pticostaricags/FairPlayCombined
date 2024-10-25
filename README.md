@@ -9,9 +9,21 @@ Click the links to help improve quality
 
 ## The combined FairPlay stack using .NET Aspire
 
+### How the "FairPlay" initiative was born?
+
+Check the following article:
+
+"FairPlay"​ software. What is it?
+https://www.linkedin.com/pulse/fairplay-software-what-eduardo-fonseca?utm_source=share&utm_medium=member_android&utm_campaign=share_via
+
+### External Resources
+**Open At Microsoft - Real World Apps with Blazor and .NET Aspire:**
+
+https://youtu.be/5v2GNcrEabg?list=PLlrxD0HtieHg8On6t1l5_kj--7PMmyfGi
+
 ### Repository Objective
 FairPlayCombined is a suite of Open-Source Enterprise-Grade High-Quality software focused on helping entrepreneurs reduce costs in Software Development.
-**We build the software, you build your buisness with it**
+**We build the software, you build your business with it**
 
 FairPlayCombined make use of cutting edge technologies that faciliate Software Development, including .NET Aspire a cloud-raedy stack which helps you build high-quality distributed platforms easier than ever before.
 You can check more about .NET Aspire here: https://learn.microsoft.com/en-us/dotnet/aspire/
@@ -20,7 +32,12 @@ You can check more about .NET Aspire here: https://learn.microsoft.com/en-us/dot
 The project is still a work in progress, it started some time after DotNetConf release of .NET 8 and the public reveal of .NET Aspire Preview.
 
 ### Wiki
-https://github.com/pticostaricags/FairPlayCombined/wiki
+
+* General Wiki: https://github.com/pticostaricags/FairPlayCombined/wiki
+* FairPlayTube Wiki: https://github.com/pticostaricags/FairPlayCombined/wiki/FairPlayTube
+
+### Sample Apps
+* [FairPlayTube](https://fairplaytube.pticostarica.com/)
 
 ### Support Me
 Developing software takes a lot of time and effort(researching, testing, trial and error, programming, etc.), you can help me help yourself and lots of other developers learning by becoming a Sponsor here: https://github.com/sponsors/efonsecab
@@ -49,6 +66,9 @@ FairPlayCombined is a project evaluating technologies in preview, for that reaso
 **Technologies in preview(or using experimental functionality):**
 * .NET 9
 * Semantic Kernel
+
+### Survey
+Are you an entrepreneur exploring Open-Source platforms for your startup? Let us know about you in the following [Survey](https://us11.list-manage.com/survey?u=8b82a1556651be6b90abb39cb&id=9f3b59683c&attribution=false)
 
 ## Contributions 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
