@@ -71,18 +71,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = testUserName,
-                NormalizedUserName = testUserName.Normalize(),
-                Email = testUserName,
-                NormalizedEmail = testUserName.Normalize(),
-                Name = "AT FROM NAME",
-                Lastname = "AT FROM LASTNAME"
-            };
-            await dbContext.AspNetUsers.AddAsync(testUser);
+            AspNetUsers testUser = await CreateFromUserAsync(dbContext);
             PostType postType = new()
             {
                 Name = "AT Type"
@@ -134,19 +123,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             var PostService = sp.GetRequiredService<PostService>();
-            string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = testUserName,
-                NormalizedUserName = testUserName.Normalize(),
-                Email = testUserName,
-                NormalizedEmail = testUserName.Normalize(),
-                Name = "AT FROM NAME",
-                Lastname = "AT FROM LASTNAME"
-            };
-            await dbContext.AspNetUsers.AddAsync(testUser);
-            await dbContext.SaveChangesAsync();
+            AspNetUsers testUser = await CreateFromUserAsync(dbContext);
             PostType postType = new()
             {
                 Name = "AT Type"
@@ -198,19 +175,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             var PostService = sp.GetRequiredService<PostService>();
-            string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = testUserName,
-                NormalizedUserName = testUserName.Normalize(),
-                Email = testUserName,
-                NormalizedEmail = testUserName.Normalize(),
-                Name = "AT FROM NAME",
-                Lastname = "AT FROM LASTNAME"
-            };
-            await dbContext.AspNetUsers.AddAsync(testUser);
-            await dbContext.SaveChangesAsync();
+            AspNetUsers testUser = await CreateFromUserAsync(dbContext);
             PostType postType = new()
             {
                 Name = "AT Type"
@@ -275,19 +240,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             var PostService = sp.GetRequiredService<PostService>();
-            string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = testUserName,
-                NormalizedUserName = testUserName.Normalize(),
-                Email = testUserName,
-                NormalizedEmail = testUserName.Normalize(),
-                Name = "AT FROM NAME",
-                Lastname = "AT FROM LASTNAME"
-            };
-            await dbContext.AspNetUsers.AddAsync(testUser);
-            await dbContext.SaveChangesAsync();
+            AspNetUsers testUser = await CreateFromUserAsync(dbContext);
             PostType postType = new()
             {
                 Name = "AT Type"

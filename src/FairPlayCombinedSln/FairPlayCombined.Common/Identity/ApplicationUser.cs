@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace FairPlayCombined.Common.Identity;
 
@@ -19,5 +21,15 @@ public class ApplicationUser : IdentityUser
     public string? XformerlyTwitterUrl { get; set; }
     [ProtectedPersonalData]
     public string? WebsiteUrl { get; set; }
+    [ProtectedPersonalData]
+    public DateTimeOffset? RowCreationDateTime { get; set; }
+
+    [ProtectedPersonalData]
+    public string? RowCreationUser { get; set; }
+
+    [ProtectedPersonalData]
+    public string? SourceApplication { get; set; }
+    [ProtectedPersonalData]
+    public string? OriginatorIpaddress { get; set; }
 }
 

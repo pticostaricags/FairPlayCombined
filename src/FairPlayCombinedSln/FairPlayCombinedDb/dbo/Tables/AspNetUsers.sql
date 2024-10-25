@@ -20,7 +20,11 @@
     [LinkedInProfileUrl] NVARCHAR(MAX) NULL, 
     [InstagramProfileUrl] NVARCHAR(MAX) NULL, 
     [XFormerlyTwitterUrl] NVARCHAR(MAX) NULL,
-    [WebsiteUrl] NVARCHAR(MAX) NULL 
+    [WebsiteUrl] NVARCHAR(MAX) NULL,
+    [RowCreationDateTime] DATETIMEOFFSET NOT NULL, 
+    [RowCreationUser] NVARCHAR(256) NOT NULL,
+    [SourceApplication] NVARCHAR(250) NOT NULL, 
+    [OriginatorIPAddress] NVARCHAR(100) NOT NULL
 );
 
 

@@ -62,19 +62,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = testUserName,
-                NormalizedUserName = testUserName.Normalize(),
-                Email = testUserName,
-                NormalizedEmail = testUserName.Normalize(),
-                Name = "AT FROM NAME",
-                Lastname = "AT FROM LASTNAME"
-            };
-            await dbContext.AspNetUsers.AddAsync(testUser);
-            await dbContext.SaveChangesAsync();
+            AspNetUsers testUser = await CreateFromUserAsync(dbContext);
             var GroupService = sp.GetRequiredService<GroupService>();
             CreateGroupModel createGroupModel = new()
             {
@@ -113,19 +101,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             var GroupService = sp.GetRequiredService<GroupService>();
-            string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = testUserName,
-                NormalizedUserName = testUserName.Normalize(),
-                Email = testUserName,
-                NormalizedEmail = testUserName.Normalize(),
-                Name = "AT FROM NAME",
-                Lastname = "AT FROM LASTNAME"
-            };
-            await dbContext.AspNetUsers.AddAsync(testUser);
-            await dbContext.SaveChangesAsync();
+            AspNetUsers testUser = await CreateFromUserAsync(dbContext);
             DataAccess.Models.FairPlaySocialSchema.Group entity = new()
             {
                 Name = "TestModel",
@@ -165,19 +141,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             var GroupService = sp.GetRequiredService<GroupService>();
-            string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = testUserName,
-                NormalizedUserName = testUserName.Normalize(),
-                Email = testUserName,
-                NormalizedEmail = testUserName.Normalize(),
-                Name = "AT FROM NAME",
-                Lastname = "AT FROM LASTNAME"
-            };
-            await dbContext.AspNetUsers.AddAsync(testUser);
-            await dbContext.SaveChangesAsync();
+            AspNetUsers testUser = await CreateToUserAsync(dbContext);
             DataAccess.Models.FairPlaySocialSchema.Group entity = new()
             {
                 Name = "TestModel",
@@ -230,19 +194,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
             var GroupService = sp.GetRequiredService<GroupService>();
-            string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = testUserName,
-                NormalizedUserName = testUserName.Normalize(),
-                Email = testUserName,
-                NormalizedEmail = testUserName.Normalize(),
-                Name = "AT FROM NAME",
-                Lastname = "AT FROM LASTNAME"
-            };
-            await dbContext.AspNetUsers.AddAsync(testUser);
-            await dbContext.SaveChangesAsync();
+            AspNetUsers testUser = await CreateFromUserAsync(dbContext);
             DataAccess.Models.FairPlaySocialSchema.Group entity = new()
             {
                 Name = "TestModel",

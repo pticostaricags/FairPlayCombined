@@ -67,19 +67,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FairPlayCombinedDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
-            string testUserName = "fromuser@test.test";
-            AspNetUsers testUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = testUserName,
-                NormalizedUserName = testUserName.Normalize(),
-                Email = testUserName,
-                NormalizedEmail = testUserName.Normalize(),
-                Name = "AT FROM NAME",
-                Lastname = "AT FROM LASTNAME"
-            };
-            await dbContext.AspNetUsers.AddAsync(testUser);
-            await dbContext.SaveChangesAsync();
+            AspNetUsers testUser = await CreateFromUserAsync(dbContext);
             TestUserProviderService.CurrentUserId = testUser.Id;
             var linkedInConnectionService = sp.GetRequiredService<LinkedInConnectionService>();
             Stream fileStream = File.OpenRead(linkedInConnectionsFilePath!);

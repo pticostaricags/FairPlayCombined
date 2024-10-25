@@ -158,30 +158,9 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.FairPlayDating
             Photo photo, Profession profession)>
             CreateTestRecordsAsync(FairPlayCombinedDbContext dbContext)
         {
-            string fromUserName = "fromuser@test.test";
-            string toUserName = "toUser@test.test";
-            AspNetUsers fromUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = fromUserName,
-                NormalizedUserName = fromUserName.Normalize(),
-                Email = fromUserName,
-                NormalizedEmail = fromUserName.Normalize(),
-                Name = "AT FROM NAME",
-                Lastname = "AT FROM LASTNAME"
-            };
-            AspNetUsers toUser = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = toUserName,
-                NormalizedUserName = toUserName.Normalize(),
-                Email = toUserName,
-                NormalizedEmail = toUserName.Normalize(),
-                Name = "AT TO NAME",
-                Lastname = "AT TO LASTNAME"
-            };
-            await dbContext.AspNetUsers.AddRangeAsync(fromUser);
-            await dbContext.AspNetUsers.AddRangeAsync(toUser);
+            AspNetUsers fromUser = await CreateFromUserAsync(dbContext);
+            AspNetUsers toUser = await CreateToUserAsync(dbContext);
+
             Activity activity = new()
             {
                 Name = "TEST ACTIVITY"
