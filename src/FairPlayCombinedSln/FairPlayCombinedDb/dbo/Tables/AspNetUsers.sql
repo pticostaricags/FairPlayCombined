@@ -21,10 +21,10 @@
     [InstagramProfileUrl] NVARCHAR(MAX) NULL, 
     [XFormerlyTwitterUrl] NVARCHAR(MAX) NULL,
     [WebsiteUrl] NVARCHAR(MAX) NULL,
-    [RowCreationDateTime] DATETIMEOFFSET NOT NULL DEFAULT GETUTCDATE(), 
-    [RowCreationUser] NVARCHAR(256) NOT NULL DEFAULT 'Test',
-    [SourceApplication] NVARCHAR(250) NOT NULL DEFAULT 'Test', 
-    [OriginatorIPAddress] NVARCHAR(100) NOT NULL DEFAULT 'Test'
+    [RowCreationDateTime] DATETIMEOFFSET NOT NULL, 
+    [RowCreationUser] NVARCHAR(256) NOT NULL,
+    [SourceApplication] NVARCHAR(250) NOT NULL, 
+    [OriginatorIPAddress] NVARCHAR(100) NOT NULL
 );
 
 
