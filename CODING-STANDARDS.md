@@ -25,7 +25,7 @@ The names of variables and properties must specify what the variable contents ar
   * [HttpGet("[action]")]
 
 ## Accessing API Endpoints
-* use a ClientService class in the "FairPlayTube.ClientServices" project, use the same prefix than the one used in the Controller for a name
+* use a ClientService class in the "{MainProject}.ClientServices" project, use the same prefix than the one used in the Controller for a name
 * Generate the client using Kiota.
 
 ## Blazor Pages & components
