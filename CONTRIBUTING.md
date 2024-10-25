@@ -36,7 +36,7 @@ Please do:
 
 * **DO** follow follow the rules defined in the Wiki
 * **DO** Add a an Automated Test for every single endpoint your create
-* **DO** share the repo on your blos, and social networks
+* **DO** share the repo on your blogs, and social networks
 * **DO** create a branch per Issue/Task
 * **DO** Create a PR and add reviewers
 
@@ -66,9 +66,3 @@ UX & UI Experts Contributors Required
 We are looking for UX and UI to collaborate with the design for the system.
 We plan to have a UI that would work for both Desktop and mobile devices, using Blazor and Fluent UI.
 We plan the UI to also look good on MAUI Blazor.
-
-Knowledge Base Maintainters Required
----------------
-
-The system uses Azure QnA to keep it's knowledge base and facilitate giving help to the users.
-This needs someone to maintain the knowledge base updated with all kinds of questions and answers for heping users.
