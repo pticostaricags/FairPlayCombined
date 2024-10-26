@@ -93,6 +93,8 @@ builder.Services.AddSignalR(hubOptions =>
 builder.Services.AddTransient<UserManager<ApplicationUser>, CustomUserManager>();
 builder.Services.AddBlazoredToast();
 builder.AddIdentityEmailSender();
+
+builder.Services.AddTransient<ICustomCache, CustomCache>();
 builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<HttpClientService>();
 builder.Services.AddTransient<PostService>();
