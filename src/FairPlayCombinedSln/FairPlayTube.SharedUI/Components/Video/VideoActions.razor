@@ -1,0 +1,188 @@
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+
+@inject NavigationManager navigationManager
+
+@inject IDialogService dialogService
+@inject IToastService toastService
+@inject IStringLocalizer<VideoActions> localizer
+@inject IVideoInfoService videoInfoService
+
+@if (this.context != null)
+{
+    <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
+        <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[DeleteVideoTextKey]?.Value"
+        OnClick="@( () => OnDeleteVideoClickedAsync(context))">
+            <FluentIcon Value="@(new Icons.Regular.Size20.Delete())" Color="Color.Warning"></FluentIcon>
+        </FluentButton>
+        <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[CreateYouTubeThumbnailTextKey]?.Value"
+        OnClick="@( ()=> OnCreateYouTubeThumbnailClicked(context))">
+            <i class="bi bi-image-fill"></i>
+        </FluentButton>
+        <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[CreateInfographicTextKey]?.Value"
+        OnClick="@( ()=> OnCreateInfographicClicked(context))">
+            <i class="bi bi-file-earmark-bar-graph-fill"></i>
+        </FluentButton>
+        <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[GetLinkedInMarketingIdeasTextKey]?.Value"
+        OnClick="@( ()=> OnGetLinkedInDigitalMarketingIdeasClicked(context))">
+            <i class="bi bi-list-task"></i>
+        </FluentButton>
+        <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[GetNewLinkedInDailyPostsIdeasTextKey]?.Value"
+        OnClick="@( ()=> OnGetLinkedInDailyPostsClicked(context))">
+            <i class="bi bi-linkedin"></i>
+        </FluentButton>
+        <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[GetPassiveIncomeIdeasTextKey]?.Value"
+        OnClick="@( ()=> OnGetPassiveIncomeIdeas(context))">
+            <i class="bi bi-currency-dollar"></i>
+        </FluentButton>
+        <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[CreateLinkedInArticleTextKey]?.Value"
+        OnClick="@( ()=> OnCreateLinkedInArticleClicked(context))">
+            <i class="bi bi-file-richtext-fill"></i>
+        </FluentButton>
+        <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[ViewMyVideoViewersTextKey]?.Value"
+        OnClick="@( () => OnViewMyVideoViewersClicked(context))">
+            <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
+        </FluentButton>
+        @if (!String.IsNullOrWhiteSpace(context.YouTubeVideoId))
+        {
+            <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[ManageYouTubeCaptionsTextKey]?.Value"
+            OnClick="@( () => OnManageYouTubeCaptionsButtonClicked(context))">
+                <i class="bi bi-badge-cc-fill"></i>
+            </FluentButton>
+            <FluentAnchor data-enhance-nav="false"
+            data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[WatchOnYouTubeTextKey]?.Value"
+            Href="@($"https://youtu.be/{context.YouTubeVideoId}")" Target="_blank">
+                <i class="bi bi-youtube"></i>
+            </FluentAnchor>
+        }
+        <FluentButton Type="ButtonType.Button" data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[CreateYouTubeChaptersTextKey]?.Value"
+        OnClick="@( () => OnCreateYouTubeChaptersClicked(context))">
+            <FluentIcon Value="@(new Icons.Regular.Size20.Timeline())"></FluentIcon>
+        </FluentButton>
+        <FluentAnchor Href="@($"/Account/MyVideoDataExport/{context.VideoInfoId}")"
+        data-bs-toggle="tooltip" data-bs-placement="top" title="@localizer[ExportVideoDataTextKey]?.Value"
+        Target="_blank">
+            <FluentIcon Value="@(new Icons.Regular.Size20.ArrowExport())"></FluentIcon>
+        </FluentAnchor>
+    </FluentStack>
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public VideoInfoModel? context { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<VideoInfoModel> OnVideoDeleted { get; set; }
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+
+    public bool IsBusy { get; set; }
+
+    private async Task OnDeleteVideoClickedAsync(VideoInfoModel videoInfoModel)
+    {
+        try
+        {
+            var dialogReference =
+            await dialogService.ShowConfirmationAsync($"Are you sure you want to delete the video: {videoInfoModel.Name}?");
+            var result = await dialogReference.Result;
+            if (!result.Cancelled)
+            {
+                this.IsBusy = true;
+                StateHasChanged();
+                await this.videoInfoService.DeleteMyVideoAsync(videoInfoId: videoInfoModel.VideoInfoId, cancellationToken: this.cancellationTokenSource.Token);
+                await OnVideoDeleted.InvokeAsync();
+                this.toastService.ShowSuccess("Your video is now deleted");
+            }
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    private void OnViewMyVideoViewersClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideoViewers}/{videoInfoModel.VideoId}");
+    }
+
+    private void OnManageYouTubeCaptionsButtonClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoCaptions/VideoInfo{videoInfoModel.VideoInfoId}/YouTube/{videoInfoModel.YouTubeVideoId}");
+    }
+
+    private void OnCreateYouTubeThumbnailClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/YouTubeThumbnail/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnCreateInfographicClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.VideoInfographic}/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnGetLinkedInDigitalMarketingIdeasClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoDigitalMarketing/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnGetPassiveIncomeIdeas(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoPassiveIncome/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnGetLinkedInDailyPostsClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.VideoDailyPosts}/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnCreateLinkedInArticleClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoLinkedInArticle/{videoInfoModel.VideoInfoId}");
+    }
+
+    private void OnCreateYouTubeChaptersClicked(VideoInfoModel videoInfoModel)
+    {
+        this.navigationManager.NavigateTo($"/Creator/VideoChapters/{videoInfoModel.VideoInfoId}");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
+    }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Delete Video")]
+    public const string DeleteVideoTextKey = "DeleteVideoText";
+    [ResourceKey(defaultValue: "Create YouTube Thumbnail")]
+    public const string CreateYouTubeThumbnailTextKey = "CreateYouTubeThumbnailText";
+    [ResourceKey(defaultValue: "Create Infographic")]
+    public const string CreateInfographicTextKey = "CreateInfographicText";
+    [ResourceKey(defaultValue: "Get LinkedIn Marketing Ideas")]
+    public const string GetLinkedInMarketingIdeasTextKey = "GetLinkedInMarketingIdeasText";
+    [ResourceKey(defaultValue: "Get New LinkedIn Daily Posts Ideas")]
+    public const string GetNewLinkedInDailyPostsIdeasTextKey = "GetNewLinkedInDailyPostsIdeasText";
+    [ResourceKey(defaultValue: "Get Passive Income Ideas")]
+    public const string GetPassiveIncomeIdeasTextKey = "GetPassiveIncomeIdeasText";
+    [ResourceKey(defaultValue: "Create LinkedIn Article")]
+    public const string CreateLinkedInArticleTextKey = "CreateLinkedInArticleText";
+    [ResourceKey(defaultValue: "View My Video Viewers")]
+    public const string ViewMyVideoViewersTextKey = "ViewMyVideoViewersText";
+    [ResourceKey(defaultValue: "Manage YouTube Captions")]
+    public const string ManageYouTubeCaptionsTextKey = "ManageYouTubeCaptionsText";
+    [ResourceKey(defaultValue: "Watch on YouTube")]
+    public const string WatchOnYouTubeTextKey = "WatchOnYouTubeText";
+    [ResourceKey(defaultValue: "Create YouTube Chapters")]
+    public const string CreateYouTubeChaptersTextKey = "CreateYouTubeChaptersText";
+    [ResourceKey(defaultValue: "Export Video Data")]
+    public const string ExportVideoDataTextKey = "ExportVideoDataText";
+    #endregion Resource Keys
+}

@@ -13,6 +13,7 @@
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
 @using System.Collections.Concurrent
+@using FairPlayTube.SharedUI.Components.Video
 
 @attribute [StreamRendering(enabled: true)]
 
@@ -36,10 +37,18 @@
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
+@if (this.VideoInfoId.HasValue)
+{
+    <FluentAccordion>
+        <FluentAccordionItem Expanded="true">
+            <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
+        </FluentAccordionItem>
+    </FluentAccordion>
+}
 
 <div>
     <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-                  OnClick="OnCreateNewInfographicClickedAsync">Create New Infographic</FluentButton>
+    OnClick="OnCreateNewInfographicClickedAsync">Create New Infographic</FluentButton>
 </div>
 <div>
     @if (this.Items?.Items?.Length > 0)
@@ -84,6 +93,7 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
+    private VideoInfoModel? VideoInfoModel { get; set; }
     private bool IsBusy { get; set; }
     private PaginationOfT<VideoInfographicModel>? Items;
     private readonly ConcurrentDictionary<long, string> PagePhotos = new();
@@ -119,6 +129,7 @@
         {
             this.IsBusy = true;
             StateHasChanged();
+            this.VideoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
             var items = await videoInfographicService.GetPaginatedVideoInfographicByVideoInfoIdAsync(
                 this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
             this.Items = items;

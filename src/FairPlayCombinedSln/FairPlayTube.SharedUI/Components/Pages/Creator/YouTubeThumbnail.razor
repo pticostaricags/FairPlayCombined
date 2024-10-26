@@ -15,6 +15,7 @@
 @using FairPlayTube.SharedUI.Components.Spinners
 @using System.Collections.Concurrent
 @using System.Globalization
+@using FairPlayTube.SharedUI.Components.Video
 
 @attribute [StreamRendering(enabled: true)]
 
@@ -39,26 +40,35 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
+@if (this.VideoInfoId.HasValue)
+{
+    <FluentAccordion>
+        <FluentAccordionItem Expanded="true">
+            <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
+        </FluentAccordionItem>
+    </FluentAccordion>
+}
+
 @if (this.HasRequiredFundsToCreate)
 {
     <div>
         @if (this.ImageStyles?.Length > 0)
         {
             <FluentSelect Appearance="Appearance.Accent"
-                          @bind-SelectedOption="@this.SelectedImageStyle"
-                          Items="@this.ImageStyles"
-                          Label="Image Style (Experimental)"
-                          OptionText="@(p=>p!.StyleName!)"
-                          OptionValue="@(p=>p!.ImageStyleId!.ToString())"></FluentSelect>
+            @bind-SelectedOption="@this.SelectedImageStyle"
+            Items="@this.ImageStyles"
+            Label="Image Style (Experimental)"
+            OptionText="@(p=>p!.StyleName!)"
+            OptionValue="@(p=>p!.ImageStyleId!.ToString())"></FluentSelect>
         }
     </div>
     <div>
         <FluentCheckbox Label="Request Clean Thumbnail (No Text)?"
-                        @bind-Value="@this.RequestCleanThumbnail"></FluentCheckbox>
+        @bind-Value="@this.RequestCleanThumbnail"></FluentCheckbox>
     </div>
     <div>
         <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-                      OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
+        OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
     </div>
 }
 <div>
@@ -105,6 +115,7 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
+    private VideoInfoModel? VideoInfoModel { get; set; }
     private bool RequestCleanThumbnail { get; set; } = false;
     private bool IsBusy { get; set; }
     private bool HasRequiredFundsToCreate { get; set; } = false;
@@ -146,6 +157,7 @@
         {
             this.IsBusy = true;
             StateHasChanged();
+            this.VideoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
             this.HasRequiredFundsToCreate =
             await this.userFundService
             .HasFundsToCreateThumbnailsAsync(this.cancellationTokenSource.Token);
