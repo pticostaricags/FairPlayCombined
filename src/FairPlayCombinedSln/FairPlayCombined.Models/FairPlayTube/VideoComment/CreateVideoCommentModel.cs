@@ -1,19 +1,20 @@
-﻿using FairPlayCombined.Common.GeneratorsAttributes;
+﻿using FairPlayCombined.Common.CustomAttributes;
+using FairPlayCombined.Common.GeneratorsAttributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace FairPlayCombined.Models.FairPlayTube.VideoComment
 {
     public class CreateVideoCommentModel : ICreateModel
     {
-        [DeniedValues(default(long))]
+        [CustomDeniedValues(default(long))]
         public long VideoInfoId { get; set; }
 
-        [Required]
-        [StringLength(450)]
+        [CustomRequired]
+        [CustomStringLength(450)]
         public string? ApplicationUserId { get; set; }
 
-        [Required]
-        [StringLength(500)]
+        [CustomRequired]
+        [CustomStringLength(500)]
         public string? Comment { get; set; }
     }
 }
