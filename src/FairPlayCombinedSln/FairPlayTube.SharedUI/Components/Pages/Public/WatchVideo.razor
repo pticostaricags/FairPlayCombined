@@ -203,18 +203,23 @@
 <FluentPaginator State="this.paginationState"></FluentPaginator>
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
     <FluentDataGrid ItemsProvider="this.ItemsProvider" Pagination="this.paginationState">
-        <TemplateColumn>
-            <FluentCard>
-                <FluentHeader>
-                    <strong>
-                        @context.RowCreationUser
-                    </strong> @context.RowCreationDateTime.LocalDateTime
-                </FluentHeader>
-                <FluentBodyContent>
-                    @context.Comment
-                </FluentBodyContent>
-            </FluentCard>
-        </TemplateColumn>
+        <EmptyContent>
+            @localizer[NoDataTextKey]
+        </EmptyContent>
+        <ChildContent>
+            <TemplateColumn>
+                <FluentCard>
+                    <FluentHeader>
+                        <strong>
+                            @context.RowCreationUser
+                        </strong> @context.RowCreationDateTime.LocalDateTime
+                    </FluentHeader>
+                    <FluentBodyContent>
+                        @context.Comment
+                    </FluentBodyContent>
+                </FluentCard>
+            </TemplateColumn>
+        </ChildContent>
     </FluentDataGrid>
 </div>
 
@@ -459,5 +464,7 @@
     public const string CommentsTextKey = "CommentsText";
     [ResourceKey(defaultValue: "Add Comment")]
     public const string AddCommentTextKey = "AddCommentText";
+    [ResourceKey(defaultValue: "No data to show!")]
+    public const string NoDataTextKey = "NoDataText";
     #endregion Resource Keys
 }
