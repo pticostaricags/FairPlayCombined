@@ -113,7 +113,7 @@
         };
     }
 
-    private async Task OnVideoDeletedAsync(VideoInfoModel videoInfoModel)
+    private async Task OnVideoDeletedAsync()
     {
         await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
     }

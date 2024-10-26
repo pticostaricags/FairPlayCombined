@@ -10,6 +10,7 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
+@using FairPlayTube.SharedUI.Components.Video
 
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
@@ -30,6 +31,15 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
+@if (this.VideoInfoId.HasValue)
+{
+    <FluentAccordion>
+        <FluentAccordionItem Expanded="true">
+            <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
+        </FluentAccordionItem>
+    </FluentAccordion>
+}
+
 <FluentButton Type="ButtonType.Button" OnClick="CreateLinkedInArticleAsync">
     Re-Create Article
 </FluentButton>
@@ -47,6 +57,7 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
+    private VideoInfoModel? VideoInfoModel { get; set; }
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private string? LinkedInArticleDraftText { get; set; }
@@ -54,6 +65,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        this.VideoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
         await this.CreateLinkedInArticleAsync();
     }
 

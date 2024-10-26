@@ -11,6 +11,7 @@
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
 @using System.Globalization
+@using FairPlayTube.SharedUI.Components.Video
 
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
@@ -34,9 +35,18 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
+@if (this.VideoInfoId.HasValue)
+{
+    <FluentAccordion>
+        <FluentAccordionItem Expanded="true">
+            <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
+        </FluentAccordionItem>
+    </FluentAccordion>
+}
+
 <div>
     <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@supportedCultures"
-                  Embedded="true">
+    Embedded="true">
         <OptionTemplate>@context!.DisplayName</OptionTemplate>
     </FluentSelect>
 </div>
@@ -63,6 +73,7 @@
 {
     [Parameter]
     public long? VideoInfoId { get; set; }
+    private VideoInfoModel? VideoInfoModel { get; set; }
     private CultureInfo[]? supportedCultures { get; set; }
     private CultureInfo? SelectedCulture { get; set; }
     private bool IsBusy { get; set; }
@@ -72,8 +83,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
         this.IsBusy = true;
         StateHasChanged();
+        this.VideoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
         var items = await this.customCache!.GetOrCreateAsync<string[]>(
                 key: nameof(this.supportedCultures),
                 retrieveDataTask: async () =>
