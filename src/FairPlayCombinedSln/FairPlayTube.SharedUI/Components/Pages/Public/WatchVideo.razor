@@ -21,6 +21,7 @@
 @inject IVideoCommentService videoCommentService
 @inject IToastService toastService
 @inject IApiResolver apiResolver
+@inject IStringLocalizer<WatchVideo> localizer
 
 @inject NavigationManager navigationManager
 @inject HttpClient httpClient
@@ -34,28 +35,28 @@
         <meta name="thumbnail" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
 
         <TwitterCard Site="@("@pticostarica")"
-                     Title="@this.OpenGraphTitle"
-                     Description="@this.OpenGraphDescription"
-                     ImageUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"></TwitterCard>
+        Title="@this.OpenGraphTitle"
+        Description="@this.OpenGraphDescription"
+        ImageUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"></TwitterCard>
 
         <OpenGraph Title="@this.OpenGraphTitle"
-                   Description="@this.OpenGraphDescription"
-                   ImageUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
-                   ImageSecureUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
-                   ImageType="image/jpeg"
-                   ImageWidth="400"
-                   ImageHeight="300"
-                   ImageAlt="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")"></OpenGraph>
+        Description="@this.OpenGraphDescription"
+        ImageUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
+        ImageSecureUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
+        ImageType="image/jpeg"
+        ImageWidth="400"
+        ImageHeight="300"
+        ImageAlt="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")"></OpenGraph>
 
 
         <JsonLdForSingleVideo Name="@this.OpenGraphTitle"
-                              Description="@this.OpenGraphDescription"
-                              ThumbnailUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
-                              UploadDate="@this.videoInfoModel.RowCreationDateTime.ToString("yyyy-MM-ddTHH:mm:sszzz")"
-                              Duration="@this.videoInfoModel.VideoObjectDuration"
-                              ContentUrl="@this.navigationManager.Uri"
-                              EmbedUrl="@($"{apiBaseUrl}/Public/EmbedVideo/{this.VideoId}")"
-                              InteractionCount="1"></JsonLdForSingleVideo>
+        Description="@this.OpenGraphDescription"
+        ThumbnailUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
+        UploadDate="@this.videoInfoModel.RowCreationDateTime.ToString("yyyy-MM-ddTHH:mm:sszzz")"
+        Duration="@this.videoInfoModel.VideoObjectDuration"
+        ContentUrl="@this.navigationManager.Uri"
+        EmbedUrl="@($"{apiBaseUrl}/Public/EmbedVideo/{this.VideoId}")"
+        InteractionCount="1"></JsonLdForSingleVideo>
     }
 
 </HeadContent>
@@ -71,51 +72,47 @@
     <div id="container" data-permanent>
         <!-- HTML -->
         <VideoJs SupportedLanguages="@this.SupportedLanguages"
-                 VideoId="@this.VideoId"
-                 VideoUrl="@this.VideoUrl"></VideoJs>
+        VideoId="@this.VideoId"
+        VideoUrl="@this.VideoUrl"></VideoJs>
     </div>
     @if (this.videoInfoModel != null)
     {
         @if (this.videoInfoModel.IsVideoGeneratedWithAi == true)
         {
             <FluentLabel Typo="Typography.Body" Color="Color.Warning">
-                Video was generated using AI, content could be innacurate.
+                @localizer[VideoGeneratedWithAIAccuracyWarningTextKey]
             </FluentLabel>
         }
         <FluentAccordion>
-            <FluentAccordionItem Heading="Share" Expanded="true">
+            <FluentAccordionItem Heading="@localizer[ShareTextKey]" Expanded="true">
                 <SharePage Description="@this.videoInfoModel.Description" Url="@this.navigationManager.Uri"></SharePage>
             </FluentAccordionItem>
-            <FluentAccordionItem Heading="Description" Expanded="true">
+            <FluentAccordionItem Heading="@localizer[DescriptionTextKey]" Expanded="true">
                 <FluentTextArea Rows="10" style="width:100%;" Value="@this.videoInfoModel.Description"></FluentTextArea>
                 <AuthorizeView>
                     <Authorized>
                         @if (this.videoInfoModel.ApplicationUserId == userProviderService.GetCurrentUserId())
                         {
                             <FluentButton Type="ButtonType.Button"
-                                          Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
-                                          OnClick="OnCreateDescriptionWithAIAsync">Create With AI</FluentButton>
+                            Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
+                            OnClick="OnCreateDescriptionWithAIAsync">@localizer[CreateWithAITextKey]</FluentButton>
                         }
                     </Authorized>
                 </AuthorizeView>
             </FluentAccordionItem>
             @if (this.videoInfoModel.GitHubSponsorsUsername != null ||
-           this.videoInfoModel.BuyMeACoffeeUsername != null)
+    this.videoInfoModel.BuyMeACoffeeUsername != null)
             {
-                <FluentAccordionItem Heading="Monetization" Expanded="true">
+                <FluentAccordionItem Heading="@localizer[MonetizationTextKey]" Expanded="true">
                     <FluentLabel Weight="FontWeight.Bold">
-                        @nameof(Constants.ApplicationTitles.FairPlayTube) is all about been fair to everyone,
-                        that includes every single creator, even those just starting, even those totally unexperienced.
-                        No matter how small, how unexperienced, they all deserve to be compensated for their creations.
-                        Creating content takes effort, and sometimes, even money.
-                        We encourage you to help every creator by funding their efforts through their monenization profiles.
+                        @localizer[MonetizationDescriptionTextKey, nameof(Constants.ApplicationTitles.FairPlayTube)]
                     </FluentLabel>
                     @if (this.videoInfoModel.GitHubSponsorsUsername != null)
                     {
                         <FluentLabel Typo="Typography.Body">
                             <FluentAnchor Href="@($"https://github.com/sponsors/{this.videoInfoModel.GitHubSponsorsUsername}")" Target="_blank">
                                 <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
-                                            Color="Color.Accent" Slot="start"></FluentIcon>
+                                Color="Color.Accent" Slot="start"></FluentIcon>
                                 GitHub Sponsors
                             </FluentAnchor>
                         </FluentLabel>
@@ -125,7 +122,7 @@
                         <FluentLabel Typo="Typography.Body">
                             <FluentAnchor Href="@($"https://buymeacoffee.com/{this.videoInfoModel.BuyMeACoffeeUsername}")" Target="_blank">
                                 <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
-                                            Color="Color.Accent" Slot="start"></FluentIcon>
+                                Color="Color.Accent" Slot="start"></FluentIcon>
                                 Buy Me A Coffee
                             </FluentAnchor>
                         </FluentLabel>
@@ -137,13 +134,13 @@
     @if (this.videoInfoModel?.VideoKeywords?.Length > 0)
     {
         <FluentAccordion>
-            <FluentAccordionItem Expanded="false" Heading="Keywords">
+            <FluentAccordionItem Expanded="false" Heading="@localizer[KeywordsTextKey]">
                 <div>
                     <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
                         @foreach (var singleKeyword in this.videoInfoModel.VideoKeywords)
                         {
                             <FluentBadge Circular="true"
-                                         Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
+                            Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
                                 @singleKeyword
                             </FluentBadge>
                         }
@@ -155,14 +152,14 @@
     @if (this.videoInfoModel?.VideoTopics?.Length > 0)
     {
         <FluentAccordion>
-            <FluentAccordionItem Heading="Topics" Expanded="false">
+            <FluentAccordionItem Heading="@localizer[TopicsTextKey]" Expanded="false">
                 <div>
                     <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
                         @foreach (var singleTopic in this.videoInfoModel.VideoTopics)
                         {
                             <FluentBadge Circular="true"
-                                         Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
-                                         Class="multiline-text">
+                            Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
+                            Class="multiline-text">
                                 @singleTopic
                             </FluentBadge>
                         }
@@ -172,18 +169,18 @@
         </FluentAccordion>
     }
     <FluentAccordion>
-        <FluentAccordionItem Heading="All Insights" Expanded="false">
+        <FluentAccordionItem Heading="@localizer[AllInsightsTextKey]" Expanded="false">
             <div>
                 <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
                     <iframe width="580" height="780"
-                            src="@this.videoInfoModel?.AllInsightsUrl" frameborder="0" allowfullscreen></iframe>
+                    src="@this.videoInfoModel?.AllInsightsUrl" frameborder="0" allowfullscreen></iframe>
                 </FluentStack>
             </div>
         </FluentAccordionItem>
     </FluentAccordion>
 }
 
-<FluentLabel Typo="Typography.H3">Comments</FluentLabel>
+<FluentLabel Typo="Typography.H3">@localizer[CommentsTextKey]</FluentLabel>
 <AuthorizeView>
     <Authorized>
         @if (this.createVideoCommentModel != null)
@@ -194,10 +191,10 @@
                     <FluentValidationSummary></FluentValidationSummary>
                 </div>
                 <div>
-                    <FluentTextField Required="true" Placeholder="Add a comment..." @bind-Value="this.createVideoCommentModel.Comment"></FluentTextField>
+                    <FluentTextField Required="true" Placeholder="@($"{localizer[AddCommentTextKey]}...")" @bind-Value="this.createVideoCommentModel.Comment"></FluentTextField>
                 </div>
                 <div>
-                    <FluentButton Type="ButtonType.Submit" style="display:none;">Add Comment</FluentButton>
+                    <FluentButton Type="ButtonType.Submit" style="display:none;">@localizer[AddCommentTextKey]</FluentButton>
                 </div>
             </FluentEditForm>
         }
@@ -438,4 +435,29 @@
         this.persistingSubscription.Dispose();
         return ValueTask.CompletedTask;
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Video was generated using AI, content could be innacurate.")]
+    public const string VideoGeneratedWithAIAccuracyWarningTextKey = "VideoGeneratedWithAIAccuracyWarningText";
+    [ResourceKey(defaultValue: "Share")]
+    public const string ShareTextKey = "ShareText";
+    [ResourceKey(defaultValue: "Description")]
+    public const string DescriptionTextKey = "DescriptionText";
+    [ResourceKey(defaultValue: "Create With AI")]
+    public const string CreateWithAITextKey = "CreateWithAITextKeyCreateWithAIText";
+    [ResourceKey(defaultValue: "Monetization")]
+    public const string MonetizationTextKey = "MonetizationText";
+    [ResourceKey(defaultValue: "{0} is all about been fair to everyone, that includes every single creator, even those just starting, even those totally unexperienced. No matter how small, how unexperienced, they all deserve to be compensated for their creations. Creating content takes effort, and sometimes, even money. We encourage you to help every creator by funding their efforts through their monenization profiles.")]
+    public const string MonetizationDescriptionTextKey = "MonetizationDescriptionText";
+    [ResourceKey(defaultValue: "Keywords")]
+    public const string KeywordsTextKey = "KeywordsText";
+    [ResourceKey(defaultValue: "Topics")]
+    public const string TopicsTextKey = "TopicsText";
+    [ResourceKey(defaultValue: "All Insights")]
+    public const string AllInsightsTextKey = "AllInsightsText";
+    [ResourceKey(defaultValue: "Comments")]
+    public const string CommentsTextKey = "CommentsText";
+    [ResourceKey(defaultValue: "Add Comment")]
+    public const string AddCommentTextKey = "AddCommentText";
+    #endregion Resource Keys
 }
