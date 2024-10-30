@@ -47,6 +47,12 @@ var paypalClientSecret = builder.Configuration["PayPalClientSecret"] ??
 var ipDataKey = builder.Configuration["IpDataKey"] ??
     throw new InvalidOperationException("'IpDataKey' not found");
 
+var fairPlayTubeTwitterClientId = builder.Configuration["FairPlayTube:TwitterClientId"] ??
+    throw new InvalidOperationException("'FairPlayTube:TwitterClientId' not found");
+
+var fairPlayTubeTwitterClientSecret = builder.Configuration["FairPlayTube:TwitterClientSecret"] ??
+    throw new InvalidOperationException("'FairPlayTube:TwitterClientSecret' not found");
+
 IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource = ConfigureDatabase(builder);
 
 var blobs = builder
@@ -106,6 +112,8 @@ if (addFairPlayTube)
             callback.EnvironmentVariables.Add("LinkedInAuthClientSecret", linkedInAuthClientSecret);
 
             callback.EnvironmentVariables.Add("IpDataKey", ipDataKey);
+            callback.EnvironmentVariables.Add("TwitterClientId", fairPlayTubeTwitterClientId);
+            callback.EnvironmentVariables.Add("TwitterClientSecret", fairPlayTubeTwitterClientSecret);
         })
     .WithReference(fairPlayDbResource)
     .WithReference(blobs);

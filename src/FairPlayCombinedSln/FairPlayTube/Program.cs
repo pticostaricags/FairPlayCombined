@@ -93,6 +93,9 @@ builder.Services.AddSingleton<YouTubeClientServiceConfiguration>(new YouTubeClie
 
 LinkedInAuthClientSecretInfo linkedInAuthClientSecretInfo = builder.GetLinkedInAuthClientSecretInfo();
 
+var twitterClientId = builder.Configuration["TwitterClientId"];
+var twitterClientSecret = builder.Configuration["TwitterClientSecret"];
+
 builder.AddPayPalCore();
 
 builder.Services.AddAuthentication(configureOptions =>
@@ -112,6 +115,12 @@ builder.Services.AddAuthentication(configureOptions =>
     [
         "w_member_social"
         ], saveTokens:true)
+    .AddTwitter(configureOptions => 
+    {
+        configureOptions.ClientId = twitterClientId!;
+        configureOptions.ClientSecret = twitterClientSecret!;
+        configureOptions.SaveTokens = true;
+    })
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
 
