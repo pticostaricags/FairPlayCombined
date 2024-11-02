@@ -1,4 +1,5 @@
 ﻿using FairPlayCombined.Models.AzureMaps;
+using FairPlayCombined.Models.AzureMaps.Enums;
 using System.Net.Http.Json;
 
 namespace FairPlayCombined.Services.Common
@@ -6,14 +7,6 @@ namespace FairPlayCombined.Services.Common
     public class AzureMapsService(AzureMapsConfiguration azureMapsConfiguration,
         HttpClient httpClient)
     {
-        /// <summary>
-        /// Check https://learn.microsoft.com/en-us/azure/azure-maps/supported-search-categories
-        /// </summary>
-        public enum POICategories
-        {
-            AIRPORT
-        }
-
         public async Task<SearchByPOICategoryResponse> GetNearbyAirportsAsync(double latitude, double longitude, CancellationToken cancellationToken)
         {
             string format = "json";
