@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FairPlayCombined.Models.AzureMaps.Enums
+﻿namespace FairPlayCombined.Models.AzureMaps.Enums
 {
     /// <summary>
     /// Check https://learn.microsoft.com/en-us/azure/azure-maps/supported-search-categories
