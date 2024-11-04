@@ -34,7 +34,7 @@
     <PackageReference Include="Azure.AI.ContentSafety" Version="1.0.0" />
     <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.17" />
     <PackageReference Include="CsvHelper" Version="33.0.1" />
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.68.0.3556" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.68.0.3582" />
     <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.0.0-rc.1.24381.5" />
     <PackageReference Include="PayoutsSdk" Version="1.1.1" />
     <PackageReference Include="PayPal" Version="2.0.0-rc2" />
