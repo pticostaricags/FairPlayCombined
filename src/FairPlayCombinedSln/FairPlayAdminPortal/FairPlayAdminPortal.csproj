@@ -22,7 +22,7 @@
     <None Remove="Resources\**" />
   </ItemGroup>
   <ItemGroup>
-	<PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="8.2.1" />
+	<PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0-rc.1.24511.1" />
 	<PackageReference Include="Azure.AI.OpenAI" Version="2.1.0-beta.2" />
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.3" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.6.0" />

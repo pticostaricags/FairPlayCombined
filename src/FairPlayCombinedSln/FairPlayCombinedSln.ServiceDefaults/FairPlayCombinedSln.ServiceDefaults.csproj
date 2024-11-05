@@ -22,9 +22,9 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-rc.2.24474.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.0.0-rc.1.24381.5" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0-preview.9.24507.7" />
-    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="8.2.1" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="9.0.0-rc.1.24511.1" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.10.0-rc.1" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.10.0-rc.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.9.0-beta.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />

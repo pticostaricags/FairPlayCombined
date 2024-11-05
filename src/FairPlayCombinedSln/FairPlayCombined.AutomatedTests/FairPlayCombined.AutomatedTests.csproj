@@ -27,7 +27,7 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.Testing" Version="8.2.0" />
+    <PackageReference Include="Aspire.Hosting.Testing" Version="9.0.0-rc.1.24511.1" />
     <PackageReference Include="Azure.AI.ContentSafety" Version="1.0.0" />
     <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0-beta.2" />
     <PackageReference Include="MessagePack" Version="3.0.238-rc.1" />
