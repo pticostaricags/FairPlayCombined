@@ -19,8 +19,7 @@ namespace FairPlayCombined.Services.Common
                     {
                         new SystemChatMessage(systemMessage)
                     }, cancellationToken: cancellationToken);
-                var contentResponse =
-                chatCompletion.Value.Content;
+                var contentResponse = chatCompletion.Value.Content[0].Text;
                 azureOpenAIHealth.Response = contentResponse!.ToString();
                 azureOpenAIHealth.IsHealthy = true;
             }

@@ -1,4 +1,5 @@
 ﻿#if Debug_Enable_Paid_Tests
+using FairPlayCombined.AutomatedTests.ServicesTests.Providers;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Models.OpenAI;
 using FairPlayCombined.Services.Common;
@@ -53,7 +54,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 genericHttpClient: new HttpClient(),
                 openAIServiceConfiguration: openAIServiceConfiguration,
                 dbContextFactory: dbContextFactory,
-                logger: logger);
+                logger: logger, 
+                userProviderService:new TestUserProviderService());
             string prompt = "Analyze this image";
             byte[] imageBytes = await File.ReadAllBytesAsync(imageToAnalyzeFilePath);
             string imageBase64String= $"data:image/jpg;base64, {Convert.ToBase64String(imageBytes)}";
@@ -97,7 +99,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                 genericHttpClient: new HttpClient(),
                 openAIServiceConfiguration: openAIServiceConfiguration,
                 dbContextFactory: dbContextFactory,
-                logger: logger);
+                logger: logger,
+                userProviderService:new TestUserProviderService());
             var systemMessage = "You will take the role of an expert in Digital Marketing. I will give you the information for one of my videos. Your job is to give me a detailed strategy on how to use the content to grow my audience. You will give me a 1 month Digital Marketing plan to repurpose the video content into LinkedIn. I post at least once a day.";
             var userMessage = $"Video Title: Is Blazor Good For Applications That Handle Millions Of Records Of Data. Video Captions: {VideoCaptions}";
             var result = await openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, CancellationToken.None);
@@ -135,7 +138,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             OpenAIService openAIService = new(httpClient, new HttpClient(),
                 openAIServiceConfiguration,
                 dbContextFactory,
-                logger: logger);
+                logger: logger,
+                userProviderService:new TestUserProviderService());
             var result = await openAIService.GenerateDallE3ImageAsync(prompt: "logo for a Social Network app named FairPlaySocial", cancellationToken: CancellationToken.None);
             Assert.IsNotNull(result);
         }
@@ -171,7 +175,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             OpenAIService openAIService = new(httpClient, new HttpClient(),
                 openAIServiceConfiguration,
                 dbContextFactory,
-                logger:logger);
+                logger:logger,
+                userProviderService:new TestUserProviderService());
             var result = await openAIService.GenerateDallE3ImageAsync(prompt: $"YouTube Thumbnail for video based on the following data. Video Title: Is Blazor Good For Applications That Handle Millions Of Records Of Data. Video Captions: {VideoCaptions}", cancellationToken: CancellationToken.None);
             Assert.IsNotNull(result);
         }

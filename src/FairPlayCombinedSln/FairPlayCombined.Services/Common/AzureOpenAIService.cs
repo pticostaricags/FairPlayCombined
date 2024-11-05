@@ -35,7 +35,7 @@ namespace FairPlayCombined.Services.Common
                 new UserChatMessage($"Video Title: {videoTitle}." +
                     $"Video Captions: {videoCaptions}")
             }, cancellationToken: cancellationToken);
-            var contentResponse = response.Value.Content.ToString();
+            var contentResponse = response.Value.Content[0].Text;
             return contentResponse;
         }
         public async Task<TextModerationResponse?> ModerateTextContentAsync(string text, CancellationToken cancellationToken)
@@ -71,7 +71,7 @@ namespace FairPlayCombined.Services.Common
             }, cancellationToken: cancellationToken);
             try
             {
-                var contentResponse = response.Value.ToString();
+                var contentResponse = response.Value.Content[0].Text;
                 TextModerationResponse? textModerationResponse =
                     JsonSerializer.Deserialize<TextModerationResponse>(contentResponse!);
                 return textModerationResponse;
@@ -114,7 +114,7 @@ namespace FairPlayCombined.Services.Common
                     $"{nameof(TranslationResponse.SourceLocale)}, {nameof(TranslationResponse.DestLocale)}, {nameof(TranslationResponse.TranslatedText)}"),
                 new UserChatMessage(JsonSerializer.Serialize(translationRequest))
             }, cancellationToken: cancellationToken);
-            var contentResponse = response.Value.Content.ToString();
+            var contentResponse = response.Value.Content[0].Text;
             logger.LogInformation("Content Response: {ContentResponse}", contentResponse);
             TranslationResponse? translationResponse =
                 JsonSerializer.Deserialize<TranslationResponse>(contentResponse!);
@@ -134,7 +134,7 @@ namespace FairPlayCombined.Services.Common
                     $"{nameof(TranslationResponse.OriginalText)}, {nameof(TranslationResponse.SourceLocale)}, {nameof(TranslationResponse.DestLocale)}, {nameof(TranslationResponse.TranslatedText)}"),
                 new UserChatMessage(JsonSerializer.Serialize(textsToTranslate))
             }, cancellationToken: cancellationToken);
-            var contentResponse = response.Value.Content.ToString();
+            var contentResponse = response.Value.Content[0].Text;
             TranslationResponse[]? translationResponse =
                 JsonSerializer.Deserialize<TranslationResponse[]>(contentResponse!);
             return translationResponse;

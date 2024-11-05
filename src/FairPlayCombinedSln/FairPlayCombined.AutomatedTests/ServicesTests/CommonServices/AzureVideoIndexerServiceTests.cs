@@ -303,7 +303,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             var getAccessTokenResult = await azureVideoIndexerService
                 .GetAccessTokenForArmAccountAsync(armAccesstoken, CancellationToken.None);
             Assert.IsNotNull(getAccessTokenResult);
-            var fileBytes = File.ReadAllBytes(videoToIndexFullPath!);
+            var fileBytes = await File.ReadAllBytesAsync(videoToIndexFullPath!);
             var result = await azureVideoIndexerService.IndexVideoFromBytesAsync(
                 new IndexVideoFromBytesFormatModel()
                 {

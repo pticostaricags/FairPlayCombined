@@ -34,8 +34,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                     Endpoint = endpoint,
                     Key = key
                 };
-            OpenAIClient openAIClient = new(endpoint: new(endpoint),
-                keyCredential: new Azure.AzureKeyCredential(key));
+            AzureOpenAIClient openAIClient = new(endpoint: new(endpoint),
+                credential: new Azure.AzureKeyCredential(key));
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<AzureOpenAIService>();
             AzureOpenAIService azureOpenAIService = new(openAIClient,
@@ -74,8 +74,8 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
                     Endpoint = endpoint,
                     Key = key
                 };
-            OpenAIClient openAIClient=new(endpoint:new(endpoint),
-                keyCredential:new Azure.AzureKeyCredential(key));
+            AzureOpenAIClient openAIClient=new(endpoint:new(endpoint),
+                credential:new Azure.AzureKeyCredential(key));
             var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
             var logger = loggerFactory!.CreateLogger<AzureOpenAIService>();
             AzureOpenAIService azureOpenAIService = 
