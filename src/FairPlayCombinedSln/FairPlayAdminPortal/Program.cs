@@ -7,7 +7,6 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.Common;
-using FairPlayCombined.Services.AI.Extensions;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlayDating;
@@ -85,8 +84,7 @@ builder.Services.AddTransient<ConfigurationSecretService>();
 builder.Services.AddTransient<OpenAIPromptService>();
 builder.Services.AddTransient<IPromptGeneratorService, PromptGeneratorService>();
 builder.Services.AddTransient<IUserFundsUniqueCodesService, UserFundsUniqueCodesService>();
-builder.AddOpenAIClient();
-builder.AddSemanticKernel();
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

@@ -34,17 +34,17 @@ namespace FairPlayCombined.Services.Extensions
                 return azureOpenAIServiceConfiguration;
             });
 
-            services.AddTransient<OpenAIClient>(sp =>
+            services.AddTransient<AzureOpenAIClient>(sp =>
             {
                 AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration =
                 sp.GetRequiredService<AzureOpenAIServiceConfiguration>();
-                OpenAIClient openAIClient = new(endpoint: new Uri(azureOpenAIServiceConfiguration.Endpoint!),
-                    keyCredential: new Azure.AzureKeyCredential(azureOpenAIServiceConfiguration.Key!));
+                AzureOpenAIClient openAIClient = new(endpoint: new Uri(azureOpenAIServiceConfiguration.Endpoint!),
+                    credential: new Azure.AzureKeyCredential(azureOpenAIServiceConfiguration.Key!));
                 return openAIClient;
             });
             services.AddTransient<IAzureOpenAIService, AzureOpenAIService>(sp =>
             {
-                OpenAIClient openAIClient = sp.GetRequiredService<OpenAIClient>();
+                AzureOpenAIClient openAIClient = sp.GetRequiredService<AzureOpenAIClient>();
                 AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration =
                 sp.GetRequiredService<AzureOpenAIServiceConfiguration>();
                 var logger = sp.GetRequiredService<ILogger<AzureOpenAIService>>();

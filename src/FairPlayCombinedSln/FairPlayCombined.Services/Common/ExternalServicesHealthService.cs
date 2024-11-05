@@ -1,4 +1,6 @@
 ﻿using Azure.AI.OpenAI;
+using OpenAI.Chat;
+using System.Runtime.Serialization;
 
 namespace FairPlayCombined.Services.Common
 {
@@ -11,19 +13,15 @@ namespace FairPlayCombined.Services.Common
             try
             {
                 string systemMessage = "Reply with 'YES'";
-                ChatCompletionsOptions chatCompletionsOptions = new()
-                {
-                    DeploymentName = externalServicesConfigurationModel.AzureOpenDeploymentName,
-                    Messages =
-                {
-                    new ChatRequestSystemMessage(systemMessage)
-                }
-                };
-                var response = await externalServicesConfigurationModel.OpenAIClient!.GetChatCompletionsAsync(
-                chatCompletionsOptions, cancellationToken: cancellationToken);
+                var chatClient = externalServicesConfigurationModel.OpenAIClient!.GetChatClient(externalServicesConfigurationModel.AzureOpenDeploymentName);
+                var chatCompletion = await chatClient.CompleteChatAsync(messages:
+                    new[]
+                    {
+                        new SystemChatMessage(systemMessage)
+                    }, cancellationToken: cancellationToken);
                 var contentResponse =
-                response.Value.Choices[0].Message.Content;
-                azureOpenAIHealth.Response = contentResponse;
+                chatCompletion.Value.Content;
+                azureOpenAIHealth.Response = contentResponse!.ToString();
                 azureOpenAIHealth.IsHealthy = true;
             }
             catch (Exception ex)
@@ -38,7 +36,7 @@ namespace FairPlayCombined.Services.Common
     public class ExternalServicesConfigurationModel
     {
         public string? AzureOpenDeploymentName { get; set; }
-        public Azure.AI.OpenAI.OpenAIClient? OpenAIClient { get; set; }
+        public Azure.AI.OpenAI.AzureOpenAIClient? OpenAIClient { get; set; }
     }
 
     public class ExternalServicesHealthModel

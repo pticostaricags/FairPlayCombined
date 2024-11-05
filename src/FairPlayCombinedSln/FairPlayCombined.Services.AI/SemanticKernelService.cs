@@ -1,7 +1,7 @@
-﻿using Azure.AI.OpenAI;
-using FairPlayCombined.Models.AzureOpenAI;
+﻿using FairPlayCombined.Models.AzureOpenAI;
 using FairPlayCombined.Models.OpenAI;
 using Microsoft.SemanticKernel;
+using OpenAI;
 using System.Text;
 
 namespace FairPlayCombined.Services.AI

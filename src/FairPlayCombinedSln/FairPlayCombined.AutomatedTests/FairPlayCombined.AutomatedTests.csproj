@@ -29,7 +29,7 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.Testing" Version="8.2.0" />
     <PackageReference Include="Azure.AI.ContentSafety" Version="1.0.0" />
-    <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.17" />
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0-beta.2" />
     <PackageReference Include="MessagePack" Version="3.0.238-rc.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.6.2" />
@@ -51,7 +51,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0-rc.2.24473.5" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FairPlayCombined.Services.AI\FairPlayCombined.Services.AI.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.AppHost\FairPlayCombinedSln.AppHost.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
