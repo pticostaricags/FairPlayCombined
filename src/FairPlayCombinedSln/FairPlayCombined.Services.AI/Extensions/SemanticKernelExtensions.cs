@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using OpenAI;
 
 namespace FairPlayCombined.Services.AI.Extensions
 {

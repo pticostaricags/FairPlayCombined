@@ -64,8 +64,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Services.AI", "FairPlayCombined.Services.AI\FairPlayCombined.Services.AI.csproj", "{3BC719E3-8407-4B97-96AC-C61FE2DC0BF3}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FairPlayCombined.Migrations", "FairPlayCombined.Migrations\FairPlayCombined.Migrations.csproj", "{1BAEDFA1-2B3A-4C18-9C38-BFAF2C95D94F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConfigurationTemplates", "ConfigurationTemplates", "{4E91149A-8BA9-45CE-942A-290F4563E402}"
@@ -286,12 +284,6 @@ Global
 		{7A94972A-A31B-4AA8-98F4-55D0A215173E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A94972A-A31B-4AA8-98F4-55D0A215173E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A94972A-A31B-4AA8-98F4-55D0A215173E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3BC719E3-8407-4B97-96AC-C61FE2DC0BF3}.Debug_Enable_Paid_Tests|Any CPU.ActiveCfg = Debug|Any CPU
-		{3BC719E3-8407-4B97-96AC-C61FE2DC0BF3}.Debug_Enable_Paid_Tests|Any CPU.Build.0 = Debug|Any CPU
-		{3BC719E3-8407-4B97-96AC-C61FE2DC0BF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3BC719E3-8407-4B97-96AC-C61FE2DC0BF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3BC719E3-8407-4B97-96AC-C61FE2DC0BF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3BC719E3-8407-4B97-96AC-C61FE2DC0BF3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1BAEDFA1-2B3A-4C18-9C38-BFAF2C95D94F}.Debug_Enable_Paid_Tests|Any CPU.ActiveCfg = Debug|Any CPU
 		{1BAEDFA1-2B3A-4C18-9C38-BFAF2C95D94F}.Debug_Enable_Paid_Tests|Any CPU.Build.0 = Debug|Any CPU
 		{1BAEDFA1-2B3A-4C18-9C38-BFAF2C95D94F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

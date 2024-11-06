@@ -1,15 +1,16 @@
 using Blazored.Toast;
 using FairPlayBudget.Components;
-using FairPlayBudget.Components.Account;
 using FairPlayBudget.Data;
 using FairPlayCombined.Common;
 using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlayBudget;
+using FairPlayCombined.SharedAuth.Components.Account;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +81,7 @@ builder.Services.AddTransient<ICultureService, CultureService>();
 builder.Services.AddTransient<MonthlyBudgetInfoService>();
 builder.Services.AddTransient<CurrencyService>();
 builder.Services.AddTransient<BalanceService>();
+builder.Services.AddTransient<ICustomCache, CustomCache>();
 
 var app = builder.Build();
 
@@ -110,7 +112,8 @@ using var ctx = scope.ServiceProvider.GetRequiredService<FairPlayCombinedDbConte
 await app.UseDatabaseDrivenLocalization();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(FairPlayBudget.UIConfiguration.AdditionalSetup.AdditionalAssemblies);
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();

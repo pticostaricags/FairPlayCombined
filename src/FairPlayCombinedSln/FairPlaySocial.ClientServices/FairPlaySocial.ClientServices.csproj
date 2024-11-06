@@ -6,18 +6,19 @@
     <Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.12.0" />
-    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.9.11" />
-    <PackageReference Include="Microsoft.Kiota.Authentication.Azure" Version="1.9.11" />
-    <PackageReference Include="Microsoft.Kiota.Http.HttpClientLibrary" Version="1.9.11" />
-    <PackageReference Include="Microsoft.Kiota.Serialization.Form" Version="1.9.11" />
-    <PackageReference Include="Microsoft.Kiota.Serialization.Json" Version="1.9.11" />
-    <PackageReference Include="Microsoft.Kiota.Serialization.Multipart" Version="1.9.11" />
-    <PackageReference Include="Microsoft.Kiota.Serialization.Text" Version="1.9.11" />
+    <PackageReference Include="Azure.Identity" Version="1.13.1" />
+    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.13.2" />
+    <PackageReference Include="Microsoft.Kiota.Authentication.Azure" Version="1.13.2" />
+    <PackageReference Include="Microsoft.Kiota.Http.HttpClientLibrary" Version="1.13.2" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Form" Version="1.13.2" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Json" Version="1.13.2" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Multipart" Version="1.13.2" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Text" Version="1.13.2" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Text.Json" Version="9.0.0-rc.2.24473.5" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="FairPlaySocialClient.cs">

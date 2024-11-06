@@ -27,30 +27,30 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.Testing" Version="8.2.0" />
+    <PackageReference Include="Aspire.Hosting.Testing" Version="9.0.0-rc.1.24511.1" />
     <PackageReference Include="Azure.AI.ContentSafety" Version="1.0.0" />
-    <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.17" />
-    <PackageReference Include="MessagePack" Version="2.5.187" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.5.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.5.0" />
-    <PackageReference Include="Microsoft.Playwright.MSTest" Version="1.45.1" />
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0-beta.2" />
+    <PackageReference Include="MessagePack" Version="3.0.238-rc.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.6.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.6.2" />
+    <PackageReference Include="Microsoft.Playwright.MSTest" Version="1.48.0" />
     <PackageReference Include="coverlet.collector" Version="6.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NBomber" Version="5.7.0" />
+    <PackageReference Include="NBomber" Version="5.8.1" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
 	<PackageReference Include="System.Net.Http" Version="4.3.4" />
+	<PackageReference Include="System.Text.Json" Version="9.0.0-rc.2.24473.5" />
 	<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <PackageReference Include="Testcontainers.MsSql" Version="3.9.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0-preview.6.24327.7" />
+    <PackageReference Include="Testcontainers.MsSql" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0-rc.2.24473.5" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FairPlayCombined.Services.AI\FairPlayCombined.Services.AI.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.AppHost\FairPlayCombinedSln.AppHost.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />

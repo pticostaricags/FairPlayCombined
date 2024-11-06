@@ -9,11 +9,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Faker.Net" Version="2.0.163" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0-preview.6.24327.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0-rc.2.24473.5" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Text.Json" Version="9.0.0-rc.2.24473.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />

@@ -2,12 +2,13 @@
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Models.AzureOpenAI;
 using Microsoft.Extensions.Logging;
+using OpenAI.Chat;
 using OpenTelemetry.Logs;
 using System.Text.Json;
 
 namespace FairPlayCombined.Services.Common
 {
-    public class AzureOpenAIService(OpenAIClient openAIClient,
+    public class AzureOpenAIService(AzureOpenAIClient openAIClient,
         AzureOpenAIServiceConfiguration azureOpenAIServiceConfiguration,
         ILogger<AzureOpenAIService> logger) : IAzureOpenAIService
     {
@@ -27,20 +28,14 @@ namespace FairPlayCombined.Services.Common
             {
                 systemMessage = $"{systemMessage}. Add 5 {articleMood} jokes around the article.";
             }
-            ChatCompletionsOptions chatCompletionsOptions = new()
+            var chatClient = openAIClient.GetChatClient(azureOpenAIServiceConfiguration.DeploymentName);
+            var response = await chatClient.CompleteChatAsync(messages: new ChatMessage[]
             {
-                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
-                Messages =
-                {
-                    new ChatRequestSystemMessage(systemMessage),
-                    new ChatRequestUserMessage($"Video Title: {videoTitle}." +
+                new SystemChatMessage(systemMessage),
+                new UserChatMessage($"Video Title: {videoTitle}." +
                     $"Video Captions: {videoCaptions}")
-                }
-            };
-            var response = await openAIClient.GetChatCompletionsAsync(
-                chatCompletionsOptions, cancellationToken: cancellationToken);
-            var contentResponse =
-            response.Value.Choices[0].Message.Content;
+            }, cancellationToken: cancellationToken);
+            var contentResponse = response.Value.Content[0].Text;
             return contentResponse;
         }
         public async Task<TextModerationResponse?> ModerateTextContentAsync(string text, CancellationToken cancellationToken)
@@ -62,39 +57,23 @@ namespace FairPlayCombined.Services.Common
                 TextModerated = "Text moderated"
             };
             string jsonRequest = JsonSerializer.Serialize(textModerationRequest);
-            ChatCompletionsOptions chatCompletionsOptions = new()
+            var chatClient = openAIClient.GetChatClient(azureOpenAIServiceConfiguration.DeploymentName);
+            var response = await chatClient.CompleteChatAsync(messages: new ChatMessage[]
             {
-                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
-                Messages =
-                {
-                    new ChatRequestSystemMessage("You are an expert content moderator. " +
+                new SystemChatMessage("You are an expert content moderator. " +
                     "Your jobs is to restrict text containing personal inormaton and any kind of gross content." +
                     "My requests will be in json format with the following properties:" +
                     $"{jsonRequest}" +
                     "Your responses must be in json format with the propertie I'll give you." +
                     "Avoid adding the ```json separators, give me only the json. Properties:" +
                     $"{JsonSerializer.Serialize(textModerationResponseSkeleton)}"),
-                    new ChatRequestUserMessage(jsonRequest)
-                }
-            };
+                new UserChatMessage(jsonRequest)
+            }, cancellationToken: cancellationToken);
             try
             {
-                var response = await openAIClient.GetChatCompletionsAsync(
-                    chatCompletionsOptions, cancellationToken: cancellationToken);
-                var contentResponse =
-                response.Value.Choices[0].Message.Content;
-                if (contentResponse is null)
-                {
-                    var filter = response.Value.PromptFilterResults[0];
-                    return new TextModerationResponse()
-                    {
-                        IsSexuallyExplicit = filter.ContentFilterResults.Sexual.Severity == ContentFilterSeverity.High,
-                        IsSexuallySuggestive = filter.ContentFilterResults.Sexual.Severity != ContentFilterSeverity.High,
-                        IsOffensive = filter.ContentFilterResults.Hate.Severity != ContentFilterSeverity.Safe
-                    };
-                }
+                var contentResponse = response.Value.Content[0].Text;
                 TextModerationResponse? textModerationResponse =
-                    JsonSerializer.Deserialize<TextModerationResponse>(contentResponse);
+                    JsonSerializer.Deserialize<TextModerationResponse>(contentResponse!);
                 return textModerationResponse;
             }
             catch (Azure.RequestFailedException ex)
@@ -125,51 +104,39 @@ namespace FairPlayCombined.Services.Common
                 SourceLocale = sourceLocale,
                 DestLocale = destLocale
             };
-            ChatCompletionsOptions chatCompletionsOptions = new()
+            var chatClient = openAIClient.GetChatClient(azureOpenAIServiceConfiguration.DeploymentName);
+            var response = await chatClient.CompleteChatAsync(messages: new ChatMessage[]
             {
-                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
-                Messages =
-                {
-                    new ChatRequestSystemMessage("You are an expert translator. Your jobs is to translate the text I give you." +
+                new SystemChatMessage("You are an expert translator. Your jobs is to translate the text I give you." +
                     "My requests will be in json format with the following properties:" +
                     $"{nameof(TranslationRequest.OriginalText)}, {nameof(TranslationRequest.SourceLocale)}, {nameof(TranslationRequest.DestLocale)}" +
                     "Your responses must be in json format, in UTF-8, with the properties I'll give you. Return the json only, avoid adding the code block indicator ```json. JSON properties:" +
                     $"{nameof(TranslationResponse.SourceLocale)}, {nameof(TranslationResponse.DestLocale)}, {nameof(TranslationResponse.TranslatedText)}"),
-                    new ChatRequestUserMessage(JsonSerializer.Serialize(translationRequest))
-                }
-            };
-            var response = await openAIClient.GetChatCompletionsAsync(
-                chatCompletionsOptions, cancellationToken: cancellationToken);
-            var contentResponse =
-            response.Value.Choices[0].Message.Content;
+                new UserChatMessage(JsonSerializer.Serialize(translationRequest))
+            }, cancellationToken: cancellationToken);
+            var contentResponse = response.Value.Content[0].Text;
             logger.LogInformation("Content Response: {ContentResponse}", contentResponse);
             TranslationResponse? translationResponse =
-                JsonSerializer.Deserialize<TranslationResponse>(contentResponse);
+                JsonSerializer.Deserialize<TranslationResponse>(contentResponse!);
             return translationResponse;
         }
 
         public async Task<TranslationResponse[]?> TranslateMultipleTextsAsync(
             TranslationRequest[] textsToTranslate, CancellationToken cancellationToken)
         {
-            ChatCompletionsOptions chatCompletionsOptions = new()
+            var chatClient = openAIClient.GetChatClient(azureOpenAIServiceConfiguration.DeploymentName);
+            var response = await chatClient.CompleteChatAsync(messages: new ChatMessage[]
             {
-                DeploymentName = azureOpenAIServiceConfiguration.DeploymentName,
-                Messages =
-                {
-                    new ChatRequestSystemMessage("You are an expert translator. Your jobs is to translate the text I give you." +
+                new SystemChatMessage("You are an expert translator. Your jobs is to translate the text I give you." +
                     "My requests will be in json format with the following properties:" +
                     $"{nameof(TranslationRequest.OriginalText)}, {nameof(TranslationRequest.SourceLocale)}, {nameof(TranslationRequest.DestLocale)}" +
                     "Your responses must be in json format with the following properties:" +
                     $"{nameof(TranslationResponse.OriginalText)}, {nameof(TranslationResponse.SourceLocale)}, {nameof(TranslationResponse.DestLocale)}, {nameof(TranslationResponse.TranslatedText)}"),
-                    new ChatRequestUserMessage(JsonSerializer.Serialize(textsToTranslate))
-                }
-            };
-            var response = await openAIClient.GetChatCompletionsAsync(
-                chatCompletionsOptions, cancellationToken: cancellationToken);
-            var contentResponse =
-            response.Value.Choices[0].Message.Content;
+                new UserChatMessage(JsonSerializer.Serialize(textsToTranslate))
+            }, cancellationToken: cancellationToken);
+            var contentResponse = response.Value.Content[0].Text;
             TranslationResponse[]? translationResponse =
-                JsonSerializer.Deserialize<TranslationResponse[]>(contentResponse);
+                JsonSerializer.Deserialize<TranslationResponse[]>(contentResponse!);
             return translationResponse;
         }
     }

@@ -1,3 +1,4 @@
+using FairPlayCombined.Common;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
@@ -35,7 +36,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
                 var geoNamesServiceLogger = loggerFactory.CreateLogger<GeoNamesService>();
                 GeoNamesService geoNamesService = new(httpClient, geoNamesServiceLogger);
                 List<geodata> geoDataCollection = [];
-                await PreparerandomLocations(logger, geoNamesService, geoDataCollection);
+                await PrepareRandomLocations(logger, geoNamesService, geoDataCollection);
                 int itemsCount = 5000;
                 var geoDataArray = geoDataCollection.ToArray();
                 for (int i = 0; i < itemsCount; i++)
@@ -125,6 +126,11 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
             Name = Faker.Name.First(),
             Lastname = Faker.Name.Last()
         };
+        var applicationName = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Name;
+        entity.SourceApplication = applicationName;
+        entity.RowCreationDateTime = DateTimeOffset.UtcNow;
+        entity.RowCreationUser = entity.UserName!;
+        entity.OriginatorIpaddress = String.Join(",", IpAddressProvider.GetCurrentHostIPv4AddressesAsync().Result);
         var randomActivities = Random.Shared.GetItems<Activity>(allActivities, 1);
         foreach (var activity in randomActivities)
         {
@@ -185,7 +191,7 @@ public class TestDataGenerator(ILogger<TestDataGenerator> logger,
         return (allMalesPhotosPaths, allFemalesPhotosPaths);
     }
 
-    private static async Task PreparerandomLocations(ILogger<TestDataGenerator> logger, GeoNamesService geoNamesService, List<geodata> geoDataCollection)
+    private static async Task PrepareRandomLocations(ILogger<TestDataGenerator> logger, GeoNamesService geoNamesService, List<geodata> geoDataCollection)
     {
         for (int i = 0; i < 50; i++)
         {

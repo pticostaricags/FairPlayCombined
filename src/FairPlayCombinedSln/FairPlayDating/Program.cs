@@ -8,8 +8,8 @@ using FairPlayCombined.Interfaces.FairPlayDating;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlayDating;
+using FairPlayCombined.SharedAuth.Components.Account;
 using FairPlayDating.Components;
-using FairPlayDating.Components.Account;
 using FairPlayDating.Data;
 using FairPlayDating.HealthChecks;
 using FairPlayDating.Services;
@@ -127,7 +127,8 @@ app.UseAntiforgery();
 await app.UseDatabaseDrivenLocalization();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(FairPlayDating.UIConfiguration.AdditionalSetup.AdditionalAssemblies);
 
 app.MapControllers();
 
