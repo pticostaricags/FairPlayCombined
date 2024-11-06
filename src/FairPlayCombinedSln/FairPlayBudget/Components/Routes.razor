@@ -1,5 +1,7 @@
-﻿@using FairPlayBudget.Components.Account.Shared
-<Router AppAssembly="@typeof(Program).Assembly">
+﻿@using FairPlayBudget.UIConfiguration
+@using FairPlayCombined.SharedAuth.Components.Account.Shared
+
+<Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="AdditionalSetup.AdditionalAssemblies">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
             <NotAuthorized>
