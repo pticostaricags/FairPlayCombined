@@ -1,6 +1,6 @@
-﻿namespace FairPlayCombined.Models.AzureMaps.SearchByPOICategory
+﻿#pragma warning disable S101 // Types should be named in PascalCase
+namespace FairPlayCombined.Models.AzureMaps.SearchByPOICategory
 {
-
     public class SearchByPOICategoryResponse
     {
         public Summary? summary { get; set; }
@@ -134,3 +134,4 @@
     }
 
 }
+#pragma warning restore S101 // Types should be named in PascalCase

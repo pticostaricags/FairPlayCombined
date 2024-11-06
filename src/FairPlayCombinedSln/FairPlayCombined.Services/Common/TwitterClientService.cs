@@ -1,4 +1,5 @@
-﻿using FairPlayCombined.DataAccess.Data;
+﻿#pragma warning disable S1075 // URIs should not be hardcoded
+using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -52,3 +53,4 @@ namespace FairPlayCombined.Services.Common
     }
 
 }
+#pragma warning restore S1075 // URIs should not be hardcoded
