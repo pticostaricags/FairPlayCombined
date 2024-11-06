@@ -37,10 +37,8 @@ public partial class Contact
     [StringLength(50)]
     public string EmailAddress { get; set; }
 
-    [StringLength(50)]
     public string LinkedInProfileUrl { get; set; }
 
-    [StringLength(50)]
     public string YouTubeChannelUrl { get; set; }
 
     public string InstagramUrl { get; set; }
