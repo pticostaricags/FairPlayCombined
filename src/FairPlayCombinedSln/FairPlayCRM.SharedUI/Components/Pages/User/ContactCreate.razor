@@ -85,6 +85,10 @@
         </FluentTextField>
     </div>
     <div>
+        <FluentLabel Typo="Typography.Body">Notes</FluentLabel>
+        <FluentTextArea @bind-Value="@this.createContactModel.Notes" Style="width:100%;" Rows="10"></FluentTextArea>
+    </div>
+    <div>
         <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Save</FluentButton>
     </div>
 </FluentEditForm>

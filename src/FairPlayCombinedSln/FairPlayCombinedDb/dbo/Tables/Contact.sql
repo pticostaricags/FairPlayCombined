@@ -12,6 +12,7 @@
     [BusinessPhoneNumber] NVARCHAR(50) NULL, 
     [MobilePhoneNumber] NVARCHAR(50) NULL, 
     [BirthDate] DATETIMEOFFSET NULL, 
+    [Notes] NVARCHAR(MAX) NULL, 
     CONSTRAINT [FK_Contact_AspNetUsers] FOREIGN KEY ([OwnerApplicationUserId]) REFERENCES [AspNetUsers]([Id])
 )
 

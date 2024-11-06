@@ -21,5 +21,6 @@ namespace FairPlayCombined.Models.Common.Contact
         public string? BusinessPhoneNumber { get; set; }
         public string? MobilePhoneNumber { get; set; }
         public DateTimeOffset? BirthDate { get; set; }
+        public string? Notes { get; set; }
     }
 }

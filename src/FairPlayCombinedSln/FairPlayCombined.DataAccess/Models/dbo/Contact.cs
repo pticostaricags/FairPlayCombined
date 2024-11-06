@@ -56,6 +56,8 @@ public partial class Contact
 
     public DateTimeOffset? BirthDate { get; set; }
 
+    public string Notes { get; set; }
+
     [InverseProperty("PrimaryContact")]
     public virtual ICollection<Company> Company { get; set; } = new List<Company>();
 
