@@ -40,5 +40,6 @@ namespace FairPlayCombined.Models.Common.Contact
         [Required]
         [StringLength(450)]
         public string? OwnerApplicationUserId { get; set; }
+        public string? Notes { get; set; }
     }
 }
