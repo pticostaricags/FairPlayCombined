@@ -16,6 +16,7 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0-rc.1.24511.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.0-rc.2.24474.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0-rc.2.24474.3" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
@@ -28,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FairPlayCombined.Migrations\FairPlayCombined.Migrations.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.SharedAuth\FairPlayCombined.SharedAuth.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>

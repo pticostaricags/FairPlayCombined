@@ -10,7 +10,6 @@ using FairPlayCombined.Models.LinkedInAuth;
 using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
-using FairPlayCombined.Shared.CustomLocalization.EF;
 using FairPlayCombined.SharedAuth.Components.Account;
 using FairPlayCombined.SharedAuth.Extensions;
 using FairPlayTube.Components;
@@ -29,10 +28,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Processing;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.IO.Compression;
 using System.Reflection;
 
