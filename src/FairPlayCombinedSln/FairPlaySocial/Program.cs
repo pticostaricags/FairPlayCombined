@@ -10,9 +10,9 @@ using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.Post;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
+using FairPlayCombined.SharedAuth.Components.Account;
 using FairPlaySocial.ClientServices;
 using FairPlaySocial.Components;
-using FairPlaySocial.Components.Account;
 using FairPlaySocial.Data;
 using FairPlaySocial.MinimalApiEndpoints;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -129,7 +129,8 @@ app.UseAntiforgery();
 await app.UseDatabaseDrivenLocalization();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(FairPlaySocial.UIConfiguration.AdditionalSetup.AdditionalAssemblies);
 
 app.MapControllers();
 // Add additional endpoints required by the Identity /Account Razor components.

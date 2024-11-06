@@ -1,5 +1,6 @@
-﻿@using FairPlaySocial.Components.Account.Shared
-<Router AppAssembly="@typeof(Program).Assembly">
+﻿@using FairPlayCombined.SharedAuth.Components.Account.Shared
+@using FairPlaySocial.UIConfiguration
+<Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="AdditionalSetup.AdditionalAssemblies">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
             <NotAuthorized>
