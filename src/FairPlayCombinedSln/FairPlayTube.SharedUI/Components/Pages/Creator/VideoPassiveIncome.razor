@@ -1,5 +1,5 @@
 ﻿@page "/Creator/VideoPassiveIncome/{VideoInfoId:long}"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -13,24 +13,13 @@
 @using System.Globalization
 @using FairPlayTube.SharedUI.Components.Video
 
-@inject IJSRuntime jsRuntime
-@inject IVideoInfoService videoInfoService
-@inject IUserProviderService userProviderService
-@inject IOpenAIService openAIService
-@inject IVideoCaptionsService videoCaptionsService
-@inject IVideoDigitalMarketingPlanService videoDigitalMarketingPlanService
-@inject IPromptGeneratorService promptGeneratorService
-@inject IVideoPassiveIncomeIdeaService videoPassiveIncomeIdeaService
-@inject ICustomCache customCache
-@inject ICultureService cultureService
-@inject IToastService toastService
 
 <PageTitle>
-    Video Passive Income
+    @Localizer![VideoPassiveIncomeTextKey]
 </PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    Video Passive Income
+    @Localizer![VideoPassiveIncomeTextKey]
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -45,14 +34,14 @@
 }
 
 <div>
-    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@supportedCultures"
+    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@SupportedCultures"
     Embedded="true">
         <OptionTemplate>@context!.DisplayName</OptionTemplate>
     </FluentSelect>
 </div>
 <div>
     <FluentButton Type="ButtonType.Button" OnClick="OnCreatePassiveIncomeIdeaButtonClickedAsync">
-        Create Passive Income Idea
+        @Localizer![CreatePassiveIncomeIdeaTextKey]
     </FluentButton>
 </div>
 <div>
@@ -68,75 +57,3 @@
         }
     }
 </div>
-
-@code
-{
-    [Parameter]
-    public long? VideoInfoId { get; set; }
-    private VideoInfoModel? VideoInfoModel { get; set; }
-    private CultureInfo[]? supportedCultures { get; set; }
-    private CultureInfo? SelectedCulture { get; set; }
-    private bool IsBusy { get; set; }
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private List<string>? PassiveIncomeIdeas { get; set; }
-    private string? RevisedPrompt { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadDataAsync();
-    }
-
-    private async Task LoadDataAsync()
-    {
-        this.IsBusy = true;
-        StateHasChanged();
-        this.VideoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
-        var items = await this.customCache!.GetOrCreateAsync<string[]>(
-                key: nameof(this.supportedCultures),
-                retrieveDataTask: async () =>
-                {
-                    var data = (await this.cultureService!
-                        .GetSupportedCultures(this.cancellationTokenSource.Token));
-                    return data;
-                },
-                expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
-                this.cancellationTokenSource.Token);
-        this.supportedCultures ??= items
-        .Select(p => new CultureInfo(p))
-        .OrderBy(p => p.DisplayName)
-        .ToArray();
-        this.SelectedCulture ??= CultureInfo.CurrentCulture;
-        this.PassiveIncomeIdeas = (await this.videoPassiveIncomeIdeaService
-        .GetVideoPassiveIncomeIdeasAsync(
-            videoInfoId: this.VideoInfoId!.Value!,
-            cancellationToken: this.cancellationTokenSource.Token))?.ToList();
-        this.IsBusy = false;
-        StateHasChanged();
-    }
-
-    private async Task OnCreatePassiveIncomeIdeaButtonClickedAsync()
-    {
-        try
-        {
-            this.IsBusy = true;
-            StateHasChanged();
-            var result = await this.videoPassiveIncomeIdeaService.CreateVideoPassiveIncomeIdeaAsync(
-            this.VideoInfoId!.Value, this.SelectedCulture!.DisplayName!, this.cancellationTokenSource.Token);
-            this.PassiveIncomeIdeas?.Insert(0, result);
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-        finally
-        {
-            this.IsBusy = false;
-            StateHasChanged();
-        }
-    }
-
-    void IDisposable.Dispose()
-    {
-        this.cancellationTokenSource.Dispose();
-    }
-}
