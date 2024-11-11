@@ -1,5 +1,5 @@
 ﻿@attribute [Route($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.VideoDailyPosts}/{{VideoInfoId:long}}")]
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -12,25 +12,18 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoDigitalMarketingDailyPosts
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
+@using FairPlayTube.SharedUI.Components.Paginators
 @using FairPlayTube.SharedUI.Components.Spinners
 @using System.Text
 @using System.Globalization
 @using FairPlayTube.SharedUI.Components.Video
 
-
-@inject IJSRuntime jsRuntime
-@inject IVideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
-@inject IToastService toastService
-@inject ICustomCache customCache
-@inject ICultureService cultureService
-@inject IVideoInfoService videoInfoService
-
 <PageTitle>
-    Video Daily Posts
+    @Localizer![VideoDailyPostsTextKey]
 </PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    Video Daily Posts
+    @Localizer![VideoDailyPostsTextKey]
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -45,7 +38,7 @@
 }
 
 <div>
-    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@supportedCultures"
+    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@SupportedCultures"
     Embedded="true">
         <OptionTemplate>@context!.DisplayName</OptionTemplate>
     </FluentSelect>
@@ -58,7 +51,7 @@
 </div>
 <div>
     <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-    OnClick="OnCreateVideoDailyPostAsync">Create Video Daily Posts</FluentButton>
+    OnClick="OnCreateVideoDailyPostAsync">@Localizer![CreateVideoDailyPostsTextKey]</FluentButton>
 </div>
 
 @if (this.ItemsProvider != null)
@@ -72,7 +65,7 @@
             </FluentAccordion>
         </TemplateColumn>
     </FluentDataGrid>
-    <FluentPaginator State="@this.paginationState"></FluentPaginator>
+    <CustomFluentPaginator State="@this.paginationState"></CustomFluentPaginator>
 }
 
 <div>
@@ -83,131 +76,3 @@
         </p>
     }
 </div>
-
-@code
-{
-    [Parameter]
-    public long? VideoInfoId { get; set; }
-    private VideoInfoModel? VideoInfoModel { get; set; }
-    private bool IsBusy { get; set; }
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private string? DigitalMarketingDailyPostsIdeas { get; set; }
-    private string? RevisedPrompt { get; set; }
-    private GridItemsProvider<VideoDigitalMarketingDailyPostsModel>? ItemsProvider { get; set; }
-    private readonly PaginationState paginationState = new()
-        {
-            ItemsPerPage = Constants.Pagination.PageSize
-        };
-
-    private CultureInfo[]? supportedCultures { get; set; }
-    private CultureInfo? SelectedCulture { get; set; }
-    private string? SelectedSocialNetwork { get; set; } = "LinkedIn";
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadDataAsync();
-    }
-
-    protected async Task LoadDataAsync()
-    {
-        try
-        {
-            this.IsBusy = true;
-            StateHasChanged();
-            this.VideoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
-            var items = await this.customCache!.GetOrCreateAsync<string[]>(
-                key: nameof(this.supportedCultures),
-                retrieveDataTask: async () =>
-                {
-                    var data = (await this.cultureService!
-                        .GetSupportedCultures(this.cancellationTokenSource.Token));
-                    return data;
-                },
-                expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
-                this.cancellationTokenSource.Token);
-            this.supportedCultures ??= items
-            .Select(p => new CultureInfo(p))
-            .OrderBy(p => p.DisplayName)
-            .ToArray();
-            this.SelectedCulture ??= CultureInfo.CurrentCulture;
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-        finally
-        {
-            this.IsBusy = false;
-            StateHasChanged();
-        }
-        if (ItemsProvider is null)
-        {
-            ItemsProvider = async req =>
-            {
-                this.IsBusy = true;
-                StateHasChanged();
-                PaginationRequest paginationRequest = new()
-                    {
-                        PageSize = Constants.Pagination.PageSize,
-                        StartIndex = req.StartIndex,
-                        SortingItems = new SortingItem[]
-                    {
-                        new SortingItem()
-                        {
-                            PropertyName=nameof(VideoDigitalMarketingDailyPostsModel.VideoDigitalMarketingDailyPostsId),
-                            SortType= SortType.Descending
-                        }
-                    }
-                    };
-                var items = await this.videoDigitalMarketingDailyPostsService
-                .GetPaginatedVideoDigitalMarketingDailyPostsByVideoInfoIdAsync(
-                    this.VideoInfoId!.Value, paginationRequest, this.cancellationTokenSource.Token);
-                var result = GridItemsProviderResult.From(items!.Items!,
-                items.TotalItems);
-                this.IsBusy = false;
-                StateHasChanged();
-                return result;
-            };
-        }
-    }
-
-    private async Task OnCreateVideoDailyPostAsync()
-    {
-        try
-        {
-            this.IsBusy = true;
-            StateHasChanged();
-            switch (this.SelectedSocialNetwork)
-            {
-                case "LinkedIn":
-                    this.DigitalMarketingDailyPostsIdeas =
-                await this.videoDigitalMarketingDailyPostsService
-                .CreateVideoDigitalMarketingDailyPostsForLinkedInAsync(this.VideoInfoId!.Value,
-                    $"{this.SelectedCulture!.DisplayName}({this.SelectedCulture.Name})", this.cancellationTokenSource.Token);
-                    break;
-                case "X":
-                    this.DigitalMarketingDailyPostsIdeas =
-                await this.videoDigitalMarketingDailyPostsService
-                .CreateVideoDigitalMarketingDailyPostsForTwitterAsync(this.VideoInfoId!.Value,
-                    $"{this.SelectedCulture!.DisplayName}({this.SelectedCulture.Name})", this.cancellationTokenSource.Token);
-                    break;
-            }
-            await this.paginationState.SetCurrentPageIndexAsync(
-                    this.paginationState.CurrentPageIndex);
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-        finally
-        {
-            this.IsBusy = false;
-            StateHasChanged();
-        }
-    }
-
-    void IDisposable.Dispose()
-    {
-        this.cancellationTokenSource.Dispose();
-    }
-}
