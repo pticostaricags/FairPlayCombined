@@ -1,5 +1,5 @@
 ﻿@page "/Creator/VideoLinkedInArticle/{VideoInfoId:long}"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -12,21 +12,12 @@
 @using FairPlayTube.SharedUI.Components.Spinners
 @using FairPlayTube.SharedUI.Components.Video
 
-@inject IJSRuntime jsRuntime
-@inject IVideoInfoService videoInfoService
-@inject IUserProviderService userProviderService
-@inject IOpenAIService openAIService
-@inject IVideoCaptionsService videoCaptionsService
-@inject IVideoDigitalMarketingPlanService videoDigitalMarketingPlanService
-@inject IPromptGeneratorService promptGeneratorService
-@inject IToastService toastService
-
 <PageTitle>
-    Video Article
+    @Localizer![VideoArticleTextKey]
 </PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    Video Article
+    @Localizer![VideoArticleTextKey]
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -41,7 +32,7 @@
 }
 
 <FluentButton Type="ButtonType.Button" OnClick="CreateLinkedInArticleAsync">
-    Re-Create Article
+    @Localizer![ReCreateArticleTextKey]
 </FluentButton>
 
 <div>
@@ -52,58 +43,3 @@
         </p>
     }
 </div>
-
-@code
-{
-    [Parameter]
-    public long? VideoInfoId { get; set; }
-    private VideoInfoModel? VideoInfoModel { get; set; }
-    private bool IsBusy { get; set; }
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private string? LinkedInArticleDraftText { get; set; }
-    private string? RevisedPrompt { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadDataAsync();
-    }
-
-    private async Task LoadDataAsync()
-    {
-        this.VideoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(this.VideoInfoId!.Value, this.cancellationTokenSource.Token);
-        await this.CreateLinkedInArticleAsync();
-    }
-
-    private async Task CreateLinkedInArticleAsync()
-    {
-        try
-        {
-            this.IsBusy = true;
-            StateHasChanged();
-            var videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-            cancellationToken: this.cancellationTokenSource.Token);
-            var englishCaptions = await this.videoCaptionsService
-            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-            var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
-                Constants.PromptsNames.CreateVideoLinkedInArticle, cancellationToken: this.cancellationTokenSource.Token);
-            var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-            var result = await this.openAIService.GenerateChatCompletionAsync(promptInfo!.BaseText!, userMessage, this.cancellationTokenSource.Token);
-            this.LinkedInArticleDraftText = result!.choices![0]!.message!.content!;
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-        finally
-        {
-            this.IsBusy = false;
-            StateHasChanged();
-        }
-    }
-
-    void IDisposable.Dispose()
-    {
-        this.cancellationTokenSource.Dispose();
-    }
-}
