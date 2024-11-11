@@ -16,7 +16,7 @@ namespace FairPlayCombined.Services.Extensions
     {
         public static void AddOpenAI(this WebApplicationBuilder builder)
         {
-            builder.Services.AddTransient<OpenAIServiceConfiguration>(sp => 
+            builder.Services.AddSingleton<OpenAIServiceConfiguration>(sp => 
             {
                 IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory =
                 sp.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();

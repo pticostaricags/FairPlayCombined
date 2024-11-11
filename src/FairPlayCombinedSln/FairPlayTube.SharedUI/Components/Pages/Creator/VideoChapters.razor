@@ -1,5 +1,5 @@
 ﻿@page "/Creator/VideoChapters/{VideoInfoId:long}"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -11,25 +11,19 @@
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
 
-@inject IJSRuntime jsRuntime
-@inject IVideoInfoService videoInfoService
-@inject IUserProviderService userProviderService
-@inject IOpenAIService openAIService
-@inject IVideoCaptionsService videoCaptionsService
-
 <PageTitle>
-    Video Chapters @(videoInfoModel != null ? $"- {videoInfoModel.Name}" : String.Empty)
+    @Localizer![VideoChaptersTextKey] @(VideoInfoModel != null ? $"- {VideoInfoModel.Name}" : String.Empty)
 </PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    Video Chapters @(videoInfoModel != null ? $"- {videoInfoModel.Name}" : String.Empty)
+    @Localizer![VideoChaptersTextKey] @(VideoInfoModel != null ? $"- {VideoInfoModel.Name}" : String.Empty)
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <div>
     <FluentButton Type="ButtonType.Button" OnClick="OnRecreatePlanButtonclickedAsync">
-        Re-Create Chapters
+        @Localizer![ReCreateChaptersTextKey]
     </FluentButton>
 </div>
 <div>
@@ -40,54 +34,3 @@
         </p>
     }
 </div>
-
-@code
-{
-    [Parameter]
-    public long? VideoInfoId { get; set; }
-    private VideoInfoModel? videoInfoModel { get; set; }
-    private bool IsBusy { get; set; }
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private string? YouTubeChapters { get; set; }
-    private string? RevisedPrompt { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        this.IsBusy = true;
-        StateHasChanged();
-        this.videoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        StateHasChanged();
-        await this.GenerateYouTubeChaptersAsync(videoInfoModel);
-        this.IsBusy = false;
-        StateHasChanged();
-    }
-
-    private async Task OnRecreatePlanButtonclickedAsync()
-    {
-        this.IsBusy = true;
-        StateHasChanged();
-        await this.GenerateYouTubeChaptersAsync(this.videoInfoModel!);
-        this.IsBusy = false;
-        StateHasChanged();
-    }
-
-    private async Task GenerateYouTubeChaptersAsync(VideoInfoModel videoInfoModel)
-    {
-        var englishCaptions = await this.videoCaptionsService
-            .GetVideoCaptionsByVideoInfoIdAndLanguageAsync(videoInfoId: videoInfoModel.VideoInfoId,
-            language: "en-US", cancellationToken: this.cancellationTokenSource.Token);
-        var systemMessage = "You will take the role of an expert in YouTube SEO. I will give you the information for one of my videos. Your job is to generate the repective YouTube Chapters, timestamp must be in format: hh:mm:ss, do not add milliseconds, always start with 00:00:00. Return them as an HTML 5 bullet list.";
-        var userMessage = $"Video Title: {videoInfoModel.Description}. Video Captions: {englishCaptions}";
-        var result = await this.openAIService.GenerateChatCompletionAsync(systemMessage, userMessage, this.cancellationTokenSource.Token);
-        if (result != null)
-        {
-            this.YouTubeChapters = result!.choices![0]!.message!.content!;
-        }
-    }
-
-    void IDisposable.Dispose()
-    {
-        this.cancellationTokenSource.Dispose();
-    }
-}
