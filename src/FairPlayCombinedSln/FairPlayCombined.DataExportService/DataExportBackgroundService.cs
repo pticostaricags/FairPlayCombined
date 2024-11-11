@@ -37,7 +37,7 @@ public class DataExportBackgroundService(ILogger<DataExportBackgroundService> lo
                     var queueQuery = dbContext.UserDataExportQueue
                         .Where(p => !p.IsCompleted)
                         .Include(p => p.ApplicationUser);
-                    if (await queueQuery.AnyAsync(stoppingToken))
+                    if (await queueQuery!.AnyAsync(stoppingToken))
                     {
                         foreach (var singleEnqueuedItem in queueQuery)
                         {
