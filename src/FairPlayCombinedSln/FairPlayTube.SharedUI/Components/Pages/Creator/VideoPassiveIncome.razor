@@ -1,5 +1,5 @@
 ﻿@page "/Creator/VideoPassiveIncome/{VideoInfoId:long}"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -24,13 +24,14 @@
 @inject ICustomCache customCache
 @inject ICultureService cultureService
 @inject IToastService toastService
+@inject IStringLocalizer<VideoPassiveIncome> localizer
 
 <PageTitle>
-    Video Passive Income
+    @localizer[VideoPassiveIncomeTextKey]
 </PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    Video Passive Income
+    @localizer[VideoPassiveIncomeTextKey]
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -52,7 +53,7 @@
 </div>
 <div>
     <FluentButton Type="ButtonType.Button" OnClick="OnCreatePassiveIncomeIdeaButtonClickedAsync">
-        Create Passive Income Idea
+        @localizer[CreatePassiveIncomeIdeaTextKey]
     </FluentButton>
 </div>
 <div>
@@ -135,8 +136,16 @@
         }
     }
 
-    void IDisposable.Dispose()
+    public ValueTask DisposeAsync()
     {
         this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Video Passive Income")]
+    public const string VideoPassiveIncomeTextKey = "VideoPassiveIncomeTextKey";
+    [ResourceKey(defaultValue: "Create Passive Income Idea")]
+    public const string CreatePassiveIncomeIdeaTextKey = "CreatePassiveIncomeIdeaText";
+    #endregion Resource Keys
 }
