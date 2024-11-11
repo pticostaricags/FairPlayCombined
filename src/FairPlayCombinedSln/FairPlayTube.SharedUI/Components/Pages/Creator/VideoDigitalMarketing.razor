@@ -1,5 +1,5 @@
 ﻿@page "/Creator/VideoDigitalMarketing/{VideoInfoId:long}"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -13,21 +13,12 @@
 @using System.Globalization
 @using FairPlayTube.SharedUI.Components.Video
 
-@inject IJSRuntime jsRuntime
-@inject IVideoInfoService videoInfoService
-@inject IUserProviderService userProviderService
-@inject IOpenAIService openAIService
-@inject IVideoCaptionsService videoCaptionsService
-@inject IVideoDigitalMarketingPlanService videoDigitalMarketingPlanService
-@inject ICultureService cultureService
-@inject ICustomCache customCache
-
 <PageTitle>
-    Video Digital Marketing Strategy
+    @Localizer![VideoDigitalMarketingStrategyTextKey]
 </PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    Video Digital Marketing Strategy
+    @Localizer![VideoDigitalMarketingStrategyTextKey]
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -42,14 +33,14 @@
 }
 
 <div>
-    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@supportedCultures"
+    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@SupportedCultures"
     Embedded="true">
         <OptionTemplate>@context!.DisplayName</OptionTemplate>
     </FluentSelect>
 </div>
 <div>
     <FluentButton Type="ButtonType.Button" OnClick="OnRecreatePlanButtonclickedAsync">
-        Create New Plan
+        @Localizer![CreateNewPlanTextKey]
     </FluentButton>
 </div>
 <div>
@@ -65,80 +56,3 @@
         }
     }
 </div>
-
-@code
-{
-    [Parameter]
-    public long? VideoInfoId { get; set; }
-    private VideoInfoModel? VideoInfoModel{ get; set; }
-    private CultureInfo[]? supportedCultures { get; set; }
-    private CultureInfo? SelectedCulture { get; set; }
-    private bool IsBusy { get; set; }
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private List<string>? DigitalMarketingIdeas { get; set; }
-    private string? RevisedPrompt { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadDataAsync();
-    }
-
-    private async Task LoadDataAsync()
-    {
-        this.IsBusy = true;
-        StateHasChanged();
-        this.VideoInfoModel = await this.videoInfoService.GetVideoInfoByIdAsync(id: this.VideoInfoId!.Value,
-        cancellationToken: this.cancellationTokenSource.Token);
-        var items = await this.customCache!.GetOrCreateAsync<string[]>(
-                key: nameof(this.supportedCultures),
-                retrieveDataTask: async () =>
-                {
-                    var data = (await this.cultureService!
-                        .GetSupportedCultures(this.cancellationTokenSource.Token));
-                    return data;
-                },
-                expiration: Constants.CacheConfiguration.LocalizationCacheDuration,
-                this.cancellationTokenSource.Token);
-        this.supportedCultures ??= items
-        .Select(p => new CultureInfo(p))
-        .OrderBy(p => p.DisplayName)
-        .ToArray();
-        this.SelectedCulture ??= CultureInfo.CurrentCulture;
-        this.DigitalMarketingIdeas = (await this.videoDigitalMarketingPlanService
-        .GetVideoDigitalMarketingPlansAsync(
-            videoInfoId: this.VideoInfoModel.VideoInfoId,
-            socialNetworkName: "LinkedIn",
-            cancellationToken: this.cancellationTokenSource.Token))?.ToList();
-        if (this.DigitalMarketingIdeas is null)
-        {
-            await this.GenerateDigitalMarketingIdeasAsync();
-        }
-        this.IsBusy = false;
-        StateHasChanged();
-    }
-
-    private async Task OnRecreatePlanButtonclickedAsync()
-    {
-        this.IsBusy = true;
-        StateHasChanged();
-        await this.GenerateDigitalMarketingIdeasAsync();
-        this.IsBusy = false;
-        StateHasChanged();
-    }
-
-    private async Task GenerateDigitalMarketingIdeasAsync()
-    {
-        var result =
-        await this.videoDigitalMarketingPlanService
-        .CreateVideoDigitalMarketingPlanAsync(this.VideoInfoId!.Value, 
-            this.SelectedCulture!.DisplayName!,
-            this.cancellationTokenSource.Token);
-        this.DigitalMarketingIdeas?.Insert(0,result);
-        StateHasChanged();
-    }
-
-    void IDisposable.Dispose()
-    {
-        this.cancellationTokenSource.Dispose();
-    }
-}
