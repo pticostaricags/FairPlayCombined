@@ -24,111 +24,86 @@
 {
     <div style="display: table; table-layout: fixed; width: 100%;">
         <div style="overflow-x: auto;">
-            <FluentDataGrid Style="min-width: max-content;"
-                            ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
-                <TemplateColumn Title="Name">
-                    @($"{context.Name} {context.Lastname}")
-                </TemplateColumn>
+            <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@paginationState">
                 <TemplateColumn Title="Information">
                     <div>
-                        <ul>
-                            @if (context.BirthDate.HasValue)
-                            {
-                                <li>
-                                    BirthDate: @context.BirthDate
-                                </li>
-                            }
+                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                            @($"{context.Name} {context.Lastname}")
+                        </FluentLabel>
+                    </div>
+                    <div>
+                        <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
                             @if (!String.IsNullOrWhiteSpace(context.EmailAddress))
                             {
-                                <li>
-                                    <FluentLabel Typo="Typography.Body">
-                                        <FluentAnchor Type="" Href="@($"mailto:{context.EmailAddress}")" Target="_blank">
-                                            <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
-                                                        Color="Color.Accent" Slot="start"></FluentIcon>
-                                            Email
-                                        </FluentAnchor>
-                                    </FluentLabel>
-                                </li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Type="" Href="@($"mailto:{context.EmailAddress}")" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        Email
+                                    </FluentAnchor>
+                                </FluentLabel>
                             }
                             @if (!String.IsNullOrWhiteSpace(context.BusinessPhoneNumber))
                             {
-                                <li>
-                                    <FluentLabel Typo="Typography.Body">
-                                        <FluentAnchor Type="" Href="@($"tel:{context.BusinessPhoneNumber}")" Target="_blank">
-                                            <FluentIcon Value="@(new Icons.Regular.Size16.Phone())"
-                                                        Color="Color.Accent" Slot="start"></FluentIcon>
-                                            Business Phone Number
-                                        </FluentAnchor>
-                                    </FluentLabel>
-                                </li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Type="" Href="@($"tel:{context.BusinessPhoneNumber}")" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Phone())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        Business Phone Number
+                                    </FluentAnchor>
+                                </FluentLabel>
                             }
                             @if (!String.IsNullOrWhiteSpace(context.MobilePhoneNumber))
                             {
-                                <li>
-                                    <FluentLabel Typo="Typography.Body">
-                                        <FluentAnchor Type="" Href="@($"tel:{context.MobilePhoneNumber}")" Target="_blank">
-                                            <FluentIcon Value="@(new Icons.Regular.Size16.Phone())"
-                                                        Color="Color.Accent" Slot="start"></FluentIcon>
-                                            Mobile Phone Number
-                                        </FluentAnchor>
-                                    </FluentLabel>
-                                </li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Type="" Href="@($"tel:{context.MobilePhoneNumber}")" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Phone())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        Mobile Phone Number
+                                    </FluentAnchor>
+                                </FluentLabel>
                             }
                             @if (!String.IsNullOrWhiteSpace(context.LinkedInProfileUrl))
                             {
-                                <li>
-                                    <FluentLabel Typo="Typography.Body">
-                                        <FluentAnchor Href="@context.LinkedInProfileUrl" Target="_blank">
-                                            <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
-                                                        Color="Color.Accent" Slot="start"></FluentIcon>
-                                            LinkedIn
-                                        </FluentAnchor>
-                                    </FluentLabel>
-                                </li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.LinkedInProfileUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        LinkedIn
+                                    </FluentAnchor>
+                                </FluentLabel>
                             }
                             @if (!String.IsNullOrWhiteSpace(context.InstagramUrl))
                             {
-                                <li>
-                                    <FluentLabel Typo="Typography.Body">
-                                        <FluentAnchor Href="@context.InstagramUrl" Target="_blank">
-                                            <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
-                                                        Color="Color.Accent" Slot="start"></FluentIcon>
-                                            Instagram
-                                        </FluentAnchor>
-                                    </FluentLabel>
-                                </li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.InstagramUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        Instagram
+                                    </FluentAnchor>
+                                </FluentLabel>
                             }
                             @if (!String.IsNullOrWhiteSpace(context.YouTubeChannelUrl))
                             {
-                                <li>
-                                    <FluentLabel Typo="Typography.Body">
-                                        <FluentAnchor Href="@context.YouTubeChannelUrl" Target="_blank">
-                                            <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
-                                                        Color="Color.Accent" Slot="start"></FluentIcon>
-                                            YouTube Channel
-                                        </FluentAnchor>
-                                    </FluentLabel>
-                                </li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.YouTubeChannelUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        YouTube Channel
+                                    </FluentAnchor>
+                                </FluentLabel>
                             }
                             @if (!String.IsNullOrWhiteSpace(context.XformerlyTwitterUrl))
                             {
-                                <li>
-                                    <FluentLabel Typo="Typography.Body">
-                                        <FluentAnchor Href="@context.XformerlyTwitterUrl" Target="_blank">
-                                            <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
-                                                        Color="Color.Accent" Slot="start"></FluentIcon>
-                                            X (Formerly Twitter)
-                                        </FluentAnchor>
-                                    </FluentLabel>
-                                </li>
+                                <FluentLabel Typo="Typography.Body">
+                                    <FluentAnchor Href="@context.XformerlyTwitterUrl" Target="_blank">
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
+                                                    Color="Color.Accent" Slot="start"></FluentIcon>
+                                        X (Formerly Twitter)
+                                    </FluentAnchor>
+                                </FluentLabel>
                             }
-                        </ul>
-                    </div>
-                    <div>
-                        @if (!String.IsNullOrWhiteSpace(context.Notes))
-                        {
-                            <FluentTextArea Value="@context.Notes" Style="width:100%;" ReadOnly="true" Rows="10"></FluentTextArea>
-                        }
+                        </FluentStack>
                     </div>
                 </TemplateColumn>
             </FluentDataGrid>

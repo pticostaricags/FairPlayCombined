@@ -264,6 +264,10 @@ if (addFairPlayCRM)
         });
 }
 
+bool addFairPlayCRMTestDataGenerator = Convert.ToBoolean(builder.Configuration["AddFairPlayCRMTestDataGenerator"]);
+if (addFairPlayCRMTestDataGenerator)
+    builder.AddProject<Projects.FairPlayCRM_TestDataGenerator>(ResourcesNames.FairPlayCRMTestDataGenerator)
+        .WithReference(fairPlayDbResource);
 
 builder.AddProject<Projects.FairPlayCombined_WebApi>(ResourcesNames.FairPlayWebApi)
 .WithExternalHttpEndpoints()

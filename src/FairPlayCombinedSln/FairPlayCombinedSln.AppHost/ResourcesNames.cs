@@ -16,5 +16,6 @@
         public static string FairPlayBudget => nameof(Projects.FairPlayBudget).ToLower();
         public static string FairPlayWebApi => "fairplaywebapi";
         public static string FairPlayCRM => nameof(Projects.FairPlayCRM).ToLower();
+        public static string FairPlayCRMTestDataGenerator => "fairplaycrmtestdatagenerator";
     }
 }

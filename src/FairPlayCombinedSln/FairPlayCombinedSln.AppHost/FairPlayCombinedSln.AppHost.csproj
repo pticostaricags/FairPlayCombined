@@ -42,6 +42,7 @@
     </ProjectReference>
     <ProjectReference Include="..\FairPlayCombined.MailDev.Hosting\FairPlayCombined.MailDev.Hosting.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\FairPlayCombined.WebApi\FairPlayCombined.WebApi.csproj" />
+    <ProjectReference Include="..\FairPlayCRM.TestDataGenerator\FairPlayCRM.TestDataGenerator.csproj" />
     <ProjectReference Include="..\FairPlayCRM\FairPlayCRM.csproj" />
     <ProjectReference Include="..\FairPlayDating.TestDataGenerator\FairPlayDating.TestDataGenerator.csproj">
       <ExcludeAssets>all</ExcludeAssets>

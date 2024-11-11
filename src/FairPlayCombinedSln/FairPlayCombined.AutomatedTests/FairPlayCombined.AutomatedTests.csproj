@@ -47,7 +47,7 @@
 	<PackageReference Include="System.Net.Http" Version="4.3.4" />
 	<PackageReference Include="System.Text.Json" Version="9.0.0-rc.2.24473.5" />
 	<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <PackageReference Include="Testcontainers.MsSql" Version="4.0.0" />
+    <PackageReference Include="Testcontainers.MsSql" Version="4.1.0-beta.11746011829" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0-rc.2.24473.5" />
   </ItemGroup>
   <ItemGroup>
