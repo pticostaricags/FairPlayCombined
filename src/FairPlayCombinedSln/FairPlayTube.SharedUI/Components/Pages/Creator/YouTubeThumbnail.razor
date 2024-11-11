@@ -2,6 +2,7 @@
 @implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
+@attribute [StreamRendering(enabled: true)]
 
 @using FairPlayCombined.Common
 @using FairPlayCombined.Common.GeneratorsAttributes
@@ -12,12 +13,11 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.FairPlayTube.VideoThumbnail
 @using FairPlayCombined.Models.Pagination
+@using FairPlayTube.SharedUI.Components.Paginators
 @using FairPlayTube.SharedUI.Components.Spinners
 @using System.Collections.Concurrent
 @using System.Globalization
 @using FairPlayTube.SharedUI.Components.Video
-
-@attribute [StreamRendering(enabled: true)]
 
 @inject IJSRuntime jsRuntime
 @inject IVideoInfoService videoInfoService
@@ -25,17 +25,19 @@
 @inject IOpenAIService openAIService
 @inject IVideoThumbnailService videoThumbnailService
 @inject IToastService toastService
-@inject HttpClient httpClient
-@inject NavigationManager navigationManager
 @inject IUserFundService userFundService
 @inject IImageStyleService imageStyleService
+@inject IStringLocalizer<YouTubeThumbnail> localizer
+
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
 
 <PageTitle>
-    Video Thumbnail
+    @localizer[VideoThumbnailTextKey]
 </PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    Video Thumbnail
+    @localizer[VideoThumbnailTextKey]
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
@@ -57,18 +59,18 @@
             <FluentSelect Appearance="Appearance.Accent"
             @bind-SelectedOption="@this.SelectedImageStyle"
             Items="@this.ImageStyles"
-            Label="Image Style (Experimental)"
+            Label="@localizer[ImageStyleTextKey]"
             OptionText="@(p=>p!.StyleName!)"
             OptionValue="@(p=>p!.ImageStyleId!.ToString())"></FluentSelect>
         }
     </div>
     <div>
-        <FluentCheckbox Label="Request Clean Thumbnail (No Text)?"
+        <FluentCheckbox Label="@localizer[RequestCleanThumbnailTextKey]"
         @bind-Value="@this.RequestCleanThumbnail"></FluentCheckbox>
     </div>
     <div>
         <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-        OnClick="OnCreateNewThumbnailClickedAsync">Create New Thumbnail</FluentButton>
+        OnClick="OnCreateNewThumbnailClickedAsync">@localizer[CreateNewThumbnailTextKey]</FluentButton>
     </div>
 }
 <div>
@@ -78,7 +80,7 @@
             @foreach (var singleThumbnail in this.Items.Items)
             {
                 <div style="width:400px;">
-                    <FluentLabel Typo="Typography.Subject">Cost: @singleThumbnail.ThumbnailCost.ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
+                    <FluentLabel Typo="Typography.Subject">@localizer[CostTextKey]: @singleThumbnail.ThumbnailCost.ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
                     @if (!this.PagePhotos.ContainsKey(singleThumbnail.PhotoId))
                     {
                         <FluentCard class="card-padding" Width="400">
@@ -94,7 +96,7 @@
             }
         </FluentStack>
     }
-    <FluentPaginator State="this.paginationState" CurrentPageIndexChanged="OnCurrentPageIndexChangedAsync"></FluentPaginator>
+    <CustomFluentPaginator State="@this.paginationState" CurrentPageIndexChanged="OnCurrentPageIndexChangedAsync"></CustomFluentPaginator>
 </div>
 <FluentDivider Role="DividerRole.Separator"></FluentDivider>
 <div>
@@ -163,7 +165,7 @@
             .HasFundsToCreateThumbnailsAsync(this.cancellationTokenSource.Token);
             if (!this.HasRequiredFundsToCreate)
             {
-                this.toastService.ShowWarning("You don't have any funds left to create thumbnails");
+                this.toastService.ShowWarning(localizer[NoFundsLeftTextKey]);
             }
             this.ImageStyles ??= await imageStyleService.GetAllImageStyleAsync(this.cancellationTokenSource.Token);
             this.SelectedImageStyle ??= this.ImageStyles[0];
@@ -240,4 +242,19 @@
         await this.cancellationTokenSource.CancelAsync();
         this.cancellationTokenSource.Dispose();
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Video Thumbnail")]
+    public const string VideoThumbnailTextKey = "VideoThumbnailText";
+    [ResourceKey(defaultValue: "Image Style (Experimental)")]
+    public const string ImageStyleTextKey = "ImageStyleText";
+    [ResourceKey(defaultValue: "Request Clean Thumbnail (No Text)?")]
+    public const string RequestCleanThumbnailTextKey = "RequestCleanThumbnailText";
+    [ResourceKey(defaultValue: "Create New Thumbnail")]
+    public const string CreateNewThumbnailTextKey = "CreateNewThumbnailText";
+    [ResourceKey(defaultValue: "Cost")]
+    public const string CostTextKey = "CostText";
+    [ResourceKey(defaultValue: "You don't have any funds left to create thumbnails")]
+    public const string NoFundsLeftTextKey = "NoFundsLeftText";
+    #endregion Resource Keys
 }
