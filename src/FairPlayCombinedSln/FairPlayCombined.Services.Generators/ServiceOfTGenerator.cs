@@ -11,19 +11,26 @@ namespace FairPlayCombined.Services.Generators
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
+            try
+            {
 #if DEBUG
 
 #pragma warning disable S125 // Sections of code should not be commented out
-            //System.Diagnostics.Debugger.Launch();
+                //System.Diagnostics.Debugger.Launch();
 #endif
-            var provider = context.SyntaxProvider.CreateSyntaxProvider(
-                predicate: static (node, token) => node is ClassDeclarationSyntax,
-                transform: static (ctx, token) => (ClassDeclarationSyntax)ctx.Node
-                ).Where(node => node is not null);
+                var provider = context.SyntaxProvider.CreateSyntaxProvider(
+                    predicate: static (node, token) => node is ClassDeclarationSyntax,
+                    transform: static (ctx, token) => (ClassDeclarationSyntax)ctx.Node
+                    ).Where(node => node is not null);
 
-            var compilation = context.CompilationProvider.Combine(provider.Collect());
+                var compilation = context.CompilationProvider.Combine(provider.Collect());
 
-            context.RegisterSourceOutput(compilation, Execute);
+                context.RegisterSourceOutput(compilation, Execute);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+            }
         }
 
 #pragma warning disable S3776 // Cognitive Complexity of methods should not be too high
