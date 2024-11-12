@@ -1,5 +1,5 @@
 ﻿@page "/Creator/UpdateVideoPlan/{VideoPlanId:long}"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -14,20 +14,12 @@
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Google.Apis.YouTube.v3.Data
 
-
-@inject IPromptGeneratorService promptGeneratorService
-@inject IOpenAIService openAIService
-@inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
-@inject IAzureVideoIndexerService azureVideoIndexerService
-@inject IVideoPlanService videoPlanService
-@inject IToastService toastService
-@inject IUserProviderService userProviderService
-@inject IYouTubeClientService youTubeClientService
-@inject ILogger<CreateVideoPlan> logger
-@inject NavigationManager navigationManager
+<PageTitle>
+    @Localizer![UpdateVideoPlanTextKey]
+</PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    Update Video Plan
+    @Localizer![UpdateVideoPlanTextKey]
 </FluentLabel>
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
@@ -38,25 +30,25 @@
         <FluentValidationSummary></FluentValidationSummary>
     </div>
     <div>
-        <FluentLabel Typo="Typography.Body">Name</FluentLabel>
+        <FluentLabel Typo="Typography.Body">@Localizer![NameTextKey]</FluentLabel>
         <FluentTextField @bind-Value="this.updateVideoPlanModel.VideoName" Maxlength="50" style="width:100%;"></FluentTextField>
     </div>
     <div>
         <FluentAccordion>
-            <FluentAccordionItem Heading="Description" Expanded="true">
+            <FluentAccordionItem Heading="@Localizer![DescriptionTextKey]" Expanded="true">
                 <FluentTextArea @bind-Value="this.updateVideoPlanModel.VideoDescription" Rows="10" Maxlength="500" style="width:100%;"></FluentTextArea>
             </FluentAccordionItem>
         </FluentAccordion>
     </div>
     <div>
         <FluentAccordion>
-            <FluentAccordionItem Heading="Video Script" Expanded="true">
+            <FluentAccordionItem Heading="@Localizer![VideoScriptTextKey]" Expanded="true">
                 <FluentTextArea @bind-Value="this.updateVideoPlanModel.VideoScript" Rows="40" Maxlength="3000" style="width:100%;"></FluentTextArea>
             </FluentAccordionItem>
         </FluentAccordion>
     </div>
     <div>
-        <FluentButton Type="ButtonType.Submit">Save</FluentButton>
+        <FluentButton Type="ButtonType.Submit">@Localizer![SaveTextKey]</FluentButton>
     </div>
 </FluentEditForm>
 
@@ -73,85 +65,3 @@
         </p>
     }
 </div>
-
-@code {
-    [Parameter]
-    public long? VideoPlanId { get; set; }
-    [SupplyParameterFromForm]
-    private UpdateVideoPlanModel updateVideoPlanModel { get; set; } = new();
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private bool IsBusy { get; set; }
-    private string? GeneratedYouTubeThumbnailUri { get; set; }
-    private string? RevisedPrompt { get; set; }
-    private VideoPlanModel? originalVideoPlan { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            this.IsBusy = true;
-            StateHasChanged();
-            this.updateVideoPlanModel.ApplicationUserId = this.userProviderService.GetCurrentUserId();
-            if (this.originalVideoPlan is null)
-            {
-                this.originalVideoPlan = await this.videoPlanService.GetVideoPlanByIdAsync(this.VideoPlanId!.Value, this.cancellationTokenSource.Token);
-                this.updateVideoPlanModel.VideoPlanId = this.VideoPlanId.Value;
-                this.updateVideoPlanModel.VideoName = this.originalVideoPlan.VideoName;
-                this.updateVideoPlanModel.VideoDescription = this.originalVideoPlan.VideoDescription;
-                this.updateVideoPlanModel.VideoScript = this.originalVideoPlan.VideoScript;
-            }
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-        finally
-        {
-            this.IsBusy = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task OnValidSubmitAsync()
-    {
-        try
-        {
-            this.IsBusy = true;
-            StateHasChanged();
-            await this.videoPlanService.UpdateVideoPlanAsync(
-                this.updateVideoPlanModel, this.cancellationTokenSource.Token);
-            this.toastService.ShowSuccess("Your Plan has been updated");
-            StateHasChanged();
-            var promptInfo = await this.promptGeneratorService.GetPromptCompleteInfoAsync(promptName:
-                    "YouTubeThumbnail", cancellationToken: this.cancellationTokenSource.Token);
-            string prompt = $"{promptInfo!.BaseText}. Video Title: {this.updateVideoPlanModel.VideoName}. Video Description: {this.updateVideoPlanModel.VideoDescription}. Video Script: {this.updateVideoPlanModel.VideoScript}";
-            if (prompt.Length > 4000)
-                prompt = prompt.Substring(0, 4000);
-            var result = await this.openAIService.GenerateDallE3ImageAsync(prompt, this.cancellationTokenSource.Token);
-            if (result != null)
-            {
-                this.GeneratedYouTubeThumbnailUri = result!.data![0]!.url!;
-                this.RevisedPrompt = result!.data[0]!.revised_prompt;
-                this.toastService.ShowSuccess("Your thumbnail has been created");
-            }
-            else
-            {
-                this.toastService.ShowError("Your thumbnail could not be created");
-            }
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-        finally
-        {
-            this.IsBusy = false;
-            StateHasChanged();
-        }
-    }
-
-    void IDisposable.Dispose()
-    {
-        this.cancellationTokenSource.Dispose();
-    }
-}
