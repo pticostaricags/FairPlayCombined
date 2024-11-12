@@ -30,7 +30,7 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             Assert.IsTrue(result.poiCategories!.Length > 0);
             var convertedList = result.ToPOICategoryModelList();
             Assert.IsNotNull(convertedList);
-            Assert.IsTrue(convertedList.SelectMany(p=>p.Children!).Count() > 0);
+            Assert.IsTrue(convertedList.SelectMany(p=>p.Children!).Any());
         }
 
         [TestMethod]

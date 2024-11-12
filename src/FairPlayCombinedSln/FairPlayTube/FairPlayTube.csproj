@@ -17,8 +17,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
-    <PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="8.3.0" />
-    <PackageReference Include="AspNet.Security.OAuth.Twitter" Version="8.3.0" />
+    <PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="9.0.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Twitter" Version="9.0.0" />
     <PackageReference Include="Azure.Identity" Version="1.13.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0" />
