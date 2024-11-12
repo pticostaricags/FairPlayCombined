@@ -7,19 +7,23 @@
 @using FairPlayCombined.Models.PayPal
 @using FairPlayCombined.WebComponents.PayPal
 
-@inject IUserFundService userFundService
-@inject IToastService toastService
-@inject IUserFundsUniqueCodesService userFundsUniqueCodesService
+<PageTitle>
+    @Localizer![MyFundsTextKey]
+</PageTitle>
+
+<FluentLabel Typo="Typography.H3">
+    @Localizer![MyFundsTextKey]
+</FluentLabel>
 
 @if (this.AvailableFunds != null)
 {
-    <FluentLabel Typo="Typography.Header">Available Funds: @(this.AvailableFunds.Value.ToString("c"))</FluentLabel>
+    <FluentLabel Typo="Typography.Header">@Localizer![AvailableFundsTextKey]: @(this.AvailableFunds.Value.ToString("c"))</FluentLabel>
 }
 
 <div>
-    <FluentLabel Typo="Typography.Body">Use Code:</FluentLabel>
+    <FluentLabel Typo="Typography.Body">@Localizer![UseCodeTextKey]:</FluentLabel>
     <FluentTextField @bind-Value="@this.CodeToClaim" style="width:100%;"></FluentTextField>
-    <FluentButton Type="ButtonType.Button" OnClick="OnClaimCodeClickAsync" Appearance="Appearance.Accent">Claim Code</FluentButton>
+    <FluentButton Type="ButtonType.Button" OnClick="OnClaimCodeClickAsync" Appearance="Appearance.Accent">@Localizer![ClaimCodeTextKey]</FluentButton>
 </div>
 <FluentDivider Style="width: 100%;" Role="DividerRole.Presentation"></FluentDivider>
 <div>
@@ -27,74 +31,3 @@
 </div>
 
 
-@code
-{
-    private decimal? AvailableFunds { get; set; }
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private string? CodeToClaim { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            await LoadDataAsync();
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-    }
-
-    private async Task LoadDataAsync()
-    {
-        this.AvailableFunds = await this.userFundService
-        .GetMyAvailableFundsAsync(this.cancellationTokenSource.Token);
-        StateHasChanged();
-    }
-
-    private async Task OnPayPalOrderApprovedAsync(
-        (
-            PaypalCheckoutApprovedDataModel data,
-            PaypalCheckoutApprovedDetailsModel details
-        ) tuple
-    )
-    {
-        try
-        {
-            await this.userFundService.AddMyFundsAsync(tuple.data.orderID!, this.cancellationTokenSource.Token);
-            this.toastService.ShowSuccess($"Funds have been added to your Wallet");
-            await LoadDataAsync();
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-    }
-
-    private async Task OnClaimCodeClickAsync()
-    {
-        try
-        {
-            Guid codeGuid = Guid.Parse(this.CodeToClaim!);
-            await this.userFundsUniqueCodesService.ClaimFundsUniqueCodeAsync(codeGuid, this.cancellationTokenSource.Token);
-            this.toastService.ShowInfo("Your code has been claimed and added to your funds");
-            this.CodeToClaim = String.Empty;
-            await this.LoadDataAsync();
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-    }
-
-    private void OnError(string errorMessage)
-    {
-        this.toastService.ShowError(errorMessage);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await this.cancellationTokenSource.CancelAsync();
-        this.cancellationTokenSource.Dispose();
-    }
-}
