@@ -57,7 +57,6 @@ namespace FairPlayTube.SharedUI.Components.Pages.Creator
 
         public async ValueTask DisposeAsync()
         {
-            GC.SuppressFinalize(this);
             await this.cancellationTokenSource.CancelAsync();
             this.cancellationTokenSource.Dispose();
         }
