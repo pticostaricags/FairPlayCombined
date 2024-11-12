@@ -16,7 +16,7 @@ namespace FairPlayCombined.Common.CustomAttributes
         }
 
         #region Resource Keys
-        [ResourceKey(defaultValue: "The {0} must be at least {2} and at max {1} characters long.")]
+        [ResourceKey(defaultValue: "The {0} must be at least {1} and at max {2} characters long.")]
         public const string InvalidLengthTextKey = "InvalidLengthText";
         #endregion Resource Keys
     }
