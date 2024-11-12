@@ -1,5 +1,4 @@
 ﻿@page "/Creator/UploadMyVideo"
-@implements IDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -14,21 +13,12 @@
 @using FairPlayTube.SharedUI.Components.YouTube
 @using Google.Apis.YouTube.v3.Data
 
-@inject AzureVideoIndexerServiceConfiguration azureVideoIndexerServiceConfiguration
-@inject IAzureVideoIndexerService azureVideoIndexerService
-@inject IVideoInfoService videoInfoService
-@inject IToastService toastService
-@inject IUserProviderService userProviderService
-@inject IYouTubeClientService youTubeClientService
-@inject ILogger<UploadMyVideo> logger
-@inject NavigationManager navigationManager
-
 <FluentLabel Typo="Typography.H3">
-    UploadMyVideo
+    @Localizer![UploadMyVideoTextKey]
 </FluentLabel>
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<FluentEditForm FormName="frmCreateVideoInfo" Model="this.createVideoInfoModel"
+<FluentEditForm FormName="frmCreateVideoInfo" Model="this.CreateVideoInfoModel"
                 OnValidSubmit="OnValidSubmitAsync" @ref="frmCreateVideoInfo">
     <div>
         <DataAnnotationsValidator></DataAnnotationsValidator>
@@ -38,39 +28,39 @@
         <Steps>
             <FluentWizardStep OnChange="OnVideoNameChange">
                 <div>
-                    <FluentLabel Typo="Typography.Body">Name</FluentLabel>
-                    <FluentTextField @bind-Value="this.createVideoInfoModel.Name" style="width:100%;"></FluentTextField>
-                    <FluentValidationMessage For="@(()=>this.createVideoInfoModel.Name)"></FluentValidationMessage>
-                    <FluentCheckbox @bind-Value="this.createVideoInfoModel.IsVideoGeneratedWithAi" Label="Was the Video Generated Using AI?"></FluentCheckbox>
+                    <FluentLabel Typo="Typography.Body">@Localizer![NameTextKey]</FluentLabel>
+                    <FluentTextField @bind-Value="this.CreateVideoInfoModel.Name" style="width:100%;"></FluentTextField>
+                    <FluentValidationMessage For="@(()=>this.CreateVideoInfoModel.Name)"></FluentValidationMessage>
+                    <FluentCheckbox @bind-Value="this.CreateVideoInfoModel.IsVideoGeneratedWithAi" Label="@Localizer![WasVideoGeneratedUsingAITextKey]"></FluentCheckbox>
                 </div>
             </FluentWizardStep>
             <FluentWizardStep OnChange="OnVideoDescriptionStepChange">
                 <div>
-                    <FluentLabel Typo="Typography.Body">Description</FluentLabel>
-                    <FluentTextArea @bind-Value="this.createVideoInfoModel.Description" style="width:100%;"></FluentTextArea>
-                    <FluentValidationMessage For="@(()=>this.createVideoInfoModel.Description)"></FluentValidationMessage>
+                    <FluentLabel Typo="Typography.Body">@Localizer![DescriptionTextKey]</FluentLabel>
+                    <FluentTextArea @bind-Value="this.CreateVideoInfoModel.Description" style="width:100%;"></FluentTextArea>
+                    <FluentValidationMessage For="@(()=>this.CreateVideoInfoModel.Description)"></FluentValidationMessage>
                 </div>
             </FluentWizardStep>
-            <FluentWizardStep Label="Video Url" OnChange="OnVideoUrlChange">
+            <FluentWizardStep Label="@Localizer![VideoUrlTextKey]" OnChange="OnVideoUrlChange">
                 <div>
-                    <FluentLabel Typo="Typography.Body">Video Url</FluentLabel>
-                    <FluentTextField @bind-Value="this.createVideoInfoModel.ExternalVideoSourceUrl" style="width:100%;"></FluentTextField>
-                    <FluentValidationMessage For="@(()=>this.createVideoInfoModel.ExternalVideoSourceUrl)"></FluentValidationMessage>
+                    <FluentLabel Typo="Typography.Body">@Localizer![VideoUrlTextKey]</FluentLabel>
+                    <FluentTextField @bind-Value="this.CreateVideoInfoModel.ExternalVideoSourceUrl" style="width:100%;"></FluentTextField>
+                    <FluentValidationMessage For="@(()=>this.CreateVideoInfoModel.ExternalVideoSourceUrl)"></FluentValidationMessage>
                 </div>
             </FluentWizardStep>
             <FluentWizardStep>
-                <FluentLabel Typo="Typography.Body">Here you can upload your video to YouTube if you want</FluentLabel>
-                <FluentButton Type="ButtonType.Button" OnClick="UploadToYouTubeAsync">Upload To YouTube</FluentButton>
-                <FluentLabel Typo="Typography.Body">Bytes Sent: @bytesSent</FluentLabel>
+                <FluentLabel Typo="Typography.Body">@Localizer![YouCanUploadToYouTubeTextKey]</FluentLabel>
+                <FluentButton Type="ButtonType.Button" OnClick="UploadToYouTubeAsync">@Localizer![UploadToYouTubeTextKey]</FluentButton>
+                <FluentLabel Typo="Typography.Body">@Localizer![BytesSentTextKey]: @BytesSent</FluentLabel>
             </FluentWizardStep>
             <FluentWizardStep>
                 <div>
-                    <FluentLabel Typo="Typography.Subject">Video Id (YouTube)</FluentLabel>
+                    <FluentLabel Typo="Typography.Subject">@Localizer![YouTubeVideoIdTextKey]</FluentLabel>
                     <InputText class="@ThemeConfiguration.GenericControls.DefaultCss"
-                               @bind-Value="this.createVideoInfoModel.YouTubeVideoId" style="width:100%;"></InputText>
+                               @bind-Value="this.CreateVideoInfoModel.YouTubeVideoId" style="width:100%;"></InputText>
                     @if (this.IsAuthenticatedWithGoogle)
                     {
-                        <FluentButton Type="ButtonType.Button" OnClick="this.OpenSearchYouTubeVideoDialog">Search My YouTube Videos</FluentButton>
+                        <FluentButton Type="ButtonType.Button" OnClick="this.OpenSearchYouTubeVideoDialog">@Localizer![SearchMyVideosTextKey]</FluentButton>
                     }
                 </div>
             </FluentWizardStep>
@@ -78,216 +68,11 @@
     </FluentWizard>
 </FluentEditForm>
 
-<FluentDialog @ref="searchYoutubeVideosDialog"
-              @bind-Hidden="@hideSearchYoutubeVideosDialog"
+<FluentDialog @ref="SearchYoutubeVideosDialog"
+              @bind-Hidden="@HideSearchYoutubeVideosDialog"
               Modal="true" TrapFocus="true"
               PreventScroll="false">
     <FluentDialogHeader Visible="false"></FluentDialogHeader>
     <SearchYouTubeVideo OnYouTubeVideoSelected="OnYouTubeVideoSelected"></SearchYouTubeVideo>
-    <FluentButton Type="ButtonType.Button" Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent" OnClick="CloseSearchYouTubeVideoDialog">Close</FluentButton>
+    <FluentButton Type="ButtonType.Button" Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent" OnClick="CloseSearchYouTubeVideoDialog">@Localizer![CloseTextKey]</FluentButton>
 </FluentDialog>
-
-@code {
-    [SupplyParameterFromForm]
-    private CreateVideoInfoModel createVideoInfoModel { get; set; } = new();
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private bool IsBusy { get; set; }
-    private EditForm? frmCreateVideoInfo;
-    private long bytesSent { get; set; }
-    private bool hideSearchYoutubeVideosDialog { get; set; } = false;
-    private FluentDialog? searchYoutubeVideosDialog { get; set; }
-    private bool IsAuthenticatedWithGoogle { get; set; }
-
-    protected override void OnInitialized()
-    {
-        this.IsAuthenticatedWithGoogle = this.userProviderService.IsAuthenticatedWithGoogle();
-        this.createVideoInfoModel.AccountId = Guid.Parse(azureVideoIndexerServiceConfiguration.AccountId!);
-        this.createVideoInfoModel.Location = azureVideoIndexerServiceConfiguration.Location;
-        this.createVideoInfoModel.VideoVisibilityId = 1;
-        this.createVideoInfoModel.FileName = "Test";
-        this.createVideoInfoModel.VideoVisibilityId = (short)VideoVisibility.Public;
-        this.createVideoInfoModel.ApplicationUserId = this.userProviderService.GetCurrentUserId();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            this.searchYoutubeVideosDialog!.Hide();
-        }
-    }
-
-    private async Task<bool> OnProcessFileButtonClickedAsync()
-    {
-        bool hasError = false;
-        try
-        {
-            logger.LogInformation(message: "Processing video from url: {Url}", this.createVideoInfoModel.ExternalVideoSourceUrl);
-            this.IsBusy = true;
-            StateHasChanged();
-            this.frmCreateVideoInfo!.EditContext!.Validate();
-            var nameField = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.Name));
-            var descriptionField = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.Name));
-            var externalVideoSourceUrl = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.ExternalVideoSourceUrl));
-            if (!frmCreateVideoInfo.EditContext.IsValid(nameField) ||
-            !frmCreateVideoInfo.EditContext.IsValid(descriptionField) ||
-            !frmCreateVideoInfo.EditContext.IsValid(externalVideoSourceUrl))
-            {
-                this.IsBusy = false;
-                StateHasChanged();
-                this.toastService.ShowError("Please make sure to fill all the values and try again");
-                hasError = true;
-            }
-            var authToken = await this.azureVideoIndexerService.AuthenticateToAzureArmAsync();
-            var accountAccessToken = await this.azureVideoIndexerService.GetAccessTokenForArmAccountAsync(authToken, this.cancellationTokenSource.Token);
-            var indexVideoResult = await this.azureVideoIndexerService
-            .IndexVideoFromUriAsync(
-                new IndexVideoFromUriParameters()
-                    {
-                        ArmAccessToken = accountAccessToken!.AccessToken!,
-                        Description = this.createVideoInfoModel.Description!,
-                        FileName = this.createVideoInfoModel.Name!,
-                        Name = this.createVideoInfoModel.Name!,
-                        VideoUri = new Uri(this.createVideoInfoModel.ExternalVideoSourceUrl!)
-                    });
-            this.createVideoInfoModel.VideoId = indexVideoResult!.id;
-            this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
-            this.frmCreateVideoInfo.EditContext.Validate();
-            this.toastService.ShowInfo("Your has been sent to be processed.");
-            hasError = false;
-        }
-        catch (Exception ex)
-        {
-            hasError = true;
-            logger.LogError(exception: ex, message: "Failed to process video. {Message}", ex.Message);
-            this.toastService.ShowError(ex.Message);
-        }
-        this.IsBusy = false;
-        StateHasChanged();
-        return hasError;
-    }
-
-    public async Task UploadToYouTubeAsync()
-    {
-        try
-        {
-            this.IsBusy = true;
-            StateHasChanged();
-            this.frmCreateVideoInfo!.EditContext!.Validate();
-            var nameField = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.Name));
-            var descriptionField = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.Name));
-            var externalVideoSourceUrl = frmCreateVideoInfo!.EditContext!.Field(nameof(CreateVideoInfoModel.ExternalVideoSourceUrl));
-            if (!frmCreateVideoInfo.EditContext.IsValid(nameField) ||
-            !frmCreateVideoInfo.EditContext.IsValid(descriptionField) ||
-            !frmCreateVideoInfo.EditContext.IsValid(externalVideoSourceUrl))
-            {
-                this.toastService.ShowError("Please make sure to fill all the values and try again");
-                return;
-            }
-            var videoStream = await new HttpClient().GetStreamAsync(this.createVideoInfoModel.ExternalVideoSourceUrl);
-            Google.Apis.YouTube.v3.Data.Video video = new();
-            video.Snippet = new VideoSnippet();
-            video.Snippet.Title = this.createVideoInfoModel.Name;
-            video.Snippet.Description = this.createVideoInfoModel.Description;
-            video.Status = new VideoStatus();
-            video.Status.PrivacyStatus = "unlisted";
-            await this.youTubeClientService.UploadVideoAsync(video, videoStream,
-            progressChanged: async (uploadProgress) =>
-            {
-                this.bytesSent = uploadProgress.BytesSent;
-                await InvokeAsync(() => StateHasChanged());
-            },
-            responseReceived: (video) =>
-            {
-                this.createVideoInfoModel.YouTubeVideoId = video.Id;
-                this.toastService.ShowSuccess($"Video uploaded to YouTube. Id: {video.Id}");
-            });
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-        this.IsBusy = false;
-        StateHasChanged();
-    }
-
-    private async Task OnValidSubmitAsync()
-    {
-        try
-        {
-            this.IsBusy = true;
-            StateHasChanged();
-            bool hasError = await OnProcessFileButtonClickedAsync();
-            if (!hasError)
-            {
-                this.createVideoInfoModel.VideoIndexStatusId = (short)VideoIndexStatus.Processing;
-                await this.videoInfoService.CreateVideoInfoAsync(this.createVideoInfoModel,
-                this.cancellationTokenSource.Token);
-                this.toastService.ShowSuccess("Your video has been saved. You'll be notified when indexing is ready. It will take a while for your video to become visible.");
-                this.navigationManager.NavigateTo(Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyProcessingVideos);
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(exception: ex, message: "Error: {ErrorMessage}", ex.Message);
-            this.toastService.ShowError(ex.Message);
-        }
-        this.IsBusy = false;
-        StateHasChanged();
-    }
-
-    private async Task PerformSubmitAsync()
-    {
-        await this.frmCreateVideoInfo!.OnValidSubmit.InvokeAsync();
-    }
-
-    private void OpenSearchYouTubeVideoDialog()
-    {
-        this.searchYoutubeVideosDialog!.Show();
-    }
-
-    private void CloseSearchYouTubeVideoDialog()
-    {
-        this.searchYoutubeVideosDialog!.Hide();
-    }
-
-    private void OnYouTubeVideoSelected(string youTubeVideoId)
-    {
-        this.createVideoInfoModel!.YouTubeVideoId = youTubeVideoId;
-        CloseSearchYouTubeVideoDialog();
-    }
-
-    private void OnVideoNameChange(FluentWizardStepChangeEventArgs fluentWizardStepChangeEventArgs)
-    {
-        var videonameField = this.frmCreateVideoInfo!.EditContext!
-        .Field(nameof(createVideoInfoModel.Name));
-        this.frmCreateVideoInfo.EditContext.Validate();
-        var isVideonameFieldValid = this.frmCreateVideoInfo.EditContext.IsValid(videonameField);
-        fluentWizardStepChangeEventArgs.IsCancelled = !isVideonameFieldValid;
-    }
-
-    private void OnVideoDescriptionStepChange(FluentWizardStepChangeEventArgs fluentWizardStepChangeEventArgs)
-    {
-        var descriptonField = this.frmCreateVideoInfo!.EditContext!
-        .Field(nameof(CreateVideoInfoModel.Description));
-        this.frmCreateVideoInfo.EditContext.Validate();
-        var isDescriptonFieldValid = this.frmCreateVideoInfo.EditContext.IsValid(descriptonField);
-        fluentWizardStepChangeEventArgs.IsCancelled = !isDescriptonFieldValid;
-    }
-
-    private void OnVideoUrlChange(FluentWizardStepChangeEventArgs fluentWizardStepChangeEventArgs)
-    {
-        var externalVideoSourceUrlField =
-        this.frmCreateVideoInfo!.EditContext!
-        .Field(nameof(CreateVideoInfoModel.ExternalVideoSourceUrl));
-        this.frmCreateVideoInfo.EditContext.Validate();
-        bool isExternalVideoSourceUrlFieldValid =
-        this.frmCreateVideoInfo.EditContext.IsValid(externalVideoSourceUrlField);
-        fluentWizardStepChangeEventArgs.IsCancelled = !isExternalVideoSourceUrlFieldValid;
-    }
-
-    void IDisposable.Dispose()
-    {
-        this.cancellationTokenSource.Dispose();
-    }
-}
