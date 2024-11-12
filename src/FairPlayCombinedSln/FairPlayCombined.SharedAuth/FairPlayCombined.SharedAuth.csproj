@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="8.3.0" />
+	<PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="9.0.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.3" />
