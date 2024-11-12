@@ -1,5 +1,5 @@
 ﻿@attribute [Route($"{Constants.Routes.FairPlayTubeRoutes.CreatorRoutes.MyVideoViewers}/{{VideoId}}")]
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -9,71 +9,30 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.FairPlayTube.VideoViewer
 @using FairPlayCombined.Models.Pagination
+@using FairPlayTube.SharedUI.Components.Paginators
 @using FairPlayTube.SharedUI.Components.Spinners
 
-@inject IVideoViewerService videoViewerService
-@inject IUserProviderService userProviderService
-<PageTitle>My Video Viewers</PageTitle>
+
+<PageTitle>@Localizer![MyVideoViewersTextKey]</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
     <FluentDataGrid ItemsProvider="ItemsProvider" Pagination="this.paginationState">
-        <TemplateColumn Class="multiline-text">
+        <TemplateColumn Class="multiline-text" Title="@Localizer![UserTextKey]">
             @if (String.IsNullOrWhiteSpace(context.Username))
             {
-                <FluentLabel>Anonymous</FluentLabel>
+                <FluentLabel>@Localizer![AnonymousTextKey]</FluentLabel>
             }
             else
             {
                 <FluentLabel>@context.Username</FluentLabel>
             }
         </TemplateColumn>
-        <TemplateColumn Title="@nameof(VideoViewerModel.TotalTimeWatched)">
+        <TemplateColumn Title="@Localizer![TotalTimeWatchedTextKey]">
             @TimeSpan.FromSeconds(context.TotalTimeWatched)
         </TemplateColumn>
-        <PropertyColumn Property="@( p=> p.TotalSessions)"></PropertyColumn>
+        <PropertyColumn Property="@( p=> p.TotalSessions)" Title="@Localizer![TotalSessionsTextKey]"></PropertyColumn>
     </FluentDataGrid>
 </div>
-<FluentPaginator State="this.paginationState"></FluentPaginator>
-
-@code
-{
-    [Parameter]
-    public string? VideoId { get; set; }
-    private bool IsBusy { get; set; }
-    private GridItemsProvider<VideoViewerModel>? ItemsProvider;
-    private readonly PaginationState paginationState = new()
-        {
-            ItemsPerPage = Constants.Pagination.PageSize
-        };
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-
-    protected override void OnInitialized()
-    {
-        this.IsBusy = true;
-        ItemsProvider = async req =>
-        {
-            StateHasChanged();
-            PaginationRequest paginationRequest = new()
-                {
-                    PageSize = paginationState.ItemsPerPage,
-                    StartIndex = req.StartIndex
-                };
-            var items = await videoViewerService
-            .GetPaginatedVideoViewerInfoForUserIdAsync(paginationRequest,
-                videoId: this.VideoId!,
-                userId: this.userProviderService!.GetCurrentUserId()!,
-            this.cancellationTokenSource.Token);
-            StateHasChanged();
-            var result = GridItemsProviderResult.From<VideoViewerModel>(items!.Items!, items.TotalItems);
-            return result;
-        };
-        this.IsBusy = false;
-    }
-
-    void IDisposable.Dispose()
-    {
-        this.cancellationTokenSource.Dispose();
-    }
-}
+<CustomFluentPaginator State="@this.paginationState"></CustomFluentPaginator>
