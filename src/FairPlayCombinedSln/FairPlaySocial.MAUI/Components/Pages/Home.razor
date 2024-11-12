@@ -100,7 +100,8 @@
             }
             catch (Exception ex)
             {
-                await Application.Current!.MainPage!.DisplayAlert("Error", ex.Message, "OK");
+                
+                await Application.Current!.Windows[0].Page!.DisplayAlert("Error", ex.Message, "OK");
                 return GridItemsProviderResult.From<PostModel>(Array.Empty<PostModel>(), 0);
             }
         };
@@ -127,7 +128,7 @@
         }
         else
         {
-            await Application.Current!.MainPage!.DisplayAlert("Not support", "Your devices does not support capturing photos","OK");
+            await Application.Current!.Windows[0].Page!.DisplayAlert("Not support", "Your devices does not support capturing photos", "OK");
         }
     }
 
