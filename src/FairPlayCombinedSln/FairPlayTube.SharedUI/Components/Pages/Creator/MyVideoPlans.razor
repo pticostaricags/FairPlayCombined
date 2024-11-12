@@ -1,5 +1,5 @@
 ﻿@page "/Creator/MyVideoPlans"
-@implements IDisposable
+@implements IAsyncDisposable
 
 @attribute [Authorize(Roles = FairPlayCombined.Common.Constants.RoleName.BasicPlanUser)]
 
@@ -9,16 +9,16 @@
 @using FairPlayCombined.Interfaces.FairPlayTube
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.FairPlayTube.VideoPlan
+@using FairPlayTube.SharedUI.Components.Paginators
 @using FairPlayTube.SharedUI.Components.Spinners
 @using Google.Apis.YouTube.v3.Data
 
-@inject IVideoPlanService videoPlanService
-@inject IToastService toastService
-@inject IUserProviderService userProviderService
-@inject ILogger<MyVideoPlans> logger
+<PageTitle>
+    @Localizer![MyVideoPlansTextKey]
+</PageTitle>
 
 <FluentLabel Typo="Typography.H3">
-    My Video Plans
+    @Localizer![MyVideoPlansTextKey]
 </FluentLabel>
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
@@ -26,45 +26,14 @@
 <FluentDataGrid ItemsProvider="this.itemsProvider">
     <TemplateColumn>
         <FluentAnchor data-enhance-nav="false"
-                      data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"
+                      data-bs-toggle="tooltip" data-bs-placement="top" title="@Localizer![EditTextKey]"
                       IconStart="@(new Icons.Regular.Size20.Edit())"
                       Href="@($"/Creator/UpdateVideoPlan/{context.VideoPlanId}")">
-                      Edit
+            @Localizer![EditTextKey]
         </FluentAnchor>
     </TemplateColumn>
-    <PropertyColumn Property="@(p=>p.VideoName)"></PropertyColumn>
-    <PropertyColumn Property="@(p=>p.VideoDescription)"></PropertyColumn>
-    <PropertyColumn Property="@(p=>p.VideoScript)"></PropertyColumn>
+    <PropertyColumn Property="@(p=>p.VideoName)" Title="@Localizer![VideoNameTextKey]"></PropertyColumn>
+    <PropertyColumn Property="@(p=>p.VideoDescription)" Title="@Localizer![VideoDescriptionTextKey]"></PropertyColumn>
+    <PropertyColumn Property="@(p=>p.VideoScript)" Title="@Localizer![VideoScriptTextKey]"></PropertyColumn>
 </FluentDataGrid>
-<FluentPaginator State="this.paginationState"></FluentPaginator>
-@code {
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private bool IsBusy { get; set; }
-    private readonly PaginationState paginationState = new()
-        {
-            ItemsPerPage = Constants.Pagination.PageSize
-        };
-    private GridItemsProvider<VideoPlanModel>? itemsProvider;
-
-    protected override void OnInitialized()
-    {
-        this.itemsProvider = async req =>
-        {
-            this.IsBusy = true;
-            StateHasChanged();
-            var items = await this.videoPlanService.GetPaginatedVideoPlanAsync(paginationRequest: new()
-            {
-                PageSize = paginationState.ItemsPerPage
-            }, cancellationToken:this.cancellationTokenSource.Token);
-            this.IsBusy = false;
-            StateHasChanged();
-            var result = GridItemsProviderResult.From<VideoPlanModel>(items!.Items!, items.TotalItems);
-            return result;
-        };
-    }
-
-    void IDisposable.Dispose()
-    {
-        this.cancellationTokenSource.Dispose();
-    }
-}
+<CustomFluentPaginator State="@this.paginationState"></CustomFluentPaginator>
