@@ -18,19 +18,7 @@
 
 @attribute [StreamRendering(enabled: true)]
 
-@inject IStringLocalizer<MyVideos> localizer
-@inject IJSRuntime jsRuntime
-@inject IVideoInfoService videoInfoService
-@inject IUserProviderService userProviderService
-@inject IToastService toastService
-@inject IOpenAIService openAIService
-@inject IVideoCaptionsService videoCaptionsService
-@inject IVideoDigitalMarketingDailyPostsService videoDigitalMarketingDailyPostsService
-@inject IDialogService dialogService
-
-@inject NavigationManager navigationManager
-
-<PageTitle>@localizer[MyVideosPageTitleTextKey]</PageTitle>
+<PageTitle>@Localizer![MyVideosPageTitleTextKey]</PageTitle>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
@@ -48,12 +36,12 @@
                 </HeadingTemplate>
                 <ChildContent>
                     <div>
-                        <FluentLabel Typo="Typography.Body">@localizer[IndexingCostTextKey]: @context.IndexingCost.ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
+                        <FluentLabel Typo="Typography.Body">@Localizer![IndexingCostTextKey]: @context.IndexingCost.ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
                     </div>
                     @if (context.YouTubeVideoId != null)
                     {
                         <div>
-                            <FluentLabel Typo="Typography.Body">@localizer[YouTubeVideoIdTextKey]: <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">@context.YouTubeVideoId</a></FluentLabel>
+                            <FluentLabel Typo="Typography.Body">@Localizer![YouTubeVideoIdTextKey]: <a data-enhance-nav="false" href="@($"https://youtu.be/{context.YouTubeVideoId}")" target="_blank">@context.YouTubeVideoId</a></FluentLabel>
                         </div>
                     }
                     <div>
@@ -65,95 +53,3 @@
     </TemplateColumn>
 </FluentDataGrid>
 <FluentPaginator State="this.paginationState"></FluentPaginator>
-
-@code
-{
-    private bool IsBusy { get; set; }
-    private GridItemsProvider<VideoInfoModel>? ItemsProvider;
-    private readonly PaginationState paginationState = new()
-        {
-            ItemsPerPage = Constants.Pagination.PageSize
-        };
-    private readonly CancellationTokenSource cancellationTokenSource = new();
-    private static CultureInfo CurrencyCulture = new(Constants.Cultures.CurrencyDefaultCulture);
-    private const string CurrencyFormat = Constants.Cultures.CurrencyDefaultFormat;
-
-    protected override void OnInitialized()
-    {
-        ItemsProvider = async req =>
-        {
-            try
-            {
-                this.IsBusy = true;
-                StateHasChanged();
-                PaginationRequest paginationRequest = new()
-                    {
-                        PageSize = paginationState.ItemsPerPage,
-                        StartIndex = req.StartIndex,
-                        SortingItems = [new SortingItem()
-                    {
-                        PropertyName=nameof(VideoInfoModel.RowCreationDateTime),
-                        SortType= SortType.Descending
-                    }]
-                    };
-                var items = await videoInfoService.GetPaginatedCompletedVideoInfobyUserIdAsync(paginationRequest,
-                    userId: this.userProviderService!.GetCurrentUserId()!,
-                this.cancellationTokenSource.Token);
-                this.IsBusy = false;
-                StateHasChanged();
-                var result = GridItemsProviderResult.From<VideoInfoModel>(items!.Items!, items.TotalItems);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                this.toastService.ShowError(ex.Message);
-                return GridItemsProviderResult.From<VideoInfoModel>(
-                    Array.Empty<VideoInfoModel>(), 0);
-            }
-        };
-    }
-
-    private async Task OnVideoDeletedAsync()
-    {
-        await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await this.cancellationTokenSource.CancelAsync();
-        this.cancellationTokenSource.Dispose();
-    }
-
-    #region Resource Keys
-    [ResourceKey(defaultValue:"My Videos")]
-    public const string MyVideosPageTitleTextKey = "MyVideosPageTitleText";
-    [ResourceKey(defaultValue:"Indexing Cost")]
-    public const string IndexingCostTextKey = "IndexingCostText";
-    [ResourceKey(defaultValue: "YouTube Video Id")]
-    public const string YouTubeVideoIdTextKey = "YouTubeVideoIdText";
-    [ResourceKey(defaultValue: "Delete Video")]
-    public const string DeleteVideoTextKey = "DeleteVideoText";
-    [ResourceKey(defaultValue: "Create YouTube Thumbnail")]
-    public const string CreateYouTubeThumbnailTextKey = "CreateYouTubeThumbnailText";
-    [ResourceKey(defaultValue: "Create Infographic")]
-    public const string CreateInfographicTextKey = "CreateInfographicText";
-    [ResourceKey(defaultValue: "Get LinkedIn Marketing Ideas")]
-    public const string GetLinkedInMarketingIdeasTextKey = "GetLinkedInMarketingIdeasText";
-    [ResourceKey(defaultValue: "Get New LinkedIn Daily Posts Ideas")]
-    public const string GetNewLinkedInDailyPostsIdeasTextKey = "GetNewLinkedInDailyPostsIdeasText";
-    [ResourceKey(defaultValue: "Get Passive Income Ideas")]
-    public const string GetPassiveIncomeIdeasTextKey = "GetPassiveIncomeIdeasText";
-    [ResourceKey(defaultValue: "Create LinkedIn Article")]
-    public const string CreateLinkedInArticleTextKey = "CreateLinkedInArticleText";
-    [ResourceKey(defaultValue: "View My Video Viewers")]
-    public const string ViewMyVideoViewersTextKey = "ViewMyVideoViewersText";
-    [ResourceKey(defaultValue: "Manage YouTube Captions")]
-    public const string ManageYouTubeCaptionsTextKey = "ManageYouTubeCaptionsText";
-    [ResourceKey(defaultValue: "Watch on YouTube")]
-    public const string WatchOnYouTubeTextKey = "WatchOnYouTubeText";
-    [ResourceKey(defaultValue: "Create YouTube Chapters")]
-    public const string CreateYouTubeChaptersTextKey = "CreateYouTubeChaptersText";
-    [ResourceKey(defaultValue: "Export Video Data")]
-    public const string ExportVideoDataTextKey = "ExportVideoDataText";
-    #endregion Resource Keys
-}
