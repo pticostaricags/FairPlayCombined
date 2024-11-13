@@ -42,76 +42,83 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-@if (this.VideoInfoId.HasValue)
+@if (this.VideoInfoModel != null)
 {
-    <FluentAccordion>
-        <FluentAccordionItem Expanded="true">
-            <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
-        </FluentAccordionItem>
-    </FluentAccordion>
-}
-
-@if (this.HasRequiredFundsToCreate)
-{
-    <div>
-        @if (this.ImageStyles?.Length > 0)
-        {
-            <FluentSelect Appearance="Appearance.Accent"
-            @bind-SelectedOption="@this.SelectedImageStyle"
-            Items="@this.ImageStyles"
-            Label="@localizer[ImageStyleTextKey]"
-            OptionText="@(p=>p!.StyleName!)"
-            OptionValue="@(p=>p!.ImageStyleId!.ToString())"></FluentSelect>
-        }
-    </div>
-    <div>
-        <FluentCheckbox Label="@localizer[RequestCleanThumbnailTextKey]"
-        @bind-Value="@this.RequestCleanThumbnail"></FluentCheckbox>
-    </div>
-    <div>
-        <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-        OnClick="OnCreateNewThumbnailClickedAsync">@localizer[CreateNewThumbnailTextKey]</FluentButton>
-    </div>
-}
-<div>
-    @if (this.Items?.Items?.Length > 0)
-    {
-        <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
-            @foreach (var singleThumbnail in this.Items.Items)
+    <VideoAuthorizeView VideoInfoModel="@this.VideoInfoModel" CancellationTokenSource="@this.cancellationTokenSource">
+        <AuthorizedContent>
+            @if (this.VideoInfoId.HasValue)
             {
-                <div style="width:400px;">
-                    <FluentLabel Typo="Typography.Subject">@localizer[CostTextKey]: @singleThumbnail.ThumbnailCost.ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
-                    @if (!this.PagePhotos.ContainsKey(singleThumbnail.PhotoId))
+                <FluentAccordion>
+                    <FluentAccordionItem Expanded="true">
+                        <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
+                    </FluentAccordionItem>
+                </FluentAccordion>
+            }
+
+            @if (this.HasRequiredFundsToCreate)
+            {
+                <div>
+                    @if (this.ImageStyles?.Length > 0)
                     {
-                        <FluentCard class="card-padding" Width="400">
-                            <FluentSkeleton Shape="SkeletonShape.Circle"></FluentSkeleton>
-                            <FluentProgressRing></FluentProgressRing>
-                        </FluentCard>
-                    }
-                    else
-                    {
-                        <img loading="lazy" src="@(this.PagePhotos[singleThumbnail.PhotoId])" style="width:100%;" />
+                        <FluentSelect Appearance="Appearance.Accent"
+                                      @bind-SelectedOption="@this.SelectedImageStyle"
+                                      Items="@this.ImageStyles"
+                                      Label="@localizer[ImageStyleTextKey]"
+                                      OptionText="@(p=>p!.StyleName!)"
+                                      OptionValue="@(p=>p!.ImageStyleId!.ToString())"></FluentSelect>
                     }
                 </div>
+                <div>
+                    <FluentCheckbox Label="@localizer[RequestCleanThumbnailTextKey]"
+                                    @bind-Value="@this.RequestCleanThumbnail"></FluentCheckbox>
+                </div>
+                <div>
+                    <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
+                                  OnClick="OnCreateNewThumbnailClickedAsync">@localizer[CreateNewThumbnailTextKey]</FluentButton>
+                </div>
             }
-        </FluentStack>
-    }
-    <CustomFluentPaginator State="@this.paginationState" CurrentPageIndexChanged="OnCurrentPageIndexChangedAsync"></CustomFluentPaginator>
-</div>
-<FluentDivider Role="DividerRole.Separator"></FluentDivider>
-<div>
-    @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
-    {
-        <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
-            <img width="400" class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" loading="lazy" />
-        </a>
-        <p>
-            <FluentLabel Typo="Typography.Body">
-                @this.RevisedPrompt
-            </FluentLabel>
-        </p>
-    }
-</div>
+            <div>
+                @if (this.Items?.Items?.Length > 0)
+                {
+                    <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
+                        @foreach (var singleThumbnail in this.Items.Items)
+                        {
+                            <div style="width:400px;">
+                                <FluentLabel Typo="Typography.Subject">@localizer[CostTextKey]: @singleThumbnail.ThumbnailCost.ToString(CurrencyFormat, CurrencyCulture)</FluentLabel>
+                                @if (!this.PagePhotos.ContainsKey(singleThumbnail.PhotoId))
+                                {
+                                    <FluentCard class="card-padding" Width="400">
+                                        <FluentSkeleton Shape="SkeletonShape.Circle"></FluentSkeleton>
+                                        <FluentProgressRing></FluentProgressRing>
+                                    </FluentCard>
+                                }
+                                else
+                                {
+                                    <img loading="lazy" src="@(this.PagePhotos[singleThumbnail.PhotoId])" style="width:100%;" />
+                                }
+                            </div>
+                        }
+                    </FluentStack>
+                }
+                <CustomFluentPaginator State="@this.paginationState" CurrentPageIndexChanged="OnCurrentPageIndexChangedAsync"></CustomFluentPaginator>
+            </div>
+            <FluentDivider Role="DividerRole.Separator"></FluentDivider>
+            <div>
+                @if (!String.IsNullOrWhiteSpace(this.GeneratedYouTubeThumbnailUri))
+                {
+                    <a data-enhance-nav="false" href="@this.GeneratedYouTubeThumbnailUri" target="_blank">
+                        <img width="400" class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedYouTubeThumbnailUri" loading="lazy" />
+                    </a>
+                    <p>
+                        <FluentLabel Typo="Typography.Body">
+                            @this.RevisedPrompt
+                        </FluentLabel>
+                    </p>
+                }
+            </div>
+        </AuthorizedContent>
+    </VideoAuthorizeView>
+}
 
 @code
 {

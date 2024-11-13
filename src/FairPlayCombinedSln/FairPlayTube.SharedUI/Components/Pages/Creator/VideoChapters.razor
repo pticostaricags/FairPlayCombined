@@ -10,6 +10,7 @@
 @using FairPlayCombined.Models.FairPlayTube.VideoInfo
 @using FairPlayCombined.Models.Pagination
 @using FairPlayTube.SharedUI.Components.Spinners
+@using FairPlayTube.SharedUI.Components.Video
 
 <PageTitle>
     @Localizer![VideoChaptersTextKey] @(VideoInfoModel != null ? $"- {VideoInfoModel.Name}" : String.Empty)
@@ -21,16 +22,23 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-<div>
-    <FluentButton Type="ButtonType.Button" OnClick="OnRecreatePlanButtonclickedAsync">
-        @Localizer![ReCreateChaptersTextKey]
-    </FluentButton>
-</div>
-<div>
-    @if (!String.IsNullOrWhiteSpace(this.YouTubeChapters))
-    {
-        <p>
-            @((MarkupString)this.YouTubeChapters)
-        </p>
-    }
-</div>
+@if (this.VideoInfoModel != null)
+{
+    <VideoAuthorizeView VideoInfoModel="@this.VideoInfoModel" CancellationTokenSource="@this.cancellationTokenSource">
+        <AuthorizedContent>
+            <div>
+                <FluentButton Type="ButtonType.Button" OnClick="OnRecreatePlanButtonclickedAsync">
+                    @Localizer![ReCreateChaptersTextKey]
+                </FluentButton>
+            </div>
+            <div>
+                @if (!String.IsNullOrWhiteSpace(this.YouTubeChapters))
+                {
+                    <p>
+                        @((MarkupString)this.YouTubeChapters)
+                    </p>
+                }
+            </div>
+        </AuthorizedContent>
+    </VideoAuthorizeView>
+}

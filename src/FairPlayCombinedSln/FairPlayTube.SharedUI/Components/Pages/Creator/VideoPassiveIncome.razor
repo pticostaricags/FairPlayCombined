@@ -24,36 +24,44 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-@if (this.VideoInfoId.HasValue)
+@if (this.VideoInfoModel != null)
 {
-    <FluentAccordion>
-        <FluentAccordionItem Expanded="true">
-            <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
-        </FluentAccordionItem>
-    </FluentAccordion>
-}
+    <VideoAuthorizeView VideoInfoModel="@this.VideoInfoModel" CancellationTokenSource="@this.cancellationTokenSource">
+        <AuthorizedContent>
+            @if (this.VideoInfoId.HasValue)
+            {
+                <FluentAccordion>
+                    <FluentAccordionItem Expanded="true">
+                        <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
+                    </FluentAccordionItem>
+                </FluentAccordion>
+            }
 
-<div>
-    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@SupportedCultures"
-    Embedded="true">
-        <OptionTemplate>@context!.DisplayName</OptionTemplate>
-    </FluentSelect>
-</div>
-<div>
-    <FluentButton Type="ButtonType.Button" OnClick="OnCreatePassiveIncomeIdeaButtonClickedAsync">
-        @Localizer![CreatePassiveIncomeIdeaTextKey]
-    </FluentButton>
-</div>
-<div>
-    @if (this.PassiveIncomeIdeas?.Count > 0)
-    {
-        @foreach (var singlePassiveIncomeIdea in this.PassiveIncomeIdeas)
-        {
             <div>
-                <p>
-                    @((MarkupString)singlePassiveIncomeIdea)
-                </p>
+                <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@SupportedCultures"
+                              Embedded="true">
+                    <OptionTemplate>@context!.DisplayName</OptionTemplate>
+                </FluentSelect>
             </div>
-        }
-    }
-</div>
+            <div>
+                <FluentButton Type="ButtonType.Button" OnClick="OnCreatePassiveIncomeIdeaButtonClickedAsync">
+                    @Localizer![CreatePassiveIncomeIdeaTextKey]
+                </FluentButton>
+            </div>
+            <div>
+                @if (this.PassiveIncomeIdeas?.Count > 0)
+                {
+                    @foreach (var singlePassiveIncomeIdea in this.PassiveIncomeIdeas)
+                    {
+                        <div>
+                            <p>
+                                @((MarkupString)singlePassiveIncomeIdea)
+                            </p>
+                        </div>
+                    }
+                }
+            </div>
+
+        </AuthorizedContent>
+    </VideoAuthorizeView>
+}

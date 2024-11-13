@@ -26,54 +26,63 @@
 </FluentLabel>
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
-@if (this.VideoInfoId.HasValue)
-{
-    <FluentAccordion>
-        <FluentAccordionItem Expanded="true">
-            <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
-        </FluentAccordionItem>
-    </FluentAccordion>
-}
 
-<div>
-    <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-    OnClick="OnCreateNewInfographicClickedAsync">@Localizer![CreateNewInfographicTextKey]</FluentButton>
-</div>
-<div>
-    @if (this.Items?.Items?.Length > 0)
-    {
-        <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
-            @foreach (var singlePhotoId in this.Items.Items.Select(p=>p.PhotoId))
+@if (this.VideoInfoModel != null)
+{
+    <VideoAuthorizeView VideoInfoModel="@this.VideoInfoModel" CancellationTokenSource="@this.cancellationTokenSource">
+        <AuthorizedContent>
+            @if (this.VideoInfoId.HasValue)
             {
-                <div style="width:400px;">
-                    @if (!this.PagePhotos.ContainsKey(singlePhotoId))
-                    {
-                        <FluentCard class="card-padding" Width="400">
-                            <FluentSkeleton Shape="SkeletonShape.Circle"></FluentSkeleton>
-                            <FluentProgressRing></FluentProgressRing>
-                        </FluentCard>
-                    }
-                    else
-                    {
-                        <img @key="@singlePhotoId" loading="lazy" src="@(this.PagePhotos[singlePhotoId])" width="400" />
-                    }
-                </div>
+                <FluentAccordion>
+                    <FluentAccordionItem Expanded="true">
+                        <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
+                    </FluentAccordionItem>
+                </FluentAccordion>
             }
-        </FluentStack>
-    }
-    <CustomFluentPaginator State="@this.paginationState" CurrentPageIndexChanged="OnCurrentPageIndexChangedAsync"></CustomFluentPaginator>
-</div>
-<FluentDivider Role="DividerRole.Separator"></FluentDivider>
-<div>
-    @if (!String.IsNullOrWhiteSpace(this.GeneratedInfographicUri))
-    {
-        <a data-enhance-nav="false" href="@this.GeneratedInfographicUri" target="_blank">
-            <img width="400" class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedInfographicUri" />
-        </a>
-        <p>
-            <FluentLabel Typo="Typography.Body">
-                @this.RevisedPrompt
-            </FluentLabel>
-        </p>
-    }
-</div>
+
+            <div>
+                <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
+                              OnClick="OnCreateNewInfographicClickedAsync">@Localizer![CreateNewInfographicTextKey]</FluentButton>
+            </div>
+            <div>
+                @if (this.Items?.Items?.Length > 0)
+                {
+                    <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
+                        @foreach (var singlePhotoId in this.Items.Items.Select(p => p.PhotoId))
+                        {
+                            <div style="width:400px;">
+                                @if (!this.PagePhotos.ContainsKey(singlePhotoId))
+                                {
+                                    <FluentCard class="card-padding" Width="400">
+                                        <FluentSkeleton Shape="SkeletonShape.Circle"></FluentSkeleton>
+                                        <FluentProgressRing></FluentProgressRing>
+                                    </FluentCard>
+                                }
+                                else
+                                {
+                                    <img @key="@singlePhotoId" loading="lazy" src="@(this.PagePhotos[singlePhotoId])" width="400" />
+                                }
+                            </div>
+                        }
+                    </FluentStack>
+                }
+                <CustomFluentPaginator State="@this.paginationState" CurrentPageIndexChanged="OnCurrentPageIndexChangedAsync"></CustomFluentPaginator>
+            </div>
+            <FluentDivider Role="DividerRole.Separator"></FluentDivider>
+            <div>
+                @if (!String.IsNullOrWhiteSpace(this.GeneratedInfographicUri))
+                {
+                    <a data-enhance-nav="false" href="@this.GeneratedInfographicUri" target="_blank">
+                        <img width="400" class="@ThemeConfiguration.Images.ThumbnailDefaultCss" src="@this.GeneratedInfographicUri" />
+                    </a>
+                    <p>
+                        <FluentLabel Typo="Typography.Body">
+                            @this.RevisedPrompt
+                        </FluentLabel>
+                    </p>
+                }
+            </div>
+
+        </AuthorizedContent>
+    </VideoAuthorizeView>
+}
