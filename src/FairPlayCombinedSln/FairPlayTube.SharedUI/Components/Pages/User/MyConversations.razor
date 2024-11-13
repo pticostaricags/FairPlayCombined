@@ -42,12 +42,12 @@
                             @if (context.Id == this.SelectedUser?.Id)
                             {
                                 <strong>
-                                    @context.UserName
+                                    @context.FullName
                                 </strong>
                             }
                             else
                             {
-                                @context.UserName
+                                @context.FullName
                             }
                         </FluentButton>
                     </TemplateColumn>
