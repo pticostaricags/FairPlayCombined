@@ -30,29 +30,16 @@
     private ApiClient? apiClient { get; set; }
     [Inject]
     private NavigationManager? navingationManager { get; set; }
+    [Inject] AuthenticationStateProvider? authenticationStateProvider { get; set; }
     private readonly LoginRequest loginRequest = new();
 
     private async Task OnValidSubmitAsync()
     {
         try
         {
-            var result = await this.apiClient!.Login.PostAsync(this.loginRequest);
-            if (!String.IsNullOrWhiteSpace(result!.AccessToken))
-            {
-                UserContext.AccessToken = result.AccessToken;
-                UserContext.AccessTokenExpiresIn = result.ExpiresIn;
-                UserContext.RefreshToken = result.RefreshToken;
-                UserContext.TokenExpiraton = DateTimeOffset.UtcNow.AddMinutes(result!.ExpiresIn!.Value);
-                ReloadService.IsReloading = true;
-                StateHasChanged();
-                this.navingationManager!.NavigateTo("/", false);
-                ReloadService.IsReloading = false;
-                StateHasChanged();
-            }
-            else
-            {
-                await Application.Current!.Windows[0].Page!.DisplayAlert("Error", "Unknown error", "OK");
-            }
+            var customAuthProvider = authenticationStateProvider as CustomAuthenticationStateProvider;
+            await customAuthProvider!.LoginAsync(this.loginRequest);
+            StateHasChanged();
         }
         catch (ApiException apiEx)
         {
