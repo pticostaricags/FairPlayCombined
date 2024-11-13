@@ -3,6 +3,8 @@ using FairPlayCombined.Common.CustomAttributes;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 
 namespace FairPlayTube.ClientServices.CustomLocalization
@@ -13,6 +15,7 @@ namespace FairPlayTube.ClientServices.CustomLocalization
         IMemoryCache memoryCache
         ) : IStringLocalizer<T>
     {
+        private readonly Lock _lock=new();
         public LocalizedString this[string name]
         {
             get
@@ -34,14 +37,17 @@ namespace FairPlayTube.ClientServices.CustomLocalization
 
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
-            var response = memoryCache.GetOrCreate(
-                $"{nameof(ApiLocalizer<T>)}.{GetAllStrings}", (entry) =>
+            var typeFullName = typeof(T).FullName;
+            var cacheKey = $"{typeFullName}-{nameof(GetAllStrings)}-{CultureInfo.CurrentCulture.Name}";
+            var response = memoryCache.GetOrCreateAsync(
+                cacheKey, (entry) =>
                 {
                     entry.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
                     var response = anonymousClient.Localization.GetAllResources.GetAsync().Result;
-                    return response!;
-                });
-            var result = response!.Select(p =>
+                    return Task.FromResult(response);
+                }).Result;
+            var typeName = typeof(T).FullName;
+            var result = response!.Where(p=>p.Type == typeName).Select(p =>
             new LocalizedString(p.Key!, p.Value!))
                 .ToArray();
             return result;
@@ -49,7 +55,26 @@ namespace FairPlayTube.ClientServices.CustomLocalization
 
         private string GetString(string name)
         {
-            return name;
+            try
+            {
+                using (this._lock.EnterScope())
+                {
+                    var typeFullName = typeof(T).FullName;
+                    var cacheKey = $"{typeFullName}-{nameof(GetString)}-{name}-{CultureInfo.CurrentCulture.Name}";
+                    var result = memoryCache!.GetOrCreate(cacheKey, (cacheEntry) =>
+                    {
+                        cacheEntry.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
+                        var data = this.GetAllStrings().FirstOrDefault(p => p.Name == name)?.Value;
+                        return data ?? name;
+                    });
+                    return result!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return name;
+            }
         }
     }
 }

@@ -3,6 +3,8 @@ using FairPlayTube.ClientServices.KiotaClient.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace FairPlayTube.ClientServices.CustomLocalization
 {
@@ -11,6 +13,7 @@ namespace FairPlayTube.ClientServices.CustomLocalization
         KiotaClient.ApiClient anonymousClient,
         IMemoryCache memoryCache) : IStringLocalizer
     {
+        private readonly Lock _lock = new();
         public LocalizedString this[string name]
         {
             get
@@ -32,13 +35,14 @@ namespace FairPlayTube.ClientServices.CustomLocalization
 
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
-            var response = memoryCache.GetOrCreate(
-                $"{nameof(ApiLocalizer)}.{GetAllStrings}", (entry) =>
+            string cacheKey = $"{nameof(GetAllStrings)} -{CultureInfo.CurrentCulture.Name}";
+            var response = memoryCache.GetOrCreateAsync(
+                cacheKey, (entry) =>
                 {
                     entry.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
                     var response = anonymousClient.Localization.GetAllResources.GetAsync().Result;
-                    return response!;
-                });
+                    return Task.FromResult(response);
+                }).Result;
             var result = response!.Select(p =>
             new LocalizedString(p.Key!, p.Value!))
                 .ToArray();
@@ -47,8 +51,25 @@ namespace FairPlayTube.ClientServices.CustomLocalization
 
         private string GetString(string name)
         {
-            var allStrings = GetAllStrings(false);
-            return allStrings.SingleOrDefault(p => p.Name == name)?.Name ?? name;
+            try
+            {
+                using (this._lock.EnterScope())
+                {
+                    var cacheKey = $"{name}-{CultureInfo.CurrentCulture.Name}";
+                    var result = memoryCache.GetOrCreate(cacheKey, cacheEntry =>
+                    {
+                        cacheEntry.SlidingExpiration = Constants.CacheConfiguration.LocalizationCacheDuration;
+                        var data = this.GetAllStrings().SingleOrDefault(p => p.Name == name)?.Name;
+                        return data ?? name;
+                    });
+                    return result!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return name;
+            }
         }
     }
 }
