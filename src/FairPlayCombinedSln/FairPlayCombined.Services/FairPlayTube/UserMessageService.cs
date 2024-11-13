@@ -75,11 +75,11 @@ namespace FairPlayCombined.Services.FairPlayTube
                 .OrderByDescending(p => p.RowCreationDateTime)
                 .Select(p => new UserMessageModel()
                 {
-                    FromApplicationUserFullName = p.FromApplicationUser.UserName,
+                    FromApplicationUserFullName = $"{p.FromApplicationUser.Name} {p.FromApplicationUser.Lastname}",
                     Message = p.Message,
                     ReadByDestinatary = p.ReadByDestinatary,
                     RowCreationDateTime = p.RowCreationDateTime,
-                    ToApplicationUserFullName = p.ToApplicationUser.UserName,
+                    ToApplicationUserFullName = $"{p.ToApplicationUser.Name} {p.ToApplicationUser.Lastname}",
                     ToApplicationUserId = p.ToApplicationUserId
                 }).ToArrayAsync(cancellationToken);
         }
