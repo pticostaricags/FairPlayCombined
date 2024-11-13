@@ -22,24 +22,31 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-@if (this.VideoInfoId.HasValue)
+@if (this.VideoInfoModel != null)
 {
-    <FluentAccordion>
-        <FluentAccordionItem Expanded="true">
-            <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
-        </FluentAccordionItem>
-    </FluentAccordion>
+    <VideoAuthorizeView VideoInfoModel="@this.VideoInfoModel" CancellationTokenSource="@this.cancellationTokenSource">
+        <AuthorizedContent>
+            @if (this.VideoInfoId.HasValue)
+            {
+                <FluentAccordion>
+                    <FluentAccordionItem Expanded="true">
+                        <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
+                    </FluentAccordionItem>
+                </FluentAccordion>
+            }
+
+            <FluentButton Type="ButtonType.Button" OnClick="CreateLinkedInArticleAsync">
+                @Localizer![ReCreateArticleTextKey]
+            </FluentButton>
+
+            <div>
+                @if (!String.IsNullOrWhiteSpace(this.LinkedInArticleDraftText))
+                {
+                    <p>
+                        @((MarkupString)this.LinkedInArticleDraftText)
+                    </p>
+                }
+            </div>
+        </AuthorizedContent>
+    </VideoAuthorizeView>
 }
-
-<FluentButton Type="ButtonType.Button" OnClick="CreateLinkedInArticleAsync">
-    @Localizer![ReCreateArticleTextKey]
-</FluentButton>
-
-<div>
-    @if (!String.IsNullOrWhiteSpace(this.LinkedInArticleDraftText))
-    {
-        <p>
-            @((MarkupString)this.LinkedInArticleDraftText)
-        </p>
-    }
-</div>

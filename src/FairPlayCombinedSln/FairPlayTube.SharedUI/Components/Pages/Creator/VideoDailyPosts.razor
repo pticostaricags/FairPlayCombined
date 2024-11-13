@@ -28,51 +28,58 @@
 
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 
-@if (this.VideoInfoId.HasValue)
+@if (this.VideoInfoModel != null)
 {
-    <FluentAccordion>
-        <FluentAccordionItem Expanded="true">
-            <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
-        </FluentAccordionItem>
-    </FluentAccordion>
+    <VideoAuthorizeView VideoInfoModel="@this.VideoInfoModel" CancellationTokenSource="@this.cancellationTokenSource">
+        <AuthorizedContent>
+            @if (this.VideoInfoId.HasValue)
+            {
+                <FluentAccordion>
+                    <FluentAccordionItem Expanded="true">
+                        <VideoActions context="this.VideoInfoModel" OnVideoDeleted="LoadDataAsync"></VideoActions>
+                    </FluentAccordionItem>
+                </FluentAccordion>
+            }
+
+            <div>
+                <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@SupportedCultures"
+                              Embedded="true">
+                    <OptionTemplate>@context!.DisplayName</OptionTemplate>
+                </FluentSelect>
+            </div>
+            <div>
+                <FluentRadioGroup DisplayName="Social Network" @bind-Value="@this.SelectedSocialNetwork">
+                    <FluentRadio Value="@("LinkedIn")">LinkedIn</FluentRadio>
+                    <FluentRadio Value="@("X")">Twitter/X</FluentRadio>
+                </FluentRadioGroup>
+            </div>
+            <div>
+                <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
+                              OnClick="OnCreateVideoDailyPostAsync">@Localizer![CreateVideoDailyPostsTextKey]</FluentButton>
+            </div>
+
+            @if (this.ItemsProvider != null)
+            {
+                <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
+                    <TemplateColumn Class="multiline-text" Title="Posts">
+                        <FluentAccordion>
+                            <FluentAccordionItem Expanded="false" Heading="@($"({context.SocialNetworkName} - Expand to see the content)")">
+                                @((MarkupString)context.HtmlVideoDigitalMarketingDailyPostsIdeas!)
+                            </FluentAccordionItem>
+                        </FluentAccordion>
+                    </TemplateColumn>
+                </FluentDataGrid>
+                <CustomFluentPaginator State="@this.paginationState"></CustomFluentPaginator>
+            }
+
+            <div>
+                @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingDailyPostsIdeas))
+                {
+                    <p>
+                        @((MarkupString)this.DigitalMarketingDailyPostsIdeas)
+                    </p>
+                }
+            </div>
+        </AuthorizedContent>
+    </VideoAuthorizeView>
 }
-
-<div>
-    <FluentSelect @bind-SelectedOption="@this.SelectedCulture" Items="@SupportedCultures"
-    Embedded="true">
-        <OptionTemplate>@context!.DisplayName</OptionTemplate>
-    </FluentSelect>
-</div>
-<div>
-    <FluentRadioGroup DisplayName="Social Network" @bind-Value="@this.SelectedSocialNetwork">
-        <FluentRadio Value="@("LinkedIn")">LinkedIn</FluentRadio>
-        <FluentRadio Value="@("X")">Twitter/X</FluentRadio>
-    </FluentRadioGroup>
-</div>
-<div>
-    <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Button"
-    OnClick="OnCreateVideoDailyPostAsync">@Localizer![CreateVideoDailyPostsTextKey]</FluentButton>
-</div>
-
-@if (this.ItemsProvider != null)
-{
-    <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
-        <TemplateColumn Class="multiline-text" Title="Posts">
-            <FluentAccordion>
-                <FluentAccordionItem Expanded="false" Heading="@($"({context.SocialNetworkName} - Expand to see the content)")">
-                    @((MarkupString)context.HtmlVideoDigitalMarketingDailyPostsIdeas!)
-                </FluentAccordionItem>
-            </FluentAccordion>
-        </TemplateColumn>
-    </FluentDataGrid>
-    <CustomFluentPaginator State="@this.paginationState"></CustomFluentPaginator>
-}
-
-<div>
-    @if (!String.IsNullOrWhiteSpace(this.DigitalMarketingDailyPostsIdeas))
-    {
-        <p>
-            @((MarkupString)this.DigitalMarketingDailyPostsIdeas)
-        </p>
-    }
-</div>

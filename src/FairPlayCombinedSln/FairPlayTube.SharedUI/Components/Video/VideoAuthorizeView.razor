@@ -1,0 +1,45 @@
+﻿@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.FairPlayTube
+@using FairPlayCombined.Models.FairPlayTube.VideoInfo
+
+@inject IUserProviderService userProviderService
+@inject IVideoInfoService videoInfoService
+@inject IStringLocalizer<VideoAuthorizeView> localizer
+
+@if (IsVideoOwner)
+{
+    @AuthorizedContent
+}
+else
+{
+    @localizer[NotAuthorizedTextKey]
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public VideoInfoModel? VideoInfoModel { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public RenderFragment? AuthorizedContent { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public CancellationTokenSource? CancellationTokenSource { get; set; }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "You are not authorized to access this resource")]
+    public const string NotAuthorizedTextKey = "NotAuthorizedText";
+
+    private bool IsVideoOwner => this.userProviderService.GetCurrentUserId() == this.VideoInfoModel!.ApplicationUserId;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (!IsVideoOwner)
+        {
+            CancellationTokenSource!.Cancel();
+        }
+    }
+    #endregion Resource Keys
+
+}
