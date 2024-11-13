@@ -121,98 +121,121 @@
             </div>
             <FluentLabel Color="Color.Warning">
                 <FluentIcon Value="@(new Icons.Regular.Size20.Info())"></FluentIcon>
-                This published version is intentionally limited in functionality.
-                To learn about the current full capabilities use the following link:
+                @localizer[LimitedFuncntionalityTextKey]:
                 <FluentAnchor data-enhance-nav="false" Appearance="Appearance.Hypertext"
                               Target="_blank"
-                              Href="https://calendly.com/eduardo-fonseca">
-                    Request a Demo
+                              Href="https://us11.list-manage.com/contact-form?u=8b82a1556651be6b90abb39cb&form_id=ec99fae0af90bd739e8a29962e37657a">
+                    @localizer[RequestDemoTextKey]
                 </FluentAnchor>
             </FluentLabel>
         </ChildContent>
     </FluentAccordionItem>
+    <FluentAccordionItem Expanded="true">
+        <HeadingTemplate>
+            <FluentLabel Typo="Typography.H3">
+                @localizer[VideosTextKey]
+            </FluentLabel>
+        </HeadingTemplate>
+        <ChildContent>
+            <CustomFluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged">
+            </CustomFluentPaginator>
+
+            @if (this.PageItems != null)
+            {
+                <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
+                    @foreach (var singleItem in this.PageItems.Value.Items)
+                    {
+                        <div>
+                            <div>
+                                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
+                                style="width:100%;"
+                                IconStart="@(new Icons.Regular.Size16.Play())"
+                                OnClick="@( () => OnPlayVideoClicked(singleItem.VideoId!))">@localizer[PlayVideoTextKey]</FluentButton>
+                            </div>
+                            <div>
+                                <Image Src="@($"{apiBaseUrl}/api/video/{singleItem.VideoId}/thumbnail")"
+                                Width="300" Alt="@singleItem.Name">
+                                </Image>
+                            </div>
+                            <div>
+                                <FluentLabel Alignment="HorizontalAlignment.Center"
+                                Typo="Typography.Body" Weight="FontWeight.Bold"
+                                Class="multiline-text" style="width:250px; height:50px;">
+                                    @singleItem.Name
+                                </FluentLabel>
+                                <FluentAccordion>
+                                    <FluentAccordionItem Expanded="true">
+                                        <HeadingTemplate>
+                                            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@localizer[VideoDescriptionTextKey]</FluentLabel>
+                                        </HeadingTemplate>
+                                        <ChildContent>
+                                            <FluentTextArea Rows="3" style="width:100%;" Value="@singleItem.Description"></FluentTextArea>
+                                        </ChildContent>
+                                    </FluentAccordionItem>
+                                    <FluentAccordionItem Heading=@localizer[VideoMoreInfoTextKey] Expanded="true">
+                                        <HeadingTemplate>
+                                            <FluentLabel Weight="FontWeight.Bold">@localizer[VideoMoreInfoTextKey]</FluentLabel>
+                                        </HeadingTemplate>
+                                        <ChildContent>
+                                            <FluentLabel Typo="Typography.Body">
+                                                <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
+                                                <strong>@localizer[LifetimeSessionsTextKey]:</strong> @singleItem.LifetimeSessions
+                                            </FluentLabel>
+                                            <FluentLabel Typo="Typography.Body">
+                                                <FluentIcon Value="@(new Icons.Regular.Size20.Eye())"></FluentIcon>
+                                                <strong>@localizer[LifetimeViewersTextKey]:</strong> @singleItem.LifetimeViewers
+                                            </FluentLabel>
+                                            <FluentLabel Typo="Typography.Body">
+                                                <FluentIcon Value="@(new Icons.Regular.Size20.Timer())"></FluentIcon>
+                                                <strong>@localizer[WatchTimeTextKey]:</strong> @singleItem.LifetimeWatchTime
+                                            </FluentLabel>
+                                            <FluentLabel Typo="Typography.Body">
+                                                <FluentIcon Value="@(new Icons.Regular.Size20.CalendarDate())"></FluentIcon>
+                                                <strong>@localizer[PublishedTextKey]:</strong> @singleItem.PublishedOnString
+                                            </FluentLabel>
+                                        </ChildContent>
+                                    </FluentAccordionItem>
+                                </FluentAccordion>
+                            </div>
+                        </div>
+                    }
+                </FluentStack>
+            }
+
+            <FluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged">
+                <PaginationTextTemplate>
+                    @localizer[PaginatorTextKey, this.paginationState.CurrentPageIndex + 1, this.paginationState.LastPageIndex!.Value + 1]
+                </PaginationTextTemplate>
+                <SummaryTemplate>
+                    @localizer[PaginatorSummaryTextKey, this.paginationState.TotalItemCount!.Value]
+                </SummaryTemplate>
+            </FluentPaginator>
+        </ChildContent>
+    </FluentAccordionItem>
+    <FluentAccordionItem Expanded="true">
+        <HeadingTemplate>
+            <FluentLabel Typo="Typography.H3">
+                @localizer[ScheduleMeetingTextKey]
+            </FluentLabel>
+        </HeadingTemplate>
+        <ChildContent>
+            <!-- Calendly inline widget begin -->
+            <div class="calendly-inline-widget" data-url="https://calendly.com/eduardo-fonseca" style="min-width:320px;height:700px;"></div>
+            <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+            <!-- Calendly inline widget end -->
+        </ChildContent>
+    </FluentAccordionItem>
+    <FluentAccordionItem Expanded="true">
+        <HeadingTemplate>
+            <FluentLabel Typo="Typography.H3">
+                @localizer[SubscribeToNewsletterTextKey]
+            </FluentLabel>
+        </HeadingTemplate>
+        <ChildContent>
+            <FairPlayTube.SharedUI.Components.Mailchimp.EmbeddedForm></FairPlayTube.SharedUI.Components.Mailchimp.EmbeddedForm>
+        </ChildContent>
+    </FluentAccordionItem>
 </FluentAccordion>
-
-<CustomFluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged">
-</CustomFluentPaginator>
-
-@if (this.PageItems != null)
-{
-    <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
-        @foreach (var singleItem in this.PageItems.Value.Items)
-        {
-            <div>
-                <div>
-                    <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
-                                  style="width:100%;"
-                                  IconStart="@(new Icons.Regular.Size16.Play())"
-                                  OnClick="@( () => OnPlayVideoClicked(singleItem.VideoId!))">@localizer[PlayVideoTextKey]</FluentButton>
-                </div>
-                <div>
-                    <Image Src="@($"{apiBaseUrl}/api/video/{singleItem.VideoId}/thumbnail")"
-                           Width="300" Alt="@singleItem.Name">
-                    </Image>
-                </div>
-                <div>
-                    <FluentLabel Alignment="HorizontalAlignment.Center"
-                                 Typo="Typography.Body" Weight="FontWeight.Bold"
-                                 Class="multiline-text" style="width:250px; height:50px;">
-                        @singleItem.Name
-                    </FluentLabel>
-                    <FluentAccordion>
-                        <FluentAccordionItem Expanded="true">
-                            <HeadingTemplate>
-                                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@localizer[VideoDescriptionTextKey]</FluentLabel>
-                            </HeadingTemplate>
-                            <ChildContent>
-                                <FluentTextArea Rows="3" style="width:100%;" Value="@singleItem.Description"></FluentTextArea>
-                            </ChildContent>
-                        </FluentAccordionItem>
-                        <FluentAccordionItem Heading=@localizer[VideoMoreInfoTextKey] Expanded="true">
-                            <HeadingTemplate>
-                                <FluentLabel Weight="FontWeight.Bold">@localizer[VideoMoreInfoTextKey]</FluentLabel>
-                            </HeadingTemplate>
-                            <ChildContent>
-                                <FluentLabel Typo="Typography.Body">
-                                    <FluentIcon Value="@(new Icons.Regular.Size20.PeopleAudience())"></FluentIcon>
-                                    <strong>@localizer[LifetimeSessionsTextKey]:</strong> @singleItem.LifetimeSessions
-                                </FluentLabel>
-                                <FluentLabel Typo="Typography.Body">
-                                    <FluentIcon Value="@(new Icons.Regular.Size20.Eye())"></FluentIcon>
-                                    <strong>@localizer[LifetimeViewersTextKey]:</strong> @singleItem.LifetimeViewers
-                                </FluentLabel>
-                                <FluentLabel Typo="Typography.Body">
-                                    <FluentIcon Value="@(new Icons.Regular.Size20.Timer())"></FluentIcon>
-                                    <strong>@localizer[WatchTimeTextKey]:</strong> @singleItem.LifetimeWatchTime
-                                </FluentLabel>
-                                <FluentLabel Typo="Typography.Body">
-                                    <FluentIcon Value="@(new Icons.Regular.Size20.CalendarDate())"></FluentIcon>
-                                    <strong>@localizer[PublishedTextKey]:</strong> @singleItem.PublishedOnString
-                                </FluentLabel>
-                            </ChildContent>
-                        </FluentAccordionItem>
-                    </FluentAccordion>
-                </div>
-            </div>
-        }
-    </FluentStack>
-}
-
-<FluentPaginator State="this.paginationState" CurrentPageIndexChanged="CurrentPageIndexChanged">
-    <PaginationTextTemplate>
-        @localizer[PaginatorTextKey, this.paginationState.CurrentPageIndex + 1, this.paginationState.LastPageIndex!.Value + 1]
-    </PaginationTextTemplate>
-    <SummaryTemplate>
-        @localizer[PaginatorSummaryTextKey, this.paginationState.TotalItemCount!.Value]
-    </SummaryTemplate>
-</FluentPaginator>
-
-<!-- Calendly inline widget begin -->
-<div class="calendly-inline-widget" data-url="https://calendly.com/eduardo-fonseca" style="min-width:320px;height:700px;"></div>
-<script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
-<!-- Calendly inline widget end -->
-
-<FairPlayTube.SharedUI.Components.Mailchimp.EmbeddedForm></FairPlayTube.SharedUI.Components.Mailchimp.EmbeddedForm>
 
 @code
 {
@@ -340,5 +363,15 @@
     public const string PaginatorTextKey = "PaginatorText";
     [ResourceKey(defaultValue: "Total Items: {0}")]
     public const string PaginatorSummaryTextKey = "PaginatorSummaryText";
+    [ResourceKey(defaultValue: "This published version is intentionally limited in functionality. To learn about the current full capabilities use the following link")]
+    public const string LimitedFuncntionalityTextKey = "LimitedFuncntionalityText";
+    [ResourceKey(defaultValue: "Request a Demo")]
+    public const string RequestDemoTextKey = "RequestDemoText";
+    [ResourceKey(defaultValue: "Videos")]
+    public const string VideosTextKey = "VideosText";
+    [ResourceKey(defaultValue: "Schedule a Meeting")]
+    public const string ScheduleMeetingTextKey = "ScheduleMeetingText";
+    [ResourceKey(defaultValue: "Subscribe to newsletter")]
+    public const string SubscribeToNewsletterTextKey = "SubscribeToNewsletterText";
     #endregion Resource Keys
 }
