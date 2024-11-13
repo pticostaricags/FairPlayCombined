@@ -26,6 +26,22 @@
 <h1>@localizer[RegisterTextKey]</h1>
 
 <div class="row">
+    <div class="col">
+        <p>
+            @localizer[UserAcceptanceTextKey]:
+        </p>
+        <ul>
+            <li>
+                <FluentAnchor IconStart="@(new Icons.Regular.Size20.Link())" Href="/PrivacyPolicy" Target="_blank">@localizer[PrivacyPolicyTextKey]</FluentAnchor>
+            </li>
+            <li>
+                <FluentAnchor IconStart="@(new Icons.Regular.Size20.Link())" Href="/UsageTerms" Target="_blank">@localizer[UsageTermsTextKey]</FluentAnchor>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-md-4">
         <StatusMessage Message="@Message" />
         <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
@@ -35,69 +51,69 @@
             <ValidationSummary class="text-danger" role="alert" />
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="email">@localizer[EmailTextKey]</label>
-                <InputText @bind-Value="Input.Email" 
-                class="@ThemeConfiguration.GenericControls.DefaultCss" 
+                <InputText @bind-Value="Input.Email"
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
                 autocomplete="username" aria-required="true" placeholder="name@example.com" />
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="password">@localizer[PasswordTextKey]</label>
-                <InputText type="password" @bind-Value="Input.Password" 
-                class="@ThemeConfiguration.GenericControls.DefaultCss" 
+                <InputText type="password" @bind-Value="Input.Password"
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
                 autocomplete="new-password" aria-required="true" placeholder="@PasswordText" />
                 <ValidationMessage For="() => Input.Password" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="confirm-password">@localizer[ConfirmPasswordTextKey]</label>
-                <InputText type="password" @bind-Value="Input.ConfirmPassword" 
+                <InputText type="password" @bind-Value="Input.ConfirmPassword"
                 class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="new-password" aria-required="true" placeholder="@PasswordText" />
+                autocomplete="new-password" aria-required="true" placeholder="@PasswordText" />
                 <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="name">@localizer[NameTextKey]</label>
-                <InputText @bind-Value="Input.Name" 
-                class="@ThemeConfiguration.GenericControls.DefaultCss" 
+                <InputText @bind-Value="Input.Name"
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
                 autocomplete="name" aria-required="true" placeholder="@NameText" />
                 <ValidationMessage For="() => Input.Name" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="lastname">@localizer[LastnameTextKey]</label>
-                <InputText @bind-Value="Input.Lastname" 
-                class="@ThemeConfiguration.GenericControls.DefaultCss" 
+                <InputText @bind-Value="Input.Lastname"
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
                 autocomplete="lastname" aria-required="true" placeholder="@LastnameText" />
                 <ValidationMessage For="() => Input.Lastname" class="text-danger" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="linkedinprofileurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[LinkedInProfileUrlTextKey]</label>
+                class="@ThemeConfiguration.Labels.DefaultCss">@localizer[LinkedInProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.LinkedInProfileUrl"
-                           class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="linkedinprofileurl" placeholder="@EnterLinkedInProfileURL" />
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
+                autocomplete="linkedinprofileurl" placeholder="@EnterLinkedInProfileURL" />
                 <ValidationMessage For="() => Input.LinkedInProfileUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="instagramprofileurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[InstagramProfileUrlTextKey]</label>
+                class="@ThemeConfiguration.Labels.DefaultCss">@localizer[InstagramProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.InstagramProfileUrl"
-                           class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="instagramprofileurl" placeholder="@EnterInstagramProfileURL" />
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
+                autocomplete="instagramprofileurl" placeholder="@EnterInstagramProfileURL" />
                 <ValidationMessage For="() => Input.InstagramProfileUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="xformerlytwitterurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[XFormerlyTwitterProfileUrlTextKey]</label>
+                class="@ThemeConfiguration.Labels.DefaultCss">@localizer[XFormerlyTwitterProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.XformerlyTwitterUrl"
-                           class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="xformerlytwitterurl" placeholder="@EnterXFormerlyTwitterProfileURL" />
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
+                autocomplete="xformerlytwitterurl" placeholder="@EnterXFormerlyTwitterProfileURL" />
                 <ValidationMessage For="() => Input.XformerlyTwitterUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="websiteurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[WebsiteUrlTextKey]</label>
+                class="@ThemeConfiguration.Labels.DefaultCss">@localizer[WebsiteUrlTextKey]</label>
                 <InputText @bind-Value="Input.WebsiteUrl"
-                           class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="websiteUrl" placeholder="@EnterWebsiteURL" />
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
+                autocomplete="websiteUrl" placeholder="@EnterWebsiteURL" />
                 <ValidationMessage For="() => Input.WebsiteUrl" />
             </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">@localizer[RegisterTextKey]</button>
@@ -113,6 +129,7 @@
 </div>
 
 @code {
+
     private IEnumerable<IdentityError>? identityErrors;
 
     [SupplyParameterFromForm]
@@ -245,5 +262,13 @@
     public const string EnsureClassIsValidTextKey = "EnsureClassIsValidText";
     [ResourceKey(defaultValue: "The default UI requires a user store with email support")]
     public const string DefaultUIRequiresUserStoreWithEmailTextKey = "DefaultUIRequiresUserStoreWithEmailText";
+    [ResourceKey(defaultValue: "Close")]
+    public const string CloseTextKey = "CloseText";
+    [ResourceKey(defaultValue: "By creating an account you accept the following")]
+    public const string UserAcceptanceTextKey = "UserAcceptanceText";
+    [ResourceKey(defaultValue: "Privacy Policy")]
+    private const string PrivacyPolicyTextKey = "PrivacyPolicyText";
+    [ResourceKey(defaultValue: "Usage Terms")]
+    public const string UsageTermsTextKey = "UsageTermsText";
     #endregion Resource Keys
 }
