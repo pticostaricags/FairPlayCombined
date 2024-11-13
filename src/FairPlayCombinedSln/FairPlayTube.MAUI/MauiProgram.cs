@@ -48,12 +48,18 @@ namespace FairPlayTube.MAUI
             builder.Services.TryAddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<LocalizationMessageHandler>();
+            builder.Services.ConfigureHttpClientDefaults(options =>
+            {
+                options.AddHttpMessageHandler<LocalizationMessageHandler>();
+            });
             builder.Services.AddSingleton<IAccessTokenProvider, CustomAccessTokenAuthenticationProvider>();
             builder.Services.AddKeyedSingleton<ApiClient>("AnonymousApiClient",
                 (sp, key) =>
                 {
+                    var httpClient = sp.GetRequiredService<HttpClient>();
                     AnonymousAuthenticationProvider anonymousAuthenticationProvider = new();
-                    HttpClientRequestAdapter httpClientRequestAdapter = new(anonymousAuthenticationProvider);
+                    HttpClientRequestAdapter httpClientRequestAdapter = new(anonymousAuthenticationProvider,
+                        httpClient: httpClient);
                     httpClientRequestAdapter.BaseUrl = apiBaseUrl;
                     ApiClient apiClient = new(httpClientRequestAdapter);
                     return apiClient;
@@ -61,11 +67,12 @@ namespace FairPlayTube.MAUI
             builder.Services.AddKeyedSingleton<ApiClient>("AuthenticatedApiClient",
                 (sp, key) =>
                 {
+                    var httpClient = sp.GetRequiredService<HttpClient>();
                     var accesstokenProvider = sp.GetRequiredService<IAccessTokenProvider>();
                     BaseBearerTokenAuthenticationProvider baseBearerTokenAuthenticationProvider =
                     new(accesstokenProvider);
                     HttpClientRequestAdapter httpClientRequestAdapter = 
-                    new(baseBearerTokenAuthenticationProvider);
+                    new(baseBearerTokenAuthenticationProvider, httpClient:httpClient);
                     httpClientRequestAdapter.BaseUrl = apiBaseUrl;
                     ApiClient apiClient = new(httpClientRequestAdapter);
                     return apiClient;
