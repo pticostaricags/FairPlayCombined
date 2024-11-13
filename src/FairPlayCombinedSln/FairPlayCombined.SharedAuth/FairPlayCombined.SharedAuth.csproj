@@ -15,9 +15,9 @@
 	<PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="9.0.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
-	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.3" />
+	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.4" />
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.6.0" />
-	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.3" />
+	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.4" />
 	<PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
