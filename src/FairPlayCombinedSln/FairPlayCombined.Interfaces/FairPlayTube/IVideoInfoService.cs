@@ -30,5 +30,8 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
         Task<VideoInfoModel?> GetVideoInfoByVideoIdAsync(string videoId,
             CancellationToken cancellationToken);
         Task DeleteMyVideoAsync(long videoInfoId, CancellationToken cancellationToken);
+        Task<PaginationOfT<VideoInfoModel>> GetSmallPaginatedCompletedVideoInfoAsync(
+            PaginationRequest paginationRequest, string? searchTerm,
+            CancellationToken cancellationToken);
     }
 }

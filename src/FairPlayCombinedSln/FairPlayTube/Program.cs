@@ -240,8 +240,9 @@ app.MapGet("/api/photo/{photoId}",
         .AsNoTracking()
         .AsSplitQuery()
         .Where(p => p.PhotoId == photoId)
-        .SingleOrDefaultAsync(cancellationToken);
-        return TypedResults.File(result!.PhotoBytes, System.Net.Mime.MediaTypeNames.Image.Png);
+        .Select(p=>p.PhotoBytes)
+        .SingleAsync(cancellationToken);
+        return TypedResults.File(result, System.Net.Mime.MediaTypeNames.Image.Png);
     });
 app.MapGet("/api/video/{videoId}/description",
     async (
@@ -280,10 +281,10 @@ app.MapGet("/api/video/{videoId}/thumbnail",
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         var result = await dbContext.VideoInfo
         .AsNoTracking()
-        .Include(p => p.VideoThumbnailPhoto)
         .Where(p => p.VideoId == videoId)
-        .SingleOrDefaultAsync(cancellationToken);
-        return TypedResults.File(result!.VideoThumbnailPhoto.PhotoBytes, System.Net.Mime.MediaTypeNames.Image.Jpeg);
+        .Select(p=>p.VideoThumbnailPhoto.PhotoBytes)
+        .SingleAsync(cancellationToken);
+        return TypedResults.File(result, System.Net.Mime.MediaTypeNames.Image.Jpeg);
     });
 app.MapGet("/api/video/{videoId}/captions/{language}",
     async (

@@ -187,6 +187,52 @@ namespace FairPlayCombined.Services.FairPlayTube
             return result;
         }
 
+        public async Task<PaginationOfT<VideoInfoModel>> GetSmallPaginatedCompletedVideoInfoAsync(
+            PaginationRequest paginationRequest, string? searchTerm,
+            CancellationToken cancellationToken
+    )
+        {
+            PaginationOfT<VideoInfoModel> result = new();
+            var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            string orderByString = string.Empty;
+            if (paginationRequest.SortingItems?.Length > 0)
+                orderByString =
+                    String.Join(",",
+                    paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
+            var preQuery = dbContext.VideoInfo
+                .AsNoTracking()
+                .AsSplitQuery();
+            if (!String.IsNullOrWhiteSpace(searchTerm))
+            {
+                preQuery =
+                    preQuery.Where(p => EF.Functions.FreeText(p.Description, searchTerm!));
+            }
+            var query = preQuery
+                .Where(p =>
+                p.VideoIndexStatusId == (short)FairPlayCombined.Common.FairPlayTube.Enums.VideoIndexStatus.Processed)
+                .Select(p => new VideoInfoModel
+                {
+                    VideoInfoId = p.VideoInfoId,
+                    VideoId = p.VideoId,
+                    Name = p.Name,
+                    Description = p.Description,
+                    LifetimeViewers = p.VideoWatchTime.Select(p => p.WatchedByApplicationUserId).Distinct().Count(),
+                    LifetimeSessions = p.VideoWatchTime.Count,
+                    LifetimeWatchTime = TimeSpan.FromSeconds(p.VideoWatchTime.Sum(p => p.WatchTime)),
+                    PublishedOnString = (DateTimeOffset.UtcNow.Subtract(p.RowCreationDateTime).TotalDays < 1 ? "Today" : $"{DateTimeOffset.UtcNow.Subtract(p.RowCreationDateTime).Days} {localizer![DaysAgoTextKey]}")
+                });
+            if (!String.IsNullOrEmpty(orderByString))
+                query = query.OrderBy(orderByString);
+            result.TotalItems = await query.CountAsync(cancellationToken);
+            result.PageSize = paginationRequest.PageSize;
+            result.TotalPages = (int)Math.Ceiling((decimal)result.TotalItems / result.PageSize);
+            result.Items = await query
+            .Skip(paginationRequest.StartIndex)
+            .Take(paginationRequest.PageSize)
+            .ToArrayAsync(cancellationToken);
+            return result;
+        }
+
         public async Task<PaginationOfT<VideoInfoModel>> GetPaginatedCompletedVideoInfoAsync(
             PaginationRequest paginationRequest, string? searchTerm,
             CancellationToken cancellationToken

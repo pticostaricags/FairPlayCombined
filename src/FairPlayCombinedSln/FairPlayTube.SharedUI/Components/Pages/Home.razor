@@ -148,19 +148,19 @@
                         <div>
                             <div>
                                 <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent"
-                                style="width:100%;"
-                                IconStart="@(new Icons.Regular.Size16.Play())"
-                                OnClick="@( () => OnPlayVideoClicked(singleItem.VideoId!))">@localizer[PlayVideoTextKey]</FluentButton>
+                                              style="width:100%;"
+                                              IconStart="@(new Icons.Regular.Size16.Play())"
+                                              OnClick="@( () => OnPlayVideoClicked(singleItem.VideoId!))">@localizer[PlayVideoTextKey]</FluentButton>
                             </div>
                             <div>
                                 <Image Src="@($"{apiBaseUrl}/api/video/{singleItem.VideoId}/thumbnail")"
-                                Width="300" Alt="@singleItem.Name">
+                                       Width="300" Alt="@singleItem.Name">
                                 </Image>
                             </div>
                             <div>
                                 <FluentLabel Alignment="HorizontalAlignment.Center"
-                                Typo="Typography.Body" Weight="FontWeight.Bold"
-                                Class="multiline-text" style="width:250px; height:50px;">
+                                             Typo="Typography.Body" Weight="FontWeight.Bold"
+                                             Class="multiline-text" style="width:250px; height:50px;">
                                     @singleItem.Name
                                 </FluentLabel>
                                 <FluentAccordion>
@@ -282,7 +282,7 @@
                         }
                     }
                 };
-            var items = await videoInfoService.GetPaginatedCompletedVideoInfoAsync(paginationRequest,
+            var items = await videoInfoService.GetSmallPaginatedCompletedVideoInfoAsync(paginationRequest,
                 this.SearchTerm,
             this.cancellationTokenSource.Token);
             this.IsBusy = false;

@@ -34,6 +34,7 @@ namespace FairPlayTube.Extensions
                     var result = await dbContext.Resource
                         .Include(p => p.Culture)
                         .Where(p => p.Culture.Name == currentCulture.Name)
+                        .AsNoTracking()
                         .Select(p => new ResourceModel()
                         {
                             CultureId = p.CultureId,
@@ -48,6 +49,7 @@ namespace FairPlayTube.Extensions
                         result = await dbContext.Resource
                         .Include(p => p.Culture)
                         .Where(p => p.Culture.Name == "en-US")
+                        .AsNoTracking()
                         .Select(p => new ResourceModel()
                         {
                             CultureId = p.CultureId,

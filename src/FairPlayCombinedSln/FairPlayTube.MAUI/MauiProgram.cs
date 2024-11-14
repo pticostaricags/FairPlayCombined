@@ -47,13 +47,21 @@ namespace FairPlayTube.MAUI
             builder.Services.AddOptions();
             builder.Services.TryAddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddAuthorizationCore();
+            builder.Services.AddHttpClient("DefaultHttpClient", client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            }).AddHttpMessageHandler<LocalizationMessageHandler>(); ;
+            builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("DefaultHttpClient"));
             builder.Services.AddScoped<LocalizationMessageHandler>();
             builder.Services.AddSingleton<IAccessTokenProvider, CustomAccessTokenAuthenticationProvider>();
             builder.Services.AddKeyedSingleton<ApiClient>("AnonymousApiClient",
                 (sp, key) =>
                 {
+                    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+                    var httpClient = httpClientFactory.CreateClient("DefaultHttpClient");
                     AnonymousAuthenticationProvider anonymousAuthenticationProvider = new();
-                    HttpClientRequestAdapter httpClientRequestAdapter = new(anonymousAuthenticationProvider);
+                    HttpClientRequestAdapter httpClientRequestAdapter = new(anonymousAuthenticationProvider,
+                        httpClient: httpClient);
                     httpClientRequestAdapter.BaseUrl = apiBaseUrl;
                     ApiClient apiClient = new(httpClientRequestAdapter);
                     return apiClient;
@@ -61,11 +69,14 @@ namespace FairPlayTube.MAUI
             builder.Services.AddKeyedSingleton<ApiClient>("AuthenticatedApiClient",
                 (sp, key) =>
                 {
+                    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+                    var httpClient = httpClientFactory.CreateClient("DefaultHttpClient");
                     var accesstokenProvider = sp.GetRequiredService<IAccessTokenProvider>();
                     BaseBearerTokenAuthenticationProvider baseBearerTokenAuthenticationProvider =
                     new(accesstokenProvider);
                     HttpClientRequestAdapter httpClientRequestAdapter = 
-                    new(baseBearerTokenAuthenticationProvider);
+                    new(baseBearerTokenAuthenticationProvider, 
+                    httpClient: httpClient);
                     httpClientRequestAdapter.BaseUrl = apiBaseUrl;
                     ApiClient apiClient = new(httpClientRequestAdapter);
                     return apiClient;
