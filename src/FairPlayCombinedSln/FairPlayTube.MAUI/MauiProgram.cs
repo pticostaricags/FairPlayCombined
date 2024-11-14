@@ -50,7 +50,7 @@ namespace FairPlayTube.MAUI
             builder.Services.AddHttpClient("DefaultHttpClient", client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
-            }).AddHttpMessageHandler<LocalizationMessageHandler>(); ;
+            }).AddHttpMessageHandler<LocalizationMessageHandler>();
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("DefaultHttpClient"));
             builder.Services.AddScoped<LocalizationMessageHandler>();
             builder.Services.AddSingleton<IAccessTokenProvider, CustomAccessTokenAuthenticationProvider>();
