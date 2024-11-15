@@ -2,6 +2,7 @@
 using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
 
 namespace FairPlayTube.ClientServices
 {
@@ -52,7 +53,7 @@ namespace FairPlayTube.ClientServices
                     Name = p.Name,
                     LifetimeSessions = p.LifetimeSessions!.Value,
                     LifetimeViewers = p.LifetimeViewers!.Value,
-                    LifetimeWatchTime = TimeSpan.Parse(p.LifetimeWatchTime!),
+                    LifetimeWatchTime = TimeSpan.Parse(p.LifetimeWatchTime!, CultureInfo.CurrentCulture),
                     PublishedOnString = p.PublishedOnString
                 }).ToArray(),
                 PageSize = result.PageSize!.Value,
@@ -76,7 +77,7 @@ namespace FairPlayTube.ClientServices
                     Name = p.Name,
                     LifetimeSessions = p.LifetimeSessions!.Value,
                     LifetimeViewers = p.LifetimeViewers!.Value,
-                    LifetimeWatchTime = TimeSpan.Parse(p.LifetimeWatchTime!),
+                    LifetimeWatchTime = TimeSpan.Parse(p.LifetimeWatchTime!, CultureInfo.CurrentCulture),
                     PublishedOnString = p.PublishedOnString
                 }).ToArray(),
                 PageSize = result.PageSize!.Value,
@@ -102,26 +103,8 @@ namespace FairPlayTube.ClientServices
 
         public async Task<PaginationOfT<VideoInfoModel>> GetSmallPaginatedCompletedVideoInfoAsync(PaginationRequest paginationRequest, string? searchTerm, CancellationToken cancellationToken)
         {
-            var result = await authenticatedClient.Videoinfo.GetPaginatedCompletedVideoInfoAsync
-                .GetAsync(requestConfiguration =>
-                {
-                    requestConfiguration.QueryParameters.StartIndex = paginationRequest.StartIndex;
-                }, cancellationToken);
-            return new PaginationOfT<VideoInfoModel>()
-            {
-                Items = result!.Items!.Select(p => new VideoInfoModel()
-                {
-                    VideoId = p.VideoId,
-                    Name = p.Name,
-                    LifetimeSessions = p.LifetimeSessions!.Value,
-                    LifetimeViewers = p.LifetimeViewers!.Value,
-                    LifetimeWatchTime = TimeSpan.Parse(p.LifetimeWatchTime!),
-                    PublishedOnString = p.PublishedOnString
-                }).ToArray(),
-                PageSize = result.PageSize!.Value,
-                TotalItems = result.TotalItems!.Value,
-                TotalPages = result.TotalPages!.Value,
-            };
+            var result = await GetPaginatedCompletedVideoInfoAsync(paginationRequest, searchTerm, cancellationToken);
+            return result;
         }
 
         public Task<VideoInfoModel> GetVideoInfoByIdAsync(long id, CancellationToken cancellationToken)
