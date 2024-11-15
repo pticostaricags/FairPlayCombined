@@ -19,6 +19,8 @@ namespace FairPlayTube.MAUI
 {
     public static class MauiProgram
     {
+        private const string DefaultHttpClientKey = "DefaultHttpClient";
+
         public static MauiApp CreateMauiApp()
         {
             var apiBaseUrl = string.Empty;
@@ -47,18 +49,19 @@ namespace FairPlayTube.MAUI
             builder.Services.AddOptions();
             builder.Services.TryAddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddAuthorizationCore();
-            builder.Services.AddHttpClient("DefaultHttpClient", client =>
+            builder.Services.AddHttpClient(DefaultHttpClientKey, client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
-            }).AddHttpMessageHandler<LocalizationMessageHandler>();
-            builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("DefaultHttpClient"));
+            })
+                .AddHttpMessageHandler<LocalizationMessageHandler>();
+            builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient(DefaultHttpClientKey));
             builder.Services.AddScoped<LocalizationMessageHandler>();
             builder.Services.AddSingleton<IAccessTokenProvider, CustomAccessTokenAuthenticationProvider>();
             builder.Services.AddKeyedSingleton<ApiClient>("AnonymousApiClient",
                 (sp, key) =>
                 {
                     var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
-                    var httpClient = httpClientFactory.CreateClient("DefaultHttpClient");
+                    var httpClient = httpClientFactory.CreateClient(DefaultHttpClientKey);
                     AnonymousAuthenticationProvider anonymousAuthenticationProvider = new();
                     HttpClientRequestAdapter httpClientRequestAdapter = new(anonymousAuthenticationProvider,
                         httpClient: httpClient);
@@ -70,18 +73,18 @@ namespace FairPlayTube.MAUI
                 (sp, key) =>
                 {
                     var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
-                    var httpClient = httpClientFactory.CreateClient("DefaultHttpClient");
+                    var httpClient = httpClientFactory.CreateClient(DefaultHttpClientKey);
                     var accesstokenProvider = sp.GetRequiredService<IAccessTokenProvider>();
                     BaseBearerTokenAuthenticationProvider baseBearerTokenAuthenticationProvider =
                     new(accesstokenProvider);
-                    HttpClientRequestAdapter httpClientRequestAdapter = 
-                    new(baseBearerTokenAuthenticationProvider, 
+                    HttpClientRequestAdapter httpClientRequestAdapter =
+                    new(baseBearerTokenAuthenticationProvider,
                     httpClient: httpClient);
                     httpClientRequestAdapter.BaseUrl = apiBaseUrl;
                     ApiClient apiClient = new(httpClientRequestAdapter);
                     return apiClient;
                 });
-            builder.Services.AddSingleton<IApiResolver, ApiResolver>(sp=>new ApiResolver(apiBaseUrl));
+            builder.Services.AddSingleton<IApiResolver, ApiResolver>(sp => new ApiResolver(apiBaseUrl));
             builder.Services.AddTransient<IVideoInfoService, VideoInfoClientService>();
 
 #if DEBUG
