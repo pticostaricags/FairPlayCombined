@@ -161,7 +161,7 @@ public class VideoIndexStatusBackgroundService(ILogger<VideoIndexStatusBackgroun
             await entryStream.CopyToAsync(entryMemoryStream, stoppingToken);
             byte[] fileBytes = entryMemoryStream.ToArray();
             string faceName = string.Empty;
-            foreach (var (PersonName, ThumbnailFilename) in pairs)
+            foreach (var (_, ThumbnailFilename) in pairs)
             {
                 if (entry.FullName == ThumbnailFilename)
                 {
