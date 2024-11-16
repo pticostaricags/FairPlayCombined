@@ -61,11 +61,7 @@ Check this page: [CONTRIBUTING](/CONTRIBUTING.md)
 Check this page: [CODING STANDARDS](/CODING-STANDARDS.md)
 
 ### Disclaimer
-FairPlayCombined is a project evaluating technologies in preview, for that reason it is not currently suited for production scenarios.
-
-**Technologies in preview(or using experimental functionality):**
-* .NET 9
-* Semantic Kernel
+Support for the FairPlayCombined platform is available only through paid support.
 
 ### Survey
 Are you an entrepreneur exploring Open-Source platforms for your startup? Let us know about you in the following [Survey](https://us11.list-manage.com/survey?u=8b82a1556651be6b90abb39cb&id=9f3b59683c&attribution=false)
