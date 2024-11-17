@@ -4,7 +4,7 @@
     [OwnerApplicationUserId] NVARCHAR(450) NOT NULL, 
     [Name] NVARCHAR(50) NOT NULL, 
     [Lastname] NVARCHAR(50) NOT NULL, 
-    [EmailAddress] NVARCHAR(50) NOT NULL, 
+    [EmailAddress] NVARCHAR(50) NULL, 
     [LinkedInProfileUrl] NVARCHAR(MAX) NULL, 
     [YouTubeChannelUrl] NVARCHAR(MAX) NULL, 
     [InstagramUrl] NVARCHAR(MAX) NULL, 

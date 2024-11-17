@@ -33,7 +33,6 @@ public partial class Contact
     [StringLength(50)]
     public string Lastname { get; set; }
 
-    [Required]
     [StringLength(50)]
     public string EmailAddress { get; set; }
 
