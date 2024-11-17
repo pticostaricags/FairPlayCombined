@@ -250,6 +250,10 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<Contact>(entity =>
         {
+            entity.HasIndex(e => e.EmailAddress, "UI_Contact_EmailAddress")
+                .IsUnique()
+                .HasFilter("([EmailAddress] IS NOT NULL)");
+
             entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.Contact)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Contact_AspNetUsers");

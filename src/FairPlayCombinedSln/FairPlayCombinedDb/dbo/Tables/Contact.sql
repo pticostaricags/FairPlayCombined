@@ -18,4 +18,4 @@
 
 GO
 
-CREATE UNIQUE INDEX [UI_Contact_EmailAddress] ON [dbo].[Contact] ([EmailAddress])
+CREATE UNIQUE INDEX [UI_Contact_EmailAddress] ON [dbo].[Contact] ([EmailAddress]) WHERE ([EmailAddress] IS NOT NULL)

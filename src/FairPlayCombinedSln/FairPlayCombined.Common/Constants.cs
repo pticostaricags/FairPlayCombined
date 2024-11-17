@@ -81,6 +81,8 @@
 
                     public const string LinkedInConnectionsImport = $"/User/LinkedInConnectionsImport";
                     public const string LinkedInConnectionList = $"/User/LinkedInConnectionList";
+
+                    public const string ExcelContactsImport = $"/User/ExcelContactsImport";
                 }
             }
         }

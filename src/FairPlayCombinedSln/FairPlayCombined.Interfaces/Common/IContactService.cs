@@ -1,7 +1,5 @@
 using FairPlayCombined.Models.Common.Contact;
 using FairPlayCombined.Models.Pagination;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Logging;
 
 namespace FairPlayCombined.Interfaces.Common;
 public interface IContactService
@@ -21,4 +19,5 @@ public interface IContactService
     Task<PaginationOfT<ContactModel>> GetPaginatedContactAsync(
     PaginationRequest paginationRequest,
     CancellationToken cancellationToken);
+    Task ImportFromExcelFileAsync(Stream stream, CancellationToken cancellationToken);
 }

@@ -8,33 +8,37 @@
 <AuthorizeView>
     <Authorized>
         <FluentNavGroup Title="@localizer[ContactsTextKey]" Expanded="ShouldExpandContactsGroup"
-                        Icon="@(new Icons.Regular.Size20.ContactCardGroup())">
+        Icon="@(new Icons.Regular.Size20.ContactCardGroup())">
             <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListContacts"
-                           Icon="@(new Icons.Regular.Size20.BookContacts())">
+            Icon="@(new Icons.Regular.Size20.BookContacts())">
                 @localizer[ListContactsTextKey]
             </FluentNavLink>
             <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.CreateContact"
-                           Icon="@(new Icons.Regular.Size20.Add())">
+            Icon="@(new Icons.Regular.Size20.Add())">
                 @localizer[CreateContactTextKey]
             </FluentNavLink>
         </FluentNavGroup>
         <FluentNavGroup Title="@localizer[CompaniesTextKey]" Expanded="ShouldExpandCompaniesGroup"
-                        Icon="@(new Icons.Regular.Size20.ContactCardGroup())">
+        Icon="@(new Icons.Regular.Size20.ContactCardGroup())">
             <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.ListCompanies"
-                           Icon="@(new Icons.Regular.Size20.BookContacts())">
+            Icon="@(new Icons.Regular.Size20.BookContacts())">
                 @localizer[ListCompaniesTextKey]
             </FluentNavLink>
             <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.CreateCompany"
-                           Icon="@(new Icons.Regular.Size20.Add())">
+            Icon="@(new Icons.Regular.Size20.Add())">
                 @localizer[CreateCompanyTextKey]
             </FluentNavLink>
             <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.LinkedInConnectionsImport"
-                           Icon="@(new Icons.Regular.Size20.CallConnecting())">
+            Icon="@(new Icons.Regular.Size20.CallConnecting())">
                 @localizer[ImportLinkedInConnectionsTextKey]
             </FluentNavLink>
             <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.LinkedInConnectionList"
-                           Icon="@(new Icons.Regular.Size20.List())">
+            Icon="@(new Icons.Regular.Size20.List())">
                 @localizer[LinkedInConnectionListTextKey]
+            </FluentNavLink>
+            <FluentNavLink Href="@Constants.Routes.FairPlayCrmRoutes.UserRoutes.ExcelContactsImport"
+            Icon="@(new Icons.Regular.Size20.CallConnecting())">
+                @localizer[ImportExcelContactsTextKey]
             </FluentNavLink>
         </FluentNavGroup>
     </Authorized>
@@ -43,9 +47,9 @@
 <AuthorizeView>
     <Authorized>
         <FluentNavGroup Title="@localizer[AccountsTextKey]" Expanded="@ShouldExpandAccountsGroup"
-                        Icon="@(new Icons.Regular.Size20.PeopleCommunity())">
+        Icon="@(new Icons.Regular.Size20.PeopleCommunity())">
             <FluentNavLink Href="/Account/Manage"
-                           Icon="@(new Icons.Regular.Size20.Edit())">@localizer[ManageAccountTextKey]</FluentNavLink>
+            Icon="@(new Icons.Regular.Size20.Edit())">@localizer[ManageAccountTextKey]</FluentNavLink>
         </FluentNavGroup>
         <FluentNavLink Icon="@(new Icons.Regular.Size20.ArrowExit())">
             <form action="Account/Logout" method="post">
@@ -59,9 +63,9 @@
     </Authorized>
     <NotAuthorized>
         <FluentNavLink Href="Account/Register"
-                       Icon="@(new Icons.Regular.Size20.PersonAdd())">@localizer[RegisterTextKey]</FluentNavLink>
+        Icon="@(new Icons.Regular.Size20.PersonAdd())">@localizer[RegisterTextKey]</FluentNavLink>
         <FluentNavLink Href="Account/Login"
-                       Icon="@(new Icons.Regular.Size20.PersonArrowRight())">@localizer[LoginTextKey]</FluentNavLink>
+        Icon="@(new Icons.Regular.Size20.PersonArrowRight())">@localizer[LoginTextKey]</FluentNavLink>
     </NotAuthorized>
 </AuthorizeView>
 
@@ -120,5 +124,7 @@
     public const string ImportLinkedInConnectionsTextKey = "ImportLinkedInConnectionsText";
     [ResourceKey(defaultValue: "LinkedIn Connection List")]
     public const string LinkedInConnectionListTextKey = "LinkedInConnectionListText";
+    [ResourceKey(defaultValue: "Import Excel Contacts")]
+    public const string ImportExcelContactsTextKey = "ImportExcelContactsText";
     #endregion Resource Keys
 }
