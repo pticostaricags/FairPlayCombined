@@ -47,9 +47,9 @@ namespace FairPlayCombined.Services.Generators
                     var attributes = symbol.GetAttributes();
                     if (attributes.Length > 0)
                     {
-                        foreach (var attribute in attributes)
+                        foreach (var attributeClass in attributes
+                            .Select(p=>p.AttributeClass))
                         {
-                            var attributeClass = attribute.AttributeClass;
                             if (attributeClass?.Name == "ServiceOfTAttribute")
                             {
                                 var createModel = attributeClass.TypeArguments[0];
