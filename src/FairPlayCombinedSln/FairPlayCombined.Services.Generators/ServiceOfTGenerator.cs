@@ -49,7 +49,7 @@ namespace FairPlayCombined.Services.Generators
                     {
                         foreach (var attribute in attributes)
                         {
-                            var attributeClass = attribute.AttributeClass as INamedTypeSymbol;
+                            var attributeClass = attribute.AttributeClass;
                             if (attributeClass?.Name == "ServiceOfTAttribute")
                             {
                                 var createModel = attributeClass.TypeArguments[0];

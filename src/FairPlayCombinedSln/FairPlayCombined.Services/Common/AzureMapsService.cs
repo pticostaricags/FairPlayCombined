@@ -51,7 +51,7 @@ namespace FairPlayCombined.Services.Common
         public async Task<SearchByPOICategoryResponse> GetNearbyAirportsAsync(double latitude, double longitude, CancellationToken cancellationToken)
         {
             string format = "json";
-            string query = POICategories.AIRPORT.ToString();
+            string query = PointOfInterestCategory.AIRPORT.ToString();
             string requestUrl = $"{azureMapsConfiguration.Endpoint}" +
                 $"/search/poi/category/{format}" +
                 $"?api-version=1.0" +
