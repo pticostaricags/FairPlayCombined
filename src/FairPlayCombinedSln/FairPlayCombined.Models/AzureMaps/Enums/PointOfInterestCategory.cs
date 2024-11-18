@@ -3,7 +3,7 @@
     /// <summary>
     /// Check https://learn.microsoft.com/en-us/azure/azure-maps/supported-search-categories
     /// </summary>
-    public enum POICategories
+    public enum PointOfInterestCategory
     {
         ACCESS_GATEWAY,
         ADMINISTRATIVE_DIVISION,
