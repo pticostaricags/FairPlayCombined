@@ -1,0 +1,57 @@
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Common
+@using FairPlayCombined.Interfaces.Common
+@attribute [Route(Constants.Routes.FairPlayCrmRoutes.UserRoutes.ExcelContactsImport)]
+@attribute [Authorize]
+
+@inject IContactService contactService
+@inject IToastService toastService
+
+<h3>Contacts Import</h3>
+
+
+<LoadingIndicator ShowSpinners="@this.IsBusy"></LoadingIndicator>
+
+<p>
+    Select file to import
+</p>
+<InputFile OnChange="OnFileSelectedAsync"></InputFile>
+
+@code {
+    private bool IsBusy { get; set; }
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+
+    private async Task OnFileSelectedAsync(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        try
+        {
+            this.IsBusy = true;
+            StateHasChanged();
+            if (inputFileChangeEventArgs.FileCount == 1)
+            {
+                var stream = inputFileChangeEventArgs.File.OpenReadStream();
+                MemoryStream streamCopy = new();
+                await stream.CopyToAsync(streamCopy);
+                await this.contactService
+                .ImportFromExcelFileAsync(streamCopy, this.cancellationTokenSource.Token);
+                this.toastService.ShowSuccess("Contacts have been imported");
+            }
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            StateHasChanged();
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        this.cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}
