@@ -36,7 +36,6 @@ namespace FairPlayCombined.Services.Common
             using SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(stream: stream, isEditable: false);
             if (spreadsheetDocument != null)
             {
-                WorkbookPart workbookPart = spreadsheetDocument!.WorkbookPart!;
                 IEnumerable<Sheet> sheets = spreadsheetDocument.WorkbookPart!.Workbook.GetFirstChild<Sheets>()!.Elements<Sheet>();
                 string relationshipId = sheets.Single(p => p.Name == "My Active Contacts").Id!.Value!;
                 WorksheetPart worksheetPart = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(relationshipId);
@@ -45,10 +44,9 @@ namespace FairPlayCombined.Services.Common
                 IEnumerable<Row> rows = sheetData.Descendants<Row>();
                 Dictionary<int, string> columns = new();
                 int pos = 0;
-                foreach (var cell in rows.ElementAt(0))
+                foreach (var cellInnerText in rows.ElementAt(0).Select(p=>p.InnerText))
                 {
-                    var cellText = cell.InnerText;
-                    columns.Add(pos, cellText);
+                    columns.Add(pos, cellInnerText);
                     pos++;
                 }
                 await InsertExcelContactsAsync(dbContextFactory, rows, columns, cancellationToken);
