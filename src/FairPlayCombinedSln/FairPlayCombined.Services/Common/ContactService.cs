@@ -37,7 +37,7 @@ namespace FairPlayCombined.Services.Common
             if (spreadsheetDocument != null)
             {
                 IEnumerable<Sheet> sheets = spreadsheetDocument.WorkbookPart!.Workbook.GetFirstChild<Sheets>()!.Elements<Sheet>();
-                string relationshipId = sheets.Single(p => p.Name == "My Active Contacts").Id!.Value!;
+                string relationshipId = sheets.First().Id!.Value!;
                 WorksheetPart worksheetPart = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(relationshipId);
                 Worksheet workSheet = worksheetPart.Worksheet;
                 SheetData sheetData = workSheet!.GetFirstChild<SheetData>()!;
