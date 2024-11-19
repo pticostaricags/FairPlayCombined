@@ -116,8 +116,16 @@ namespace FairPlayCombined.Services.Common
             }, cancellationToken: cancellationToken);
             var contentResponse = response.Value.Content[0].Text;
             logger.LogInformation("Content Response: {ContentResponse}", contentResponse);
-            TranslationResponse? translationResponse =
+            TranslationResponse? translationResponse=null;
+            try
+            {
+                translationResponse =
                 JsonSerializer.Deserialize<TranslationResponse>(contentResponse!);
+            }
+            catch (Exception ex) 
+            {
+                logger.LogError(ex, "Error Translating. Source: {SourceText}. Response: {Response}. Exception: {Message}", translationRequest.OriginalText, response.Value.Content.First(), ex.Message);
+            }
             return translationResponse;
         }
 
