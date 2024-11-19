@@ -2,15 +2,14 @@ using FairPlayCombined.Common;
 using FairPlayCombined.Common.CustomAttributes;
 using FairPlayCombined.Common.GeneratorsAttributes;
 using FairPlayCombined.Interfaces;
-using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Interfaces.FairPlayTube;
 using FairPlayCombined.Models.FairPlayTube.NewVideoRecommendation;
-using FairPlayCombined.Models.FairPlayTube.VideoInfo;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
+using System.Globalization;
 
 namespace FairPlayTube.SharedUI.Components.Pages.Creator
 {
@@ -19,9 +18,6 @@ namespace FairPlayTube.SharedUI.Components.Pages.Creator
         [Inject] IJSRuntime? JsRuntime { get; set; }
         [Inject] IVideoInfoService? VideoInfoService { get; set; }
         [Inject] IUserProviderService? UserProviderService { get; set; }
-        [Inject] IOpenAIService? OpenAIService { get; set; }
-        [Inject] IVideoCaptionsService? VideoCaptionsService { get; set; }
-        [Inject] IPromptGeneratorService? PromptGeneratorService { get; set; }
         [Inject] IToastService? ToastService { get; set; }
         [Inject] INewVideoRecommendationService? NewVideoRecommendationService { get; set; }
         [Inject] IStringLocalizer<NewVideoRecommendation>? Localizer { get; set; }
@@ -67,48 +63,16 @@ namespace FairPlayTube.SharedUI.Components.Pages.Creator
             }
         }
 
-        private async Task OnCreateNewVideoRecommendationButtonclickedAsync()
+        private async Task OnCreateNewVideoRecommendationButtonClickedAsync()
         {
             try
             {
                 this.IsBusy = true;
                 StateHasChanged();
-                var promptModel = await this.PromptGeneratorService!
-        .GetPromptCompleteInfoAsync(Constants.PromptsNames.CreateNewVideoRecommendationIdea,
-            this.cancellationTokenSource.Token);
-                string currentUserId = this.UserProviderService!.GetCurrentUserId()!;
-                var videos = await this.VideoInfoService!.GetPaginatedCompletedVideoInfobyUserIdAsync(new PaginationRequest()
-                {
-                    PageSize = 5,
-                    SortingItems = new[]
-                                                                    {
-                    new SortingItem()
-                    {
-                        PropertyName=nameof(VideoInfoModel.VideoInfoId),
-                        SortType = SortType.Descending
-                    }
-                },
-                    StartIndex = 0
-                },
-                    currentUserId,
-                    this.cancellationTokenSource.Token);
-
-                var titles = videos!.Items!.Select(p => $"* Title: {p.Name}. Keywords: {String.Join(",", p.VideoKeywords!)}. Topics: {String.Join(",", p.VideoTopics!)}. Video Captions: {String.Join(",", p.EnglishCaptions)}\r\n");
-                var userMessage = $"Video Titles: {String.Join(".", titles)}.";
-                var result = await this.OpenAIService!.GenerateChatCompletionAsync(promptModel!.BaseText!,
-                    userMessage, this.cancellationTokenSource.Token);
-                if (result != null)
-                {
-                    this.NewVideoRecommendationIdea = result!.choices![0]!.message!.content!;
-                    await NewVideoRecommendationService!.CreateNewVideoRecommendationAsync(
-                        createModel: new()
-                        {
-                            ApplicationUserId = currentUserId,
-                            HtmlNewVideoRecommendation = this.NewVideoRecommendationIdea
-                        },
-                        this.cancellationTokenSource.Token);
-                    await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
-                }
+                this.NewVideoRecommendationIdea =
+                    await NewVideoRecommendationService!
+                    .GenerateNewVideoRecommendationAsync(CultureInfo.CurrentCulture.Name, this.cancellationTokenSource.Token);
+                await this.paginationState.SetCurrentPageIndexAsync(this.paginationState.CurrentPageIndex);
             }
             catch (Exception ex)
             {

@@ -24,5 +24,8 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
         PaginationRequest paginationRequest, CancellationToken cancellationToken);
         Task<PaginationOfT<NewVideoRecommendationModel>> GetPaginatedNewVideoRecommendationForUserIdAsync(
         PaginationRequest paginationRequest, string userId, CancellationToken cancellationToken);
+
+        Task<string> GenerateNewVideoRecommendationAsync(string languageCode,
+            CancellationToken cancellationToken);
     }
 }
