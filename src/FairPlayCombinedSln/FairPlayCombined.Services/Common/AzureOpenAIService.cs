@@ -124,7 +124,7 @@ namespace FairPlayCombined.Services.Common
             }
             catch (Exception ex) 
             {
-                logger.LogError(ex, "Error Translating. Source: {SourceText}. Response: {Response}. Exception: {Message}", translationRequest.OriginalText, response.Value.Content.First(), ex.Message);
+                logger.LogError(ex, "Error Translating. Source: {SourceText}. Response: {Response}. Exception: {Message}", translationRequest.OriginalText, response.Value.Content[0].Text, ex.Message);
             }
             return translationResponse;
         }
