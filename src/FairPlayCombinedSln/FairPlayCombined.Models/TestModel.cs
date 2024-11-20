@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FairPlayCombined.Models
 {
-    //[ModelOfEntity<ICreateModel>("[dbo].[AspNetUsers]")]
+    [ModelOfEntity<ICreateModel>("[dbo].[AspNetUsers]")]
     public partial class TestModel
     {
     }

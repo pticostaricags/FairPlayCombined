@@ -1,7 +1,16 @@
-﻿using Microsoft.CodeAnalysis;
+﻿/*
+ * This class is experimental. 
+ * The purpose is to find the best way to automatically generate the models classes
+ * using Source Generators.
+ * We are purposely supressing banned apis messages in order to research.
+ * The final version of this class should completely avoid usage of banned APIs
+ */
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 
 namespace FairPlayCombined.Models.Generators
@@ -38,6 +47,7 @@ namespace FairPlayCombined.Models.Generators
         private static void Execute(SourceProductionContext context, (Compilation Left, ImmutableArray<ClassDeclarationSyntax> Right) tuple)
 #pragma warning restore S3776 // Cognitive Complexity of methods should not be too high
         {
+            StringBuilder classBuilder = new();
             var (compilation, list) = tuple;
             foreach (var syntax in list)
             {
@@ -74,16 +84,65 @@ namespace FairPlayCombined.Models.Generators
                                         {
                                             var tables = dataSchemaModel.Model.Where(p => p.Type == "SqlTable");
                                             var matchingTable = tables.Where(p => p.Name == constructorArg);
-                                            var columnsRelationship = matchingTable.First().Relationship.Single(p => p.Name == "Columns");
+                                            var tableName = matchingTable.First().Name;
+                                            string pattern = @"\[\w+\]\.\[(\w+)\]";
+                                            Match match = Regex.Match(tableName, pattern);
+
+                                            if (match.Success)
+                                            {
+                                                tableName = match.Groups![1].Value;
+                                                var symbolNamespace = symbol.ContainingNamespace.ToString();
+                                                classBuilder.AppendLine("#nullable enable");
+                                                classBuilder.AppendLine($"namespace {symbolNamespace};");
+                                                classBuilder.AppendLine($"public partial class {tableName}");
+                                                classBuilder.AppendLine("{");
+                                                Debug.WriteLine($"{tableName}");
+                                            }
+                                                var columnsRelationship = matchingTable.First().Relationship.Single(p => p.Name == "Columns");
                                             var columnsEntries = columnsRelationship.Entry;
                                             foreach (var columnEntry in columnsEntries)
                                             {
                                                 string columnName = columnEntry.Element.Name.Replace(constructorArg, String.Empty)
                                                     .Replace("[", String.Empty).Replace("]", String.Empty)
                                                     .TrimStart('.');
+                                                var columnTypeSpecifier = columnEntry.Element.Relationship;
+                                                var columnSqlTypeSpecifier = columnTypeSpecifier.Entry.Element;
+                                                var columnSqlTypeSpecifierRelationshipEntry = columnSqlTypeSpecifier.Relationship.Entry;
+                                                var columnTypeReference = columnSqlTypeSpecifierRelationshipEntry.References.Name.Trim(['[',']']);
+                                                string? propertyType=null;
+                                                switch (columnTypeReference.ToLowerInvariant())
+                                                {
+                                                    case "nvarchar":
+                                                        propertyType = "string?";
+                                                        if (columnSqlTypeSpecifier.Property.Length > 0)
+                                                        {
+                                                            var columnLength = columnSqlTypeSpecifier.Property[0].Value;
+                                                            Debug.WriteLine($"{columnName}.{columnLength}");
+                                                        }
+                                                        break;
+                                                    case "bit":
+                                                        propertyType = "bool";
+                                                        break;
+                                                    case "datetimeoffset":
+                                                        propertyType = "DateTimeOffset";
+                                                        break;
+                                                    case "int":
+                                                        propertyType = "int";
+                                                        break;
+                                                    default:
+                                                        Debug.WriteLine("did not find a match");
+                                                        break;
+                                                }
+                                                if (propertyType?.Length > 0)
+                                                {
+                                                    Debug.WriteLine(propertyType);
+                                                    classBuilder.AppendLine($"public {propertyType} {columnName} {{ get; set; }}");
+                                                }
                                                 Debug.WriteLine(columnName);
                                             }
-                                            Debug.WriteLine(dataSchemaModel.DspName);
+                                            classBuilder.AppendLine("}");
+                                            classBuilder.AppendLine("#nullable disable");
+                                            context.AddSource($"{tableName}.g.cs", classBuilder.ToString());
                                         }
                                     }
 #pragma warning restore RS1035 // Do not use APIs banned for analyzers
