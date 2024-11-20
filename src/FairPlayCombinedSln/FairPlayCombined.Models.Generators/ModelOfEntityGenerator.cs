@@ -70,8 +70,7 @@ namespace FairPlayCombined.Models.Generators
                                         var firstFile = dacPacFiles[0];
                                         using var stream = File.Open(firstFile, FileMode.Open);
                                         XmlSerializer xmlSerializer = new(typeof(DataSchemaModel));
-                                        DataSchemaModel? dataSchemaModel = xmlSerializer.Deserialize(stream) as DataSchemaModel;
-                                        if (dataSchemaModel != null)
+                                        if (xmlSerializer.Deserialize(stream) is DataSchemaModel dataSchemaModel)
                                         {
                                             var tables = dataSchemaModel.Model.Where(p => p.Type == "SqlTable");
                                             var matchingTable = tables.Where(p => p.Name == constructorArg);
@@ -82,6 +81,7 @@ namespace FairPlayCombined.Models.Generators
                                                 string columnName = columnEntry.Element.Name.Replace(constructorArg, String.Empty)
                                                     .Replace("[", String.Empty).Replace("]", String.Empty)
                                                     .TrimStart('.');
+                                                Debug.WriteLine(columnName);
                                             }
                                             Debug.WriteLine(dataSchemaModel.DspName);
                                         }
