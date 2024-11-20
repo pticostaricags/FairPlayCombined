@@ -100,15 +100,15 @@ namespace FairPlayCombined.Models.Generators
                                             }
                                                 var columnsRelationship = matchingTable.First().Relationship.Single(p => p.Name == "Columns");
                                             var columnsEntries = columnsRelationship.Entry;
-                                            foreach (var columnEntry in columnsEntries)
+                                            foreach (var columnEntryElement in columnsEntries.Select(c=>c.Element))
                                             {
-                                                string columnName = columnEntry.Element.Name.Replace(constructorArg, String.Empty)
+                                                string columnName = columnEntryElement.Name.Replace(constructorArg, String.Empty)
                                                     .Replace("[", String.Empty).Replace("]", String.Empty)
                                                     .TrimStart('.');
-                                                var columnTypeSpecifier = columnEntry.Element.Relationship;
+                                                var columnTypeSpecifier = columnEntryElement.Relationship;
                                                 var columnSqlTypeSpecifier = columnTypeSpecifier.Entry.Element;
                                                 var columnSqlTypeSpecifierRelationshipEntry = columnSqlTypeSpecifier.Relationship.Entry;
-                                                var columnTypeReference = columnSqlTypeSpecifierRelationshipEntry.References.Name.Trim(['[',']']);
+                                                var columnTypeReference = columnSqlTypeSpecifierRelationshipEntry.References.Name.Trim('[',']');
                                                 string? propertyType=null;
                                                 switch (columnTypeReference.ToLowerInvariant())
                                                 {
