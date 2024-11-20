@@ -18,6 +18,7 @@
       "FairPlayCombined.LocalizationGenerator\\FairPlayCombined.LocalizationGenerator.csproj",
       "FairPlayCombined.MailDev.Hosting\\FairPlayCombined.MailDev.Hosting.csproj",
       "FairPlayCombined.Migrations\\FairPlayCombined.Migrations.csproj",
+      "FairPlayCombined.Models.Generators\\FairPlayCombined.Models.Generators.csproj",
       "FairPlayCombined.Models\\FairPlayCombined.Models.csproj",
       "FairPlayCombined.Services.Generators\\FairPlayCombined.Services.Generators.csproj",
       "FairPlayCombined.Services\\FairPlayCombined.Services.csproj",
