@@ -1,5 +1,6 @@
 ﻿@page "/Public/WatchVideo/{VideoId}"
 @implements IAsyncDisposable
+@using FairPlayCombined.Common.FairPlayTube.Enums
 @using FairPlayCombined.Common.GeneratorsAttributes
 @using FairPlayCombined.Interfaces
 @using FairPlayCombined.Interfaces.FairPlayTube
@@ -35,28 +36,28 @@
         <meta name="thumbnail" content="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")" />
 
         <TwitterCard Site="@("@pticostarica")"
-        Title="@this.OpenGraphTitle"
-        Description="@this.OpenGraphDescription"
-        ImageUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"></TwitterCard>
+                     Title="@this.OpenGraphTitle"
+                     Description="@this.OpenGraphDescription"
+                     ImageUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"></TwitterCard>
 
         <OpenGraph Title="@this.OpenGraphTitle"
-        Description="@this.OpenGraphDescription"
-        ImageUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
-        ImageSecureUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
-        ImageType="image/jpeg"
-        ImageWidth="400"
-        ImageHeight="300"
-        ImageAlt="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")"></OpenGraph>
+                   Description="@this.OpenGraphDescription"
+                   ImageUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
+                   ImageSecureUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
+                   ImageType="image/jpeg"
+                   ImageWidth="400"
+                   ImageHeight="300"
+                   ImageAlt="@($"{apiBaseUrl}/api/video/{this.VideoId}/description")"></OpenGraph>
 
 
         <JsonLdForSingleVideo Name="@this.OpenGraphTitle"
-        Description="@this.OpenGraphDescription"
-        ThumbnailUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
-        UploadDate="@this.videoInfoModel.RowCreationDateTime.ToString("yyyy-MM-ddTHH:mm:sszzz")"
-        Duration="@this.videoInfoModel.VideoObjectDuration"
-        ContentUrl="@this.navigationManager.Uri"
-        EmbedUrl="@($"{apiBaseUrl}/Public/EmbedVideo/{this.VideoId}")"
-        InteractionCount="1"></JsonLdForSingleVideo>
+                              Description="@this.OpenGraphDescription"
+                              ThumbnailUrl="@($"{apiBaseUrl}/api/video/{this.VideoId}/thumbnail")"
+                              UploadDate="@this.videoInfoModel.RowCreationDateTime.ToString("yyyy-MM-ddTHH:mm:sszzz")"
+                              Duration="@this.videoInfoModel.VideoObjectDuration"
+                              ContentUrl="@this.navigationManager.Uri"
+                              EmbedUrl="@($"{apiBaseUrl}/Public/EmbedVideo/{this.VideoId}")"
+                              InteractionCount="1"></JsonLdForSingleVideo>
     }
 
 </HeadContent>
@@ -69,14 +70,41 @@
 <LoadingIndicator ShowSpinners="this.IsBusy"></LoadingIndicator>
 @if (!String.IsNullOrWhiteSpace(this.VideoUrl))
 {
-    <div id="container" data-permanent>
-        <!-- HTML -->
-        <VideoJs SupportedLanguages="@this.SupportedLanguages"
-        VideoId="@this.VideoId"
-        VideoUrl="@this.VideoUrl"></VideoJs>
-    </div>
     @if (this.videoInfoModel != null)
     {
+        @if (this.videoInfoModel.VideoVisibilityId == (int)VideoVisibility.Public)
+        {
+            <div id="container" data-permanent>
+                <!-- HTML -->
+                <VideoJs SupportedLanguages="@this.SupportedLanguages"
+                         VideoId="@this.VideoId"
+                         VideoUrl="@this.VideoUrl"></VideoJs>
+            </div>
+        }
+        else
+        {
+            <AuthorizeView Roles="@Constants.RoleName.BasicPlanUser">
+                <Authorized>
+                    <div id="container" data-permanent>
+                        <!-- HTML -->
+                        <VideoJs SupportedLanguages="@this.SupportedLanguages"
+                                 VideoId="@this.VideoId"
+                                 VideoUrl="@this.VideoUrl"></VideoJs>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <p>
+                        <FluentLabel Typo="Typography.Body" Color="@Color.Error">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.Info())"></FluentIcon>
+                            @localizer[VideoAvailableForUsersOnlyTextKey]
+                        </FluentLabel>
+                    </p>
+                    <FluentAnchor Href="Account/Login" IconStart="@(new Icons.Regular.Size20.PersonArrowRight())">
+                        @localizer[LoginTextKey]
+                    </FluentAnchor>
+                </NotAuthorized>
+            </AuthorizeView>
+        }
         @if (this.videoInfoModel.IsVideoGeneratedWithAi == true)
         {
             <FluentLabel Typo="Typography.Body" Color="Color.Warning">
@@ -94,14 +122,14 @@
                         @if (this.videoInfoModel.ApplicationUserId == userProviderService.GetCurrentUserId())
                         {
                             <FluentButton Type="ButtonType.Button"
-                            Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
-                            OnClick="OnCreateDescriptionWithAIAsync">@localizer[CreateWithAITextKey]</FluentButton>
+                                          Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
+                                          OnClick="OnCreateDescriptionWithAIAsync">@localizer[CreateWithAITextKey]</FluentButton>
                         }
                     </Authorized>
                 </AuthorizeView>
             </FluentAccordionItem>
             @if (this.videoInfoModel.GitHubSponsorsUsername != null ||
-    this.videoInfoModel.BuyMeACoffeeUsername != null)
+           this.videoInfoModel.BuyMeACoffeeUsername != null)
             {
                 <FluentAccordionItem Heading="@localizer[MonetizationTextKey]" Expanded="true">
                     <FluentLabel Weight="FontWeight.Bold">
@@ -112,7 +140,7 @@
                         <FluentLabel Typo="Typography.Body">
                             <FluentAnchor Href="@($"https://github.com/sponsors/{this.videoInfoModel.GitHubSponsorsUsername}")" Target="_blank">
                                 <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
-                                Color="Color.Accent" Slot="start"></FluentIcon>
+                                            Color="Color.Accent" Slot="start"></FluentIcon>
                                 GitHub Sponsors
                             </FluentAnchor>
                         </FluentLabel>
@@ -122,7 +150,7 @@
                         <FluentLabel Typo="Typography.Body">
                             <FluentAnchor Href="@($"https://buymeacoffee.com/{this.videoInfoModel.BuyMeACoffeeUsername}")" Target="_blank">
                                 <FluentIcon Value="@(new Icons.Regular.Size16.Globe())"
-                                Color="Color.Accent" Slot="start"></FluentIcon>
+                                            Color="Color.Accent" Slot="start"></FluentIcon>
                                 Buy Me A Coffee
                             </FluentAnchor>
                         </FluentLabel>
@@ -140,7 +168,7 @@
                         @foreach (var singleKeyword in this.videoInfoModel.VideoKeywords)
                         {
                             <FluentBadge Circular="true"
-                            Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
+                                         Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent">
                                 @singleKeyword
                             </FluentBadge>
                         }
@@ -158,8 +186,8 @@
                         @foreach (var singleTopic in this.videoInfoModel.VideoTopics)
                         {
                             <FluentBadge Circular="true"
-                            Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
-                            Class="multiline-text">
+                                         Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Accent"
+                                         Class="multiline-text">
                                 @singleTopic
                             </FluentBadge>
                         }
@@ -173,7 +201,7 @@
             <div>
                 <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="3">
                     <iframe width="580" height="780"
-                    src="@this.videoInfoModel?.AllInsightsUrl" frameborder="0" allowfullscreen></iframe>
+                            src="@this.videoInfoModel?.AllInsightsUrl" frameborder="0" allowfullscreen></iframe>
                 </FluentStack>
             </div>
         </FluentAccordionItem>
@@ -466,5 +494,9 @@
     public const string AddCommentTextKey = "AddCommentText";
     [ResourceKey(defaultValue: "No data to show!")]
     public const string NoDataTextKey = "NoDataText";
+    [ResourceKey(defaultValue: "Only users with an account are allowed to play this video. You need to login first")]
+    public const string VideoAvailableForUsersOnlyTextKey = "VideoAvailableForUsersOnlyText";
+    [ResourceKey(defaultValue: "Login")]
+    public const string LoginTextKey = "LoginText";
     #endregion Resource Keys
 }
