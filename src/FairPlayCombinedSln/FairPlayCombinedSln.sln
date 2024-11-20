@@ -93,6 +93,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.WebCompone
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCRM.TestDataGenerator", "FairPlayCRM.TestDataGenerator\FairPlayCRM.TestDataGenerator.csproj", "{5E25442A-6DAE-4821-A427-C692A20B2C86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairPlayCombined.Models.Generators", "FairPlayCombined.Models.Generators\FairPlayCombined.Models.Generators.csproj", "{45BF5E68-74C8-42D7-BA83-C30CD3F9ABBB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Enable_Paid_Tests|Any CPU = Debug_Enable_Paid_Tests|Any CPU
@@ -358,6 +360,12 @@ Global
 		{5E25442A-6DAE-4821-A427-C692A20B2C86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E25442A-6DAE-4821-A427-C692A20B2C86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E25442A-6DAE-4821-A427-C692A20B2C86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45BF5E68-74C8-42D7-BA83-C30CD3F9ABBB}.Debug_Enable_Paid_Tests|Any CPU.ActiveCfg = Debug|Any CPU
+		{45BF5E68-74C8-42D7-BA83-C30CD3F9ABBB}.Debug_Enable_Paid_Tests|Any CPU.Build.0 = Debug|Any CPU
+		{45BF5E68-74C8-42D7-BA83-C30CD3F9ABBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45BF5E68-74C8-42D7-BA83-C30CD3F9ABBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45BF5E68-74C8-42D7-BA83-C30CD3F9ABBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45BF5E68-74C8-42D7-BA83-C30CD3F9ABBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

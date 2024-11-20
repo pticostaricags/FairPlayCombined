@@ -32,5 +32,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FairPlayCombined.Common\FairPlayCombined.Common.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.Models.Generators\FairPlayCombined.Models.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>
