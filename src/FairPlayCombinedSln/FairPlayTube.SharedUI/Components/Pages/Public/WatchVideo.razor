@@ -99,7 +99,7 @@
                             @localizer[VideoAvailableForUsersOnlyTextKey]
                         </FluentLabel>
                     </p>
-                    <FluentAnchor Href="Account/Login" IconStart="@(new Icons.Regular.Size20.PersonArrowRight())">
+                    <FluentAnchor Href="@($"Account/Login?returnUrl={Uri.EscapeDataString(navigationManager.Uri)}")" IconStart="@(new Icons.Regular.Size20.PersonArrowRight())">
                         @localizer[LoginTextKey]
                     </FluentAnchor>
                 </NotAuthorized>
