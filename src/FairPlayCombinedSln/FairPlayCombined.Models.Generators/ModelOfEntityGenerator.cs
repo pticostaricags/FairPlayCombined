@@ -86,7 +86,7 @@ namespace FairPlayCombined.Models.Generators
                                             var matchingTable = tables.Where(p => p.Name == constructorArg);
                                             var tableName = matchingTable.First().Name;
                                             string pattern = @"\[\w+\]\.\[(\w+)\]";
-                                            Match match = Regex.Match(tableName, pattern);
+                                            Match match = Regex.Match(tableName, pattern, RegexOptions.None, TimeSpan.FromSeconds(1));
 
                                             if (match.Success)
                                             {
