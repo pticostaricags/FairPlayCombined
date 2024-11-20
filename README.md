@@ -14,12 +14,11 @@ Click the links to help improve quality
 Check the following article:
 
 "FairPlay"​ software. What is it?
-https://www.linkedin.com/pulse/fairplay-software-what-eduardo-fonseca?utm_source=share&utm_medium=member_android&utm_campaign=share_via
+[Learn more here](https://www.linkedin.com/smart-links/AQEfZXJrHrF21Q)
 
 ### External Resources
-**Open At Microsoft - Real World Apps with Blazor and .NET Aspire:**
-
-https://youtu.be/5v2GNcrEabg?list=PLlrxD0HtieHg8On6t1l5_kj--7PMmyfGi
+**Real World Apps with Blazor and .NET Aspire:**
+[Learn more here](https://www.linkedin.com/smart-links/AQFJxOugmNBsMA)
 
 ### Repository Objective
 FairPlayCombined is a suite of Open-Source Enterprise-Grade High-Quality software focused on helping entrepreneurs reduce costs in Software Development.
@@ -37,7 +36,7 @@ The project is still a work in progress, it started some time after DotNetConf r
 * FairPlayTube Wiki: https://github.com/pticostaricags/FairPlayCombined/wiki/FairPlayTube
 
 ### Sample Apps
-* [FairPlayTube](https://fairplaytube.pticostarica.com/)
+* [FairPlayTube](https://www.linkedin.com/smart-links/AQH9BZbJfMQMUw)
 
 ### Support Me
 Developing software takes a lot of time and effort(researching, testing, trial and error, programming, etc.), you can help me help yourself and lots of other developers learning by becoming a Sponsor here: https://github.com/sponsors/efonsecab
