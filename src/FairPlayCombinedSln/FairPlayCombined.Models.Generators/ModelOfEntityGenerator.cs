@@ -145,7 +145,7 @@ namespace FairPlayCombined.Models.Generators
             string columnName = columnEntryElement.Name.Replace(constructorArg, String.Empty)
                 .Replace("[", String.Empty).Replace("]", String.Empty)
                 .TrimStart('.');
-            if (declaredMemberNames.Count(p => p == columnName) > 0)
+            if (declaredMemberNames.Any(p => p == columnName))
             {
                 //if the defining type already has the property we skip processing the column
                 return;
