@@ -1,15 +1,13 @@
-﻿using FairPlayCombined.Common.GeneratorsAttributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FairPlayCombined.Common.CustomAttributes;
+using FairPlayCombined.Common.GeneratorsAttributes;
 
 namespace FairPlayCombined.Models
 {
     [ModelOfEntity<ICreateModel>("[dbo].[AspNetUsers]")]
     public partial class TestModel
     {
+        [CustomRequired]
+        [CustomStringLength(maximumLength:0)]
         public string? Id { get; set; }
     }
 }

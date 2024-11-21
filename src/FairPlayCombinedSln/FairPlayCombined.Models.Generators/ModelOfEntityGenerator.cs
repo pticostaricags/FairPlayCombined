@@ -119,6 +119,8 @@ namespace FairPlayCombined.Models.Generators
                         tableName = match.Groups![1].Value;
                         var symbolNamespace = symbol.ContainingNamespace.ToString();
                         classBuilder.AppendLine("#nullable enable");
+                        classBuilder.AppendLine("using FairPlayCombined.Common.CustomAttributes;");
+                        classBuilder.AppendLine("using FairPlayCombined.Common.ValidationAttributes;");
                         classBuilder.AppendLine($"namespace {symbolNamespace};");
                         classBuilder.AppendLine($"public partial class {tableName}");
                         classBuilder.AppendLine("{");
@@ -148,6 +150,15 @@ namespace FairPlayCombined.Models.Generators
                 //if the defining type already has the property we skip processing the column
                 return;
             }
+            var isNullableProperty = columnEntryElement.Property?.SingleOrDefault(p => p.Name == "IsNullable");
+            if (isNullableProperty != null)
+            {
+                classBuilder.AppendLine("[CustomRequired]");
+            }
+            if (columnName.IndexOf("Url") >=0)
+            {
+                classBuilder.AppendLine("[NullableUrl]");
+            }
             var columnTypeSpecifier = columnEntryElement.Relationship;
             var columnSqlTypeSpecifier = columnTypeSpecifier.Entry.Element;
             var columnSqlTypeSpecifierRelationshipEntry = columnSqlTypeSpecifier.Relationship.Entry;
@@ -159,8 +170,12 @@ namespace FairPlayCombined.Models.Generators
                     propertyType = "string?";
                     if (columnSqlTypeSpecifier.Property.Length > 0)
                     {
-                        var columnLength = columnSqlTypeSpecifier.Property[0].Value;
-                        Debug.WriteLine($"{columnName}.{columnLength}");
+                        var columnLengthProperty = columnSqlTypeSpecifier.Property.SingleOrDefault(p => p.Name == "Length");
+                        if (columnLengthProperty != null)
+                        {
+                            classBuilder.AppendLine($"[CustomStringLength(maximumLength:{columnLengthProperty.Value})]");
+                            Debug.WriteLine($"{columnName}.{columnLengthProperty.Value}");
+                        }
                     }
                     break;
                 case "bit":
