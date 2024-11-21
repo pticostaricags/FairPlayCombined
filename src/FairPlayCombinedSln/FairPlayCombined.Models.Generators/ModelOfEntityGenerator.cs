@@ -128,7 +128,7 @@ namespace FairPlayCombined.Models.Generators
                     var columnsEntries = columnsRelationship.Entry;
                     foreach (var columnEntryElement in columnsEntries.Select(c => c.Element))
                     {
-                        ProcessColumnEntry(classBuilder, constructorArg, columnEntryElement);
+                        ProcessColumnEntry(classBuilder, constructorArg, columnEntryElement, symbol.MemberNames);
                     }
                     classBuilder.AppendLine("}");
                     classBuilder.AppendLine("#nullable disable");
@@ -137,11 +137,17 @@ namespace FairPlayCombined.Models.Generators
             }
         }
 
-        private static void ProcessColumnEntry(StringBuilder classBuilder, string? constructorArg, DataSchemaModelElementRelationshipEntryElement columnEntryElement)
+        private static void ProcessColumnEntry(StringBuilder classBuilder, string? constructorArg, DataSchemaModelElementRelationshipEntryElement columnEntryElement,
+            IEnumerable<string> declaredMemberNames)
         {
             string columnName = columnEntryElement.Name.Replace(constructorArg, String.Empty)
                 .Replace("[", String.Empty).Replace("]", String.Empty)
                 .TrimStart('.');
+            if (declaredMemberNames.Count(p => p == columnName) > 0)
+            {
+                //if the defining type already has the property we skip processing the column
+                return;
+            }
             var columnTypeSpecifier = columnEntryElement.Relationship;
             var columnSqlTypeSpecifier = columnTypeSpecifier.Entry.Element;
             var columnSqlTypeSpecifierRelationshipEntry = columnSqlTypeSpecifier.Relationship.Entry;
