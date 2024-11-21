@@ -100,10 +100,10 @@ namespace FairPlayCombined.Models.Generators
         {
             var modelSourceFilePath = syntax.GetLocation().SourceTree!.FilePath;
             var searchPath = Directory.GetParent(modelSourceFilePath).Parent.FullName;
-            var dacPacFiles = Directory.GetFiles(searchPath, "model.xml", SearchOption.AllDirectories);
-            if (dacPacFiles?.Length > 0)
+            var dataSchemaFiles = Directory.GetFiles(searchPath, "model.xml", SearchOption.AllDirectories);
+            if (dataSchemaFiles?.Length > 0)
             {
-                var firstFile = dacPacFiles[0];
+                var firstFile = dataSchemaFiles[0];
                 using var stream = File.Open(firstFile, FileMode.Open);
                 XmlSerializer xmlSerializer = new(typeof(DataSchemaModel));
                 if (xmlSerializer.Deserialize(stream) is DataSchemaModel dataSchemaModel)
@@ -170,10 +170,12 @@ namespace FairPlayCombined.Models.Generators
                     propertyType = "string?";
                     if (columnSqlTypeSpecifier.Property.Length > 0)
                     {
-                        var columnLengthProperty = columnSqlTypeSpecifier.Property.SingleOrDefault(p => p.Name == "Length");
+                        var columnLengthProperty = columnSqlTypeSpecifier
+                            .Property.SingleOrDefault(p => p.Name == "Length");
                         if (columnLengthProperty != null)
                         {
-                            classBuilder.AppendLine($"[CustomStringLength(maximumLength:{columnLengthProperty.Value})]");
+                            classBuilder
+                                .AppendLine($"[CustomStringLength(maximumLength:{columnLengthProperty.Value})]");
                             Debug.WriteLine($"{columnName}.{columnLengthProperty.Value}");
                         }
                     }
