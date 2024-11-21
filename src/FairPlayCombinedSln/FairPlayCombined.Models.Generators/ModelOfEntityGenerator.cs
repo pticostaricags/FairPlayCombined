@@ -100,10 +100,10 @@ namespace FairPlayCombined.Models.Generators
         {
             var modelSourceFilePath = syntax.GetLocation().SourceTree!.FilePath;
             var searchPath = Directory.GetParent(modelSourceFilePath).Parent.FullName;
-            var dacPacFiles = Directory.GetFiles(searchPath, "model.xml", SearchOption.AllDirectories);
-            if (dacPacFiles?.Length > 0)
+            var dataSchemaFiles = Directory.GetFiles(searchPath, "model.xml", SearchOption.AllDirectories);
+            if (dataSchemaFiles?.Length > 0)
             {
-                var firstFile = dacPacFiles[0];
+                var firstFile = dataSchemaFiles[0];
                 using var stream = File.Open(firstFile, FileMode.Open);
                 XmlSerializer xmlSerializer = new(typeof(DataSchemaModel));
                 if (xmlSerializer.Deserialize(stream) is DataSchemaModel dataSchemaModel)
@@ -119,6 +119,8 @@ namespace FairPlayCombined.Models.Generators
                         tableName = match.Groups![1].Value;
                         var symbolNamespace = symbol.ContainingNamespace.ToString();
                         classBuilder.AppendLine("#nullable enable");
+                        classBuilder.AppendLine("using FairPlayCombined.Common.CustomAttributes;");
+                        classBuilder.AppendLine("using FairPlayCombined.Common.ValidationAttributes;");
                         classBuilder.AppendLine($"namespace {symbolNamespace};");
                         classBuilder.AppendLine($"public partial class {tableName}");
                         classBuilder.AppendLine("{");
@@ -128,7 +130,7 @@ namespace FairPlayCombined.Models.Generators
                     var columnsEntries = columnsRelationship.Entry;
                     foreach (var columnEntryElement in columnsEntries.Select(c => c.Element))
                     {
-                        ProcessColumnEntry(classBuilder, constructorArg, columnEntryElement);
+                        ProcessColumnEntry(classBuilder, constructorArg, columnEntryElement, symbol.MemberNames);
                     }
                     classBuilder.AppendLine("}");
                     classBuilder.AppendLine("#nullable disable");
@@ -137,11 +139,26 @@ namespace FairPlayCombined.Models.Generators
             }
         }
 
-        private static void ProcessColumnEntry(StringBuilder classBuilder, string? constructorArg, DataSchemaModelElementRelationshipEntryElement columnEntryElement)
+        private static void ProcessColumnEntry(StringBuilder classBuilder, string? constructorArg, DataSchemaModelElementRelationshipEntryElement columnEntryElement,
+            IEnumerable<string> declaredMemberNames)
         {
             string columnName = columnEntryElement.Name.Replace(constructorArg, String.Empty)
                 .Replace("[", String.Empty).Replace("]", String.Empty)
                 .TrimStart('.');
+            if (declaredMemberNames.Any(p => p == columnName))
+            {
+                //if the defining type already has the property we skip processing the column
+                return;
+            }
+            var isNullableProperty = columnEntryElement.Property?.SingleOrDefault(p => p.Name == "IsNullable");
+            if (isNullableProperty != null)
+            {
+                classBuilder.AppendLine("[CustomRequired]");
+            }
+            if (columnName.IndexOf("Url") >=0)
+            {
+                classBuilder.AppendLine("[NullableUrl]");
+            }
             var columnTypeSpecifier = columnEntryElement.Relationship;
             var columnSqlTypeSpecifier = columnTypeSpecifier.Entry.Element;
             var columnSqlTypeSpecifierRelationshipEntry = columnSqlTypeSpecifier.Relationship.Entry;
@@ -153,8 +170,14 @@ namespace FairPlayCombined.Models.Generators
                     propertyType = "string?";
                     if (columnSqlTypeSpecifier.Property.Length > 0)
                     {
-                        var columnLength = columnSqlTypeSpecifier.Property[0].Value;
-                        Debug.WriteLine($"{columnName}.{columnLength}");
+                        var columnLengthProperty = columnSqlTypeSpecifier
+                            .Property.SingleOrDefault(p => p.Name == "Length");
+                        if (columnLengthProperty != null)
+                        {
+                            classBuilder
+                                .AppendLine($"[CustomStringLength(maximumLength:{columnLengthProperty.Value})]");
+                            Debug.WriteLine($"{columnName}.{columnLengthProperty.Value}");
+                        }
                     }
                     break;
                 case "bit":
