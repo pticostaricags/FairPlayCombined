@@ -84,8 +84,6 @@ public class ModelOfEntityGenerator : IIncrementalGenerator
         {
             return;
         }
-        // Extract the type argument
-        var modelGenericType = attributeData.AttributeClass.TypeArguments[0];
 
         // Extract the constructor argument (e.g., "dbo.AspNetUsers")
         if (attributeData.ConstructorArguments.Length <= 0)
