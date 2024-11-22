@@ -43,6 +43,9 @@ Developing software takes a lot of time and effort(researching, testing, trial a
 
 You can also help by sharing this wiki with other people and encouraging to become sponsors too.
 
+### Frequently Asked Questions
+Check the following link: [FAQ](https://github.com/pticostaricags/FairPlayCombined/wiki/Frequently-Asked-Questions-(FAQ))
+
 ### Pricing
 Check the following link: [FairPlayCombined Pricing](/PRICING.md)
 
