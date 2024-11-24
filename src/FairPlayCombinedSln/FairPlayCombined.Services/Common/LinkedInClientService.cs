@@ -47,7 +47,9 @@ namespace FairPlayCombined.Services.Common
         {
             httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+#pragma warning disable S1075 // URIs should not be hardcoded
             var requestUrl = "https://api.linkedin.com/v2/assets?action=registerUpload";
+#pragma warning restore S1075 // URIs should not be hardcoded
             string json = $$"""
                         {
                 "registerUploadRequest": {
