@@ -30,26 +30,20 @@ public class AudienceGrowthBackgroundService(IServiceProvider serviceProvider,
                 p.LoginProvider == "LinkedIn" &&
                 p.Name == "access_token"))
                 {
-                    DateTimeOffset timeToStart = DateTimeOffset.UtcNow.AddMinutes(5);
-                    foreach (var singleUserVideo in dbContext.VideoInfo.Where(p => p.ApplicationUserId == singleLinkedInClaim.UserId))
+                    DateTimeOffset timeToStart = DateTimeOffset.UtcNow;
+                    foreach (var singleUserVideo in 
+                        dbContext.VideoInfo.Where(p => p.ApplicationUserId == singleLinkedInClaim.UserId)
+                        .OrderByDescending(p=>p.VideoInfoId))
                     {
                         string jobName = $"{singleUserVideo.ApplicationUserId}-{singleUserVideo.VideoInfoId}";
                         JobKey jobKey = new(jobName);
                         if (!await scheduler.CheckExists(jobKey))
                         {
-                            var job = JobBuilder.Create<AudienceGrowthJob>()
-                                .WithIdentity(jobName)
-                                .Build();
-                            var triggers = await scheduler.GetTriggersOfJob(jobKey);
-                            if (triggers?.Count > 0)
+                            try
                             {
-                                foreach (var singleTrigger in triggers)
-                                {
-                                    await scheduler.ResetTriggerFromErrorState(singleTrigger.Key);
-                                }
-                            }
-                            else
-                            {
+                                var job = JobBuilder.Create<AudienceGrowthJob>()
+                                    .WithIdentity(jobName)
+                                    .Build();
                                 var trigger = TriggerBuilder.Create()
                                     .WithIdentity($"tr-{singleUserVideo.ApplicationUserId}-{singleUserVideo.VideoInfoId}")
                                     .StartAt(timeToStart)
@@ -57,6 +51,10 @@ public class AudienceGrowthBackgroundService(IServiceProvider serviceProvider,
                                     .Build();
                                 await scheduler.ScheduleJob(job, trigger, stoppingToken);
                                 timeToStart = timeToStart.AddHours(3);
+                            }
+                            catch (Exception jobAndTriggerEx)
+                            {
+                                logger.LogError(jobAndTriggerEx, "An error ocurred: {ErrorMessage}", jobAndTriggerEx.Message);
                             }
                         }
                     }

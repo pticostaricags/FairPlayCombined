@@ -6,7 +6,7 @@ namespace FairPlayCombined.Interfaces.FairPlayTube
 {
     public interface IVideoInfoService
     {
-        Task CreateDescriptionForVideoAsync(long videoInfoId, CancellationToken cancellationToken);
+        Task CreateDescriptionForVideoAsync(long videoInfoId, string language, CancellationToken cancellationToken);
         Task<long> CreateVideoInfoAsync(CreateVideoInfoModel createModel,
             CancellationToken cancellationToken);
         Task<VideoInfoModel[]> GetAllVideoInfoAsync(CancellationToken cancellationToken);

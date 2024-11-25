@@ -135,6 +135,8 @@ namespace FairPlayCombined.Services.Common
             }
 
             var escapedText = CleanString(text);
+            var escapedMediaDescription = CleanString(mediaDescription);
+            var escapedMediaTitle = CleanString(mediaTitle);
             var json = $$"""
 {
     "author": "urn:li:person:{{authorId}}",
@@ -149,11 +151,11 @@ namespace FairPlayCombined.Services.Common
                 {
                     "status": "READY",
                     "description": {
-                        "text": "{{mediaDescription}}"
+                        "text": "{{escapedMediaDescription}}"
                     },
                     "media": "{{registeredUpload.value!.asset}}",
                     "title": {
-                        "text": "{{mediaTitle}}"
+                        "text": "{{escapedMediaTitle}}"
                     }
                 }
             ]
