@@ -17,6 +17,8 @@ namespace FairPlayCombined.Services.Common
         ILogger<LinkedInClientService> logger,
         HttpClient httpClient) : ILinkedInClientService
     {
+        private const string BEARER_KEY = "Bearer";
+
         public async Task<string> GetAccessTokenForUserAsync(string userId, CancellationToken cancellationToken)
         {
             logger.LogInformation("Start of method: {MethodName}", nameof(GetAccessTokenForUserAsync));
@@ -45,7 +47,7 @@ namespace FairPlayCombined.Services.Common
         public async Task<UserInfoModel> GetUserInfoAsync(string accessToken, CancellationToken cancellationToken)
         {
             httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                new System.Net.Http.Headers.AuthenticationHeaderValue(BEARER_KEY, accessToken);
 #pragma warning disable S1075 // URIs should not be hardcoded
             string requestUrl = "https://api.linkedin.com/v2/userinfo";
 #pragma warning restore S1075 // URIs should not be hardcoded
@@ -58,7 +60,7 @@ namespace FairPlayCombined.Services.Common
             CancellationToken cancellationToken)
         {
             httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                new System.Net.Http.Headers.AuthenticationHeaderValue(BEARER_KEY, accessToken);
 #pragma warning disable S1075 // URIs should not be hardcoded
             var requestUrl = "https://api.linkedin.com/v2/assets?action=registerUpload";
 #pragma warning restore S1075 // URIs should not be hardcoded
@@ -110,7 +112,7 @@ namespace FairPlayCombined.Services.Common
             CancellationToken cancellationToken)
         {
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", accessToken);
+                new AuthenticationHeaderValue(BEARER_KEY, accessToken);
             httpClient.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
             var userInfo = await this.GetUserInfoAsync(accessToken, cancellationToken);
             var authorId = userInfo.sub;
@@ -182,7 +184,7 @@ namespace FairPlayCombined.Services.Common
         public async Task CreateTextShareAsync(string text, string accessToken, CancellationToken cancellationToken)
         {
             httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                new System.Net.Http.Headers.AuthenticationHeaderValue(BEARER_KEY, accessToken);
             httpClient.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
             var userInfo = await this.GetUserInfoAsync(accessToken, cancellationToken);
             var authorId = userInfo.sub;
@@ -220,7 +222,7 @@ namespace FairPlayCombined.Services.Common
             string? description, string url, CancellationToken cancellationToken)
         {
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", accessToken);
+                new AuthenticationHeaderValue(BEARER_KEY, accessToken);
             httpClient.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
             var userInfo = await this.GetUserInfoAsync(accessToken,cancellationToken);
             var authorId = userInfo.sub;
