@@ -24,7 +24,6 @@ public class AudienceGrowthBackgroundService(IServiceProvider serviceProvider,
                 using var scope = serviceProvider.CreateScope();
                 var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
                 var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
-                var linkedInClientService = scope.ServiceProvider.GetRequiredService<ILinkedInClientService>();
                 ISchedulerFactory schedulerFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
                 var scheduler = await schedulerFactory.GetScheduler(stoppingToken);
                 foreach (var singleLinkedInClaim in dbContext.AspNetUserTokens.Where(p =>
@@ -67,7 +66,7 @@ public class AudienceGrowthBackgroundService(IServiceProvider serviceProvider,
             {
                 logger.LogError(ex, message: "An error has occurred: {ErrorMessage}", ex.Message);
             }
-            await Task.Delay(timeToWait); ;
+            await Task.Delay(timeToWait);
         }
     }
 }
