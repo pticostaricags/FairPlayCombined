@@ -12,6 +12,7 @@ using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using FairPlayCombined.SharedAuth.Components.Account;
 using FairPlayCombined.SharedAuth.Extensions;
+using FairPlayTube.BackgroundServices;
 using FairPlayTube.Components;
 using FairPlayTube.Data;
 using FairPlayTube.Extensions;
@@ -27,6 +28,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
+using Quartz;
 using SixLabors.ImageSharp;
 using System.IO.Compression;
 using System.Reflection;
@@ -34,6 +36,9 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+
+
 builder.AddAzureBlobClient("blobs");
 
 if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
@@ -174,6 +179,24 @@ builder.AddIdentityEmailSender();
 builder.AddPlatformServices(googleAuthClientSecretInfo);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+builder.Services.AddQuartz(options =>
+{
+    options.UsePersistentStore(x =>
+    {
+        x.UseProperties = true;
+        x.UseClustering();
+        x.UseSqlServer(connectionString);
+        x.UseSystemTextJsonSerializer();
+    });
+});
+builder.Services.AddQuartzHostedService(options =>
+{
+    options.WaitForJobsToComplete = true;
+});
+
+builder.Services.AddHostedService<AudienceGrowthBackgroundService>();
 
 var app = builder.Build();
 ConfigureCustomValidationAttributes(app.Services);
