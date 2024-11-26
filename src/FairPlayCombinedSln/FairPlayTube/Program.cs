@@ -12,12 +12,14 @@ using FairPlayCombined.Services.Extensions;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using FairPlayCombined.SharedAuth.Components.Account;
 using FairPlayCombined.SharedAuth.Extensions;
+using FairPlayTube.BackgroundServices;
 using FairPlayTube.Components;
 using FairPlayTube.Data;
 using FairPlayTube.Extensions;
 using FairPlayTube.HealthChecks;
 using FairPlayTube.Metrics;
 using Google.Apis.YouTube.v3;
+using Hangfire;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +36,9 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+
+
 builder.AddAzureBlobClient("blobs");
 
 if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
@@ -175,6 +180,21 @@ builder.AddPlatformServices(googleAuthClientSecretInfo);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+builder.Services.AddHangfire(options =>
+{
+    options.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(connectionString);
+});
+
+builder.Services.AddHangfireServer();
+
+builder.Services.AddHostedService<AudienceGrowthBackgroundService>();
+
+builder.Services.AddHostedService<AudienceGrowthBackgroundService>();
+
 var app = builder.Build();
 ConfigureCustomValidationAttributes(app.Services);
 ConfigureModelsLocalizers(app.Services);
@@ -201,9 +221,10 @@ else
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+app.MapStaticAssets();
 app.UseAntiforgery();
 
+app.UseHangfireDashboard();
 await app.UseDatabaseDrivenLocalization();
 
 app.MapRazorComponents<App>()

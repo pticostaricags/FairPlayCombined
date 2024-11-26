@@ -146,6 +146,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
     public virtual DbSet<UserProfile> UserProfile { get; set; }
 
+    public virtual DbSet<VideoAudienceGrowthQueue> VideoAudienceGrowthQueue { get; set; }
+
     public virtual DbSet<VideoCaptions> VideoCaptions { get; set; }
 
     public virtual DbSet<VideoComment> VideoComment { get; set; }
@@ -459,6 +461,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<StoreCustomerAddress>(entity =>
         {
+            entity.HasKey(e => e.Id).HasName("PK__StoreCus__3214EC075BC02D37");
+
             entity.Property(e => e.Id).ValueGeneratedNever();
         });
 
@@ -595,6 +599,13 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_UserProfile_TattooStatus");
         });
 
+        modelBuilder.Entity<VideoAudienceGrowthQueue>(entity =>
+        {
+            entity.HasOne(d => d.VideoInfo).WithOne(p => p.VideoAudienceGrowthQueue)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoAudienceGrowthQueue_VideoInfo");
+        });
+
         modelBuilder.Entity<VideoCaptions>(entity =>
         {
             entity.HasOne(d => d.VideoInfo).WithMany(p => p.VideoCaptions)
@@ -660,11 +671,11 @@ public partial class FairPlayCombinedDbContext : DbContext
         {
             entity.HasIndex(e => e.YouTubeVideoId, "UI_VideoInfo_YouTubeVideoId")
                 .IsUnique()
-                .HasFilter("YouTubeVideoId IS NOT NULL");
+                .HasFilter("([YouTubeVideoId] IS NOT NULL)");
 
             entity.Property(e => e.ApplicationUserId).HasComment("Video Owner Id");
             entity.Property(e => e.IsVideoGeneratedWithAi).HasDefaultValue(false);
-            entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("(getutcdate())");
             entity.Property(e => e.RowCreationUser).HasDefaultValue("Unknown");
             entity.Property(e => e.SourceApplication).HasDefaultValue("Unknown");
             entity.Property(e => e.VideoIndexingProcessingPercentage).HasDefaultValue(0);
@@ -705,6 +716,8 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<VideoJobApplicationStatus>(entity =>
         {
+            entity.HasKey(e => e.VideoJobApplicationStatusId).HasName("PK__VideoJob__3EE88E40F2ABD88A");
+
             entity.Property(e => e.VideoJobApplicationStatusId).ValueGeneratedNever();
         });
 

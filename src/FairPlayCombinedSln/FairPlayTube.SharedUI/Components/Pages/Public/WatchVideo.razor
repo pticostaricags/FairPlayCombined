@@ -12,6 +12,7 @@
 @using FairPlayTube.SharedUI.Components.Video
 @using System.Net
 @using FairPlayCombined.WebComponents.SEO
+@using System.Globalization
 
 @inject IJSRuntime jsRuntime
 @inject IVideoWatchTimeService videoWatchTimeService
@@ -446,7 +447,9 @@
         {
             this.IsBusy = true;
             StateHasChanged();
-            await this.videoInfoService.CreateDescriptionForVideoAsync(this.videoInfoModel!.VideoInfoId, this.cancellationTokenSource.Token);
+            await this.videoInfoService.CreateDescriptionForVideoAsync(this.videoInfoModel!.VideoInfoId, 
+                CultureInfo.CurrentCulture.Name,
+                this.cancellationTokenSource.Token);
             this.videoInfoModel = await this.videoInfoService.GetVideoInfoByVideoIdAsync(
                 this.VideoId!,
                 this.cancellationTokenSource.Token);

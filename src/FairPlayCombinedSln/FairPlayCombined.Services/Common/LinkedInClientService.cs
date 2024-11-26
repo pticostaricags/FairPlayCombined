@@ -7,15 +7,30 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
+using System.Text.Json;
 
 namespace FairPlayCombined.Services.Common
 {
     public class LinkedInClientService(
         IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
-        IUserProviderService userProviderService,
         ILogger<LinkedInClientService> logger,
         HttpClient httpClient) : ILinkedInClientService
     {
+        private const string BEARER_KEY = "Bearer";
+
+        public async Task<string> GetAccessTokenForUserAsync(string userId, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Start of method: {MethodName}", nameof(GetAccessTokenForUserAsync));
+            var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var accessTokenEntity = await
+                dbContext.AspNetUserTokens
+                .AsNoTracking()
+                .SingleAsync(p => p.UserId == userId && p.LoginProvider == "LinkedIn" &&
+                p.Name == "access_token");
+            logger.LogInformation("End of method: {MethodName}", nameof(GetAccessTokenForUserAsync));
+            return accessTokenEntity!.Value;
+        }
         private async Task<AspNetUserTokens> GetAccessTokenAsync(IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory, IUserProviderService userProviderService)
         {
             logger.LogInformation("Start of method: {MethodName}", nameof(GetAccessTokenAsync));
@@ -29,11 +44,10 @@ namespace FairPlayCombined.Services.Common
             logger.LogInformation("End of method: {MethodName}", nameof(GetAccessTokenAsync));
             return accessTokenEntity;
         }
-        public async Task<UserInfoModel> GetUserInfoAsync(CancellationToken cancellationToken)
+        public async Task<UserInfoModel> GetUserInfoAsync(string accessToken, CancellationToken cancellationToken)
         {
-            AspNetUserTokens accessTokenEntity = await GetAccessTokenAsync(dbContextFactory, userProviderService);
             httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessTokenEntity.Value);
+                new System.Net.Http.Headers.AuthenticationHeaderValue(BEARER_KEY, accessToken);
 #pragma warning disable S1075 // URIs should not be hardcoded
             string requestUrl = "https://api.linkedin.com/v2/userinfo";
 #pragma warning restore S1075 // URIs should not be hardcoded
@@ -41,13 +55,15 @@ namespace FairPlayCombined.Services.Common
             return result!;
         }
 
-        private async Task<RegisterUploadResponseModel> RegisterUploadAsync(string accessToken, 
+        private async Task<RegisterUploadResponseModel> RegisterUploadAsync(string accessToken,
             string authorId,
             CancellationToken cancellationToken)
         {
             httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                new System.Net.Http.Headers.AuthenticationHeaderValue(BEARER_KEY, accessToken);
+#pragma warning disable S1075 // URIs should not be hardcoded
             var requestUrl = "https://api.linkedin.com/v2/assets?action=registerUpload";
+#pragma warning restore S1075 // URIs should not be hardcoded
             string json = $$"""
                         {
                 "registerUploadRequest": {
@@ -65,7 +81,7 @@ namespace FairPlayCombined.Services.Common
             }
             """;
             StringContent stringContent = new(json);
-            var response = await httpClient.PostAsync(requestUrl,stringContent, cancellationToken);
+            var response = await httpClient.PostAsync(requestUrl, stringContent, cancellationToken);
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<RegisterUploadResponseModel>(cancellationToken);
             return result!;
@@ -90,22 +106,39 @@ namespace FairPlayCombined.Services.Common
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<bool> CreateImageShareAsync(string text, 
+        public async Task<bool> CreateImageShareAsync(string text, string accessToken,
             Stream imageStream, string filename,
             string mediaDescription, string mediaTitle,
             CancellationToken cancellationToken)
         {
-            AspNetUserTokens accessTokenEntity = await GetAccessTokenAsync(dbContextFactory, userProviderService);
             httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessTokenEntity.Value);
+                new AuthenticationHeaderValue(BEARER_KEY, accessToken);
             httpClient.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
-            var userInfo = await this.GetUserInfoAsync(cancellationToken);
+            var userInfo = await this.GetUserInfoAsync(accessToken, cancellationToken);
             var authorId = userInfo.sub;
 
-            var registeredUpload = await RegisterUploadAsync(accessTokenEntity.Value, authorId!,
+            var registeredUpload = await RegisterUploadAsync(accessToken, authorId!,
                 cancellationToken);
             await UploadImageAsync(registeredUpload, imageStream, filename, cancellationToken);
 
+
+            string CleanString(string input)
+            {
+                if (string.IsNullOrWhiteSpace(input))
+                    return input;
+
+                // Replace newlines with escaped versions
+                input = input.Replace("\n", "\\n").Replace("\r", "\\r");
+
+                // Remove any trailing or leading whitespace
+                input = input.Trim();
+
+                return input;
+            }
+
+            var escapedText = CleanString(text);
+            var escapedMediaDescription = CleanString(mediaDescription);
+            var escapedMediaTitle = CleanString(mediaTitle);
             var json = $$"""
 {
     "author": "urn:li:person:{{authorId}}",
@@ -113,18 +146,18 @@ namespace FairPlayCombined.Services.Common
     "specificContent": {
         "com.linkedin.ugc.ShareContent": {
             "shareCommentary": {
-                "text": "{{text}}"
+                "text": "{{escapedText}}"
             },
             "shareMediaCategory": "IMAGE",
             "media": [
                 {
                     "status": "READY",
                     "description": {
-                        "text": "{{mediaDescription}}"
+                        "text": "{{escapedMediaDescription}}"
                     },
                     "media": "{{registeredUpload.value!.asset}}",
                     "title": {
-                        "text": "{{mediaTitle}}"
+                        "text": "{{escapedMediaTitle}}"
                     }
                 }
             ]
@@ -148,13 +181,12 @@ namespace FairPlayCombined.Services.Common
             }
             return true;
         }
-        public async Task CreateTextShareAsync(string text, CancellationToken cancellationToken)
+        public async Task CreateTextShareAsync(string text, string accessToken, CancellationToken cancellationToken)
         {
-            AspNetUserTokens accessTokenEntity = await GetAccessTokenAsync(dbContextFactory, userProviderService);
             httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessTokenEntity.Value);
+                new System.Net.Http.Headers.AuthenticationHeaderValue(BEARER_KEY, accessToken);
             httpClient.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
-            var userInfo = await this.GetUserInfoAsync(cancellationToken);
+            var userInfo = await this.GetUserInfoAsync(accessToken, cancellationToken);
             var authorId = userInfo.sub;
 
             var json = $$"""
@@ -186,14 +218,13 @@ namespace FairPlayCombined.Services.Common
                 logger.LogError("Error: {ErrorMessage}", error);
             }
         }
-        public async Task CreateArticleOrUrlShareAsync(string text, string? title,
+        public async Task CreateArticleOrUrlShareAsync(string text, string accessToken, string? title,
             string? description, string url, CancellationToken cancellationToken)
         {
-            AspNetUserTokens accessTokenEntity = await GetAccessTokenAsync(dbContextFactory, userProviderService);
             httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessTokenEntity.Value);
+                new AuthenticationHeaderValue(BEARER_KEY, accessToken);
             httpClient.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
-            var userInfo = await this.GetUserInfoAsync(cancellationToken);
+            var userInfo = await this.GetUserInfoAsync(accessToken,cancellationToken);
             var authorId = userInfo.sub;
 
             var json = $$"""

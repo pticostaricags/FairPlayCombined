@@ -86,9 +86,10 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
             await dbContext.SaveChangesAsync();
             using var stream = File.Open(linkedInTestImagePath, FileMode.Open);
             var linkedInClientService = sp.GetRequiredService<LinkedInClientService>();
-            var result = 
+            var accessToken = await linkedInClientService.GetAccessTokenForUserAsync(testUser.Id, CancellationToken.None);
+            var result =
             await linkedInClientService
-                .CreateImageShareAsync("Test image", stream,
+                .CreateImageShareAsync("Test image", accessToken, stream,
                 Path.GetFileNameWithoutExtension(linkedInTestImagePath),
                 "Media description",
                 "Media Title", CancellationToken.None);

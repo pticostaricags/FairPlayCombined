@@ -29,12 +29,12 @@
             y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
         })(window, document, "clarity", "script", "8tkjtablaw");
     </script>
-    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="@Assets["bootstrap/bootstrap.min.css"]" />
     <script src="bootstrap/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="app.css" />
-    <link rel="stylesheet" href="FairPlayTube.styles.css" />
-    <link rel="stylesheet" href="custom.css" />
-    <link rel="stylesheet" href="bootstrap-icons-1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["FairPlayTube.styles.css"]" />
+    <link rel="stylesheet" href="@Assets["custom.css"]" />
+    <link rel="stylesheet" href="@Assets["bootstrap-icons-1.11.3/font/bootstrap-icons.min.css"]" />
     <link rel="icon" type="image/png" href="favicon.png" />
 
     <!--Paypal-->
@@ -42,11 +42,12 @@
     <script src="scripts/paypal/paypal.js"></script>
     <!--Paypal-->
     <script src="_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js" type="module" async></script>
-    <link href="_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css" rel="stylesheet" />
+    <link href="@Assets["_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css"]" rel="stylesheet" />
 
     <!--VideoJS-->
-    <link href="video-js.min.css" rel="stylesheet" />
+    <link href="@Assets["video-js.min.css"]" rel="stylesheet" />
 
+    <ImportMap />
     <HeadOutlet @rendermode="@PageRenderMode" />
 </head>
 

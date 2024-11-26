@@ -40,7 +40,7 @@ namespace FairPlayCombined.Services.FairPlayTube
             this.localizer = localizer;
         }
 
-        public async Task CreateDescriptionForVideoAsync(long videoInfoId, CancellationToken cancellationToken)
+        public async Task CreateDescriptionForVideoAsync(long videoInfoId, string language, CancellationToken cancellationToken)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
             var videoEntity =
@@ -62,7 +62,7 @@ namespace FairPlayCombined.Services.FairPlayTube
 
             StringBuilder systemMessage = new("Create a description for the video based on the information I'll provide. Description must be less than 500 characters. Your response must be in simple text.");
             systemMessage.AppendLine("The description must have the 3 best hashtags at the end.");
-            systemMessage.AppendLine("The description must be in the language of the Video Title.");
+            systemMessage.AppendLine($"The description must be in the language culture: {language}.");
             var response = await openAIService!
                 .GenerateChatCompletionAsync(systemMessage.ToString(),
                 prompt: promptBuilder.ToString(), cancellationToken);
