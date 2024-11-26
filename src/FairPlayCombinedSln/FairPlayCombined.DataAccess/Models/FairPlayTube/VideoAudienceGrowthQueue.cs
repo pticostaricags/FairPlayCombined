@@ -13,33 +13,20 @@ using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
 
-namespace FairPlayCombined.DataAccess.Models.FairPlayBudgetSchema;
+namespace FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
 
-[Keyless]
-public partial class VwBalance
+[Table("VideoAudienceGrowthQueue", Schema = "FairPlayTube")]
+[Index("VideoInfoId", Name = "UI_VideoAudienceGrowthQueue_VideoInfoId", IsUnique = true)]
+public partial class VideoAudienceGrowthQueue
 {
-    [Required]
-    [StringLength(450)]
-    public string OwnerId { get; set; }
+    [Key]
+    public long VideoAudienceGrowthQueueId { get; set; }
 
-    [Column(TypeName = "money")]
-    public decimal Amount { get; set; }
+    public long VideoInfoId { get; set; }
 
-    [StringLength(10)]
-    public string TransactionType { get; set; }
+    public DateTimeOffset LastTimePublished { get; set; }
 
-    public DateTimeOffset DateTime { get; set; }
-
-    [Required]
-    [StringLength(500)]
-    public string Description { get; set; }
-
-    public int CurrencyId { get; set; }
-
-    [Required]
-    [StringLength(50)]
-    public string Currency { get; set; }
-
-    [StringLength(150)]
-    public string MonthlyBudgetDescription { get; set; }
+    [ForeignKey("VideoInfoId")]
+    [InverseProperty("VideoAudienceGrowthQueue")]
+    public virtual VideoInfo VideoInfo { get; set; }
 }

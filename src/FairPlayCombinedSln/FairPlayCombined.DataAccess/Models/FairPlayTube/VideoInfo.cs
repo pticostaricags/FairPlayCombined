@@ -112,6 +112,9 @@ public partial class VideoInfo
     public virtual AspNetUsers ApplicationUser { get; set; }
 
     [InverseProperty("VideoInfo")]
+    public virtual VideoAudienceGrowthQueue VideoAudienceGrowthQueue { get; set; }
+
+    [InverseProperty("VideoInfo")]
     public virtual ICollection<VideoCaptions> VideoCaptions { get; set; } = new List<VideoCaptions>();
 
     [InverseProperty("VideoInfo")]

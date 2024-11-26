@@ -19,6 +19,7 @@ using FairPlayTube.Extensions;
 using FairPlayTube.HealthChecks;
 using FairPlayTube.Metrics;
 using Google.Apis.YouTube.v3;
+using Hangfire;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;
-using Quartz;
 using SixLabors.ImageSharp;
 using System.IO.Compression;
 using System.Reflection;
@@ -181,20 +181,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-builder.Services.AddQuartz(options =>
+builder.Services.AddHangfire(options =>
 {
-    options.UsePersistentStore(x =>
-    {
-        x.UseProperties = true;
-        x.UseClustering();
-        x.UseSqlServer(connectionString);
-        x.UseSystemTextJsonSerializer();
-    });
+    options.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(connectionString);
 });
-builder.Services.AddQuartzHostedService(options =>
-{
-    options.WaitForJobsToComplete = true;
-});
+
+builder.Services.AddHangfireServer();
+
+builder.Services.AddHostedService<AudienceGrowthBackgroundService>();
 
 builder.Services.AddHostedService<AudienceGrowthBackgroundService>();
 
@@ -227,6 +224,7 @@ app.UseHttpsRedirection();
 app.MapStaticAssets();
 app.UseAntiforgery();
 
+app.UseHangfireDashboard();
 await app.UseDatabaseDrivenLocalization();
 
 app.MapRazorComponents<App>()

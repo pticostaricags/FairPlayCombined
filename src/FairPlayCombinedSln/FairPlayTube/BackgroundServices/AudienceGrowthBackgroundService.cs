@@ -1,10 +1,8 @@
 ﻿
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces.Common;
-using Microsoft.AspNetCore.Http.Extensions;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Quartz;
 using System.Text;
 
 namespace FairPlayTube.BackgroundServices;
@@ -24,38 +22,44 @@ public class AudienceGrowthBackgroundService(IServiceProvider serviceProvider,
                 using var scope = serviceProvider.CreateScope();
                 var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
                 var dbContext = await dbContextFactory.CreateDbContextAsync(stoppingToken);
-                ISchedulerFactory schedulerFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
-                var scheduler = await schedulerFactory.GetScheduler(stoppingToken);
-                foreach (var singleLinkedInClaim in dbContext.AspNetUserTokens.Where(p =>
+                foreach (var singleLinkedInClaimUserId in dbContext.AspNetUserTokens.Where(p =>
                 p.LoginProvider == "LinkedIn" &&
-                p.Name == "access_token"))
+                p.Name == "access_token")
+                    .AsNoTracking().Select(p => p.UserId))
                 {
+                    var currentTime = DateTimeOffset.UtcNow;
                     DateTimeOffset timeToStart = DateTimeOffset.UtcNow;
-                    foreach (var singleUserVideo in 
-                        dbContext.VideoInfo.Where(p => p.ApplicationUserId == singleLinkedInClaim.UserId)
-                        .OrderByDescending(p=>p.VideoInfoId))
+                    var lastPublishedItemForUser = await dbContext.VideoAudienceGrowthQueue
+                        .AsNoTracking()
+                        .Where(p => p.VideoInfo.ApplicationUserId == singleLinkedInClaimUserId)
+                        .OrderByDescending(p => p.LastTimePublished)
+                        .FirstOrDefaultAsync(stoppingToken);
+                    int hoursToAdd = 6;
+                    if (lastPublishedItemForUser != null)
+                        timeToStart = lastPublishedItemForUser.LastTimePublished.AddHours(hoursToAdd);
+                    foreach (var singleUserVideo in
+                        dbContext.VideoInfo.Include(p => p.VideoAudienceGrowthQueue)
+                        .Where(p => p.ApplicationUserId == singleLinkedInClaimUserId)
+                        .AsNoTracking())
                     {
-                        string jobName = $"{singleUserVideo.ApplicationUserId}-{singleUserVideo.VideoInfoId}";
-                        JobKey jobKey = new(jobName);
-                        if (!await scheduler.CheckExists(jobKey))
+                        try
                         {
-                            try
+                            if (singleUserVideo.VideoAudienceGrowthQueue == null ||
+                                (currentTime > singleUserVideo.VideoAudienceGrowthQueue.LastTimePublished.AddDays(7)))
                             {
-                                var job = JobBuilder.Create<AudienceGrowthJob>()
-                                    .WithIdentity(jobName)
-                                    .Build();
-                                var trigger = TriggerBuilder.Create()
-                                    .WithIdentity($"tr-{singleUserVideo.ApplicationUserId}-{singleUserVideo.VideoInfoId}")
-                                    .StartAt(timeToStart)
-                                    .UsingJobData("VideoInfoId", singleUserVideo.VideoInfoId.ToString())
-                                    .Build();
-                                await scheduler.ScheduleJob(job, trigger, stoppingToken);
-                                timeToStart = timeToStart.AddHours(3);
+                                BackgroundJob.Schedule<AudienceGrowthJob>(p => p.Execute(singleUserVideo.VideoInfoId), timeToStart);
+                                await dbContext.VideoAudienceGrowthQueue.AddAsync(new()
+                                {
+                                    LastTimePublished = timeToStart,
+                                    VideoInfoId = singleUserVideo.VideoInfoId
+                                }, stoppingToken);
+                                await dbContext.SaveChangesAsync(stoppingToken);
+                                timeToStart = timeToStart.AddHours(hoursToAdd);
                             }
-                            catch (Exception jobAndTriggerEx)
-                            {
-                                logger.LogError(jobAndTriggerEx, "An error ocurred: {ErrorMessage}", jobAndTriggerEx.Message);
-                            }
+                        }
+                        catch (Exception scheduleEx)
+                        {
+                            logger.LogError(scheduleEx, "An error has occurred: {ErrorMessage}", scheduleEx.Message);
                         }
                     }
                 }
@@ -70,9 +74,9 @@ public class AudienceGrowthBackgroundService(IServiceProvider serviceProvider,
 }
 
 public class AudienceGrowthJob(IServiceProvider serviceProvider,
-    ILogger<AudienceGrowthJob> logger) : IJob
+    ILogger<AudienceGrowthJob> logger)
 {
-    public async Task Execute(IJobExecutionContext context)
+    public async Task Execute(long videoInfoId)
     {
         try
         {
@@ -81,9 +85,6 @@ public class AudienceGrowthJob(IServiceProvider serviceProvider,
             var dbContextFactory =
                 scope.ServiceProvider.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
             var dbContext = dbContextFactory.CreateDbContext();
-            var videoInfoIdString = context.MergedJobDataMap.Single(p => p.Key == "VideoInfoId").Value;
-
-            long videoInfoId = Convert.ToInt64(videoInfoIdString);
             var videoData = await dbContext.VideoInfo
                 .SingleAsync(p => p.VideoInfoId == videoInfoId);
             var thumbnailEntity = await dbContext.VideoThumbnail.Include(p => p.Photo).FirstOrDefaultAsync(p => p.VideoInfoId == videoInfoId);

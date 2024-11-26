@@ -278,6 +278,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayTube].[VideoAudienceGrowthQueue]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayTube].[VideoCaptions]",
          "ObjectType": 0
       },
