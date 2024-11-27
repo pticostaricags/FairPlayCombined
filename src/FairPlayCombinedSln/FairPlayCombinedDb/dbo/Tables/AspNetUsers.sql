@@ -21,6 +21,7 @@
     [InstagramProfileUrl] NVARCHAR(MAX) NULL, 
     [XFormerlyTwitterUrl] NVARCHAR(MAX) NULL,
     [WebsiteUrl] NVARCHAR(MAX) NULL,
+    [ReasonToCreateAccount] NVARCHAR(1000) NOT NULL DEFAULT 'N/A',
     [RowCreationDateTime] DATETIMEOFFSET NOT NULL, 
     [RowCreationUser] NVARCHAR(256) NOT NULL,
     [SourceApplication] NVARCHAR(250) NOT NULL, 

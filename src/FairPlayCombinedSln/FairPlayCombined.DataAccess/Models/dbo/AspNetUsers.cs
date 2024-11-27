@@ -70,6 +70,10 @@ public partial class AspNetUsers
 
     public string WebsiteUrl { get; set; }
 
+    [Required]
+    [StringLength(1000)]
+    public string ReasonToCreateAccount { get; set; }
+
     public DateTimeOffset RowCreationDateTime { get; set; }
 
     [Required]

@@ -222,6 +222,8 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .IsUnique()
                 .HasFilter("([NormalizedUserName] IS NOT NULL)");
 
+            entity.Property(e => e.ReasonToCreateAccount).HasDefaultValue("N/A");
+
             entity.HasMany(d => d.Role).WithMany(p => p.User)
                 .UsingEntity<Dictionary<string, object>>(
                     "AspNetUserRoles",
@@ -461,8 +463,6 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<StoreCustomerAddress>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__StoreCus__3214EC075BC02D37");
-
             entity.Property(e => e.Id).ValueGeneratedNever();
         });
 
@@ -671,11 +671,11 @@ public partial class FairPlayCombinedDbContext : DbContext
         {
             entity.HasIndex(e => e.YouTubeVideoId, "UI_VideoInfo_YouTubeVideoId")
                 .IsUnique()
-                .HasFilter("([YouTubeVideoId] IS NOT NULL)");
+                .HasFilter("YouTubeVideoId IS NOT NULL");
 
             entity.Property(e => e.ApplicationUserId).HasComment("Video Owner Id");
             entity.Property(e => e.IsVideoGeneratedWithAi).HasDefaultValue(false);
-            entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
             entity.Property(e => e.RowCreationUser).HasDefaultValue("Unknown");
             entity.Property(e => e.SourceApplication).HasDefaultValue("Unknown");
             entity.Property(e => e.VideoIndexingProcessingPercentage).HasDefaultValue(0);
@@ -716,8 +716,6 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<VideoJobApplicationStatus>(entity =>
         {
-            entity.HasKey(e => e.VideoJobApplicationStatusId).HasName("PK__VideoJob__3EE88E40F2ABD88A");
-
             entity.Property(e => e.VideoJobApplicationStatusId).ValueGeneratedNever();
         });
 
