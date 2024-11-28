@@ -26,6 +26,10 @@
         }
         public static class PromptsNames
         {
+            #region Users Validation
+            public const string ValidateUserSentData = nameof(ValidateUserSentData);
+            #endregion Users Validation
+
             #region FairPlayTube
             public const string CreateYouTubeThumbnail = "YouTubeThumbnail";
             public const string CreateVideoPassiveIncomeStrategy = nameof(CreateVideoPassiveIncomeStrategy);

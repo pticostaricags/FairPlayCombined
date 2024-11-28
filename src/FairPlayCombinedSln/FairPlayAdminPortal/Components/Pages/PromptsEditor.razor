@@ -121,11 +121,21 @@
             <FluentValidationMessage For="@( () => AnalyzePotentialMatchPrompt.BaseText)"></FluentValidationMessage>
         </div>
     }
+    @if (this.ValidateUserSentDataPrompt != null)
+    {
+        <div>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                @ValidateUserSentDataPrompt.PromptName
+            </FluentLabel>
+            <FluentTextArea Rows="10" style="width:100%;" @bind-Value="this.ValidateUserSentDataPrompt.BaseText"></FluentTextArea>
+            <FluentValidationMessage For="@( () => ValidateUserSentDataPrompt.BaseText)"></FluentValidationMessage>
+        </div>
+    }
     <div>
         <FluentButton Type="ButtonType.Submit"
-                      IconStart="@(new Icons.Regular.Size16.ArrowClockwise())"
-                      Appearance="Appearance.Accent"
-                      Loading="@this.IsBusy">
+        IconStart="@(new Icons.Regular.Size16.ArrowClockwise())"
+        Appearance="Appearance.Accent"
+        Loading="@this.IsBusy">
             Save
         </FluentButton>
     </div>
@@ -164,6 +174,9 @@
 
     private PromptModel? AnalyzePotentialMatchPrompt =>
     allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.AnalyzePotentialMatch);
+
+    private PromptModel? ValidateUserSentDataPrompt =>
+    allPrompts.SingleOrDefault(p => p.PromptName == Constants.PromptsNames.ValidateUserSentData);
 
     private bool IsBusy { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
@@ -243,6 +256,13 @@
                 this.allPrompts.Add(new PromptModel()
                     {
                         PromptName = Constants.PromptsNames.AnalyzePotentialMatch
+                    });
+            }
+            if (this.ValidateUserSentDataPrompt is null)
+            {
+                this.allPrompts.Add(new PromptModel()
+                    {
+                        PromptName = Constants.PromptsNames.ValidateUserSentData
                     });
             }
         }
