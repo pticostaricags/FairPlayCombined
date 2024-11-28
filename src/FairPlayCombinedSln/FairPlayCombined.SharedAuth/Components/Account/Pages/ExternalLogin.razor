@@ -6,6 +6,7 @@
 @using System.Text.Encodings.Web
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.ValidationAttributes
+@using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.Auth.ExternalLogin
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
@@ -21,6 +22,7 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<ExternalLogin> Logger
 @inject IStringLocalizer<ExternalLogin> localizer
+@inject IUserValidationService userValidationService
 
 <PageTitle>@localizer[RegisterTextKey]</PageTitle>
 
@@ -201,6 +203,22 @@
 
     private async Task OnValidSubmitAsync()
     {
+        try
+        {
+            await userValidationService.ValidateUserDataAsync(name: Input.Name, lastName: Input.Lastname, email: Input.Email,
+            reasonToCreateAccount: Input.ReasonToCreateAccount!, CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            IdentityError identityError = new()
+                {
+                    Code = "N/A",
+                    Description = ex.Message
+                };
+            message = $"Error: {ex.Message}";
+            return;
+        }
+
         var emailStore = GetEmailStore();
         var user = CreateUser();
         user.Name = Input.Name;

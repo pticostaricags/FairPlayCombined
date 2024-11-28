@@ -5,6 +5,7 @@
 @using System.Text.Encodings.Web
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.ValidationAttributes
+@using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.Auth.Register
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
@@ -20,6 +21,8 @@
 @inject IdentityRedirectManager RedirectManager
 
 @inject IStringLocalizer<Register> localizer
+
+@inject IUserValidationService userValidationService
 
 <PageTitle>@localizer[RegisterTextKey]</PageTitle>
 
@@ -149,8 +152,25 @@
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
 
+
     public async Task RegisterUser(EditContext editContext)
     {
+        try
+        {
+            await userValidationService.ValidateUserDataAsync(name: Input.Name, lastName: Input.Lastname, email: Input.Email,
+            reasonToCreateAccount: Input.ReasonToCreateAccount!, CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            IdentityError identityError = new()
+                {
+                    Code = "N/A",
+                    Description = ex.Message
+                };
+                identityErrors = [identityError];
+                return;
+        }
+
         var user = CreateUser();
         user.Name = Input.Name;
         user.Lastname = Input.Lastname;

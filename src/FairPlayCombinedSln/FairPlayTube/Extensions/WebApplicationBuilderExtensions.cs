@@ -92,6 +92,7 @@ namespace FairPlayTube.Extensions
             builder.Services.AddTransient<IImageStyleService, ImageStyleService>();
             builder.Services.AddTransient<IVideoPassiveIncomeIdeaService, VideoPassiveIncomeIdeaService>();
             builder.Services.AddTransient<ILinkedInClientService, LinkedInClientService>();
+            builder.Services.AddTransient<IUserValidationService, UserValidationService>();
         }
     }
 }
