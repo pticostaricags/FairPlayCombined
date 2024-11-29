@@ -84,6 +84,7 @@
     <Folder Include="FairPlayBudget\Tables" />
     <Folder Include="FairPlayBudget\Views" />
     <Folder Include="Storage\" />
+    <Folder Include="FairPlayBlogs" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
@@ -196,6 +197,9 @@
     <Build Include="dbo\Tables\CompanyContact.sql" />
     <Build Include="dbo\Tables\LinkedInConnection.sql" />
     <Build Include="FairPlayTube\Tables\VideoAudienceGrowthQueue.sql" />
+    <Build Include="FairPlayBlogs\Blog.sql" />
+    <Build Include="FairPlayBlogs\BlogPostStatus.sql" />
+    <Build Include="FairPlayBlogs\BlogPost.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
@@ -203,6 +207,7 @@
   <ItemGroup>
     <None Include="Scripts\3-FairPlaySocial.sql" />
     <None Include="Scripts\4-FairPlayTube.sql" />
+    <Build Include="Security\FairPlayBlogs.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="FairPlayCombinedDb.refactorlog" />
