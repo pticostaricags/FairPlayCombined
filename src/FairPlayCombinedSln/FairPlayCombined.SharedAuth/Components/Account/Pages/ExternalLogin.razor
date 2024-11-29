@@ -6,6 +6,7 @@
 @using System.Text.Encodings.Web
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.ValidationAttributes
+@using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.Auth.ExternalLogin
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
@@ -21,6 +22,7 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<ExternalLogin> Logger
 @inject IStringLocalizer<ExternalLogin> localizer
+@inject IUserValidationService userValidationService
 
 <PageTitle>@localizer[RegisterTextKey]</PageTitle>
 
@@ -50,7 +52,7 @@
                 <label for="name" class="@ThemeConfiguration.Labels.DefaultCss">@localizer[NameTextKey]</label>
                 <InputText @bind-Value="Input.Name" 
                 class="@ThemeConfiguration.GenericControls.DefaultCss" autocomplete="name"
-                           placeholder="@EnterYourNameText" />
+                placeholder="@EnterYourNameText" />
                 <ValidationMessage For="() => Input.Name" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
@@ -62,39 +64,48 @@
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="linkedinprofileurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[LinkedInProfileUrlTextKey]</label>
+                class="@ThemeConfiguration.Labels.DefaultCss">@localizer[LinkedInProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.LinkedInProfileUrl"
-                           class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="linkedinprofileurl" 
-                           placeholder="@EnterYourLinkedInProfileURL" />
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
+                autocomplete="linkedinprofileurl" 
+                placeholder="@EnterYourLinkedInProfileURL" />
                 <ValidationMessage For="() => Input.LinkedInProfileUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="instagramprofileurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[InstagramProfileUrlTextKey]</label>
+                class="@ThemeConfiguration.Labels.DefaultCss">@localizer[InstagramProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.InstagramProfileUrl"
-                           class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="instagramprofileurl" 
-                           placeholder="@EnterYourInstagramProfileUrl" />
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
+                autocomplete="instagramprofileurl" 
+                placeholder="@EnterYourInstagramProfileUrl" />
                 <ValidationMessage For="() => Input.InstagramProfileUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="xformerlytwitterurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[XFormerlyTwitterProfileUrlTextKey]</label>
+                class="@ThemeConfiguration.Labels.DefaultCss">@localizer[XFormerlyTwitterProfileUrlTextKey]</label>
                 <InputText @bind-Value="Input.XformerlyTwitterUrl"
-                           class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="xformerlytwitterurl" 
-                           placeholder="@EnterYourXFormerlyTwitterProfileUrl" />
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
+                autocomplete="xformerlytwitterurl" 
+                placeholder="@EnterYourXFormerlyTwitterProfileUrl" />
                 <ValidationMessage For="() => Input.XformerlyTwitterUrl" />
             </div>
             <div class="@ThemeConfiguration.Divisions.DefaultCss">
                 <label for="websiteurl"
-                       class="@ThemeConfiguration.Labels.DefaultCss">@localizer[WebsiteUrlTextKey]</label>
+                class="@ThemeConfiguration.Labels.DefaultCss">@localizer[WebsiteUrlTextKey]</label>
                 <InputText @bind-Value="Input.WebsiteUrl"
-                           class="@ThemeConfiguration.GenericControls.DefaultCss"
-                           autocomplete="websiteurl" 
-                           placeholder="@EnterYourWebsiteURL" />
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
+                autocomplete="websiteurl" 
+                placeholder="@EnterYourWebsiteURL" />
                 <ValidationMessage For="() => Input.WebsiteUrl" />
+            </div>
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
+                <label for="reasontocreateaccount"
+                class="@ThemeConfiguration.Labels.DefaultCss">@localizer[ReasonToCreateAccountTextKey]</label>
+                <InputTextArea @bind-Value="Input.ReasonToCreateAccount"
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
+                autocomplete="reasontocreateaccount"
+                placeholder="@EnterYourReasonToCreateAccount" />
+                <ValidationMessage For="() => Input.ReasonToCreateAccount" />
             </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">@localizer[RegisterTextKey]</button>
         </EditForm>
@@ -192,6 +203,22 @@
 
     private async Task OnValidSubmitAsync()
     {
+        try
+        {
+            await userValidationService.ValidateUserDataAsync(name: Input.Name, lastName: Input.Lastname, email: Input.Email,
+            reasonToCreateAccount: Input.ReasonToCreateAccount!, CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            IdentityError identityError = new()
+                {
+                    Code = "N/A",
+                    Description = ex.Message
+                };
+            message = $"Error: {ex.Message}";
+            return;
+        }
+
         var emailStore = GetEmailStore();
         var user = CreateUser();
         user.Name = Input.Name;
@@ -212,6 +239,7 @@
         {
             user.WebsiteUrl = Input.WebsiteUrl;
         }
+        user.ReasonToCreateAccount = Input.ReasonToCreateAccount;
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
@@ -312,6 +340,11 @@
     [ResourceKey(defaultValue: "Please enter your Website URL")]
     public const string EnterYourWebsiteURLTextKey = "EnterYourWebsiteURLText";
     private string EnterYourWebsiteURL => localizer[EnterYourWebsiteURLTextKey];
+    [ResourceKey(defaultValue: "Reason to create account")]
+    public const string ReasonToCreateAccountTextKey = "ReasonToCreateAccountText";
+    [ResourceKey("Enter your reason to create account")]
+    public const string EnterYourReasonToCreateAccountTextKey = "EnterYourReasonToCreateAccountText";
+    private string EnterYourReasonToCreateAccount => localizer[EnterYourReasonToCreateAccountTextKey];
     [ResourceKey(defaultValue: "Error from external provider")]
     public const string ErrorFromExternalProviderTextKey = "ErrorFromExternalProviderText";
     [ResourceKey(defaultValue: "Error loading external login information")]

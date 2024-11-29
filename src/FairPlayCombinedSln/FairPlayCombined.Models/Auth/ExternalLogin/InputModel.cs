@@ -51,6 +51,10 @@ namespace FairPlayCombined.Models.Auth.ExternalLogin
         ResourceType = typeof(InputModelLocalizer),
             Name = nameof(InputModelLocalizer.DisplayFor_WebsiteUrl))]
         public string? WebsiteUrl { get; set; }
+
+        [CustomRequired]
+        [CustomStringLength(1000)]
+        public string? ReasonToCreateAccount { get; set; }
     }
 
     [CompilerGenerated]

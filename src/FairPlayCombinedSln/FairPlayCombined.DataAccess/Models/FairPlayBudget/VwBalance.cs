@@ -25,9 +25,6 @@ public partial class VwBalance
     [Column(TypeName = "money")]
     public decimal Amount { get; set; }
 
-    [StringLength(10)]
-    public string TransactionType { get; set; }
-
     public DateTimeOffset DateTime { get; set; }
 
     [Required]
@@ -40,6 +37,7 @@ public partial class VwBalance
     [StringLength(50)]
     public string Currency { get; set; }
 
+    [Required]
     [StringLength(150)]
     public string MonthlyBudgetDescription { get; set; }
 }

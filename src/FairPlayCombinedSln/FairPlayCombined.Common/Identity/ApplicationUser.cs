@@ -22,6 +22,8 @@ public class ApplicationUser : IdentityUser
     [ProtectedPersonalData]
     public string? WebsiteUrl { get; set; }
     [ProtectedPersonalData]
+    public string? ReasonToCreateAccount { get; set; }
+    [ProtectedPersonalData]
     public DateTimeOffset? RowCreationDateTime { get; set; }
 
     [ProtectedPersonalData]

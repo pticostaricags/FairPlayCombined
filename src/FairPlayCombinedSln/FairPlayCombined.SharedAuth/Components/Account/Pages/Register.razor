@@ -5,6 +5,7 @@
 @using System.Text.Encodings.Web
 @using FairPlayCombined.Common.CustomAttributes
 @using FairPlayCombined.Common.ValidationAttributes
+@using FairPlayCombined.Interfaces
 @using FairPlayCombined.Models.Auth.Register
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
@@ -20,6 +21,8 @@
 @inject IdentityRedirectManager RedirectManager
 
 @inject IStringLocalizer<Register> localizer
+
+@inject IUserValidationService userValidationService
 
 <PageTitle>@localizer[RegisterTextKey]</PageTitle>
 
@@ -116,6 +119,15 @@
                 autocomplete="websiteUrl" placeholder="@EnterWebsiteURL" />
                 <ValidationMessage For="() => Input.WebsiteUrl" />
             </div>
+            <div class="@ThemeConfiguration.Divisions.DefaultCss">
+                <label for="reasontocreateaccount"
+                class="@ThemeConfiguration.Labels.DefaultCss">@localizer[ReasonToCreateAccountTextKey]</label>
+                <InputTextArea @bind-Value="Input.ReasonToCreateAccount"
+                class="@ThemeConfiguration.GenericControls.DefaultCss"
+                autocomplete="reasontocreateaccount"
+                placeholder="@EnterYourReasonToCreateAccount" />
+                <ValidationMessage For="() => Input.ReasonToCreateAccount" />
+            </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">@localizer[RegisterTextKey]</button>
         </EditForm>
     </div>
@@ -140,8 +152,25 @@
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
 
+
     public async Task RegisterUser(EditContext editContext)
     {
+        try
+        {
+            await userValidationService.ValidateUserDataAsync(name: Input.Name, lastName: Input.Lastname, email: Input.Email,
+            reasonToCreateAccount: Input.ReasonToCreateAccount!, CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            IdentityError identityError = new()
+                {
+                    Code = "N/A",
+                    Description = ex.Message
+                };
+                identityErrors = [identityError];
+                return;
+        }
+
         var user = CreateUser();
         user.Name = Input.Name;
         user.Lastname = Input.Lastname;
@@ -161,6 +190,7 @@
         {
             user.WebsiteUrl = Input.WebsiteUrl;
         }
+        user.ReasonToCreateAccount = Input.ReasonToCreateAccount;
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -254,6 +284,11 @@
     [ResourceKey(defaultValue: "Please enter your Website URL")]
     public const string EnterWebsiteURLTextKey = "EnterWebsiteURLText";
     public string EnterWebsiteURL => localizer[EnterWebsiteURLTextKey];
+    [ResourceKey(defaultValue: "Reason to create account")]
+    public const string ReasonToCreateAccountTextKey = "ReasonToCreateAccountText";
+    [ResourceKey("Enter your reason to create account")]
+    public const string EnterYourReasonToCreateAccountTextKey = "EnterYourReasonToCreateAccountText";
+    private string EnterYourReasonToCreateAccount => localizer[EnterYourReasonToCreateAccountTextKey];
     [ResourceKey(defaultValue: "Use another service to register")]
     public const string UseAnotherServiceToRegisterTextKey = "UseAnotherServiceToRegisterText";
     [ResourceKey(defaultValue: "Can't create an instance of '{0}'")]
