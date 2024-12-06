@@ -96,6 +96,9 @@ LinkedInAuthClientSecretInfo linkedInAuthClientSecretInfo = builder.GetLinkedInA
 var twitterClientId = builder.Configuration["TwitterClientId"];
 var twitterClientSecret = builder.Configuration["TwitterClientSecret"];
 
+var facebookAppId = builder.Configuration["FacebookAppId"];
+var facebookAppSecret = builder.Configuration["FacebookAppSecret"];
+
 builder.AddPayPalCore();
 
 builder.Services.AddAuthentication(configureOptions =>
@@ -120,6 +123,12 @@ builder.Services.AddAuthentication(configureOptions =>
         configureOptions.ClientId = twitterClientId!;
         configureOptions.ClientSecret = twitterClientSecret!;
         configureOptions.SaveTokens = true;
+    })
+    .AddFacebook(options => 
+    {
+        options.AppId = facebookAppId!;
+        options.AppSecret = facebookAppSecret!;
+        options.Scope.Add("email");
     })
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();

@@ -53,6 +53,12 @@ var fairPlayTubeTwitterClientId = builder.Configuration["FairPlayTube:TwitterCli
 var fairPlayTubeTwitterClientSecret = builder.Configuration["FairPlayTube:TwitterClientSecret"] ??
     throw new InvalidOperationException("'FairPlayTube:TwitterClientSecret' not found");
 
+var fairPlayTubeFacebookAppId = builder.Configuration["FairPlayTube:FacebookAppId"] ??
+    throw new InvalidOperationException("'FairPlayTube:FacebookAppId' not found");
+
+var fairPlayTubeFacebookAppSecret = builder.Configuration["FairPlayTube:FacebookAppSecret"] ??
+    throw new InvalidOperationException("'FairPlayTube:FacebookAppSecret' not found");
+
 IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource = ConfigureDatabase(builder);
 
 var blobs = builder
@@ -114,6 +120,9 @@ if (addFairPlayTube)
             callback.EnvironmentVariables.Add("IpDataKey", ipDataKey);
             callback.EnvironmentVariables.Add("TwitterClientId", fairPlayTubeTwitterClientId);
             callback.EnvironmentVariables.Add("TwitterClientSecret", fairPlayTubeTwitterClientSecret);
+
+            callback.EnvironmentVariables.Add("FacebookAppId", fairPlayTubeFacebookAppId);
+            callback.EnvironmentVariables.Add("FacebookAppSecret", fairPlayTubeFacebookAppSecret);
         })
     .WithReference(fairPlayDbResource)
     .WithReference(blobs);
@@ -158,8 +167,8 @@ if (addCitiesImporter)
         .WithReference(fairPlayDbResource);
 }
 
-bool addFairPlatAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPlatAdminPortal"]);
-if (addFairPlatAdminPortal)
+bool addFairPlayAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPlayAdminPortal"]);
+if (addFairPlayAdminPortal)
 {
     var fairPlatAdminPortal =
     builder.AddProject<Projects.FairPlayAdminPortal>(ResourcesNames.FairPlayAdminPortal)
