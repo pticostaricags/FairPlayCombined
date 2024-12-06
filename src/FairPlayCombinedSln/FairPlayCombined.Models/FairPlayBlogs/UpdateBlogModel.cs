@@ -15,7 +15,7 @@ public class UpdateBlogModel: IUpdateModel
     [CustomStringLength(500)]
     public string? Description { get; set; }
     [CustomRequired]
-    public byte[]? HeaderPhotoBytes { get; set; }
+    public long HeaderPhotoId { get; set; }
 
     [CustomStringLength(100)]
     public string? CustomDomain { get; set; }
