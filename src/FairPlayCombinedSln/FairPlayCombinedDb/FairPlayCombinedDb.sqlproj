@@ -84,6 +84,9 @@
     <Folder Include="FairPlayBudget\Tables" />
     <Folder Include="FairPlayBudget\Views" />
     <Folder Include="Storage\" />
+    <Folder Include="FairPlayBlogs" />
+    <Folder Include="HangFire\" />
+    <Folder Include="HangFire\Tables\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
@@ -196,6 +199,23 @@
     <Build Include="dbo\Tables\CompanyContact.sql" />
     <Build Include="dbo\Tables\LinkedInConnection.sql" />
     <Build Include="FairPlayTube\Tables\VideoAudienceGrowthQueue.sql" />
+    <Build Include="FairPlayBlogs\Blog.sql" />
+    <Build Include="FairPlayBlogs\BlogPostStatus.sql" />
+    <Build Include="FairPlayBlogs\BlogPost.sql" />
+    <None Include="Scripts\6-FairPlayBlogs.sql" />
+    <Build Include="HangFire\Tables\Job.sql" />
+    <Build Include="HangFire\Tables\Schema.sql" />
+    <Build Include="HangFire\Tables\AggregatedCounter.sql" />
+    <Build Include="HangFire\Tables\Hash.sql" />
+    <Build Include="HangFire\Tables\Counter.sql" />
+    <Build Include="HangFire\Tables\Set.sql" />
+    <Build Include="HangFire\Tables\List.sql" />
+    <Build Include="HangFire\Tables\Server.sql" />
+    <Build Include="HangFire\Tables\JobQueue.sql" />
+    <Build Include="HangFire\Tables\JobParameter.sql" />
+    <Build Include="HangFire\Tables\State.sql" />
+    <Build Include="Security\HangFire.sql" />
+    <Build Include="FairPlayBlogs\BlogSubscriber.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\1-Script.PostDeployment1.sql" />
@@ -203,6 +223,7 @@
   <ItemGroup>
     <None Include="Scripts\3-FairPlaySocial.sql" />
     <None Include="Scripts\4-FairPlayTube.sql" />
+    <Build Include="Security\FairPlayBlogs.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="FairPlayCombinedDb.refactorlog" />

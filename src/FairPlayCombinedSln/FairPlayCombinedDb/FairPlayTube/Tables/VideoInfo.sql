@@ -1,38 +1,40 @@
-﻿CREATE TABLE [FairPlayTube].[VideoInfo]
-(
-	[VideoInfoId] BIGINT NOT NULL CONSTRAINT PK_VideoInfo PRIMARY KEY IDENTITY, 
-    [AccountId] UNIQUEIDENTIFIER NOT NULL, 
-    [VideoId] NVARCHAR(50) NULL, 
-    [Location] NVARCHAR(50) NOT NULL, 
-    [Name] NVARCHAR(50) NOT NULL, 
-    [Description] NVARCHAR(500) NULL, 
-    [FileName] NVARCHAR(50) NOT NULL, 
-    [VideoBloblUrl] NVARCHAR(500) NULL,
-    [IndexedVideoUrl] NVARCHAR(500) NULL,
-    [ApplicationUserId] NVARCHAR(450) NOT NULL, 
-    [VideoIndexStatusId] INT NOT NULL, 
-    [VideoDurationInSeconds] FLOAT NOT NULL DEFAULT 0, 
-    [VideoIndexSourceClass] NVARCHAR(500) NULL, 
-    [Price] MONEY NOT NULL DEFAULT 0,
-    [ExternalVideoSourceUrl] NVARCHAR(500),
-    [VideoLanguageCode] NVARCHAR(10) NULL, 
-    [VideoVisibilityId] SMALLINT NOT NULL DEFAULT 1, 
-    [ThumbnailUrl] NVARCHAR(500) NULL,
-    [RowCreationDateTime] DATETIMEOFFSET NOT NULL DEFAULT GETUTCDATE(), 
-    [RowCreationUser] NVARCHAR(256) NOT NULL DEFAULT 'Unknown',
-    [SourceApplication] NVARCHAR(250) NOT NULL DEFAULT 'Unknown', 
-    [OriginatorIPAddress] NVARCHAR(100) NOT NULL
-    CONSTRAINT [FK_VideoInfo_ApplicationUser] FOREIGN KEY ([ApplicationUserId]) REFERENCES [dbo].[AspNetUsers]([Id]), 
-    [YouTubeVideoId] NVARCHAR(11) NULL, 
-    [VideoIndexJSON] NVARCHAR(MAX) NULL, 
-    [VideoThumbnailPhotoId] BIGINT NULL, 
-    [VideoIndexingProcessingPercentage] INT NULL DEFAULT 0, 
-    [PublishedUrl] NVARCHAR(1000) NULL, 
-    [IsVideoGeneratedWithAI] BIT NULL DEFAULT 0, 
-    CONSTRAINT [FK_VideoInfo_VideoIndexStatus] FOREIGN KEY ([VideoIndexStatusId]) REFERENCES [FairPlayTube].[VideoIndexStatus]([VideoIndexStatusId]), 
-    CONSTRAINT [FK_VideoInfo_VideoVisibility] FOREIGN KEY ([VideoVisibilityId]) REFERENCES [FairPlayTube].[VideoVisibility]([VideoVisibilityId]), 
-    CONSTRAINT [FK_VideoInfo_Photo_Thumbnail] FOREIGN KEY ([VideoThumbnailPhotoId]) REFERENCES [dbo].[Photo]([PhotoId])
-)
+﻿CREATE TABLE [FairPlayTube].[VideoInfo] (
+    [VideoInfoId]                       BIGINT             IDENTITY (1, 1) NOT NULL,
+    [AccountId]                         UNIQUEIDENTIFIER   NOT NULL,
+    [VideoId]                           NVARCHAR (50)      NULL,
+    [Location]                          NVARCHAR (50)      NOT NULL,
+    [Name]                              NVARCHAR (50)      NOT NULL,
+    [Description]                       NVARCHAR (500)     NULL,
+    [FileName]                          NVARCHAR (50)      NOT NULL,
+    [VideoBloblUrl]                     NVARCHAR (500)     NULL,
+    [IndexedVideoUrl]                   NVARCHAR (500)     NULL,
+    [ApplicationUserId]                 NVARCHAR (450)     NOT NULL,
+    [VideoIndexStatusId]                INT                NOT NULL,
+    [VideoDurationInSeconds]            FLOAT (53)         DEFAULT ((0)) NOT NULL,
+    [VideoIndexSourceClass]             NVARCHAR (500)     NULL,
+    [Price]                             MONEY              DEFAULT ((0)) NOT NULL,
+    [ExternalVideoSourceUrl]            NVARCHAR (500)     NULL,
+    [VideoLanguageCode]                 NVARCHAR (10)      NULL,
+    [VideoVisibilityId]                 SMALLINT           DEFAULT ((1)) NOT NULL,
+    [ThumbnailUrl]                      NVARCHAR (500)     NULL,
+    [RowCreationDateTime]               DATETIMEOFFSET (7) DEFAULT (getutcdate()) NOT NULL,
+    [RowCreationUser]                   NVARCHAR (256)     DEFAULT ('Unknown') NOT NULL,
+    [SourceApplication]                 NVARCHAR (250)     DEFAULT ('Unknown') NOT NULL,
+    [OriginatorIPAddress]               NVARCHAR (100)     NOT NULL,
+    [YouTubeVideoId]                    NVARCHAR (11)      NULL,
+    [VideoIndexJSON]                    NVARCHAR (MAX)     NULL,
+    [VideoThumbnailPhotoId]             BIGINT             NULL,
+    [VideoIndexingProcessingPercentage] INT                DEFAULT ((0)) NULL,
+    [PublishedUrl]                      NVARCHAR (1000)    NULL,
+    [IsVideoGeneratedWithAI]            BIT                DEFAULT ((0)) NULL,
+    CONSTRAINT [PK_VideoInfo] PRIMARY KEY CLUSTERED ([VideoInfoId] ASC),
+    CONSTRAINT [FK_VideoInfo_ApplicationUser] FOREIGN KEY ([ApplicationUserId]) REFERENCES [dbo].[AspNetUsers] ([Id]),
+    CONSTRAINT [FK_VideoInfo_Photo_Thumbnail] FOREIGN KEY ([VideoThumbnailPhotoId]) REFERENCES [dbo].[Photo] ([PhotoId]),
+    CONSTRAINT [FK_VideoInfo_VideoIndexStatus] FOREIGN KEY ([VideoIndexStatusId]) REFERENCES [FairPlayTube].[VideoIndexStatus] ([VideoIndexStatusId]),
+    CONSTRAINT [FK_VideoInfo_VideoVisibility] FOREIGN KEY ([VideoVisibilityId]) REFERENCES [FairPlayTube].[VideoVisibility] ([VideoVisibilityId])
+);
+
+
 
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
@@ -53,4 +55,8 @@ CREATE UNIQUE INDEX [UI_VideoInfo_YouTubeVideoId] ON [FairPlayTube].[VideoInfo] 
 
 GO
 
-CREATE FULLTEXT INDEX ON [FairPlayTube].[VideoInfo] ([Description]) KEY INDEX [PK_VideoInfo] ON [ftDefaultCatalog] WITH CHANGE_TRACKING AUTO
+CREATE FULLTEXT INDEX ON [FairPlayTube].[VideoInfo]
+    ([Description] LANGUAGE 1033)
+    KEY INDEX [PK_VideoInfo]
+    ON [ftDefaultCatalog];
+
