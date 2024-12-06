@@ -147,6 +147,22 @@
          "ObjectType": 0
       },
       {
+         "Name": "[FairPlayBlogs].[Blog]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayBlogs].[BlogPost]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayBlogs].[BlogPostStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[FairPlayBlogs].[BlogSubscriber]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[FairPlayBudget].[Currency]",
          "ObjectType": 0
       },

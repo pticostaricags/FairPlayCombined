@@ -6,6 +6,7 @@ using FairPlayCombined.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using FairPlayCombined.DataAccess.Models.FairPlayDatingSchema;
 using FairPlayCombined.DataAccess.Models.dboSchema;
+using FairPlayCombined.DataAccess.Models.FairPlayBlogsSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayBudgetSchema;
 using FairPlayCombined.DataAccess.Models.FairPlaySocialSchema;
 using FairPlayCombined.DataAccess.Models.FairPlayTubeSchema;
@@ -35,6 +36,14 @@ public partial class FairPlayCombinedDbContext : DbContext
     public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
 
     public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
+
+    public virtual DbSet<Blog> Blog { get; set; }
+
+    public virtual DbSet<BlogPost> BlogPost { get; set; }
+
+    public virtual DbSet<BlogPostStatus> BlogPostStatus { get; set; }
+
+    public virtual DbSet<BlogSubscriber> BlogSubscriber { get; set; }
 
     public virtual DbSet<City> City { get; set; }
 
@@ -234,6 +243,44 @@ public partial class FairPlayCombinedDbContext : DbContext
                         j.HasKey("UserId", "RoleId");
                         j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
                     });
+        });
+
+        modelBuilder.Entity<Blog>(entity =>
+        {
+            entity.HasOne(d => d.HeaderPhoto).WithMany(p => p.Blog)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Blog_Photo");
+
+            entity.HasOne(d => d.OwnerApplicationUser).WithMany(p => p.Blog)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Blog_AspNetUsers");
+        });
+
+        modelBuilder.Entity<BlogPost>(entity =>
+        {
+            entity.HasOne(d => d.Blog).WithMany(p => p.BlogPost)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BlogPost_Blog");
+
+            entity.HasOne(d => d.BlogPostStatus).WithMany(p => p.BlogPost)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BlogPost_BlogPostStatus");
+
+            entity.HasOne(d => d.ThumbnailPhoto).WithMany(p => p.BlogPost)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BlogPost_Photo");
+        });
+
+        modelBuilder.Entity<BlogPostStatus>(entity =>
+        {
+            entity.Property(e => e.BlogPostStatusId).ValueGeneratedOnAdd();
+        });
+
+        modelBuilder.Entity<BlogSubscriber>(entity =>
+        {
+            entity.HasOne(d => d.Blog).WithMany(p => p.BlogSubscriber)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BlogSubscriber_Blog");
         });
 
         modelBuilder.Entity<City>(entity =>
@@ -675,7 +722,7 @@ public partial class FairPlayCombinedDbContext : DbContext
 
             entity.Property(e => e.ApplicationUserId).HasComment("Video Owner Id");
             entity.Property(e => e.IsVideoGeneratedWithAi).HasDefaultValue(false);
-            entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.RowCreationDateTime).HasDefaultValueSql("getutcdate()");
             entity.Property(e => e.RowCreationUser).HasDefaultValue("Unknown");
             entity.Property(e => e.SourceApplication).HasDefaultValue("Unknown");
             entity.Property(e => e.VideoIndexingProcessingPercentage).HasDefaultValue(0);

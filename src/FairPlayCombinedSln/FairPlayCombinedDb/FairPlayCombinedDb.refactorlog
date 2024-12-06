@@ -175,4 +175,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="LinkedInProfileUrl" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="95c15557-a914-4f70-a68d-1241ff5d8f51" ChangeDateTime="12/06/2024 19:40:18">
+    <Property Name="ElementName" Value="[dbo].[BlogSubscriber].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[BlogSubscriber]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BlogSubscriberId" />
+  </Operation>
 </Operations>
