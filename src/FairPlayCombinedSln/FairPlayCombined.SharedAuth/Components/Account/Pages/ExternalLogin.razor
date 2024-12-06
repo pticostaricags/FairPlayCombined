@@ -210,11 +210,6 @@
         }
         catch (Exception ex)
         {
-            IdentityError identityError = new()
-                {
-                    Code = "N/A",
-                    Description = ex.Message
-                };
             message = $"Error: {ex.Message}";
             return;
         }
