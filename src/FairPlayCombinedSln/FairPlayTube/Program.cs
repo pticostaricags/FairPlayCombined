@@ -129,6 +129,8 @@ builder.Services.AddAuthentication(configureOptions =>
         options.AppId = facebookAppId!;
         options.AppSecret = facebookAppSecret!;
         options.Scope.Add("email");
+        options.Scope.Add("public_profile");
+        options.SaveTokens = true;
     })
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
