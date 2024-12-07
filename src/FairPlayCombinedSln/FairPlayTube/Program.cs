@@ -204,8 +204,6 @@ builder.Services.AddHangfireServer();
 
 builder.Services.AddHostedService<AudienceGrowthBackgroundService>();
 
-builder.Services.AddHostedService<AudienceGrowthBackgroundService>();
-
 var app = builder.Build();
 ConfigureCustomValidationAttributes(app.Services);
 ConfigureModelsLocalizers(app.Services);

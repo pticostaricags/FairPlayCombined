@@ -1,8 +1,10 @@
 ﻿
+using FairPlayCombined.Common.CustomAttributes;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.Interfaces.Common;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System.Text;
 
 namespace FairPlayTube.BackgroundServices;
@@ -45,14 +47,28 @@ public class AudienceGrowthBackgroundService(IServiceProvider serviceProvider,
                         try
                         {
                             if (singleUserVideo.VideoAudienceGrowthQueue == null ||
-                                (currentTime > singleUserVideo.VideoAudienceGrowthQueue.LastTimePublished.AddDays(7)))
+                                (currentTime > singleUserVideo.VideoAudienceGrowthQueue.LastTimePublished.AddMonths(1)))
                             {
                                 BackgroundJob.Schedule<AudienceGrowthJob>(p => p.Execute(singleUserVideo.VideoInfoId), timeToStart);
-                                await dbContext.VideoAudienceGrowthQueue.AddAsync(new()
+                                var entity = await dbContext
+                                    .VideoAudienceGrowthQueue
+                                    .SingleOrDefaultAsync(
+                                    p=>p.VideoInfoId == 
+                                    singleUserVideo.VideoInfoId,stoppingToken);
+                                if (entity is null)
                                 {
-                                    LastTimePublished = timeToStart,
-                                    VideoInfoId = singleUserVideo.VideoInfoId
-                                }, stoppingToken);
+                                    entity = new()
+                                    {
+                                        LastTimePublished = timeToStart,
+                                        VideoInfoId = singleUserVideo.VideoInfoId
+                                    };
+                                    await dbContext.VideoAudienceGrowthQueue.AddAsync(entity, stoppingToken);
+                                }
+                                else
+                                {
+                                    entity.LastTimePublished = timeToStart;
+                                }
+
                                 await dbContext.SaveChangesAsync(stoppingToken);
                                 timeToStart = timeToStart.AddHours(hoursToAdd);
                             }
@@ -81,6 +97,7 @@ public class AudienceGrowthJob(IServiceProvider serviceProvider,
         try
         {
             using var scope = serviceProvider.CreateScope();
+            var localizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<AudienceGrowthJob>>();
             var linkedInClientService = scope.ServiceProvider.GetRequiredService<ILinkedInClientService>();
             var dbContextFactory =
                 scope.ServiceProvider.GetRequiredService<IDbContextFactory<FairPlayCombinedDbContext>>();
@@ -91,6 +108,7 @@ public class AudienceGrowthJob(IServiceProvider serviceProvider,
             if (thumbnailEntity is not null)
             {
                 StringBuilder stringBuilder = new(videoData.Description);
+                stringBuilder.Append($" {localizer[DisclaimerTextKey]}");
                 stringBuilder.Append($" Visit https://fairplaytube.pticostarica.com/Public/WatchVideo/{videoData.VideoId}");
                 MemoryStream memoryStream = new(thumbnailEntity.Photo.PhotoBytes);
                 var accessToken = await linkedInClientService.GetAccessTokenForUserAsync(videoData.ApplicationUserId, CancellationToken.None);
@@ -105,4 +123,9 @@ public class AudienceGrowthJob(IServiceProvider serviceProvider,
             logger.LogError(ex, "An error ocurred: {ErrorMessage}", ex.Message);
         }
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "DISCLAIMER: Text and images were generated using AI")]
+    public const string DisclaimerTextKey = "DisclaimerText";
+    #endregion Resource Keys
 }
