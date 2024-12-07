@@ -108,8 +108,8 @@ public class AudienceGrowthJob(IServiceProvider serviceProvider,
             if (thumbnailEntity is not null)
             {
                 StringBuilder stringBuilder = new(videoData.Description);
-                stringBuilder.Append($" {localizer[DisclaimerTextKey]}");
                 stringBuilder.Append($" Visit https://fairplaytube.pticostarica.com/Public/WatchVideo/{videoData.VideoId}");
+                stringBuilder.Append($" {localizer[DisclaimerTextKey]}");
                 MemoryStream memoryStream = new(thumbnailEntity.Photo.PhotoBytes);
                 var accessToken = await linkedInClientService.GetAccessTokenForUserAsync(videoData.ApplicationUserId, CancellationToken.None);
                 await linkedInClientService.CreateImageShareAsync(stringBuilder.ToString(),
