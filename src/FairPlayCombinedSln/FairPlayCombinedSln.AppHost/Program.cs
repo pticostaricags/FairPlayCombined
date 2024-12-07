@@ -302,6 +302,11 @@ else
     });
 }
 
+bool addFairPlayBlogs = Convert.ToBoolean(builder.Configuration["AddFairPlayBlogs"]);
+if (addFairPlayBlogs)
+{
+    builder.AddProject<Projects.FairPlayBlogs>(ResourcesNames.FairPlayBlogs);
+}
 await builder.Build().RunAsync();
 
 static void AddTestDataGenerator(IDistributedApplicationBuilder builder,

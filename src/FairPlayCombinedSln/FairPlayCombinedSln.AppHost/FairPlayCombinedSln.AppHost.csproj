@@ -33,6 +33,7 @@
     <ProjectReference Include="..\FairPlayAdminPortal\FairPlayAdminPortal.csproj">
       <ExcludeAssets>all</ExcludeAssets>
     </ProjectReference>
+    <ProjectReference Include="..\FairPlayBlogs\FairPlayBlogs.csproj" />
     <ProjectReference Include="..\FairPlayBudget\FairPlayBudget.csproj" />
     <ProjectReference Include="..\FairPlayCombined.CitiesImporter\FairPlayCombined.CitiesImporter.csproj" />
     <ProjectReference Include="..\FairPlayCombined.DatabaseManager\FairPlayCombined.DatabaseManager.csproj" />

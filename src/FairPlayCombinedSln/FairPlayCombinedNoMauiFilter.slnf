@@ -3,6 +3,8 @@
     "path": "FairPlayCombinedSln.sln",
     "projects": [
       "FairPlayAdminPortal\\FairPlayAdminPortal.csproj",
+      "FairPlayBlogs.SharedUI\\FairPlayBlogs.SharedUI.csproj",
+      "FairPlayBlogs\\FairPlayBlogs.csproj",
       "FairPlayBudget\\FairPlayBudget.csproj",
       "FairPlayCRM.SharedUI\\FairPlayCRM.SharedUI.csproj",
       "FairPlayCRM.TestDataGenerator\\FairPlayCRM.TestDataGenerator.csproj",
