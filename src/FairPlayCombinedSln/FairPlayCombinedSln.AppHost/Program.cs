@@ -44,8 +44,9 @@ var linkedInAuthClientSecret = builder.Configuration["LinkedInAuthClientSecret"]
 var paypalClientSecret = builder.Configuration["PayPalClientSecret"] ??
     throw new InvalidOperationException("'PayPalClientSecret' not found");
 
-var ipDataKey = builder.Configuration["IpDataKey"] ??
-    throw new InvalidOperationException("'IpDataKey' not found");
+const string IPDATAKEY = "IpDataKey";
+var ipDataKey = builder.Configuration[IPDATAKEY] ??
+    throw new InvalidOperationException($"'{IPDATAKEY}' not found");
 
 var fairPlayTubeTwitterClientId = builder.Configuration["FairPlayTube:TwitterClientId"] ??
     throw new InvalidOperationException("'FairPlayTube:TwitterClientId' not found");
@@ -117,7 +118,7 @@ if (addFairPlayTube)
             callback.EnvironmentVariables.Add("LinkedInAuthClientId", linkedInAuthClientId);
             callback.EnvironmentVariables.Add("LinkedInAuthClientSecret", linkedInAuthClientSecret);
 
-            callback.EnvironmentVariables.Add("IpDataKey", ipDataKey);
+            callback.EnvironmentVariables.Add(IPDATAKEY, ipDataKey);
             callback.EnvironmentVariables.Add("TwitterClientId", fairPlayTubeTwitterClientId);
             callback.EnvironmentVariables.Add("TwitterClientSecret", fairPlayTubeTwitterClientSecret);
 
@@ -305,7 +306,22 @@ else
 bool addFairPlayBlogs = Convert.ToBoolean(builder.Configuration["AddFairPlayBlogs"]);
 if (addFairPlayBlogs)
 {
-    builder.AddProject<Projects.FairPlayBlogs>(ResourcesNames.FairPlayBlogs);
+    var fairPlayBlogs = 
+    builder.AddProject<Projects.FairPlayBlogs>(ResourcesNames.FairPlayBlogs)
+        .WithReference(fairPlayDbResource);
+
+    if (!useSendGrid)
+        fairPlayBlogs = fairPlayBlogs.WithReference(mailDev!);
+    else
+        fairPlayBlogs = fairPlayBlogs.WithEnvironment(callback =>
+        {
+            AddSMTPEnvironmentVariables(callback, builder);
+        });
+
+    fairPlayBlogs = fairPlayBlogs.WithEnvironment(callback => 
+    {
+        callback.EnvironmentVariables.Add("IpDataKey", ipDataKey);
+    });
 }
 await builder.Build().RunAsync();
 

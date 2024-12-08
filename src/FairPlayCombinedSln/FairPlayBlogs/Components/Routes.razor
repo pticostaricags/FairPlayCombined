@@ -1,6 +1,13 @@
-﻿<Router AppAssembly="typeof(Program).Assembly">
+﻿
+@using System.Reflection
+@using FairPlayCombined.SharedAuth.Components.Account.Shared
+<Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="@FairPlayBlogs.UIConfiguration.AdditionalSetup.AdditionalAssemblies">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                <RedirectToLogin />
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
 </Router>

@@ -4,10 +4,47 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	<Configurations>Debug;Release;Debug_Enable_Paid_Tests</Configurations>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Enable_Paid_Tests|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+    <PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="9.0.0" />
+	<PackageReference Include="AspNet.Security.OAuth.Twitter" Version="9.0.0" />
+	<PackageReference Include="Azure.Identity" Version="1.13.1" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0" />
+	<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
+	<PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.4" />
+	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.6.0" />
+	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.4" />
+	<PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
+	<PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
+	  <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+	<PackageReference Include="System.Drawing.Common" Version="9.0.0" />
+	<PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
+	<PackageReference Include="System.Text.Json" Version="9.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FairPlayBlogs.SharedUI\FairPlayBlogs.SharedUI.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.Migrations\FairPlayCombined.Migrations.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.SharedAuth\FairPlayCombined.SharedAuth.csproj" />
+    <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

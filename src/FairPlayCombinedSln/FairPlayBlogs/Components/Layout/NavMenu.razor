@@ -1,0 +1,60 @@
+﻿@implements IAsyncDisposable
+
+@using FairPlayCombined.Common.CustomAttributes
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<NavMenu> localizer
+@inject NavigationManager NavigationManager
+
+<AuthorizeView>
+    <Authorized>
+        <FluentNavLink Icon="@(new Icons.Regular.Size20.ArrowExit())">
+            <form action="Account/Logout" method="post">
+                <AntiforgeryToken />
+                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Stealth">
+                    @localizer[LogoutTextKey]
+                </FluentButton>
+            </form>
+        </FluentNavLink>
+    </Authorized>
+    <NotAuthorized>
+        <FluentNavLink Href="Account/Register"
+                       Icon="@(new Icons.Regular.Size20.PersonAdd())">@localizer[RegisterTextKey]</FluentNavLink>
+        <FluentNavLink Href="Account/Login"
+                       Icon="@(new Icons.Regular.Size20.PersonArrowRight())">@localizer[LoginTextKey]</FluentNavLink>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code
+{
+    private string? currentUrl;
+    private CancellationTokenSource cancellationTokenSource = new();
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
+    }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Logout")]
+    public const string LogoutTextKey = "LogoutText";
+    [ResourceKey(defaultValue: "Register")]
+    public const string RegisterTextKey = "RegisterText";
+    [ResourceKey(defaultValue: "Login")]
+    public const string LoginTextKey = "LoginText";
+    #endregion Resource Keys
+}
