@@ -28,7 +28,7 @@
 @code
 {
     private string? currentUrl;
-    private CancellationTokenSource cancellationTokenSource = new();
+    private readonly CancellationTokenSource cancellationTokenSource = new();
 
     protected override void OnInitialized()
     {
