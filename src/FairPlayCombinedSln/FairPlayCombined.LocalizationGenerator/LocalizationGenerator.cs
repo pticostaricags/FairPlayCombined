@@ -162,6 +162,12 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         var fairplayCombinedWebComponentsAssembly = typeof(WebComponents._Imports).Assembly;
         var fairplayCombinedWebComponentsTypes = fairplayCombinedWebComponentsAssembly.GetTypes();
 
+        var fairplayBlogsAssembly = typeof(FairPlayBlogs.Components.App).Assembly;
+        var fairplayBlogsTypes = fairplayBlogsAssembly.GetTypes();
+
+        var fairplayBlogsSharedUIAssembly = typeof(FairPlayBlogs.SharedUI._Imports).Assembly;
+        var fairplayBlogsSharedUITypes = fairplayBlogsSharedUIAssembly.GetTypes();
+
         List<Type> typesToCheck = [
             .. fairplayTubeTypes,
             .. fairplayTubeSharedUITypes,
@@ -174,7 +180,9 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
             .. fairplayCrmTypes,
             .. fairplayCrmSharedUITypes,
             .. fairplayCombinedSharedAuthTypes,
-            .. fairplayCombinedWebComponentsTypes];
-        return typesToCheck.DistinctBy(p=>p.FullName).ToList();
+            .. fairplayCombinedWebComponentsTypes,
+            .. fairplayBlogsTypes,
+            .. fairplayBlogsSharedUITypes];
+        return typesToCheck.DistinctBy(p => p.FullName).ToList();
     }
 }
