@@ -17,6 +17,9 @@ using FairPlayBlogs.Data;
 using FairPlayCombined.Services.FairPlaySocial.Notificatios.UserMessage;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.Common.IpData;
+using FairPlayCombined.Common.CustomAttributes;
+using Microsoft.Extensions.Localization;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
@@ -107,6 +110,11 @@ optionsLifetime: ServiceLifetime.Transient);
 builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>();
 builder.EnrichSqlServerDbContext<FairPlayCombinedDbContext>();
 
+
+builder.AddOpenAI();
+builder.AddGoogleGemini();
+builder.AddAzureAIContentSafety();
+
 builder.Services.AddSignalR(hubOptions =>
 {
     hubOptions.MaximumReceiveMessageSize = 20 * 1024 * 1024;
@@ -120,6 +128,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+ConfigureCustomValidationAttributes(app.Services);
+ConfigureModelsLocalizers(app.Services);
 
 //Check https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/signalr?view=aspnetcore-9.0#disable-response-compression-for-hot-reload
 if (!app.Environment.IsDevelopment())
@@ -165,6 +176,45 @@ app.UseSwaggerUI();
 
 await app.RunAsync();
 
+static void ConfigureCustomValidationAttributes(IServiceProvider services)
+{
+    //Find a way to use Source Generators for this in order to avoid using reflection
+    var modelsAssembly = typeof(CustomRequiredAttribute).Assembly;
+    var typesWithLocalizerAttribute =
+        modelsAssembly.GetTypes()
+        .Where(p =>
+        p.CustomAttributes
+        .Any(x => x.AttributeType.Name.Contains("LocalizerOfTAttribute")))
+        .ToList();
+    var localizerFactory = services.GetRequiredService<IStringLocalizerFactory>();
+    foreach (var singleLocalizerType in typesWithLocalizerAttribute)
+    {
+        var newLocalizerInstance = localizerFactory.Create(singleLocalizerType);
+        var field = singleLocalizerType
+            .GetProperty("Localizer", BindingFlags.Public | BindingFlags.Static);
+        field!.SetValue(null, newLocalizerInstance);
+    }
+}
+static void ConfigureModelsLocalizers(IServiceProvider services)
+{
+    //Find a way to use Source Generators for this in order to avoid using reflection
+    var modelsAssembly = typeof(FairPlayCombined.Models.UserModel).Assembly;
+    var typesWithLocalizerAttribute =
+        modelsAssembly.GetTypes()
+        .Where(p =>
+        p.CustomAttributes
+        .Any(x => x.AttributeType.Name.Contains("LocalizerOfTAttribute")))
+        .ToList();
+    var localizerFactory = services.GetRequiredService<IStringLocalizerFactory>();
+    foreach (var singleLocalizerType in typesWithLocalizerAttribute)
+    {
+        var newLocalizerInstance = localizerFactory.Create(singleLocalizerType);
+        var field = singleLocalizerType
+            .GetProperty("Localizer", BindingFlags.Public | BindingFlags.Static);
+        field!.SetValue(null, newLocalizerInstance);
+    }
+}
+
 static void AddPlatformServices(WebApplicationBuilder builder)
 {
     builder.Services.AddTransient<ICustomCache, CustomCache>();
@@ -180,4 +230,5 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     });
     builder.Services.AddTransient<IpDataService>();
     builder.Services.AddTransient<IVisitorTrackingService, VisitorTrackingService>();
+    builder.Services.AddTransient<IUserValidationService, UserValidationService>();
 }
