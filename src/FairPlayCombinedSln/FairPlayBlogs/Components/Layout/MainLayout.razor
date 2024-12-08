@@ -1,0 +1,166 @@
+﻿@using FairPlayCombined.Common.CustomAttributes
+@using FairPlayCombined.Interfaces
+@using FairPlayCombined.Interfaces.Common
+@using FairPlayCombined.Models.Common.VisitorTracking
+@using Microsoft.Extensions.Localization
+@using System.Timers
+
+@implements IAsyncDisposable
+
+@inherits LayoutComponentBase
+@inject IStringLocalizer<MainLayout> localizer
+@inject NavigationManager navigationManager
+@inject IVisitorTrackingService visitorTrackingService
+@inject IUserProviderService userProviderService
+@inject IStringLocalizer<MainLayout> localizer
+
+<FluentMainLayout NavMenuWidth="400">
+    <Header>
+        <div class="header-content" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
+            <img src="images/brand-logo.png" alt="@nameof(FairPlayBlogs) Logo" class="logo" style="max-width: 100%; height: auto;" />
+            <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center" style="display: flex; align-items: center; flex-wrap: nowrap;">
+                @nameof(FairPlayBlogs)
+                <FluentBadge Circular="true"
+                             Appearance="Microsoft.FluentUI.AspNetCore.Components.Appearance.Neutral"
+                             style="margin-left: 8px; white-space: nowrap;">
+                    Beta
+                </FluentBadge>
+            </FluentLabel>
+        </div>
+        <div class="search-controls" style="display: flex; align-items: center; margin-top: 16px;">
+            <FluentTextField @bind-Value="@this.SearchTerm" Placeholder=@SearchText style="flex: 1 1 auto;">
+            </FluentTextField>
+            <FluentButton Type="ButtonType.Button" OnClick="OnSearchButtonClicked"
+                          IconEnd="@(new Icons.Regular.Size20.Search())" style="margin-left: 8px;">
+            </FluentButton>
+        </div>
+    </Header>
+    <Body>
+        @Body
+    </Body>
+    <NavMenuContent>
+        <NavMenu></NavMenu>
+    </NavMenuContent>
+</FluentMainLayout>
+
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+<FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider />
+<FluentDesignTheme StorageName="theme" />
+
+@code
+{
+    private bool IsBusy { get; set; } = false;
+    private System.Timers.Timer? VisitsTimer { get; set; }
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private long? VisitorTrackingId { get; set; }
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? SearchTerm { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            await TrackVisit(createNewSession: true);
+            navigationManager.LocationChanged += NavigationManager_LocationChanged;
+        }
+        catch (Exception)
+        {
+            //Ignore
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task TrackVisit(bool createNewSession)
+    {
+        //We do not want to track authentication flow pages visits
+        if (navigationManager.Uri.Contains("/authentication/"))
+            return;
+        VisitorTrackingModel visitorTrackingModel = new()
+            {
+                VisitedUrl = navigationManager.Uri
+            };
+        var currentUserId = userProviderService.GetCurrentUserId();
+        if (!String.IsNullOrWhiteSpace(currentUserId))
+        {
+            visitorTrackingModel.ApplicationUserId = currentUserId;
+        }
+        if (createNewSession)
+        {
+            visitorTrackingModel.SessionId = Guid.NewGuid();
+        }
+        this.VisitorTrackingId = await this.visitorTrackingService
+        .TrackVisitAsync(visitorTrackingModel, this.cancellationTokenSource.Token);
+
+        if (createNewSession)
+        {
+            this.VisitsTimer = new System.Timers.Timer(TimeSpan.FromSeconds(60).TotalMilliseconds);
+            this.VisitsTimer.Elapsed += VisitsTimer_Elapsed;
+            this.VisitsTimer.Start();
+        }
+    }
+
+    private async void VisitsTimer_Elapsed(object? sender, ElapsedEventArgs e)
+    {
+        try
+        {
+            await visitorTrackingService.UpdateVisitTimeElapsedAsync(this.VisitorTrackingId!.Value,
+            this.cancellationTokenSource.Token);
+        }
+        catch (Exception)
+        {
+            //Ignore
+        }
+    }
+
+    private async void NavigationManager_LocationChanged(object? sender,
+        Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        try
+        {
+            await TrackVisit(createNewSession: false);
+        }
+        catch (Exception)
+        {
+            //Ignore
+        }
+    }
+
+    private void OnSearchButtonClicked()
+    {
+        if (!String.IsNullOrWhiteSpace(this.SearchTerm))
+        {
+            this.navigationManager.NavigateTo($"/?SearchTerm={this.SearchTerm}",
+            forceLoad: true);
+        }
+        else
+        {
+            this.navigationManager.NavigateTo($"/", forceLoad: true);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.cancellationTokenSource.CancelAsync();
+        this.cancellationTokenSource.Dispose();
+    }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "Search")]
+    public const string SearchTextKey = "SearchText";
+    public string SearchText => localizer[SearchTextKey];
+    #endregion
+}

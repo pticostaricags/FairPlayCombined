@@ -1,0 +1,60 @@
+﻿@inject NavigationManager navigationManager
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="@Assets["bootstrap/bootstrap.min.css"]" />
+    <script src="bootstrap/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["FairPlayBlogs.styles.css"]" />
+    <link rel="stylesheet" href="@Assets["custom.css"]" />
+    <link rel="stylesheet" href="@Assets["bootstrap-icons-1.11.3/font/bootstrap-icons.min.css"]" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <script src="_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js" type="module" async></script>
+    <link href="@Assets["_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css"]" rel="stylesheet" />
+
+    <ImportMap />
+    <HeadOutlet @rendermode="@PageRenderMode" />
+</head>
+
+<body>
+    <Routes @rendermode="@PageRenderMode" />
+    <script src="_framework/blazor.web.js"></script>
+    <!-- Set the default theme -->
+    <script src="_content/Microsoft.FluentUI.AspNetCore.Components/js/loading-theme.js" type="text/javascript"></script>
+    <loading-theme storage-name="theme"></loading-theme>
+</body>
+
+</html>
+@code
+{
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+    private IComponentRenderMode? PageRenderMode { get; set; }
+    private static IComponentRenderMode ServerNoPrerender = new InteractiveServerRenderMode(prerender: false);
+    private static IComponentRenderMode ServerWithPrerender = new InteractiveServerRenderMode(prerender: true);
+    protected override void OnParametersSet()
+    {
+        if (!this.HttpContext!.AcceptsInteractiveRouting())
+        {
+            this.PageRenderMode = null;
+            return;
+        }
+        if (HttpContext.AcceptsInteractiveRouting())
+        {
+            if (navigationManager.Uri.IndexOf("/User/") >= 0 ||
+            navigationManager.Uri.IndexOf("/Creator/") >= 0)
+            {
+                this.PageRenderMode = ServerNoPrerender;
+            }
+            else
+            {
+                this.PageRenderMode = ServerWithPrerender;
+            }
+        }
+    }
+}

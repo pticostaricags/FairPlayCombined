@@ -16,6 +16,8 @@
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\FairPlayAdminPortal\FairPlayAdminPortal.csproj" />
+	<ProjectReference Include="..\FairPlayBlogs.SharedUI\FairPlayBlogs.SharedUI.csproj" />
+	<ProjectReference Include="..\FairPlayBlogs\FairPlayBlogs.csproj" />
     <ProjectReference Include="..\FairPlayCombined.Services\FairPlayCombined.Services.csproj" />
     <ProjectReference Include="..\FairPlayCombined.SharedAuth\FairPlayCombined.SharedAuth.csproj" />
     <ProjectReference Include="..\FairPlayCombinedSln.ServiceDefaults\FairPlayCombinedSln.ServiceDefaults.csproj" />

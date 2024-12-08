@@ -44,14 +44,21 @@ var linkedInAuthClientSecret = builder.Configuration["LinkedInAuthClientSecret"]
 var paypalClientSecret = builder.Configuration["PayPalClientSecret"] ??
     throw new InvalidOperationException("'PayPalClientSecret' not found");
 
-var ipDataKey = builder.Configuration["IpDataKey"] ??
-    throw new InvalidOperationException("'IpDataKey' not found");
+const string IPDATAKEY = "IpDataKey";
+var ipDataKey = builder.Configuration[IPDATAKEY] ??
+    throw new InvalidOperationException($"'{IPDATAKEY}' not found");
 
 var fairPlayTubeTwitterClientId = builder.Configuration["FairPlayTube:TwitterClientId"] ??
     throw new InvalidOperationException("'FairPlayTube:TwitterClientId' not found");
 
 var fairPlayTubeTwitterClientSecret = builder.Configuration["FairPlayTube:TwitterClientSecret"] ??
     throw new InvalidOperationException("'FairPlayTube:TwitterClientSecret' not found");
+
+var fairPlayTubeFacebookAppId = builder.Configuration["FairPlayTube:FacebookAppId"] ??
+    throw new InvalidOperationException("'FairPlayTube:FacebookAppId' not found");
+
+var fairPlayTubeFacebookAppSecret = builder.Configuration["FairPlayTube:FacebookAppSecret"] ??
+    throw new InvalidOperationException("'FairPlayTube:FacebookAppSecret' not found");
 
 IResourceBuilder<IResourceWithConnectionString>? fairPlayDbResource = ConfigureDatabase(builder);
 
@@ -111,9 +118,12 @@ if (addFairPlayTube)
             callback.EnvironmentVariables.Add("LinkedInAuthClientId", linkedInAuthClientId);
             callback.EnvironmentVariables.Add("LinkedInAuthClientSecret", linkedInAuthClientSecret);
 
-            callback.EnvironmentVariables.Add("IpDataKey", ipDataKey);
+            callback.EnvironmentVariables.Add(IPDATAKEY, ipDataKey);
             callback.EnvironmentVariables.Add("TwitterClientId", fairPlayTubeTwitterClientId);
             callback.EnvironmentVariables.Add("TwitterClientSecret", fairPlayTubeTwitterClientSecret);
+
+            callback.EnvironmentVariables.Add("FacebookAppId", fairPlayTubeFacebookAppId);
+            callback.EnvironmentVariables.Add("FacebookAppSecret", fairPlayTubeFacebookAppSecret);
         })
     .WithReference(fairPlayDbResource)
     .WithReference(blobs);
@@ -158,8 +168,8 @@ if (addCitiesImporter)
         .WithReference(fairPlayDbResource);
 }
 
-bool addFairPlatAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPlatAdminPortal"]);
-if (addFairPlatAdminPortal)
+bool addFairPlayAdminPortal = Convert.ToBoolean(builder.Configuration["AddFairPlayAdminPortal"]);
+if (addFairPlayAdminPortal)
 {
     var fairPlatAdminPortal =
     builder.AddProject<Projects.FairPlayAdminPortal>(ResourcesNames.FairPlayAdminPortal)
@@ -293,6 +303,26 @@ else
     });
 }
 
+bool addFairPlayBlogs = Convert.ToBoolean(builder.Configuration["AddFairPlayBlogs"]);
+if (addFairPlayBlogs)
+{
+    var fairPlayBlogs = 
+    builder.AddProject<Projects.FairPlayBlogs>(ResourcesNames.FairPlayBlogs)
+        .WithReference(fairPlayDbResource);
+
+    if (!useSendGrid)
+        fairPlayBlogs = fairPlayBlogs.WithReference(mailDev!);
+    else
+        fairPlayBlogs = fairPlayBlogs.WithEnvironment(callback =>
+        {
+            AddSMTPEnvironmentVariables(callback, builder);
+        });
+
+    fairPlayBlogs = fairPlayBlogs.WithEnvironment(callback => 
+    {
+        callback.EnvironmentVariables.Add("IpDataKey", ipDataKey);
+    });
+}
 await builder.Build().RunAsync();
 
 static void AddTestDataGenerator(IDistributedApplicationBuilder builder,

@@ -96,6 +96,9 @@ LinkedInAuthClientSecretInfo linkedInAuthClientSecretInfo = builder.GetLinkedInA
 var twitterClientId = builder.Configuration["TwitterClientId"];
 var twitterClientSecret = builder.Configuration["TwitterClientSecret"];
 
+var facebookAppId = builder.Configuration["FacebookAppId"];
+var facebookAppSecret = builder.Configuration["FacebookAppSecret"];
+
 builder.AddPayPalCore();
 
 builder.Services.AddAuthentication(configureOptions =>
@@ -120,6 +123,14 @@ builder.Services.AddAuthentication(configureOptions =>
         configureOptions.ClientId = twitterClientId!;
         configureOptions.ClientSecret = twitterClientSecret!;
         configureOptions.SaveTokens = true;
+    })
+    .AddFacebook(options => 
+    {
+        options.AppId = facebookAppId!;
+        options.AppSecret = facebookAppSecret!;
+        options.Scope.Add("email");
+        options.Scope.Add("public_profile");
+        options.SaveTokens = true;
     })
     .AddBearerToken(IdentityConstants.BearerScheme)
     .AddIdentityCookies();
@@ -190,8 +201,6 @@ builder.Services.AddHangfire(options =>
 });
 
 builder.Services.AddHangfireServer();
-
-builder.Services.AddHostedService<AudienceGrowthBackgroundService>();
 
 builder.Services.AddHostedService<AudienceGrowthBackgroundService>();
 
