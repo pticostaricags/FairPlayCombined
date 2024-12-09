@@ -20,6 +20,8 @@ using FairPlayCombined.Models.Common.IpData;
 using FairPlayCombined.Common.CustomAttributes;
 using Microsoft.Extensions.Localization;
 using System.Reflection;
+using FairPlayCombined.Interfaces.FairPlayBlogs;
+using FairPlayCombined.Services.FairPlayBlogs;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
@@ -231,4 +233,6 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddTransient<IpDataService>();
     builder.Services.AddTransient<IVisitorTrackingService, VisitorTrackingService>();
     builder.Services.AddTransient<IUserValidationService, UserValidationService>();
+    builder.Services.AddTransient<IBlogService, BlogService>();
+    builder.Services.AddTransient<IPhotoService, PhotoService>();
 }

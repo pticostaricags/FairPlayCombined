@@ -1,0 +1,35 @@
+﻿@attribute [Route(FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.UserRoutes.CreateBlog)]
+@attribute [Authorize]
+
+@implements IAsyncDisposable
+
+
+<PageTitle>
+    @Localizer![CreateBlogTextKey]
+</PageTitle>
+<h3>@Localizer![CreateBlogTextKey]</h3>
+
+<FluentEditForm Model="@this.createBlogModel" OnValidSubmit="OnValidSubmitAsync">
+    <div>
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <FluentValidationSummary></FluentValidationSummary>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">@Localizer![NameTextKey]</FluentLabel>
+        <FluentTextField @bind-Value="this.createBlogModel.Name" style="width:100%;"></FluentTextField>
+        <FluentValidationMessage For="@(()=>this.createBlogModel.Name)"></FluentValidationMessage>
+    </div>
+    <div>
+        <FluentLabel Typo="Typography.Body">@Localizer![DescriptionTextKey]</FluentLabel>
+        <FluentTextArea @bind-Value="this.createBlogModel.Description" style="width:100%;"></FluentTextArea>
+        <FluentValidationMessage For="@(()=>this.createBlogModel.Description)"></FluentValidationMessage>
+    </div>
+    <div>
+        <InputFile accept="image/*" OnChange="OnImageSelectedAsync"></InputFile>
+    </div>
+    <div>
+        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">
+            @Localizer![CreateBlogTextKey]
+        </FluentButton>
+    </div>
+</FluentEditForm>

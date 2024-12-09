@@ -1,5 +1,6 @@
 ﻿@implements IAsyncDisposable
 
+@using FairPlayCombined.Common
 @using FairPlayCombined.Common.CustomAttributes
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<NavMenu> localizer
@@ -15,6 +16,10 @@
                     @localizer[LogoutTextKey]
                 </FluentButton>
             </form>
+        </FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayBlogsRoutes.UserRoutes.CreateBlog"
+                       Icon="@(new Icons.Regular.Size20.BookAdd())">
+            Create Blog
         </FluentNavLink>
     </Authorized>
     <NotAuthorized>
