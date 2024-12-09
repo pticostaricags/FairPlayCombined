@@ -271,11 +271,6 @@ public partial class FairPlayCombinedDbContext : DbContext
                 .HasConstraintName("FK_BlogPost_Photo");
         });
 
-        modelBuilder.Entity<BlogPostStatus>(entity =>
-        {
-            entity.Property(e => e.BlogPostStatusId).ValueGeneratedOnAdd();
-        });
-
         modelBuilder.Entity<BlogSubscriber>(entity =>
         {
             entity.HasOne(d => d.Blog).WithMany(p => p.BlogSubscriber)

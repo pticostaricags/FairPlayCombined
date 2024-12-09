@@ -37,7 +37,7 @@ public partial class BlogPost
 
     public long ThumbnailPhotoId { get; set; }
 
-    public byte BlogPostStatusId { get; set; }
+    public int BlogPostStatusId { get; set; }
 
     public DateTimeOffset RowCreationDateTime { get; set; }
 
