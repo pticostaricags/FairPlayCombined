@@ -1,10 +1,12 @@
 ﻿@implements IAsyncDisposable
 
+@using FairPlayCombined.Common
 @using FairPlayCombined.Common.CustomAttributes
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<NavMenu> localizer
 @inject NavigationManager NavigationManager
 
+<FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.Home())">@localizer[HomeTextKey]</FluentNavLink>
 <AuthorizeView>
     <Authorized>
         <FluentNavLink Icon="@(new Icons.Regular.Size20.ArrowExit())">
@@ -16,12 +18,20 @@
                 </FluentButton>
             </form>
         </FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayBlogsRoutes.UserRoutes.CreateBlog"
+        Icon="@(new Icons.Regular.Size20.BookAdd())">
+            @localizer![CreateBlogTextKey]
+        </FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayBlogsRoutes.UserRoutes.MyBlogList"
+        Icon="@(new Icons.Regular.Size20.BookOpen())">
+            @localizer[MyBlogsTextKey]
+        </FluentNavLink>
     </Authorized>
     <NotAuthorized>
         <FluentNavLink Href="Account/Register"
-                       Icon="@(new Icons.Regular.Size20.PersonAdd())">@localizer[RegisterTextKey]</FluentNavLink>
+        Icon="@(new Icons.Regular.Size20.PersonAdd())">@localizer[RegisterTextKey]</FluentNavLink>
         <FluentNavLink Href="Account/Login"
-                       Icon="@(new Icons.Regular.Size20.PersonArrowRight())">@localizer[LoginTextKey]</FluentNavLink>
+        Icon="@(new Icons.Regular.Size20.PersonArrowRight())">@localizer[LoginTextKey]</FluentNavLink>
     </NotAuthorized>
 </AuthorizeView>
 
@@ -50,11 +60,17 @@
     }
 
     #region Resource Keys
+    [ResourceKey(defaultValue: "Home")]
+    public const string HomeTextKey = "HomeText";
     [ResourceKey(defaultValue: "Logout")]
     public const string LogoutTextKey = "LogoutText";
     [ResourceKey(defaultValue: "Register")]
     public const string RegisterTextKey = "RegisterText";
     [ResourceKey(defaultValue: "Login")]
     public const string LoginTextKey = "LoginText";
+    [ResourceKey(defaultValue: "Create Blog")]
+    public const string CreateBlogTextKey = "CreateBlogTex";
+    [ResourceKey(defaultValue: "My Blogs")]
+    public const string MyBlogsTextKey = "MyBlogsText";
     #endregion Resource Keys
 }

@@ -20,6 +20,9 @@ using FairPlayCombined.Models.Common.IpData;
 using FairPlayCombined.Common.CustomAttributes;
 using Microsoft.Extensions.Localization;
 using System.Reflection;
+using FairPlayCombined.Interfaces.FairPlayBlogs;
+using FairPlayCombined.Services.FairPlayBlogs;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
@@ -169,7 +172,18 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 app.MapAdditionalIdentityEndpoints();
 app.MapHub<UserMessageNotificationHub>(Constants.Routes.SignalRHubs.UserMessageHub);
-
+app.MapGet("/api/blogpost/{blogPostId}/thumbnail", async (
+    [FromServices] IDbContextFactory<FairPlayCombinedDbContext> dbContextFactory,
+    [FromRoute] long blogPostId,
+    CancellationToken cancellationToken) =>
+{
+    var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+    var result = await dbContext.BlogPost
+    .Where(p => p.BlogPostId == blogPostId)
+    .Select(p => p.ThumbnailPhoto.PhotoBytes)
+    .SingleAsync(cancellationToken);
+    return TypedResults.File(result, System.Net.Mime.MediaTypeNames.Image.Jpeg);
+});
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -231,4 +245,7 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddTransient<IpDataService>();
     builder.Services.AddTransient<IVisitorTrackingService, VisitorTrackingService>();
     builder.Services.AddTransient<IUserValidationService, UserValidationService>();
+    builder.Services.AddTransient<IBlogService, BlogService>();
+    builder.Services.AddTransient<IPhotoService, PhotoService>();
+    builder.Services.AddTransient<IBlogPostService, BlogPostService>();
 }

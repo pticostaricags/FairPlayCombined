@@ -3,11 +3,13 @@ using FairPlayCombined.Common.Identity;
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.dboSchema;
 using FairPlayCombined.Interfaces;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.AzureOpenAI;
 using FairPlayCombined.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace FairPlayCombined.LocalizationGenerator;
 
@@ -18,6 +20,7 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
     {
         var stopwatch = Stopwatch.StartNew();
         using var scope = serviceScopeFactory.CreateScope();
+        var customCache = scope.ServiceProvider.GetRequiredService<ICustomCache>();
         var conf = scope.ServiceProvider.GetRequiredService<IConfiguration>();
         var skipTranslations = Convert.ToBoolean(conf["skipTranslations"]);
         FairPlayCombinedDbContext fairPlayCombinedDbContext =
@@ -42,7 +45,9 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
             {
                 foreach (var singleCulture in await fairPlayCombinedDbContext.Culture.ToArrayAsync(cancellationToken: stoppingToken))
                 {
-                    await InsertTranslations(logger, fairPlayCombinedDbContext, azureOpenAIService, resource, singleCulture, stoppingToken);
+                    await InsertTranslations(logger, fairPlayCombinedDbContext,
+                        azureOpenAIService, resource, singleCulture,
+                        customCache, stoppingToken);
                 }
             }
         }
@@ -54,32 +59,43 @@ public class LocalizationGenerator(IServiceScopeFactory serviceScopeFactory,
         stopwatch.Stop();
     }
 
-    private static async Task InsertTranslations(ILogger<LocalizationGenerator> logger, FairPlayCombinedDbContext fairPlayCombinedDbContext, IAzureOpenAIService azureOpenAIService, Resource? resource, Culture? singleCulture, CancellationToken stoppingToken)
+    private static async Task InsertTranslations(ILogger<LocalizationGenerator> logger,
+        FairPlayCombinedDbContext fairPlayCombinedDbContext,
+        IAzureOpenAIService azureOpenAIService,
+        Resource? resource,
+        Culture? singleCulture,
+        ICustomCache customCache,
+        CancellationToken stoppingToken)
     {
         if (!await fairPlayCombinedDbContext.Resource
                                 .AnyAsync(p => p.CultureId == singleCulture!.CultureId &&
                                 p.Key == resource!.Key && p.Type == resource.Type, cancellationToken: stoppingToken))
         {
             logger.LogInformation("Translating: \"{Value}\" to \"{Name}\"", resource!.Value, singleCulture!.Name);
-            TranslationResponse? translationResponse = await
+            const string sourceLocale = "en-US";
+            string cacheKey = $"{resource.Value}-{sourceLocale}-{singleCulture.Name}";
+            var translatedText = await customCache.GetOrCreateAsync<string?>(cacheKey,
+                retrieveDataTask: async () =>
+            {
+                TranslationResponse? translationResponse = await
                 azureOpenAIService!
                 .TranslateSimpleTextAsync(resource.Value,
-                "en-US", singleCulture.Name,
+                sourceLocale, singleCulture.Name,
                 cancellationToken: stoppingToken);
-            if (translationResponse != null)
-            {
-                await fairPlayCombinedDbContext.Resource
-                    .AddAsync(new Resource()
-                    {
-                        CultureId = singleCulture.CultureId,
-                        Key = resource.Key,
-                        Type = resource.Type,
-                        Value = translationResponse.TranslatedText ?? resource.Value
-                    },
-                    cancellationToken: stoppingToken);
-                await fairPlayCombinedDbContext
-                    .SaveChangesAsync(cancellationToken: stoppingToken);
-            }
+                return translationResponse?.TranslatedText;
+            },
+            TimeSpan.FromDays(1), stoppingToken);
+            await fairPlayCombinedDbContext.Resource
+                .AddAsync(new Resource()
+                {
+                    CultureId = singleCulture.CultureId,
+                    Key = resource.Key,
+                    Type = resource.Type,
+                    Value = translatedText ?? resource.Value
+                },
+                cancellationToken: stoppingToken);
+            await fairPlayCombinedDbContext
+                .SaveChangesAsync(cancellationToken: stoppingToken);
         }
     }
 

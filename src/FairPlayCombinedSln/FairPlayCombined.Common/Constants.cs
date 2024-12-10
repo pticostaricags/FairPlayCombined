@@ -52,6 +52,17 @@
             {
                 public const string UserMessageHub = $"/{nameof(UserMessageHub)}";
             }
+
+            public static class FairPlayBlogsRoutes
+            {
+                public static class UserRoutes
+                {
+                    public const string CreateBlog = $"/User/{nameof(CreateBlog)}";
+                    public const string MyBlogList = $"/User/{nameof(MyBlogList)}";
+                    public const string CreateBlogPost = $"/User/{nameof(CreateBlogPost)}";
+                    public const string MyBlogPosts = $"/User/{nameof(MyBlogPosts)}";
+                }
+            }
             public static class FairPlayTubeRoutes
             {
                 public static class PublicRoutes

@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [FairPlayBlogs].[BlogPostStatus]
 (
-	[BlogPostStatusId] TINYINT NOT NULL CONSTRAINT PK_BlogPostStatus PRIMARY KEY IDENTITY, 
+	[BlogPostStatusId] INT NOT NULL CONSTRAINT PK_BlogPostStatus PRIMARY KEY IDENTITY, 
     [Name] NVARCHAR(10) NOT NULL
 )
 

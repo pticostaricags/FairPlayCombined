@@ -1,0 +1,30 @@
+﻿@using FairPlayCombined.Common
+@attribute [Route(FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.UserRoutes.MyBlogList)]
+@attribute [Authorize]
+
+@implements IAsyncDisposable
+
+<PageTitle>@Localizer![MyBlogListTextKey]</PageTitle>
+
+<h3>@Localizer![MyBlogListTextKey]</h3>
+
+<div class="@ThemeConfiguration.Grids.GridContainerCss">
+    <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
+        <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.Description)"></PropertyColumn>
+        <TemplateColumn Title="@Localizer![ActionsTextKey]">
+            <FluentStack Orientation="Orientation.Horizontal" Wrap="true">
+                <FluentAnchor Href="@($"{FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.UserRoutes.CreateBlogPost}/{context.BlogId}")"
+                              data-bs-toggle="tooltip" data-bs-placement="top" title="@CreatePostText">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.Document())"></FluentIcon>
+                </FluentAnchor>
+
+                <FluentAnchor Href="@($"{FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.UserRoutes.MyBlogPosts}/{context.BlogId}")"
+                              data-bs-toggle="tooltip" data-bs-placement="top" title="@MyBlogPostsText">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.DocumentBulletList())"></FluentIcon>
+                </FluentAnchor>
+            </FluentStack>
+        </TemplateColumn>
+    </FluentDataGrid>
+</div>
+<CustomFluentPaginator State="@this.paginationState"></CustomFluentPaginator>

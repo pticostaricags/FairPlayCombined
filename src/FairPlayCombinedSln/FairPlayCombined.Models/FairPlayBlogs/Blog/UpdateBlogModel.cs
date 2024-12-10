@@ -1,9 +1,9 @@
 ﻿using FairPlayCombined.Common.CustomAttributes;
 using FairPlayCombined.Common.GeneratorsAttributes;
 
-namespace FairPlayCombined.Models.FairPlayBlogs;
+namespace FairPlayCombined.Models.FairPlayBlogs.Blog;
 
-public class UpdateBlogModel: IUpdateModel
+public class UpdateBlogModel : IUpdateModel
 {
     public long BlogId { get; set; }
 

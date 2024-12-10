@@ -6,7 +6,7 @@
     [PreviewText] NVARCHAR(250) NOT NULL,
     [Content] NVARCHAR(MAX) NOT NULL,
     [ThumbnailPhotoId] BIGINT NOT NULL,
-    [BlogPostStatusId] TINYINT NOT NULL,
+    [BlogPostStatusId] INT NOT NULL,
     [RowCreationDateTime] DATETIMEOFFSET NOT NULL, 
     [RowCreationUser] NVARCHAR(256) NOT NULL,
     [SourceApplication] NVARCHAR(250) NOT NULL, 

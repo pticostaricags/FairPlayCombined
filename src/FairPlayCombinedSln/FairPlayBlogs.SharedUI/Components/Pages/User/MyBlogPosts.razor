@@ -1,0 +1,33 @@
+﻿@using FairPlayCombined.Common
+@attribute [Route($"{FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.UserRoutes.MyBlogPosts}/{{BlogId:long}}")]
+@attribute [Authorize]
+
+@implements IAsyncDisposable
+
+<PageTitle>MyBlogPosts</PageTitle>
+
+<h3>MyBlogPosts</h3>
+
+<div>
+    <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
+        <TemplateColumn>
+            <div>
+                <div style="text-align:center;">
+                    <img src="@($"{NavigationManager!.BaseUri}api/blogpost/{context.BlogPostId}/thumbnail")" width="300" />
+                </div>
+                <div style="text-align:center;">
+                    <strong>
+                        <span>
+                            @context.Title
+                        </span>
+                    </strong>
+                    <span>@context.PreviewText</span>
+                </div>
+                <div style="text-align:center;">
+                    View Post
+                </div>
+            </div>
+        </TemplateColumn>
+    </FluentDataGrid>
+</div>
+<CustomFluentPaginator State="@this.paginationState"></CustomFluentPaginator>

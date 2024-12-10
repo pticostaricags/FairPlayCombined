@@ -21,7 +21,7 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayBlogsSchema;
 public partial class BlogPostStatus
 {
     [Key]
-    public byte BlogPostStatusId { get; set; }
+    public int BlogPostStatusId { get; set; }
 
     [Required]
     [StringLength(10)]
