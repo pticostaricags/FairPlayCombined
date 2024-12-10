@@ -1,7 +1,7 @@
 ﻿using FairPlayCombined.Common.CustomAttributes;
 using FairPlayCombined.Common.GeneratorsAttributes;
 
-namespace FairPlayCombined.Models.FairPlayBlogs;
+namespace FairPlayCombined.Models.FairPlayBlogs.Blog;
 
 public class CreateBlogModel : ICreateModel
 {

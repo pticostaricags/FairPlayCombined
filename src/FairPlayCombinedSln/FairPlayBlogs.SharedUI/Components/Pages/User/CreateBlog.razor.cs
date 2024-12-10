@@ -3,7 +3,7 @@ using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Interfaces.FairPlayBlogs;
 using FairPlayCombined.Models.Common.Photo;
-using FairPlayCombined.Models.FairPlayBlogs;
+using FairPlayCombined.Models.FairPlayBlogs.Blog;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;

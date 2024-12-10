@@ -1,7 +1,7 @@
 ﻿using FairPlayCombined.Common;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.FairPlayBlogs;
-using FairPlayCombined.Models.FairPlayBlogs;
+using FairPlayCombined.Models.FairPlayBlogs.Blog;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

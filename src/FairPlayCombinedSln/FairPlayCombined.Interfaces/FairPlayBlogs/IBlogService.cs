@@ -1,4 +1,4 @@
-﻿using FairPlayCombined.Models.FairPlayBlogs;
+﻿using FairPlayCombined.Models.FairPlayBlogs.Blog;
 using FairPlayCombined.Models.Pagination;
 
 namespace FairPlayCombined.Interfaces.FairPlayBlogs;

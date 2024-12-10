@@ -235,4 +235,5 @@ static void AddPlatformServices(WebApplicationBuilder builder)
     builder.Services.AddTransient<IUserValidationService, UserValidationService>();
     builder.Services.AddTransient<IBlogService, BlogService>();
     builder.Services.AddTransient<IPhotoService, PhotoService>();
+    builder.Services.AddTransient<IBlogPostService, BlogPostService>();
 }

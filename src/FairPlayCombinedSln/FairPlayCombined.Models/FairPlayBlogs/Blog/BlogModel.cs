@@ -1,6 +1,6 @@
 ﻿using FairPlayCombined.Common.GeneratorsAttributes;
 
-namespace FairPlayCombined.Models.FairPlayBlogs
+namespace FairPlayCombined.Models.FairPlayBlogs.Blog
 {
     public class BlogModel : IListModel
     {

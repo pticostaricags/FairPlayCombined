@@ -2,7 +2,7 @@
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.DataAccess.Models.dboSchema;
-using FairPlayCombined.Models.FairPlayBlogs;
+using FairPlayCombined.Models.FairPlayBlogs.Blog;
 using FairPlayCombined.Services.FairPlayBlogs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

@@ -2,8 +2,7 @@
 using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Models.FairPlayBlogsSchema;
 using FairPlayCombined.Interfaces.FairPlayBlogs;
-using FairPlayCombined.Models.FairPlayBlogs;
-using FairPlayCombined.Models.FairPlayTube.VideoInfo;
+using FairPlayCombined.Models.FairPlayBlogs.Blog;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
