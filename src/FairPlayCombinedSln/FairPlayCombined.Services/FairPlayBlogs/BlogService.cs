@@ -36,7 +36,6 @@ namespace FairPlayCombined.Services.FairPlayBlogs
             var query = dbContext.Blog
                 .Where(p=>p.OwnerApplicationUserId == userId)
                 .AsNoTracking()
-                .AsSplitQuery()
                 .Select(p => new BlogModel
                 {
                     BlogId = p.BlogId,

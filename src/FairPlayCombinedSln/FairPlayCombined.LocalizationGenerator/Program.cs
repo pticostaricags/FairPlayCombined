@@ -1,5 +1,7 @@
 using FairPlayCombined.DataAccess.Data;
+using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.LocalizationGenerator;
+using FairPlayCombined.Services.Common;
 using FairPlayCombined.Services.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +24,7 @@ builder.Services.AddDbContextFactory<FairPlayCombinedDbContext>(
             });
     });
 builder.Services.AddAzureOpenAIService();
+builder.Services.AddTransient<ICustomCache, CustomCache>();
 builder.Services.AddHostedService<LocalizationGenerator>();
 
 var host = builder.Build();
