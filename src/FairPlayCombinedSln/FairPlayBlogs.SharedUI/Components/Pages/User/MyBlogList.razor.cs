@@ -62,6 +62,9 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.User
         [ResourceKey(defaultValue: "Create Post")]
         public const string CreatePostTextKey = "CreatePostText";
         private string CreatePostText => Localizer![CreatePostTextKey];
+        [ResourceKey(defaultValue: "My Blog Posts")]
+        public const string MyBlogPostsTextKey = "MyBlogPostsText";
+        private string MyBlogPostsText => Localizer![MyBlogPostsTextKey];
         #endregion Resource Keys
     }
 }

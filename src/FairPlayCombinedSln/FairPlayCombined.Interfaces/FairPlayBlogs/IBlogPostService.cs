@@ -11,4 +11,6 @@ public interface IBlogPostService
     Task DeleteBlogPostByIdAsync(long id, CancellationToken cancellationToken);
     Task<PaginationOfT<BlogPostModel>> GetPaginatedBlogPostAsync(
     PaginationRequest paginationRequest, CancellationToken cancellationToken);
+    Task<PaginationOfT<BlogPostModel>> GetPaginatedBlogPostByUserIdAsync(
+        string userId, PaginationRequest paginationRequest, CancellationToken cancellationToken);
 }
