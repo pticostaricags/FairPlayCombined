@@ -21,7 +21,7 @@ public partial class MyBlogPosts
     private bool IsBusy { get; set; }
     private GridItemsProvider<BlogPostModel>? ItemsProvider { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    private PaginationState paginationState = new()
+    private readonly PaginationState paginationState = new()
     {
         ItemsPerPage = Constants.Pagination.PageSize
     };

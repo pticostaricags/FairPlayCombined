@@ -20,7 +20,7 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.User
         private IStringLocalizer<MyBlogList>? Localizer { get; set; }
         private GridItemsProvider<BlogModel>? ItemsProvider { get; set; }
         private readonly CancellationTokenSource cancellationTokenSource = new();
-        private PaginationState paginationState = new()
+        private readonly PaginationState paginationState = new()
         {
             ItemsPerPage = Constants.Pagination.PageSize
         };
