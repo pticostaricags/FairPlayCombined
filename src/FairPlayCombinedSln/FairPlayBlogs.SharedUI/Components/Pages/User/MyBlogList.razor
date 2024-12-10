@@ -12,6 +12,11 @@
     <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
         <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.Description)"></PropertyColumn>
+        <TemplateColumn Title="Actions">
+            <FluentAnchor Href="@($"{FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.UserRoutes.CreateBlogPost}/{context.BlogId}")">
+                <FluentIcon Value="@(new Icons.Regular.Size20.Document())"></FluentIcon>
+            </FluentAnchor>
+        </TemplateColumn>
     </FluentDataGrid>
 </div>
 <FluentPaginator State="@this.paginationState"></FluentPaginator>

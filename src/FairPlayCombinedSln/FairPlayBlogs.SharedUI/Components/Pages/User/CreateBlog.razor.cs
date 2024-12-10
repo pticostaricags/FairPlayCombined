@@ -63,7 +63,9 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.User
             {
                 this.IsBusy = true;
                 StateHasChanged();
-                var stream = inputFileChangeEventArgs.File.OpenReadStream();
+                //Max Allowed Size = 5 megabytes
+                var maxAllowedSize = 5242880;
+                var stream = inputFileChangeEventArgs.File.OpenReadStream(maxAllowedSize: maxAllowedSize, this.cancellationTokenSource.Token);
                 MemoryStream memoryStream = new();
                 await stream.CopyToAsync(memoryStream);
                 CreatePhotoModel createPhotoModel = new()
