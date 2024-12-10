@@ -19,7 +19,7 @@ public class CreateBlogPostModel : ICreateModel
 
     [CustomRequired]
     public string? Content { get; set; }
-
+    [DeniedValues(default(long))]
     public long ThumbnailPhotoId { get; set; }
 
     public int BlogPostStatusId { get; set; }

@@ -4,19 +4,20 @@
 
 @implements IAsyncDisposable
 
-<PageTitle>MyBlogList</PageTitle>
+<PageTitle>@Localizer![MyBlogListTextKey]</PageTitle>
 
-<h3>MyBlogList</h3>
+<h3>@Localizer![MyBlogListTextKey]</h3>
 
 <div class="@ThemeConfiguration.Grids.GridContainerCss">
     <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
         <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
         <PropertyColumn Property="@(p=>p.Description)"></PropertyColumn>
-        <TemplateColumn Title="Actions">
-            <FluentAnchor Href="@($"{FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.UserRoutes.CreateBlogPost}/{context.BlogId}")">
+        <TemplateColumn Title="@Localizer![ActionsTextKey]">
+            <FluentAnchor Href="@($"{FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.UserRoutes.CreateBlogPost}/{context.BlogId}")"
+            data-bs-toggle="tooltip" data-bs-placement="top" title="@CreatePostText">
                 <FluentIcon Value="@(new Icons.Regular.Size20.Document())"></FluentIcon>
             </FluentAnchor>
         </TemplateColumn>
     </FluentDataGrid>
 </div>
-<FluentPaginator State="@this.paginationState"></FluentPaginator>
+<CustomFluentPaginator State="@this.paginationState"></CustomFluentPaginator>

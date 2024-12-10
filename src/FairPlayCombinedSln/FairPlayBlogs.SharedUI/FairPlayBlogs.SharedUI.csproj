@@ -48,6 +48,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FairPlayCombined.Interfaces\FairPlayCombined.Interfaces.csproj" />
+    <ProjectReference Include="..\FairPlayCombined.WebComponents\FairPlayCombined.WebComponents.csproj" />
   </ItemGroup>
 
 </Project>
