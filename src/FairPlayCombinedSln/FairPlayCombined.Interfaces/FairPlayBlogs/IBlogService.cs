@@ -5,7 +5,7 @@ namespace FairPlayCombined.Interfaces.FairPlayBlogs;
 
 public interface IBlogService
 {
-    Task<long> CreateBlogAsync(CreateBlogModel createModel, 
+    Task<long> CreateBlogAsync(CreateBlogModel createModel,
         CancellationToken cancellationToken);
     Task<BlogModel[]> GetAllBlogAsync(
     CancellationToken cancellationToken);
@@ -13,4 +13,6 @@ public interface IBlogService
     Task DeleteBlogByIdAsync(long id, CancellationToken cancellationToken);
     Task<PaginationOfT<BlogModel>> GetPaginatedBlogAsync(
     PaginationRequest paginationRequest, CancellationToken cancellationToken);
+    Task<PaginationOfT<BlogModel>> GetAllBlogByUserIdAsync(string userId, PaginationRequest paginationRequest,
+    CancellationToken cancellationToken);
 }

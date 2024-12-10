@@ -6,7 +6,6 @@ using FairPlayCombined.Models.Common.Photo;
 using FairPlayCombined.Models.FairPlayBlogs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 

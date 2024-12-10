@@ -1,0 +1,17 @@
+﻿@using FairPlayCombined.Common
+@attribute [Route(FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.UserRoutes.MyBlogList)]
+@attribute [Authorize]
+
+@implements IAsyncDisposable
+
+<PageTitle>MyBlogList</PageTitle>
+
+<h3>MyBlogList</h3>
+
+<div class="@ThemeConfiguration.Grids.GridContainerCss">
+    <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
+        <PropertyColumn Property="@(p=>p.Name)"></PropertyColumn>
+        <PropertyColumn Property="@(p=>p.Description)"></PropertyColumn>
+    </FluentDataGrid>
+</div>
+<FluentPaginator State="@this.paginationState"></FluentPaginator>

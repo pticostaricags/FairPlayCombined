@@ -58,6 +58,7 @@
                 public static class UserRoutes
                 {
                     public const string CreateBlog = $"/User/{nameof(CreateBlog)}";
+                    public const string MyBlogList = $"/User/{nameof(MyBlogList)}";
                 }
             }
             public static class FairPlayTubeRoutes

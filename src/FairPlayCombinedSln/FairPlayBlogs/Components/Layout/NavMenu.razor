@@ -21,6 +21,10 @@
                        Icon="@(new Icons.Regular.Size20.BookAdd())">
             Create Blog
         </FluentNavLink>
+        <FluentNavLink Href="@Constants.Routes.FairPlayBlogsRoutes.UserRoutes.MyBlogList"
+                       Icon="@(new Icons.Regular.Size20.BookOpen())">
+            My Blogs
+        </FluentNavLink>
     </Authorized>
     <NotAuthorized>
         <FluentNavLink Href="Account/Register"
