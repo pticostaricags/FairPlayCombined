@@ -62,6 +62,11 @@
                     public const string CreateBlogPost = $"/User/{nameof(CreateBlogPost)}";
                     public const string MyBlogPosts = $"/User/{nameof(MyBlogPosts)}";
                 }
+
+                public static class PublicRoutes
+                {
+                    public const string ViewBlogPost = $"/Public/{nameof(ViewBlogPost)}";
+                }
             }
             public static class FairPlayTubeRoutes
             {
