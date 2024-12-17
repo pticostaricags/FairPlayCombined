@@ -22,4 +22,4 @@ CREATE UNIQUE INDEX [UI_Blog_Name] ON [FairPlayBlogs].[Blog] ([Name])
 
 GO
 
-CREATE UNIQUE INDEX [UI_Blog_Url] ON [FairPlayBlogs].[Blog] ([CustomDomain])
+CREATE UNIQUE INDEX [UI_Blog_CustomDomain] ON [FairPlayBlogs].[Blog] ([CustomDomain]) WHERE CustomDomain IS NOT NULL

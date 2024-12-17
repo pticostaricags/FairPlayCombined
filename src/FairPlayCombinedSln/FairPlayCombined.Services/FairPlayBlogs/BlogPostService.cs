@@ -22,10 +22,10 @@ namespace FairPlayCombined.Services.FairPlayBlogs;
         >]
 public partial class BlogPostService : BaseService, IBlogPostService
 {
-    public async Task<PaginationOfT<BlogPostModel>> GetPaginatedBlogPostByUserIdAsync(
-        string userId, PaginationRequest paginationRequest, CancellationToken cancellationToken)
+    public async Task<PaginationOfT<BlogPostModel>> GetPaginatedBlogPostByBlogIdAsync(
+        long blogId, PaginationRequest paginationRequest, CancellationToken cancellationToken)
     {
-        logger.LogInformation(message: "Start of method: {MethodName}", nameof(GetPaginatedBlogPostByUserIdAsync));
+        logger.LogInformation(message: "Start of method: {MethodName}", nameof(GetPaginatedBlogPostByBlogIdAsync));
         PaginationOfT<BlogPostModel> result = new();
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         string orderByString = string.Empty;
@@ -34,7 +34,7 @@ public partial class BlogPostService : BaseService, IBlogPostService
                 String.Join(",",
                 paginationRequest.SortingItems.Select(p => $"{p.PropertyName} {GetSortTypeString(p.SortType)}"));
         var query = dbContext.BlogPost
-            .Where(p=>p.Blog.OwnerApplicationUserId == userId)
+            .Where(p=>p.Blog.BlogId == blogId)
             .Select(p => new BlogPostModel
             {
                 BlogPostId = p.BlogPostId,

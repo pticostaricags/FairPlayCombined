@@ -247,6 +247,10 @@ public partial class FairPlayCombinedDbContext : DbContext
 
         modelBuilder.Entity<Blog>(entity =>
         {
+            entity.HasIndex(e => e.CustomDomain, "UI_Blog_CustomDomain")
+                .IsUnique()
+                .HasFilter("CustomDomain IS NOT NULL");
+
             entity.HasOne(d => d.HeaderPhoto).WithMany(p => p.Blog)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Blog_Photo");

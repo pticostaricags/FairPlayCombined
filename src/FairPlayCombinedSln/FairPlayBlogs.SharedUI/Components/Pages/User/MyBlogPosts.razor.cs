@@ -15,8 +15,6 @@ public partial class MyBlogPosts
     [Inject]
     private IBlogPostService? BlogPostService { get; set; }
     [Inject]
-    private IUserProviderService? UserProviderService { get; set; }
-    [Inject]
     private NavigationManager? NavigationManager { get; set; }
     private bool IsBusy { get; set; }
     private GridItemsProvider<BlogPostModel>? ItemsProvider { get; set; }
@@ -31,14 +29,13 @@ public partial class MyBlogPosts
         {
             this.IsBusy = true;
             StateHasChanged();
-            var userId = this.UserProviderService!.GetCurrentUserId();
             PaginationRequest paginationRequest = new()
             {
                 PageSize = paginationState.ItemsPerPage,
                 StartIndex = req.StartIndex
             };
             var items = await BlogPostService!
-            .GetPaginatedBlogPostByUserIdAsync(userId!, paginationRequest, this.cancellationTokenSource.Token);
+            .GetPaginatedBlogPostByBlogIdAsync(this.BlogId, paginationRequest, this.cancellationTokenSource.Token);
             this.IsBusy = false;
             StateHasChanged();
             var result = GridItemsProviderResult.From<BlogPostModel>(items!.Items!, items.TotalItems);
