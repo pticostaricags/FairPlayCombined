@@ -53,8 +53,7 @@
         }
         if (HttpContext.AcceptsInteractiveRouting())
         {
-            if (navigationManager.Uri.IndexOf("/User/") >= 0 ||
-            navigationManager.Uri.IndexOf("/Creator/") >= 0)
+            if (navigationManager.Uri.IndexOf("/User/") >= 0)
             {
                 this.PageRenderMode = ServerNoPrerender;
             }

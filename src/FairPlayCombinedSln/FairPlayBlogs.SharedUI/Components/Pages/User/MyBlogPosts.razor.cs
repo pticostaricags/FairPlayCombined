@@ -1,9 +1,11 @@
 ﻿using FairPlayCombined.Common;
+using FairPlayCombined.Common.CustomAttributes;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.FairPlayBlogs;
 using FairPlayCombined.Models.FairPlayBlogs.BlogPost;
 using FairPlayCombined.Models.Pagination;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace FairPlayBlogs.SharedUI.Components.Pages.User;
@@ -15,9 +17,9 @@ public partial class MyBlogPosts
     [Inject]
     private IBlogPostService? BlogPostService { get; set; }
     [Inject]
-    private IUserProviderService? UserProviderService { get; set; }
-    [Inject]
     private NavigationManager? NavigationManager { get; set; }
+    [Inject]
+    private IStringLocalizer<MyBlogPosts>? Localizer { get; set; }
     private bool IsBusy { get; set; }
     private GridItemsProvider<BlogPostModel>? ItemsProvider { get; set; }
     private readonly CancellationTokenSource cancellationTokenSource = new();
@@ -31,14 +33,13 @@ public partial class MyBlogPosts
         {
             this.IsBusy = true;
             StateHasChanged();
-            var userId = this.UserProviderService!.GetCurrentUserId();
             PaginationRequest paginationRequest = new()
             {
                 PageSize = paginationState.ItemsPerPage,
                 StartIndex = req.StartIndex
             };
             var items = await BlogPostService!
-            .GetPaginatedBlogPostByUserIdAsync(userId!, paginationRequest, this.cancellationTokenSource.Token);
+            .GetPaginatedBlogPostByBlogIdAsync(this.BlogId, paginationRequest, this.cancellationTokenSource.Token);
             this.IsBusy = false;
             StateHasChanged();
             var result = GridItemsProviderResult.From<BlogPostModel>(items!.Items!, items.TotalItems);
@@ -51,4 +52,11 @@ public partial class MyBlogPosts
         await this.cancellationTokenSource.CancelAsync();
         this.cancellationTokenSource.Dispose();
     }
+
+    #region Resource Keys
+    [ResourceKey(defaultValue: "My Blog Posts")]
+    public const string MyBlogPostsTextKey = "MyBlogPostsText";
+    [ResourceKey(defaultValue: "View Post")]
+    public const string ViewPostTextKey = "ViewPostText";
+    #endregion Resource Keys
 }

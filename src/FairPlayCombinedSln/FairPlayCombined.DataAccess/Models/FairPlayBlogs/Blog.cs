@@ -18,7 +18,6 @@ namespace FairPlayCombined.DataAccess.Models.FairPlayBlogsSchema;
 
 [Table("Blog", Schema = "FairPlayBlogs")]
 [Index("Name", Name = "UI_Blog_Name", IsUnique = true)]
-[Index("CustomDomain", Name = "UI_Blog_Url", IsUnique = true)]
 public partial class Blog
 {
     [Key]

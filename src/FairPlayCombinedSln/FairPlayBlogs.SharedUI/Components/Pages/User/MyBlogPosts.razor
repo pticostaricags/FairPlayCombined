@@ -4,9 +4,13 @@
 
 @implements IAsyncDisposable
 
-<PageTitle>MyBlogPosts</PageTitle>
+<PageTitle>
+    @Localizer![MyBlogPostsTextKey]
+</PageTitle>
 
-<h3>MyBlogPosts</h3>
+<h3>
+    @Localizer![MyBlogPostsTextKey]
+</h3>
 
 <div>
     <FluentDataGrid ItemsProvider="@this.ItemsProvider" Pagination="@this.paginationState">
@@ -21,10 +25,15 @@
                             @context.Title
                         </span>
                     </strong>
-                    <span>@context.PreviewText</span>
                 </div>
                 <div style="text-align:center;">
-                    View Post
+                    @context.PreviewText
+                </div>
+                <div style="text-align:center;">
+                    <FluentAnchor IconStart="@(new Icons.Regular.Size20.Link())"
+                                  Href="@($"{FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.PublicRoutes.ViewBlogPost}/{context.BlogPostId}")">
+                        @Localizer![ViewPostTextKey]
+                    </FluentAnchor>
                 </div>
             </div>
         </TemplateColumn>
