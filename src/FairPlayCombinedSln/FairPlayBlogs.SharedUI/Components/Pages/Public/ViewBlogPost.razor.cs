@@ -19,6 +19,8 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.Public
         private IToastService? ToastService { get; set; }
         [Inject]
         private IStringLocalizer<ViewBlogPost>? Localizer { get; set; }
+        [Inject]
+        private NavigationManager? NavigationManager { get; set; }
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private bool IsBusy { get; set; }
         private BlogPostModel? BlogPostModel { get; set; }
