@@ -1,5 +1,4 @@
 ﻿using Blazored.TextEditor;
-using FairPlayBlogs.SharedUI.Components.Pages.User;
 using FairPlayCombined.Common.CustomAttributes;
 using FairPlayCombined.Interfaces.FairPlayBlogs;
 using FairPlayCombined.Models.FairPlayBlogs.BlogPost;
@@ -13,12 +12,18 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.Public
     {
         [Parameter]
         public long BlogPostId { get; set; }
+        [Parameter]
+        public string? BlogName { get; set; }
+        [Parameter]
+        public string? BlogPostTitle { get; set; }
         [Inject]
         private IBlogPostService? BlogPostService { get; set; }
         [Inject]
         private IToastService? ToastService { get; set; }
         [Inject]
         private IStringLocalizer<ViewBlogPost>? Localizer { get; set; }
+        [Inject]
+        private NavigationManager? NavigationManager { get; set; }
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private bool IsBusy { get; set; }
         private BlogPostModel? BlogPostModel { get; set; }
@@ -30,8 +35,20 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.Public
             {
                 this.IsBusy = true;
                 StateHasChanged();
-                this.BlogPostModel = await this.BlogPostService!
-                    .GetBlogPostByIdAsync(this.BlogPostId, this.cancellationTokenSource.Token);
+                if (this.BlogName?.Length > 0 && this.BlogPostTitle?.Length > 0)
+                {
+                    var decodedBlogName = System.Net.WebUtility.UrlDecode(this.BlogName);
+                    var decodedBlogPostTitle = System.Net.WebUtility.UrlDecode(this.BlogPostTitle);
+                    decodedBlogName = decodedBlogName.Replace("-", " ");
+                    decodedBlogPostTitle = decodedBlogPostTitle.Replace("-", " ");
+                    this.BlogPostModel = await this.BlogPostService!
+                        .GetBlogPostByBlogNameAndPostTitleAsync(decodedBlogName, decodedBlogPostTitle, this.cancellationTokenSource.Token);
+                }
+                else
+                {
+                    this.BlogPostModel = await this.BlogPostService!
+                        .GetBlogPostByIdAsync(this.BlogPostId, this.cancellationTokenSource.Token);
+                }
             }
             catch (Exception ex)
             {

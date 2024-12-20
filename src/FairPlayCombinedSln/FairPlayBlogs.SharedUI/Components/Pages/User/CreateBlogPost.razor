@@ -68,6 +68,10 @@
         </div>
     </div>
     <div>
+        <FluentLabel Typo="Typography.Body">@Localizer![PublishTextKey]</FluentLabel>
+        <FluentCheckbox CheckStateChanged="OnPostStatusChanged"></FluentCheckbox>
+    </div>
+    <div>
         <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">
             @Localizer![SaveTextKey]
         </FluentButton>

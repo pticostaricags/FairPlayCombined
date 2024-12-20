@@ -22,6 +22,28 @@ namespace FairPlayCombined.Services.FairPlayBlogs;
         >]
 public partial class BlogPostService : BaseService, IBlogPostService
 {
+    public async Task<BlogPostModel?> GetBlogPostByBlogNameAndPostTitleAsync(
+        string blogName, string blogPostTitle, CancellationToken cancellationToken)
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await dbContext.BlogPost
+        .Where(p => p.Blog.Name == blogName && p.Title == blogPostTitle)
+        .AsNoTracking()
+        .Select(p => new BlogPostModel
+        {
+            BlogPostId = p.BlogPostId,
+            BlogId = p.BlogId,
+            Title = p.Title,
+            PreviewText = p.PreviewText,
+            Content = p.Content,
+            ThumbnailPhotoId = p.ThumbnailPhotoId,
+            BlogPostStatusId = p.BlogPostStatusId,
+
+        })
+        .SingleOrDefaultAsync(cancellationToken);
+        return result;
+    }
+
     public async Task<PaginationOfT<BlogPostModel>> GetPaginatedBlogPostByBlogIdAsync(
         long blogId, PaginationRequest paginationRequest, CancellationToken cancellationToken)
     {

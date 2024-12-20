@@ -97,6 +97,18 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.User
             }
         }
 
+        private void OnPostStatusChanged(bool? value)
+        {
+            if (value == true)
+            {
+                this.CreateBlogPostModel.BlogPostStatusId = (int)BlogPostStatus.Published;
+            }
+            else
+            {
+                this.CreateBlogPostModel.BlogPostStatusId = (int)BlogPostStatus.Draft;
+            }
+        }
+
         public async ValueTask DisposeAsync()
         {
             await this.cancellationTokenSource.CancelAsync();
@@ -116,6 +128,8 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.User
         public const string PreviewTextTextKey = "PreviewTextText";
         [ResourceKey(defaultValue: "Content")]
         public const string ContentTextKey = "ContentText";
+        [ResourceKey(defaultValue:"Publish")]
+        public const string PublishTextKey = "PublishText";
         #endregion Resource Keys
     }
 }

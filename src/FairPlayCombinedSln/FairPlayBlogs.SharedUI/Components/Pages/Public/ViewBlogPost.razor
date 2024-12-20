@@ -1,18 +1,26 @@
-﻿@attribute [Route($"{FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.PublicRoutes.ViewBlogPost}/{{BlogPostId:long}}")]
+﻿@using FairPlayCombined.WebComponents.SocialMedia
+@attribute [Route($"{FairPlayCombined.Common.Constants.Routes.FairPlayBlogsRoutes.PublicRoutes.ViewBlogPost}/{{BlogPostId:long}}")]
+@attribute [Route($"/Public/Blog/{{BlogName}}/Post/{{BlogPostTitle}}")]
 
 @implements IAsyncDisposable
 
 <PageTitle>
-    @Localizer![ViewBlogPostTextKey]
+    @Localizer![ViewBlogPostTextKey] - @this.BlogPostModel?.Title
 </PageTitle>
 
 <h3>
-    @Localizer![ViewBlogPostTextKey]
+    @this.BlogPostModel?.Title
 </h3>
 
-<div style="text-align:center;">
-    @this.BlogPostModel?.Title
-</div>
+@if (this.BlogPostModel != null)
+{
+    <div>
+        <SharePage Description="@this.BlogPostModel.Title" Url="@this.NavigationManager!.Uri"></SharePage>
+    </div>
+    <div style="text-align:center;">
+        <img src="@($"{NavigationManager!.BaseUri}api/blogpost/{this.BlogPostModel.BlogPostId}/thumbnail")" width="300" />
+    </div>
+}
 <div style="text-align:center;">
     <BlazoredTextEditor ReadOnly="true" @ref="@QuillHtml" Placeholder="@String.Empty">
         <ToolbarContent>
