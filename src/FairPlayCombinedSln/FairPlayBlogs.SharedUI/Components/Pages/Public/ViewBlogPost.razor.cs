@@ -1,5 +1,4 @@
 ﻿using Blazored.TextEditor;
-using FairPlayBlogs.SharedUI.Components.Pages.User;
 using FairPlayCombined.Common.CustomAttributes;
 using FairPlayCombined.Interfaces.FairPlayBlogs;
 using FairPlayCombined.Models.FairPlayBlogs.BlogPost;
@@ -40,6 +39,8 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.Public
                 {
                     var decodedBlogName = System.Net.WebUtility.UrlDecode(this.BlogName);
                     var decodedBlogPostTitle = System.Net.WebUtility.UrlDecode(this.BlogPostTitle);
+                    decodedBlogName = decodedBlogName.Replace("-", " ");
+                    decodedBlogPostTitle = decodedBlogPostTitle.Replace("-", " ");
                     this.BlogPostModel = await this.BlogPostService!
                         .GetBlogPostByBlogNameAndPostTitleAsync(decodedBlogName, decodedBlogPostTitle, this.cancellationTokenSource.Token);
                 }
