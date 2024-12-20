@@ -13,6 +13,10 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.Public
     {
         [Parameter]
         public long BlogPostId { get; set; }
+        [Parameter]
+        public string? BlogName { get; set; }
+        [Parameter]
+        public string? BlogPostTitle { get; set; }
         [Inject]
         private IBlogPostService? BlogPostService { get; set; }
         [Inject]
@@ -32,8 +36,18 @@ namespace FairPlayBlogs.SharedUI.Components.Pages.Public
             {
                 this.IsBusy = true;
                 StateHasChanged();
-                this.BlogPostModel = await this.BlogPostService!
-                    .GetBlogPostByIdAsync(this.BlogPostId, this.cancellationTokenSource.Token);
+                if (this.BlogName?.Length > 0 && this.BlogPostTitle?.Length > 0)
+                {
+                    var decodedBlogName = System.Net.WebUtility.UrlDecode(this.BlogName);
+                    var decodedBlogPostTitle = System.Net.WebUtility.UrlDecode(this.BlogPostTitle);
+                    this.BlogPostModel = await this.BlogPostService!
+                        .GetBlogPostByBlogNameAndPostTitleAsync(decodedBlogName, decodedBlogPostTitle, this.cancellationTokenSource.Token);
+                }
+                else
+                {
+                    this.BlogPostModel = await this.BlogPostService!
+                        .GetBlogPostByIdAsync(this.BlogPostId, this.cancellationTokenSource.Token);
+                }
             }
             catch (Exception ex)
             {
