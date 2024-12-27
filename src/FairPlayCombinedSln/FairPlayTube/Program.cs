@@ -5,6 +5,7 @@ using FairPlayCombined.DataAccess.Data;
 using FairPlayCombined.DataAccess.Interceptors;
 using FairPlayCombined.Interfaces;
 using FairPlayCombined.Interfaces.FairPlayTube;
+using FairPlayCombined.Models;
 using FairPlayCombined.Models.GoogleAuth;
 using FairPlayCombined.Models.LinkedInAuth;
 using FairPlayCombined.Services.Common;
@@ -38,7 +39,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 
-
+TestCreateModel testCreateModel = new();
+testCreateModel.Id = "4";
 builder.AddAzureBlobClient("blobs");
 
 if (Convert.ToBoolean(builder.Configuration["UseSendGrid"]))
