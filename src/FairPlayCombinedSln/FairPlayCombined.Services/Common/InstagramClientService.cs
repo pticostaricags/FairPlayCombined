@@ -2,6 +2,7 @@
 using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.InstagramApi;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Net.Http.Json;
 
 namespace FairPlayCombined.Services.Common
@@ -27,7 +28,7 @@ namespace FairPlayCombined.Services.Common
         {
             logger.LogInformation("Start of method: {MethodName}", nameof(GetUserMediaAsync));
             string requestUrl = $"https://graph.instagram.com/{VERSION}/{username}/media" +
-                $"&access_token={accessToken}";
+                $"?access_token={accessToken}";
             var result = await httpClient.GetFromJsonAsync<UserMediaModel>(requestUrl, cancellationToken);
             logger.LogInformation("End of method: {MethodName}", nameof(GetUserMediaAsync));
             return result;
