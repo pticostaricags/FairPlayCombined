@@ -1,8 +1,6 @@
-﻿using DocumentFormat.OpenXml.Office2010.PowerPoint;
-using FairPlayCombined.Interfaces.Common;
+﻿using FairPlayCombined.Interfaces.Common;
 using FairPlayCombined.Models.InstagramApi;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using System.Net.Http.Json;
 
 namespace FairPlayCombined.Services.Common
@@ -71,6 +69,26 @@ namespace FairPlayCombined.Services.Common
             var createdMediaModel = 
             await this.CreateMediaContainerAsync(createMediaContainerModel, 
                 username:username, accessToken:accessToken, cancellationToken: cancellationToken);
+            PublishMediaContainerModel publishMediaContainerModel = new()
+            {
+                creation_id = createdMediaModel!.id
+            };
+            var result = await this.PublishMediaContainerAsync(publishMediaContainerModel, username, accessToken, cancellationToken);
+            return result;
+        }
+
+        public async Task<PublishMediaContainerResponseModel?>
+            CreateReelPostAsync(string username, string accessToken,
+            string videoUrl, CancellationToken cancellationToken)
+        {
+            CreateMediaContainerModel createMediaContainerModel = new()
+            {
+                video_url = videoUrl,
+                media_type = "REELS"
+            };
+            var createdMediaModel =
+            await this.CreateMediaContainerAsync(createMediaContainerModel,
+                username: username, accessToken: accessToken, cancellationToken: cancellationToken);
             PublishMediaContainerModel publishMediaContainerModel = new()
             {
                 creation_id = createdMediaModel!.id
