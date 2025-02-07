@@ -78,6 +78,26 @@ namespace FairPlayCombined.Services.Common
         }
 
         public async Task<PublishMediaContainerResponseModel?>
+            CreateImageStoryPostAsync(string username, string accessToken,
+            string imageUrl, CancellationToken cancellationToken)
+        {
+            CreateMediaContainerModel createMediaContainerModel = new()
+            {
+                image_url = imageUrl,
+                media_type = "STORIES"
+            };
+            var createdMediaModel =
+            await this.CreateMediaContainerAsync(createMediaContainerModel,
+                username: username, accessToken: accessToken, cancellationToken: cancellationToken);
+            PublishMediaContainerModel publishMediaContainerModel = new()
+            {
+                creation_id = createdMediaModel!.id
+            };
+            var result = await this.PublishMediaContainerAsync(publishMediaContainerModel, username, accessToken, cancellationToken);
+            return result;
+        }
+
+        public async Task<PublishMediaContainerResponseModel?>
             CreateReelPostAsync(string username, string accessToken,
             string videoUrl, CancellationToken cancellationToken)
         {

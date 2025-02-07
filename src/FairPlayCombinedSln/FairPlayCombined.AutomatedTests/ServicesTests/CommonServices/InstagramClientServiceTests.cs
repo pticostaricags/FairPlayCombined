@@ -87,6 +87,33 @@ namespace FairPlayCombined.AutomatedTests.ServicesTests.CommonServices
         }
 
         [TestMethod]
+        public async Task Test_CreateImageStoryPostAsync()
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddUserSecrets<ServicesBase>();
+            var configuration = configurationBuilder.Build();
+            var instagramUserAccessToken = configuration["InstagramUserAccessToken"] ??
+                throw new Exception("'InstagramUserAccessToken' is not in configuration");
+            var instagramTestImageUrl = configuration["InstagramTestImageUrl"] ??
+                throw new Exception("'InstagramTestImageUrl' is not in configuration");
+            ServiceCollection services = new();
+            services.AddTransient<ILogger<InstagramClientService>>(sp =>
+            {
+                var loggerFactory = LoggerFactory.Create(p => p.AddConsole());
+                var logger = loggerFactory!.CreateLogger<InstagramClientService>();
+                return logger;
+            });
+            services.AddTransient<IUserProviderService, TestUserProviderService>();
+            services.AddTransient<IInstagramClientService, InstagramClientService>();
+            services.AddHttpClient();
+            var sp = services.BuildServiceProvider();
+            var instagramClientService = sp.GetRequiredService<IInstagramClientService>();
+            string username = "me";
+            var result = await instagramClientService.CreateImageStoryPostAsync(username, instagramUserAccessToken, instagramTestImageUrl, CancellationToken.None);
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
         public async Task Test_CreateSingleVideoPostAsync()
         {
             var configurationBuilder = new ConfigurationBuilder();

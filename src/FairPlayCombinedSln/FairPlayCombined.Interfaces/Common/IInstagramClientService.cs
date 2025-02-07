@@ -12,5 +12,8 @@ namespace FairPlayCombined.Interfaces.Common
             string imageUrl, CancellationToken cancellationToken);
         Task<PublishMediaContainerResponseModel?> CreateReelPostAsync(string username, string accessToken,
             string videoUrl, CancellationToken cancellationToken);
+        Task<PublishMediaContainerResponseModel?>
+            CreateImageStoryPostAsync(string username, string accessToken,
+            string imageUrl, CancellationToken cancellationToken);
     }
 }
