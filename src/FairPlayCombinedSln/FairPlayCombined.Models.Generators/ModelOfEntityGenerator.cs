@@ -128,18 +128,23 @@ public class ModelOfEntityGenerator : IIncrementalGenerator
         classBuilder.AppendLine("using FairPlayCombined.Common.CustomAttributes;");
         classBuilder.AppendLine("using FairPlayCombined.Common.ValidationAttributes;");
         classBuilder.AppendLine($"namespace {symbolNamespace};");
-        classBuilder.AppendLine($"public partial class {tableName}");
+        classBuilder.AppendLine($"public partial class {symbol.Name}");
         classBuilder.AppendLine("{");
         Debug.WriteLine($"{tableName}");
-        var columnsRelationship = matchingTable.First().Relationship.Single(p => p.Name == "Columns");
-        var columnsEntries = columnsRelationship.Entry;
-        foreach (var columnEntryElement in columnsEntries.Select(c => c.Element))
+        var firstTable = matchingTable.First();
+        if (firstTable.Items?.Length>0)
         {
-            ProcessColumnEntry(classBuilder, constructorArg, columnEntryElement, symbol.MemberNames);
+            var relationships = firstTable.Items.OfType<DataSchemaModelElementRelationship>();
+            var columnsRelationship = relationships.Single(p => p.Name == "Columns");
+            var columnsEntries = columnsRelationship.Entry;
+            foreach (var columnEntryElement in columnsEntries.Select(c => c.Element))
+            {
+                ProcessColumnEntry(classBuilder, constructorArg, columnEntryElement, symbol.MemberNames);
+            }
+            classBuilder.AppendLine("}");
+            classBuilder.AppendLine("#nullable disable");
+            context.AddSource($"{tableName}.g.cs", classBuilder.ToString());
         }
-        classBuilder.AppendLine("}");
-        classBuilder.AppendLine("#nullable disable");
-        context.AddSource($"{tableName}.g.cs", classBuilder.ToString());
     }
 
     private static void ProcessColumnEntry(StringBuilder classBuilder, string? constructorArg, DataSchemaModelElementRelationshipEntryElement columnEntryElement,

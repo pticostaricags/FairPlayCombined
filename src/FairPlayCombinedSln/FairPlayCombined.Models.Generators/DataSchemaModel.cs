@@ -232,13 +232,7 @@ namespace FairPlayCombined.Models.Generators
     public partial class DataSchemaModelElement
     {
 
-        private DataSchemaModelElementProperty[] propertyField;
-
-        private DataSchemaModelElementRelationship[] relationshipField;
-
-        private DataSchemaModelElementAttachedAnnotation[] attachedAnnotationField;
-
-        private DataSchemaModelElementAnnotation[] annotationField;
+        private object[] itemsField;
 
         private string typeField;
 
@@ -249,58 +243,19 @@ namespace FairPlayCombined.Models.Generators
         private bool disambiguatorFieldSpecified;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Property")]
-        public DataSchemaModelElementProperty[] Property
+        [System.Xml.Serialization.XmlElementAttribute("Annotation", typeof(DataSchemaModelElementAnnotation))]
+        [System.Xml.Serialization.XmlElementAttribute("AttachedAnnotation", typeof(DataSchemaModelElementAttachedAnnotation))]
+        [System.Xml.Serialization.XmlElementAttribute("Property", typeof(DataSchemaModelElementProperty))]
+        [System.Xml.Serialization.XmlElementAttribute("Relationship", typeof(DataSchemaModelElementRelationship))]
+        public object[] Items
         {
             get
             {
-                return this.propertyField;
+                return this.itemsField;
             }
             set
             {
-                this.propertyField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Relationship")]
-        public DataSchemaModelElementRelationship[] Relationship
-        {
-            get
-            {
-                return this.relationshipField;
-            }
-            set
-            {
-                this.relationshipField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("AttachedAnnotation")]
-        public DataSchemaModelElementAttachedAnnotation[] AttachedAnnotation
-        {
-            get
-            {
-                return this.attachedAnnotationField;
-            }
-            set
-            {
-                this.attachedAnnotationField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Annotation")]
-        public DataSchemaModelElementAnnotation[] Annotation
-        {
-            get
-            {
-                return this.annotationField;
-            }
-            set
-            {
-                this.annotationField = value;
+                this.itemsField = value;
             }
         }
 
@@ -357,6 +312,142 @@ namespace FairPlayCombined.Models.Generators
             set
             {
                 this.disambiguatorFieldSpecified = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02")]
+    public partial class DataSchemaModelElementAnnotation
+    {
+
+        private DataSchemaModelElementAnnotationProperty[] propertyField;
+
+        private string typeField;
+
+        private ushort disambiguatorField;
+
+        private bool disambiguatorFieldSpecified;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("Property")]
+        public DataSchemaModelElementAnnotationProperty[] Property
+        {
+            get
+            {
+                return this.propertyField;
+            }
+            set
+            {
+                this.propertyField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Type
+        {
+            get
+            {
+                return this.typeField;
+            }
+            set
+            {
+                this.typeField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public ushort Disambiguator
+        {
+            get
+            {
+                return this.disambiguatorField;
+            }
+            set
+            {
+                this.disambiguatorField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool DisambiguatorSpecified
+        {
+            get
+            {
+                return this.disambiguatorFieldSpecified;
+            }
+            set
+            {
+                this.disambiguatorFieldSpecified = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02")]
+    public partial class DataSchemaModelElementAnnotationProperty
+    {
+
+        private string nameField;
+
+        private string valueField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Name
+        {
+            get
+            {
+                return this.nameField;
+            }
+            set
+            {
+                this.nameField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Value
+        {
+            get
+            {
+                return this.valueField;
+            }
+            set
+            {
+                this.valueField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02")]
+    public partial class DataSchemaModelElementAttachedAnnotation
+    {
+
+        private ushort disambiguatorField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public ushort Disambiguator
+        {
+            get
+            {
+                return this.disambiguatorField;
+            }
+            set
+            {
+                this.disambiguatorField = value;
             }
         }
     }
@@ -940,11 +1031,11 @@ namespace FairPlayCombined.Models.Generators
     public partial class DataSchemaModelElementRelationshipEntryElementAttachedAnnotation
     {
 
-        private byte disambiguatorField;
+        private ushort disambiguatorField;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public byte Disambiguator
+        public ushort Disambiguator
         {
             get
             {
@@ -1033,142 +1124,6 @@ namespace FairPlayCombined.Models.Generators
             set
             {
                 this.nameField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02")]
-    public partial class DataSchemaModelElementAttachedAnnotation
-    {
-
-        private byte disambiguatorField;
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public byte Disambiguator
-        {
-            get
-            {
-                return this.disambiguatorField;
-            }
-            set
-            {
-                this.disambiguatorField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02")]
-    public partial class DataSchemaModelElementAnnotation
-    {
-
-        private DataSchemaModelElementAnnotationProperty[] propertyField;
-
-        private string typeField;
-
-        private byte disambiguatorField;
-
-        private bool disambiguatorFieldSpecified;
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Property")]
-        public DataSchemaModelElementAnnotationProperty[] Property
-        {
-            get
-            {
-                return this.propertyField;
-            }
-            set
-            {
-                this.propertyField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Type
-        {
-            get
-            {
-                return this.typeField;
-            }
-            set
-            {
-                this.typeField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public byte Disambiguator
-        {
-            get
-            {
-                return this.disambiguatorField;
-            }
-            set
-            {
-                this.disambiguatorField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool DisambiguatorSpecified
-        {
-            get
-            {
-                return this.disambiguatorFieldSpecified;
-            }
-            set
-            {
-                this.disambiguatorFieldSpecified = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02")]
-    public partial class DataSchemaModelElementAnnotationProperty
-    {
-
-        private string nameField;
-
-        private string valueField;
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Name
-        {
-            get
-            {
-                return this.nameField;
-            }
-            set
-            {
-                this.nameField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Value
-        {
-            get
-            {
-                return this.valueField;
-            }
-            set
-            {
-                this.valueField = value;
             }
         }
     }
