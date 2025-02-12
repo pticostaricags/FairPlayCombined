@@ -9,26 +9,29 @@ namespace FairPlayCombined.Services.Common
         ILogger<InstagramClientService> logger) : IInstagramClientService
     {
         private const string VERSION = "v22.0";
+        private const string START_OF_METHOD = "Start of method: {MethodName}";
+        private const string END_OF_METHOD = "End of method: {MethodName}";
+
         public async Task<UserInfoModel?> GetUserInfoAsync(string username, string accessToken,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation("Start of method: {MethodName}", nameof(GetUserInfoAsync));
+            logger.LogInformation(START_OF_METHOD, nameof(GetUserInfoAsync));
             string requestUrl = $"https://graph.instagram.com/{VERSION}/{username}" +
                 $"?fields=id,user_id,username,name,account_type,profile_picture_url,followers_count,follows_count,media_count" +
                 $"&access_token={accessToken}";
             var result = await httpClient.GetFromJsonAsync<UserInfoModel>(requestUrl, cancellationToken);
-            logger.LogInformation("End of method: {MethodName}", nameof(GetUserInfoAsync));
+            logger.LogInformation(END_OF_METHOD, nameof(GetUserInfoAsync));
             return result;
         }
 
         public async Task<UserMediaModel?> GetUserMediaAsync(string username, string accessToken,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation("Start of method: {MethodName}", nameof(GetUserMediaAsync));
+            logger.LogInformation(START_OF_METHOD, nameof(GetUserMediaAsync));
             string requestUrl = $"https://graph.instagram.com/{VERSION}/{username}/media" +
                 $"?access_token={accessToken}";
             var result = await httpClient.GetFromJsonAsync<UserMediaModel>(requestUrl, cancellationToken);
-            logger.LogInformation("End of method: {MethodName}", nameof(GetUserMediaAsync));
+            logger.LogInformation(END_OF_METHOD, nameof(GetUserMediaAsync));
             return result;
         }
 
@@ -36,12 +39,12 @@ namespace FairPlayCombined.Services.Common
             string username, string accessToken,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation("Start of method: {MethodName}", nameof(CreateMediaContainerAsync));
+            logger.LogInformation(START_OF_METHOD, nameof(CreateMediaContainerAsync));
             string requestUrl = $"https://graph.instagram.com/{VERSION}/{username}/media?access_token={accessToken}";
             var response = await httpClient.PostAsJsonAsync(requestUrl, createMediaContainerModel, cancellationToken);
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<CreateMediaContainerResponseModel>(cancellationToken);
-            logger.LogInformation("End of method: {MethodName}", nameof(CreateMediaContainerAsync));
+            logger.LogInformation(END_OF_METHOD, nameof(CreateMediaContainerAsync));
             return result;
         }
 
@@ -49,12 +52,12 @@ namespace FairPlayCombined.Services.Common
             string username, string accessToken,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation("Start of method: {MethodName}", nameof(PublishMediaContainerAsync));
+            logger.LogInformation(START_OF_METHOD, nameof(PublishMediaContainerAsync));
             string requestUrl = $"https://graph.instagram.com/{VERSION}/{username}/media_publish?access_token={accessToken}";
             var response = await httpClient.PostAsJsonAsync(requestUrl, publishMediaContainerModel, cancellationToken);
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<PublishMediaContainerResponseModel>(cancellationToken);
-            logger.LogInformation("End of method: {MethodName}", nameof(PublishMediaContainerAsync));
+            logger.LogInformation(END_OF_METHOD, nameof(PublishMediaContainerAsync));
             return result;
         }
 
